@@ -107,9 +107,9 @@ namespace tardigradeHydra{
 
                     _stateVariableIndices = stateVariableIndices;
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameters( parameters.data( ), parameters.size( ) ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::dofVelocityGradientDeformation::residual::decomposeParameters( parameters.data( ), parameters.size( ) ) );
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeAdditionalDOF( ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::dofVelocityGradientDeformation::residual::decomposeAdditionalDOF( ) );
 
                 }
 

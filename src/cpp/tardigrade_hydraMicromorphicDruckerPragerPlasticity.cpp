@@ -8787,10 +8787,10 @@ namespace tardigradeHydra{
             auto residual = get_SetDataStorage_stateVariableResiduals( );
             residual.zero( get_plasticStateVariables( )->size( ) );
 
-            floatType macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
+            floatType macroMac;
             tardigradeConstitutiveTools::mac( -( *macroYield ) );
 
-            floatType microMac  = tardigradeConstitutiveTools::mac( *microYield );
+            floatType microMac;
             tardigradeConstitutiveTools::mac( -( *microYield ) );
 
             floatVector microGradientMac( microGradientYield->size( ), 0 );

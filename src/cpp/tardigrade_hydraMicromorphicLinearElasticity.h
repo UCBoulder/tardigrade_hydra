@@ -160,7 +160,7 @@ namespace tardigradeHydra{
                                             variableVector &dTerm1dGreenLagrangeStrain, variableVector &dTerm1dMicroStrain );
     
         void computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
-                                            const variableVector &incCPsi, const parameterVector &B, const parameterVector &D,
+                                            const variableVector &invCPsi, const parameterVector &B, const parameterVector &D,
                                             variableVector &term2 );
     
         void computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
@@ -173,7 +173,7 @@ namespace tardigradeHydra{
     
         void computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
                                                     variableVector &referenceHigherOrderStress,
-                                                    variableVector &dHigherOrderStressdGamma );
+                                                    variableVector &dReferenceHigherOrderStressdGamma );
 
         void computeLinearElasticTerm3( const variableVector &invCGamma,
                                             const variableVector &referenceHigherOrderStress, variableVector &term3 );
@@ -185,7 +185,7 @@ namespace tardigradeHydra{
         void computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi );
     
         void computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi,
-                                   variableVector &dInvRCGPsidRGG, variableVector &dInvRCGPsidPsi );
+                                   variableVector &dInvRCGPsidRCG, variableVector &dInvRCGPsidPsi );
     
         void computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma );
     

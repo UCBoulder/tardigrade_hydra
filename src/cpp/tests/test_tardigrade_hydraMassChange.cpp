@@ -5142,7 +5142,7 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_t
 
         private:
 
-            virtual void setResidualClasses( ){
+            virtual void setResidualClasses( ) override{
 
                 std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 

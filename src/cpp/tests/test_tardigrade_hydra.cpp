@@ -2454,7 +2454,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setAdditionalDerivatives;
 
-            virtual void setResidual( ){
+            virtual void setResidual( ) override{
 
                 floatVector residual( getNumEquations( ), 0 );
 
@@ -2468,7 +2468,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             }
 
-            virtual void setJacobian( ){
+            virtual void setJacobian( ) override{
 
                 floatMatrix jacobian( getNumEquations( ), floatVector( numVariables, 0 ) );
 
@@ -2486,7 +2486,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             }
 
-            virtual void setdRdF( ){
+            virtual void setdRdF( ) override{
 
                 floatMatrix dRdF( getNumEquations( ), floatVector( 9, 0 ) );
 
@@ -2504,7 +2504,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             }
 
-            virtual void setdRdT( ){
+            virtual void setdRdT( ) override{
 
                 floatVector dRdT( getNumEquations( ), 0 );
 
@@ -2518,7 +2518,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             }
 
-            virtual void setdRdAdditionalDOF( ){
+            virtual void setdRdAdditionalDOF( ) override{
 
                 floatVector dRdAdditionalDOF( getNumEquations( ) * ( hydra->getAdditionalDOF( )->size( ) ), 0 );
 
@@ -2536,7 +2536,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             }
 
-            virtual void setAdditionalDerivatives( ){
+            virtual void setAdditionalDerivatives( ) override{
 
                 floatMatrix additionalDerivatives( getNumEquations( ), floatVector( 4,  0 ) );
 
@@ -4441,7 +4441,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
             }
 
-            virtual void setResidualClasses( ){
+            virtual void setResidualClasses( ) override{
 
                 r1 = ResidualBaseMockStress( this, s1 );
 
@@ -4614,7 +4614,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
 
             }
 
-            virtual void setResidualClasses( ){
+            virtual void setResidualClasses( ) override{
 
                 r1 = ResidualBaseMockStress( this, s1 );
 
@@ -5321,7 +5321,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getResidualParameterizationInfo, * boost::u
 
             }
 
-            virtual void addParameterizationInfo( std::string &parameterization_info ){
+            virtual void addParameterizationInfo( std::string &parameterization_info ) override{
 
                 parameterization_info += "Changing the information\n";
 
@@ -5470,7 +5470,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_resetProblem, * boost::unit_test::tolerance
 
             using tardigradeHydra::hydraBase::setResidualClasses;
 
-            virtual void setResidualClasses( ){
+            virtual void setResidualClasses( ) override{
 
                 r1 = residualMock( this, s1 );
 

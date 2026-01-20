@@ -86,7 +86,7 @@ namespace tardigradeHydra{
                 _expectedParameterVectorSize( expectedParameterVectorSize ),
                 _internalEnergyIndex( internalEnergyIndex ){
     
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::linearInternalEnergy::residual::decomposeParameterVector( parameters ) );
 
                 }
 

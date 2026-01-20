@@ -84,7 +84,7 @@ namespace tardigradeHydra{
 
                     _thermalConfigurationIndex = thermalConfigurationIndex;
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameters( parameters ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::thermalExpansion::residual::decomposeParameters( parameters ) );
 
                 }
 

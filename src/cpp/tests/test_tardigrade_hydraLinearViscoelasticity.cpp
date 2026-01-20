@@ -900,7 +900,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStress, * boost::unit_test::tolera
             }
 
             void decomposeStateVariableVector( floatVector &volumetricISVs,
-                                               floatVector &isochoricISVs ){
+                                               floatVector &isochoricISVs ) override {
 
                 volumetricISVs = stateVariables;
 

@@ -32,7 +32,7 @@ foreach(support_module ${INTERNAL_SUPPORT_LIBRARIES})
     set(TEST_NAME "test_${support_module}")
     add_executable(${TEST_NAME} "${TEST_NAME}.cpp")
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
-    target_compile_options(${TEST_NAME} PRIVATE "-lrt")
+    target_compile_options(${TEST_NAME} PRIVATE )
     target_link_libraries(${TEST_NAME} PUBLIC ${PROJECT_NAME})
 
     # Local builds of upstream projects require local include paths
@@ -64,7 +64,7 @@ foreach(support_module ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
     set(TEST_NAME "test_${support_module}")
     add_executable(${TEST_NAME} "${TEST_NAME}.cpp")
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
-    target_compile_options(${TEST_NAME} PRIVATE "-lrt")
+    target_compile_options(${TEST_NAME} PRIVATE )
     target_link_libraries(
         ${TEST_NAME}
         PUBLIC

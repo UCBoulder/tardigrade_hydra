@@ -89,7 +89,7 @@ namespace tardigradeHydra{
                 _temperatureGradientIndex( temperatureGradientIndex ),
                 _heatFluxIndex( heatFluxIndex ){
     
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::fourierHeatConduction::residual::decomposeParameterVector( parameters ) );
 
                 }
 

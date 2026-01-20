@@ -79,7 +79,7 @@ namespace tardigradeHydra{
                  */
                 residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters ) : tardigradeHydra::ResidualBase<>( hydra, numEquations ){
     
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::linearElasticity::residual::decomposeParameterVector( parameters ) );
     
                 }
                 //! Get a pointer to the value of the lambda Lame parameter

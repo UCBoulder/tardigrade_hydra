@@ -348,7 +348,7 @@ namespace tardigradeHydra{
 
             const floatType *massDirectionMixingParameter = get_massDirectionMixingParameter( );
 
-            const floatType *velocityGradientTrace = get_massChangeVelocityGradientTrace( );
+            const floatType *velocityGradientTrace;
 
             const dimVector *unitDirectionVector;
 

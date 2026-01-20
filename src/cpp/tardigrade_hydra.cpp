@@ -12,10 +12,6 @@
 
 namespace tardigradeHydra{
 
-    //Define hydra global constants in a place that Doxygen can pick up for documentation
-    /** \brief Define the expected number of tensor spatial dimensions. */
-    const int spatialDimensions = 3;
-
     hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
                           const floatType &temperature, const floatType &previousTemperature,
                           const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,

@@ -87,9 +87,9 @@ namespace tardigradeHydra{
 
                     _massChangeConfigurationIndex = massChangeConfigurationIndex;
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeAdditionalDOF( ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::massChange::residual::decomposeAdditionalDOF( ) );
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameters( parameters ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::massChange::residual::decomposeParameters( parameters ) );
 
                 }
 

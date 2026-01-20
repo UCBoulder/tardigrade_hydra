@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE( test_computeStateVariableResidual, * boost::unit_test::tol
 
             }
 
-            virtual void setYield( const bool isPrevious ){
+            virtual void setYield( const bool isPrevious ) override{
 
 
                 if ( isPrevious ){
@@ -1162,7 +1162,7 @@ BOOST_AUTO_TEST_CASE( test_computeConstraints, * boost::unit_test::tolerance( DE
 
             }
 
-            virtual void setYield( const bool isPrevious ){
+            virtual void setYield( const bool isPrevious ) override{
 
 
                 if ( isPrevious ){
@@ -1716,7 +1716,7 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
 
             }
 
-            virtual void setYield( const bool isPrevious ){
+            virtual void setYield( const bool isPrevious ) override{
 
 
                 if ( isPrevious ){

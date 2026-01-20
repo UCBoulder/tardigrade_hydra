@@ -3074,7 +3074,7 @@ BOOST_AUTO_TEST_CASE( test_correctResiduals, * boost::unit_test::tolerance( DEFA
                 *get_SetDataStorage_plasticMultipliers( ).value = _gammaDot;
             }
 
-            virtual void setResidual( ){
+            virtual void setResidual( ) override{
                 auto value = get_SetDataStorage_residual( );
                 value.zero( 55 );
                 for ( auto v = value.begin( ); v != value.begin( ) + 45; ++v ){

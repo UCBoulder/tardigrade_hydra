@@ -818,7 +818,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveNewtonUpdate, * boost::unit_test:
 
         protected:
 
-            virtual void initializeUnknownVector( ){
+            virtual void initializeUnknownVector( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
 
@@ -936,7 +936,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_performPreconditionedSolve, * boost::u
 
         protected:
 
-            virtual void initializeUnknownVector( ){
+            virtual void initializeUnknownVector( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
 

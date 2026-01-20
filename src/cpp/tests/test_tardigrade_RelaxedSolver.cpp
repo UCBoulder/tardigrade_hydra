@@ -437,7 +437,7 @@ BOOST_AUTO_TEST_CASE( test_RelaxedSolver_performRelaxedSolve, * boost::unit_test
 
             using tardigradeHydra::hydraBase::setResidualClasses;
 
-            virtual void setResidualClasses( ){
+            virtual void setResidualClasses( ) override{
 
                 r1 = residualMock( this, s1 );
 
@@ -475,7 +475,7 @@ BOOST_AUTO_TEST_CASE( test_RelaxedSolver_performRelaxedSolve, * boost::unit_test
 
         protected:
 
-            virtual void updateUnknownVector( const tardigradeHydra::floatVector &X ){
+            virtual void updateUnknownVector( const tardigradeHydra::floatVector &X ) override{
 
                 numCallUpdateUnknownVector++;
 
@@ -647,7 +647,7 @@ BOOST_AUTO_TEST_CASE( test_RelaxedSolver_performRelaxedSolve2, * boost::unit_tes
 
             using tardigradeHydra::hydraBase::setResidualClasses;
 
-            virtual void setResidualClasses( ){
+            virtual void setResidualClasses( ) override{
 
                 r1 = residualMock( this, s1 );
 
@@ -701,7 +701,7 @@ BOOST_AUTO_TEST_CASE( test_RelaxedSolver_performRelaxedSolve2, * boost::unit_tes
 
         protected:
 
-            virtual void updateUnknownVector( const tardigradeHydra::floatVector &X ){
+            virtual void updateUnknownVector( const tardigradeHydra::floatVector &X ) override{
 
                 numCallUpdateUnknownVector++;
 

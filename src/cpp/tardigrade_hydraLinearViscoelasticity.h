@@ -86,7 +86,7 @@ namespace tardigradeHydra{
                           const unsigned int viscoelasticISVUpperIndex,
                           const floatType integrationAlpha=0. ) : tardigradeHydra::linearElasticity::residual( hydra, numEquations ), _viscoelasticISVLowerIndex( viscoelasticISVLowerIndex ), _viscoelasticISVUpperIndex( viscoelasticISVUpperIndex ), _integrationAlpha( integrationAlpha ){
     
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::linearViscoelasticity::residual::decomposeParameterVector( parameters ) );
     
                 }
 
@@ -194,7 +194,7 @@ namespace tardigradeHydra{
 
                 virtual void setPK2Stress( const bool isPrevious ) override;
 
-                virtual void decomposeParameterVector( const floatVector &parameters );
+                virtual void decomposeParameterVector( const floatVector &parameters ) override;
 
                 virtual void setVolumetricRateMultiplier( );
 
@@ -302,7 +302,7 @@ namespace tardigradeHydra{
 
                 virtual void setUpdatedIsochoricViscoelasticStateVariables( );
 
-                virtual void setCurrentAdditionalStateVariables( );
+                virtual void setCurrentAdditionalStateVariables( ) override;
 
             private:
 

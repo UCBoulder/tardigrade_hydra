@@ -161,7 +161,6 @@ namespace tardigradeHydra{
 
             }
 
-            offset = numSecondOrderTensor;
             row0 = numPlasticMultipliers;
             offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
             for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){

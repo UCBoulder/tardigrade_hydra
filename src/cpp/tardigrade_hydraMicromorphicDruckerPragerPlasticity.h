@@ -489,7 +489,7 @@ namespace tardigradeHydra{
 
                     _plasticMultiplierBarrierModulus = plasticMultiplierBarrierModulus;
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::extractMaterialParameters( parameters ) );
 
                 }
 

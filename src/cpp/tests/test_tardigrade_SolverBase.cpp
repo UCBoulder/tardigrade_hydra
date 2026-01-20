@@ -705,7 +705,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
             using tardigradeHydra::hydraBase::getResidual;
 
-            virtual void initializeUnknownVector( ){
+            virtual void initializeUnknownVector( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, initialUnknownVector );
 
