@@ -61,15 +61,6 @@ namespace tardigradeHydra{
          *     0. A diagonal pre-conditioner populate by the inverse of the absolute largest entries of the Jacobian's rows
          */
 
-        // Initialize the scaled-quantities
-        setScaledQuantities( );
-
-        // Decompose the state variable vector initializing all of the configurations
-        decomposeStateVariableVector( );
-
-        // Set the residual classes
-        setResidualClasses( );
-
         // TEMP
         _internal_solver.hydra = this;
 
@@ -1655,12 +1646,30 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Initialize the hydra object
+     */
+    void hydraBase::initialize( ){
+
+        // Initialize the scaled-quantities
+        setScaledQuantities( );
+
+        // Decompose the state variable vector initializing all of the configurations
+        decomposeStateVariableVector( );
+
+        // Set the residual classes
+        setResidualClasses( );
+
+    }
+
     void hydraBase::evaluate( const bool &use_subcycler ){
         /*!
          * Solver the non-linear problem and update the variables
          * 
          * \param &use_subcycler: Flag for if the subcycler should be used for difficult analyses (defaults to false)
          */
+
+        initialize( );
 
         try{
 

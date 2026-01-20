@@ -84,6 +84,8 @@ namespace tardigradeHydra{
                        const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4,
                        const bool use_preconditioner=false, const unsigned int preconditioner_type=0 );
 
+            virtual void initialize( );
+
             // User defined functions
 
             // Setter functions
