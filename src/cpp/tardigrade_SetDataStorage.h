@@ -20,12 +20,28 @@
  * \param classtype: The type of the class to be defined
  * \param vartype: The ctype of the variable
  */
-#define TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getname,varname,classtype,vartype,...) \
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getname,varname,classtype,vartype) \
     classtype< vartype > getname( ){                                                          \
         /*!                                                                                         \
          * Get an object derived from SetDataStorageBase to set values                              \
          */                                                                                         \
-        return classtype< vartype >( &_##varname, ##__VA_ARGS__ );                                  \
+        return classtype< vartype >( &_##varname );                                  \
+    }
+
+/*!
+ * \brief Declares a named SetDataStorage getter function which can be controlled by a containing object
+ * \param getname: The name of the getter function
+ * \param varname: The name of the variable
+ * \param classtype: The type of the class to be defined
+ * \param vartype: The ctype of the variable
+ * \param controller: A pointer to the controlling object
+ */
+#define TARDIGRADE_HYDRA_DECLARE_CONTROLLED_NAMED_SETDATASTORAGE_GETTER(getname,varname,classtype,vartype,controller) \
+    classtype< vartype > getname( ){                                                          \
+        /*!                                                                                         \
+         * Get an object derived from SetDataStorageBase to set values                              \
+         */                                                                                         \
+        return classtype< vartype >( &_##varname, controller );                                  \
     }
 
 /*!
@@ -34,8 +50,18 @@
  * \param classtype: The type of the class to be defined
  * \param vartype: The ctype of the variable
  */
-#define TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(varname,classtype,vartype,...) \
-    TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(get_SetDataStorage_##varname,varname,classtype,vartype, ##__VA_ARGS__)
+#define TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(varname,classtype,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(get_SetDataStorage_##varname,varname,classtype,vartype)
+
+/*!
+ * \brief Declares a controlled SetDataStorage getter function
+ * \param varname: The name of the variable
+ * \param classtype: The type of the class to be defined
+ * \param vartype: The ctype of the variable
+ * \param controller: A pointer to the controlling object
+ */
+#define TARDIGRADE_HYDRA_DECLARE_CONTROLLED_SETDATASTORAGE_GETTER(varname,classtype,vartype,controller) \
+    TARDIGRADE_HYDRA_DECLARE_CONTROLLED_NAMED_SETDATASTORAGE_GETTER(get_SetDataStorage_##varname,varname,classtype,vartype,controller)
 
 /*!
  * \brief Declares a named getter function
@@ -104,11 +130,31 @@
  * \param setfun: The class member function that sets the variable
  * \param uncall: The function that is called if the variable is not set
  */
-#define TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,getsetdatastoragename,varname,classtype,vartype,setfun,uncall,...) \
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,getsetdatastoragename,varname,classtype,vartype,setfun,uncall) \
     private: DataStorage<vartype> _##varname;                       \
     public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETTER(setname,varname,vartype,setfun) \
     public: TARDIGRADE_HYDRA_DECLARE_NAMED_GETTER(getname,varname,vartype,uncall) \
-    public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getsetdatastoragename,varname,classtype,vartype, ##__VA_ARGS__) \
+    public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getsetdatastoragename,varname,classtype,vartype) \
+    context:
+
+/*!
+ * \brief Declare a controlled DataStorage class and the associated named setters and getters
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param setname: The name of the setter function
+ * \param getname: The name of the getter function
+ * \param getsetdatastoragename: The name of the getter function for the SetDataStorage object
+ * \param varname: The name of the variable
+ * \param classtype: The type of the class for the SetDataStorage object
+ * \param vartype: The ctype of the variable
+ * \param setfun: The class member function that sets the variable
+ * \param uncall: The function that is called if the variable is not set
+ * \param controller: A pointer to the controlling object
+ */
+#define TARDIGRADE_HYDRA_DECLARE_CONTROLLED_NAMED_STORAGE(context,setname,getname,getsetdatastoragename,varname,classtype,vartype,setfun,uncall,controller) \
+    private: DataStorage<vartype> _##varname;                       \
+    public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETTER(setname,varname,vartype,setfun) \
+    public: TARDIGRADE_HYDRA_DECLARE_NAMED_GETTER(getname,varname,vartype,uncall) \
+    public: TARDIGRADE_HYDRA_DECLARE_CONTROLLED_NAMED_SETDATASTORAGE_GETTER(getsetdatastoragename,varname,classtype,vartype, controller) \
     context:
 
 /*!
@@ -132,7 +178,7 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(context,setname,getname,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,get_SetDataStorage_##varname,varname,SetDataStorageIteration,vartype,setIterationData,uncall,this)
+    TARDIGRADE_HYDRA_DECLARE_CONTROLLED_NAMED_STORAGE(context,setname,getname,get_SetDataStorage_##varname,varname,SetDataStorageIteration,vartype,setIterationData,uncall,this)
 
 /*!
  * \brief Declare a DataStorage class that uses setIterationData as the setter function
@@ -142,7 +188,7 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(context,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_SetDataStorage_##varname,varname,SetDataStorageIteration,vartype,setIterationData,uncall,this)
+    TARDIGRADE_HYDRA_DECLARE_CONTROLLED_NAMED_STORAGE(context,set_##varname,get_##varname,get_SetDataStorage_##varname,varname,SetDataStorageIteration,vartype,setIterationData,uncall,this)
 
 /*!
  * \brief Declare a DataStorage class that uses setNLStepData as the setter function
@@ -152,7 +198,7 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_NLSTEP_STORAGE(context,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_SetDataStorage_##varname,varname,SetDataStorageNLStep,vartype,setNLStepData,uncall,this)
+    TARDIGRADE_HYDRA_DECLARE_CONTROLLED_NAMED_STORAGE(context,set_##varname,get_##varname,get_SetDataStorage_##varname,varname,SetDataStorageNLStep,vartype,setNLStepData,uncall,this)
 
 /*!
  * \brief Declare a named DataStorage class that uses setPreviousData as the setter function

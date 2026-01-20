@@ -245,9 +245,9 @@ namespace tardigradeHydra{
                     using tardigradeHydra::SetDataStorageIterationBase<ResidualMock,T>::SetDataStorageIterationBase;
                 };
 
-                TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myScalarData,SetDataStorageIteration,double,this);
+                TARDIGRADE_HYDRA_DECLARE_CONTROLLED_SETDATASTORAGE_GETTER(myScalarData,SetDataStorageIteration,double,this);
 
-                TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myVectorData,SetDataStorageIteration,std::vector<double>,this);
+                TARDIGRADE_HYDRA_DECLARE_CONTROLLED_SETDATASTORAGE_GETTER(myVectorData,SetDataStorageIteration,std::vector<double>,this);
 
                 std::vector< tardigradeHydra::dataBase* > iteration_data = { };
 
