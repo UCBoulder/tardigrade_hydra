@@ -38,6 +38,8 @@ namespace tardigradeHydra{
                                    const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4,
                                    const bool use_preconditioner=false, const unsigned int preconditioner_type=0 );
 
+            virtual void initialize( ) override;
+
             //! Get the current micro-deformation tensor
             const secondOrderTensor *getMicroDeformation( ){ return getScaledMicroDeformation( ); }
 

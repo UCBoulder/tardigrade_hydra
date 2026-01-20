@@ -62,9 +62,18 @@ namespace tardigradeHydra{
          *     0. A diagonal pre-conditioner populate by the inverse of the absolute largest entries of the Jacobian's rows
          */
 
-        hydraBaseMicromorphic::hydraBaseMicromorphic::setScaledQuantities( );
+    }
 
-        hydraBaseMicromorphic::hydraBaseMicromorphic::decomposeStateVariableVectorMicroConfigurations( );
+    /*!
+     * Initialize the hydra object
+     */
+    void hydraBaseMicromorphic::initialize( ){
+
+        tardigradeHydra::hydraBase::hydraBase::initialize( );
+
+        setScaledQuantities( );
+
+        decomposeStateVariableVectorMicroConfigurations( );
 
     }
 
