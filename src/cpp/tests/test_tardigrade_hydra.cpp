@@ -663,6 +663,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector, * boost::unit
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+    hydra.initialize( );
 
     tardigradeHydra::unit_test::hydraBaseTester::decomposeStateVariableVector( hydra );
 
@@ -857,6 +858,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector2, * boost::uni
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::decomposeStateVariableVector( hydra );
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( configurationsAnswer ) == *hydra.get_configurations( ), CHECK_PER_ELEMENT );
@@ -962,6 +965,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfiguration, * boost::unit_test::to
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     BOOST_TEST( hydra.getSubConfiguration( 0, 4 ) == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
 
     floatVector answer1 = { 2.24332648, 1.48246714, 2.02801682,
@@ -1014,6 +1019,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfiguration, * boost::unit_te
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     BOOST_TEST( hydra.getPrecedingConfiguration( 4 ) == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
 
@@ -1078,6 +1085,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfiguration, * boost::unit_te
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatVector answer1 = { 2.09953091, 1.83604029, 2.3712323 ,
                             0.98756433, 2.58928197, 1.05684715,
                             1.33422708, 1.67694162, 2.96443669 };
@@ -1138,6 +1147,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfiguration, * boost::unit_
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     BOOST_TEST( hydra.getPreviousSubConfiguration( 0, 4 ) == *hydra.getPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
 
     floatVector answer1 = { 2.24332648, 1.48246714, 2.02801682,
@@ -1189,6 +1200,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfiguration, * boost:
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     BOOST_TEST( hydra.getPreviousPrecedingConfiguration( 4 ) == *hydra.getPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
 
@@ -1252,6 +1265,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfiguration, * boost:
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatVector answer1 = { 2.09953091, 1.83604029, 2.3712323 ,
                             0.98756433, 2.58928197, 1.05684715,
                             1.33422708, 1.67694162, 2.96443669 };
@@ -1311,6 +1326,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian, * boost::unit_
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     floatVector configurations = *hydra.get_configurations( );
 
@@ -1419,6 +1436,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian2, * boost::unit
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatVector configurations = *hydra.get_configurations( );
 
     floatVector x = configurations;
@@ -1526,6 +1545,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationJacobian, * boost:
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatVector configurations = *hydra.get_configurations( );
 
     floatVector x = configurations;
@@ -1632,6 +1653,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationJacobian, * boost:
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     floatVector configurations = *hydra.get_configurations( );
 
@@ -1741,6 +1764,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationJacobian, * boos
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatVector configurations = *hydra.get_previousConfigurations( );
 
     floatVector x = configurations;
@@ -1847,6 +1872,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationJacobian, 
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     floatVector configurations = *hydra.get_previousConfigurations( );
 
@@ -1955,6 +1982,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationJacobian, 
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatVector configurations = *hydra.get_previousConfigurations( );
 
     floatVector x = configurations;
@@ -2059,6 +2088,8 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients, * boost::un
                                       { }, { },
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatType eps = 1e-6;
 
     floatMatrix dF1dF_answer( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
@@ -2078,6 +2109,10 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients, * boost::un
         tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
                                             { }, { },
                                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydra_p.initialize( );
+
+        hydra_m.initialize( );
 
         floatVector F1_p, F1_m;
 
@@ -2112,6 +2147,10 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients, * boost::un
         tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                             { }, { },
                                             previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydra_p.initialize( );
+
+        hydra_m.initialize( );
 
         floatVector F1_p, F1_m;
 
@@ -2174,6 +2213,8 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients, * b
                                       { }, { },
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatType eps = 1e-6;
 
     floatMatrix previousdF1dF_answer( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
@@ -2193,6 +2234,10 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients, * b
         tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
                                             { }, { },
                                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydra_p.initialize( );
+
+        hydra_m.initialize( );
 
         floatVector F1_p, F1_m;
 
@@ -2225,6 +2270,10 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients, * b
         tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                             { }, { },
                                             previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydra_p.initialize( );
+
+        hydra_m.initialize( );
 
         floatVector F1_p, F1_m;
 
@@ -2327,6 +2376,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses, * boost::unit_test::tol
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     BOOST_CHECK_NO_THROW( hydra.setResidualClasses( ) );
 
     BOOST_CHECK( ( *hydra.getResidualClasses( ) )[ 0 ]->getNumEquations( ) == hydra.s1 );
@@ -2418,7 +2469,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses2, * boost::unit_test::to
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    BOOST_CHECK_THROW( hydra.setResidualClasses( ), std::nested_exception );
+    BOOST_CHECK_THROW( hydra.initialize( ), std::nested_exception );
 
 }
 
@@ -2679,9 +2730,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
                          additionalDOF, additionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     hydraBaseMock hydraGet( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             additionalDOF, additionalDOF,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydraGet.initialize( );
 
     hydraGet.setResidualClasses( );
 
@@ -2958,7 +3013,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    hydra.setResidualClasses( );
+    hydra.initialize( );
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra );
 
@@ -3192,7 +3247,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    hydra.setResidualClasses( );
+    hydra.initialize( );
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra );
 
@@ -3555,6 +3610,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector, * boost::unit_test:
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatVector unknownVector = { -0.15564097, -0.82143154, -0.27568448, -0.86079836,  0.07935105,
                                    0.14494499,  0.24999455,  0.43334209, -0.56655812, -0.30347709,
                                   -0.6423031 ,  0.31882307, -0.40934079, -0.68385209, -0.93550481,
@@ -3715,6 +3772,8 @@ BOOST_AUTO_TEST_CASE( test_getConfiguration, * boost::unit_test::tolerance( DEFA
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       { }, { },
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     BOOST_TEST( hydra.getConfiguration( 1 ) == floatVector( hydra.get_configurations( )->begin( ) + 1 * 9,
                                                             hydra.get_configurations( )->begin( ) + 2 * 9 ), CHECK_PER_ELEMENT );
@@ -3939,6 +3998,8 @@ BOOST_AUTO_TEST_CASE( test_computeFlatdXdAdditionalDOF, * boost::unit_test::tole
                          { 1, 2, 3, 4, 5 }, { 1, 2, 3, 4, 5 },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     floatVector dXdAdditionalDOF = { -0.4084987 ,  0.39168929,  0.5515543 , -0.05139529, -0.41998415,
                                       0.18443685, -0.98977328, -0.34171132,  0.09720518,  0.21059288,
                                       0.27548634, -0.48194765,  0.11825706,  0.87472897,  0.20725542,
@@ -3956,6 +4017,8 @@ BOOST_AUTO_TEST_CASE( test_computeFlatdXdAdditionalDOF, * boost::unit_test::tole
                              { 1, 2, 3, 4, 5 }, { 1, 2, 3, 4, 5 },
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
                              9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
+
+    hydra_pre.initialize( );
 
     BOOST_TEST( dXdAdditionalDOF == *hydra_pre.getFlatdXdAdditionalDOF( ), CHECK_PER_ELEMENT );
 

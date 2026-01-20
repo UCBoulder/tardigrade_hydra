@@ -1009,6 +1009,8 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::un
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::micromorphicLinearElasticity::residual R( &hydra, 45, parameters );
 
     tardigradeHydra::micromorphicLinearElasticity::residual RJ( &hydra, 45, parameters );
@@ -1115,6 +1117,10 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::un
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
@@ -1158,6 +1164,10 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::un
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
@@ -1203,6 +1213,10 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::un
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
@@ -1246,6 +1260,10 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::un
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
@@ -1291,6 +1309,10 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::un
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
@@ -1334,6 +1356,10 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::un
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
@@ -1386,6 +1412,10 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::un
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
@@ -2162,6 +2192,8 @@ BOOST_AUTO_TEST_CASE( testMapStressesToCurrent, * boost::unit_test::tolerance( D
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 45, parameters );
 
     variableVector resultCauchyStress, resultMicroStress, resultHigherOrderStress;
@@ -2549,6 +2581,8 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     tardigradeHydra::micromorphicLinearElasticity::residual R( &hydra, 45, parameters );
@@ -2662,6 +2696,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -2731,6 +2769,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -2802,6 +2844,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
@@ -2871,6 +2917,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -2942,6 +2992,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -3011,6 +3065,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -3082,6 +3140,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
@@ -3151,6 +3213,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -3222,6 +3288,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -3291,6 +3361,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -3362,6 +3436,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
@@ -3431,6 +3509,10 @@ BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( 1e-5 ) ){
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -3596,6 +3678,8 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures, * boost::unit_test::tolera
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     tardigradeHydra::micromorphicLinearElasticity::residual R( &hydra, 45, parameters );
 
@@ -4028,6 +4112,8 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::micromorphicLinearElasticity::residual R( &hydra, 45, parameters );
 
     tardigradeHydra::micromorphicLinearElasticity::residual RJ( &hydra, 45, parameters );
@@ -4084,6 +4170,10 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
@@ -4127,6 +4217,10 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
@@ -4172,6 +4266,10 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
@@ -4215,6 +4313,10 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
@@ -4260,6 +4362,10 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
@@ -4303,6 +4409,10 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
@@ -4355,6 +4465,10 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
 
@@ -4979,8 +5093,6 @@ BOOST_AUTO_TEST_CASE( testComputeReferenceHigherOrderStress, * boost::unit_test:
 
     tardigradeHydra::micromorphicLinearElasticity::computeReferenceHigherOrderStress( Gamma, C, result );
 
-    
-
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
 
     //Test the Jacobian
@@ -4988,8 +5100,6 @@ BOOST_AUTO_TEST_CASE( testComputeReferenceHigherOrderStress, * boost::unit_test:
     variableVector resultJ;
     variableVector dMdGamma;
     tardigradeHydra::micromorphicLinearElasticity::computeReferenceHigherOrderStress( Gamma, C, resultJ, dMdGamma );
-
-    
 
     BOOST_TEST( resultJ == answer, CHECK_PER_ELEMENT );
 
@@ -5046,8 +5156,6 @@ BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm3, * boost::unit_test::toleran
     tardigradeHydra::micromorphicLinearElasticity::computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress,
                                                                                                result );
 
-    
-
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
 
     //Test the Jacobians
@@ -5057,8 +5165,6 @@ BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm3, * boost::unit_test::toleran
 
     tardigradeHydra::micromorphicLinearElasticity::computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress,
                                                                                       resultJ, dTerm3dInvCGamma, dTerm3dM );
-
-    
 
     BOOST_TEST( resultJ == answer, CHECK_PER_ELEMENT );
 
@@ -5073,12 +5179,8 @@ BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm3, * boost::unit_test::toleran
         tardigradeHydra::micromorphicLinearElasticity::computeLinearElasticTerm3( invCGamma + delta, referenceHigherOrderStress,
                                                                                           result_P );
 
-        
-
         tardigradeHydra::micromorphicLinearElasticity::computeLinearElasticTerm3( invCGamma - delta, referenceHigherOrderStress,
                                                                                          result_M );
-
-        
 
         constantVector gradCol = ( result_P - result_M ) / ( 2 * delta[i] );
 
@@ -5097,12 +5199,8 @@ BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm3, * boost::unit_test::toleran
         tardigradeHydra::micromorphicLinearElasticity::computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress + delta,
                                                                                           result_P );
 
-        
-
         tardigradeHydra::micromorphicLinearElasticity::computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress - delta,
                                                                                           result_M );
-
-        
 
         constantVector gradCol = ( result_P - result_M ) / ( 2 * delta[i] );
 
@@ -5135,8 +5233,6 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGPsi, * boost::unit_test::tolerance( DEFAU
     variableVector result;
     tardigradeHydra::micromorphicLinearElasticity::computeInvRCGPsi( invRCG, Psi, result );
 
-    
-
     BOOST_TEST( tolerantCheck( result, answer, 1e-5, 1e-5 ) );
 
     //Test Jacobians
@@ -5145,8 +5241,6 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGPsi, * boost::unit_test::tolerance( DEFAU
     variableVector dInvRCGPsidRCG, dInvRCGPsidPsi;
 
     tardigradeHydra::micromorphicLinearElasticity::computeInvRCGPsi( invRCG, Psi, resultJ, dInvRCGPsidRCG, dInvRCGPsidPsi );
-
-    
 
     BOOST_TEST( tolerantCheck( resultJ, answer, 1e-5, 1e-5 ) );
 
@@ -5162,13 +5256,9 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGPsi, * boost::unit_test::tolerance( DEFAU
 
         tardigradeHydra::micromorphicLinearElasticity::computeInvRCGPsi( invRCG_P, Psi, result_P );
 
-        
-
         variableVector invRCG_M = tardigradeVectorTools::inverse( RCG - delta, 3, 3 );
 
         tardigradeHydra::micromorphicLinearElasticity::computeInvRCGPsi( invRCG_M, Psi, result_M );
-
-        
 
         constantVector gradCol = ( result_P - result_M ) / ( 2 * delta[ i ] );
 
@@ -5186,11 +5276,7 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGPsi, * boost::unit_test::tolerance( DEFAU
 
         tardigradeHydra::micromorphicLinearElasticity::computeInvRCGPsi( invRCG, Psi + delta, result_P );
 
-        
-
         tardigradeHydra::micromorphicLinearElasticity::computeInvRCGPsi( invRCG, Psi - delta, result_M );
-
-        
 
         constantVector gradCol = ( result_P - result_M ) / ( 2 * delta[ i ] );
 
@@ -5230,8 +5316,6 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGGamma, * boost::unit_test::tolerance( DEF
     variableVector result;
     tardigradeHydra::micromorphicLinearElasticity::computeInvRCGGamma( invRCG, Gamma, result );
 
-    
-
     BOOST_TEST( tolerantCheck( result, answer, 1e-5, 1e-5 ) );
 
     //Test Jacobians
@@ -5240,8 +5324,6 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGGamma, * boost::unit_test::tolerance( DEF
     variableVector dInvRCGGammadRCG, dInvRCGGammadGamma;
 
     tardigradeHydra::micromorphicLinearElasticity::computeInvRCGGamma( invRCG, Gamma, resultJ, dInvRCGGammadRCG, dInvRCGGammadGamma );
-
-    
 
     BOOST_TEST( tolerantCheck( resultJ, answer, 1e-5, 1e-5 ) );
 
@@ -5257,13 +5339,9 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGGamma, * boost::unit_test::tolerance( DEF
 
         tardigradeHydra::micromorphicLinearElasticity::computeInvRCGGamma( invRCG_P, Gamma, result_P );
 
-        
-
         variableVector invRCG_M = tardigradeVectorTools::inverse( RCG - delta, 3, 3 );
 
         tardigradeHydra::micromorphicLinearElasticity::computeInvRCGGamma( invRCG_M, Gamma, result_M );
-
-        
 
         constantVector gradCol = ( result_P - result_M ) / ( 2 * delta[i] );
 
@@ -5281,11 +5359,7 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGGamma, * boost::unit_test::tolerance( DEF
 
         tardigradeHydra::micromorphicLinearElasticity::computeInvRCGGamma( invRCG, Gamma + delta, result_P );
 
-        
-
         tardigradeHydra::micromorphicLinearElasticity::computeInvRCGGamma( invRCG, Gamma - delta, result_M );
-
-        
 
         constantVector gradCol = ( result_P - result_M ) / ( 2 * delta[i] );
 
@@ -5492,8 +5566,6 @@ BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures, * boost::unit_
     tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures( grad_u, phi, grad_phi,
                                                                                                             resultF, resultChi, resultGradChi );
 
-    
-
     BOOST_TEST( resultF == answerDeformationGradient, CHECK_PER_ELEMENT );
 
     BOOST_TEST( resultChi == answerMicroDeformation, CHECK_PER_ELEMENT );
@@ -5507,8 +5579,6 @@ BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures, * boost::unit_
     tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures( grad_u, phi, grad_phi,
                                                                                                    resultFJ, resultChiJ, resultGradChiJ,
                                                                                                    dFdGradU, dChidPhi, dGradChidGradPhi );
-
-    
 
     BOOST_TEST( resultFJ == answerDeformationGradient, CHECK_PER_ELEMENT );
 
@@ -5545,12 +5615,8 @@ BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures, * boost::unit_
         tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures( positive_perturb, phi, grad_phi,
                                                                                                        FP, chiP, gradChiP );
 
-        
-
         tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures( negative_perturb, phi, grad_phi,
                                                                                                        FM, chiM, gradChiM );
-
-        
 
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ ii ][ ij ] );
 
@@ -5590,12 +5656,8 @@ BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures, * boost::unit_
         tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures( grad_u, positive_perturb, grad_phi,
                                                                                                        FP, chiP, gradChiP );
 
-        
-
         tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures( grad_u, negative_perturb, grad_phi,
                                                                                                        FM, chiM, gradChiM );
-
-        
 
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ i ] );
 
@@ -5655,12 +5717,8 @@ BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures, * boost::unit_
         tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures( grad_u, phi, positive_perturb,
                                                                                       FP, chiP, gradChiP );
 
-        
-
         tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures( grad_u, phi, negative_perturb,
                                                                                                        FM, chiM, gradChiM );
-
-        
 
         variableVector gradCol = ( FP - FM ) / ( 2 * delta[ ii ][ ij ] );
 
@@ -5712,20 +5770,14 @@ BOOST_AUTO_TEST_CASE( testExtractMaterialParameters, * boost::unit_test::toleran
     };
 
     tardigradeHydra::micromorphicLinearElasticity::formIsotropicA( 1.7, 1.8, answerAmatrix );
-    
 
     tardigradeHydra::micromorphicLinearElasticity::formIsotropicB( 2.8, 0.76, 0.15, 9.8, 5.4, answerBmatrix );
-    
 
     tardigradeHydra::micromorphicLinearElasticity::formIsotropicC( { 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.}, answerCmatrix );
-    
 
     tardigradeHydra::micromorphicLinearElasticity::formIsotropicD( 0.76, 5.4, answerDmatrix );
-    
 
     tardigradeHydra::micromorphicLinearElasticity::extractMaterialParameters( fparams, Amatrix, Bmatrix, Cmatrix, Dmatrix );
-
-    
 
     BOOST_TEST( Amatrix == answerAmatrix, CHECK_PER_ELEMENT );
 
@@ -5876,6 +5928,8 @@ BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_T
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R( &hydra, 45, parameters );
@@ -6011,6 +6065,8 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R( &hydra, 45, parameters );
@@ -6044,6 +6100,10 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
 
@@ -6103,6 +6163,10 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -6146,6 +6210,10 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -6315,6 +6383,8 @@ BOOST_AUTO_TEST_CASE( test_setStress, * boost::unit_test::tolerance( DEFAULT_TES
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 

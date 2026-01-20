@@ -138,6 +138,8 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests, * boost::unit_test::tolera
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, 28 );
 
     tardigradeHydra::fourierHeatConduction::unit_test::residualTester::runBasicGetTests( R );
@@ -211,6 +213,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getTemperatureGradient, * boost::unit_test::
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, 28 );
 
@@ -288,6 +292,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getConductivity, * boost::unit_test::toleran
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, 28 );
 
     double answer = 0.245;
@@ -360,6 +366,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getHeatFlux, * boost::unit_test::tolerance( 
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, temperatureGradientIndex );
 
     std::vector< double > answer = {
@@ -406,6 +414,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getHeatFlux, * boost::unit_test::tolerance( 
             tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                                x_m, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
@@ -497,6 +509,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, temperatureGradientIndex );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -538,6 +552,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
             tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, x_m, previousDeformationGradient,
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
@@ -589,6 +607,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
             tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 3, parameters, temperatureGradientIndex );
@@ -639,6 +661,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
             tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 3, parameters, temperatureGradientIndex );
@@ -684,6 +710,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
             tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                                x_m, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 

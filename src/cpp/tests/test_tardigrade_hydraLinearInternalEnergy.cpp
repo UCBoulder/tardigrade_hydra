@@ -138,6 +138,8 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests, * boost::unit_test::tolera
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::linearInternalEnergy::residual R( &hydra, 1, parameters );
 
     tardigradeHydra::linearInternalEnergy::unit_test::residualTester::runBasicGetTests( R );
@@ -210,6 +212,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getSpecificHeat, * boost::unit_test::toleran
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::linearInternalEnergy::residual R( &hydra, 1, parameters );
 
     double answer = 0.245;
@@ -280,6 +284,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getInternalEnergy, * boost::unit_test::toler
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::linearInternalEnergy::residual R( &hydra, 1, parameters );
 
     double answer = 0.2009;
@@ -320,6 +326,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getInternalEnergy, * boost::unit_test::toler
             tardigradeHydra::hydraBase hydram( time, deltaTime, x_m, previousTemperature, deformationGradient, previousDeformationGradient,
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
@@ -409,6 +419,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::linearInternalEnergy::residual R( &hydra, 1, parameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -450,6 +462,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
             tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, x_m, previousDeformationGradient,
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
@@ -501,6 +517,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
             tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 1, parameters );
@@ -551,6 +571,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
             tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 1, parameters );
@@ -596,6 +620,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
             tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                                x_m, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 

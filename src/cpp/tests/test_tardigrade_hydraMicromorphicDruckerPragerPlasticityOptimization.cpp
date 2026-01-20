@@ -357,6 +357,8 @@ BOOST_AUTO_TEST_CASE( test_computeStateVariableResidual, * boost::unit_test::tol
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R(  &hydra, 60, 1, stateVariableIndices, parameters );
@@ -647,6 +649,8 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R(  &hydra, 60, 1, stateVariableIndices, parameters );
@@ -676,6 +680,10 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
 
@@ -939,6 +947,8 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R(  &hydra, 60, 1, stateVariableIndices, parameters );
@@ -976,6 +986,10 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -1242,6 +1256,8 @@ BOOST_AUTO_TEST_CASE( test_computeConstraints, * boost::unit_test::tolerance( DE
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R(  &hydra, 60, 1, stateVariableIndices, parameters );
@@ -1502,6 +1518,8 @@ BOOST_AUTO_TEST_CASE( test_setConstraintJacobians, * boost::unit_test::tolerance
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R(  &hydra, 60, 1, stateVariableIndices, parameters );
@@ -1531,6 +1549,10 @@ BOOST_AUTO_TEST_CASE( test_setConstraintJacobians, * boost::unit_test::tolerance
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
 
@@ -1795,6 +1817,8 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 

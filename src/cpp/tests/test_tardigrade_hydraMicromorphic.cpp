@@ -187,6 +187,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor, * boost
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     BOOST_TEST( time == hydra.getTime( ) );
 
     BOOST_TEST( deltaTime == hydra.getDeltaTime( ) );
@@ -373,6 +375,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boos
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     BOOST_TEST( time == hydra.getTime( ) );
 
@@ -582,6 +586,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector answer = { 2.63306967, -0.16982965, -0.15109712,
                            1.26964411,  0.59017992,  0.35717977,
                            0.72297358, -0.4912966 ,  0.28183864 };
@@ -705,6 +711,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreceedingMicroCo
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     floatVector answer = { 2.63306967, -0.16982965, -0.15109712,
                            1.26964411,  0.59017992,  0.35717977,
@@ -908,6 +916,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector, * 
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector nonLinearPreviousStateVariables( previousStateVariables.begin( ),
                                                  previousStateVariables.begin( ) + ( numConfigurations - 1 ) * configuration_unknown_count + numNonLinearSolveStateVariables );
 
@@ -1040,6 +1050,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector answer = { 0.37335959,  0.14440808,  0.07815635,
                           -0.05311829,  1.15252061, -0.83175389,
                           -0.26108048,  1.01045459,  1.40735072 };
@@ -1157,6 +1169,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getMicroConfiguratio
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     floatVector answer = { 2.00093808,  1.48052569, -0.5533865 ,
                            0.74087198,  1.25662963,  0.17264556,
@@ -1282,6 +1296,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector answer = { 1.79993357, -0.26247057, -0.16201437,
                           -0.7635743 ,  0.6005345 ,  0.34819881,
                            0.16680516, -0.38411455,  0.34087847 };
@@ -1406,6 +1422,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceedin
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector answer = { 1.79993357, -0.26247057, -0.16201437,
                           -0.7635743 ,  0.6005345 ,  0.34819881,
                            0.16680516, -0.38411455,  0.34087847 };
@@ -1524,6 +1542,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector answer = { 0.37335959,  0.14440808,  0.07815635,
                           -0.05311829,  1.15252061, -0.83175389,
                           -0.26108048,  1.01045459,  1.40735072 };
@@ -1641,6 +1661,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousMicroCon
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     floatVector answer = { 1.41998902,  0.88426858, -0.45291886,
                           -0.76867062,  0.02912989,  0.49178024,
@@ -1765,6 +1787,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     floatVector microConfigurations = *hydra.get_microConfigurations( );
 
@@ -1944,6 +1968,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroCon
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector microConfigurations = *hydra.get_microConfigurations( );
 
     floatVector x = microConfigurations;
@@ -2121,6 +2147,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     floatVector microConfigurations = *hydra.get_microConfigurations( );
 
@@ -2300,6 +2328,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector microConfigurations = *hydra.get_previousMicroConfigurations( );
 
     floatVector x = microConfigurations;
@@ -2476,6 +2506,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceding
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     floatVector microConfigurations = *hydra.get_previousMicroConfigurations( );
 
@@ -2655,6 +2687,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatVector microConfigurations = *hydra.get_previousMicroConfigurations( );
 
     floatVector x = microConfigurations;
@@ -2833,6 +2867,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChi, * boo
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatType eps = 1e-6;
 
     floatMatrix gradient( dimension * dimension, floatVector( dimension * dimension, 0 ) );
@@ -2858,6 +2894,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChi, * boo
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector Fscp;
 
@@ -2990,6 +3030,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousdChi1dChi
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatType eps = 1e-6;
 
     floatMatrix gradient( dimension * dimension, floatVector( dimension * dimension, 0 ) );
@@ -3015,6 +3057,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousdChi1dChi
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector Fscp;
 
@@ -3147,6 +3193,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChin, * bo
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatType eps = 1e-6;
 
     floatMatrix gradient( dimension * dimension, floatVector( ( numConfigurations - 1 ) * dimension * dimension, 0 ) );
@@ -3172,6 +3220,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChin, * bo
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector Fscp;
 
@@ -3304,6 +3356,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousdChi1dCh
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatType eps = 1e-6;
 
     floatMatrix gradient( dimension * dimension, floatVector( ( numConfigurations - 1 ) * dimension * dimension, 0 ) );
@@ -3329,6 +3383,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousdChi1dCh
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector Fscp;
 
@@ -3444,6 +3502,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     floatVector answer1 = { -0.15723617, -0.19587921, -0.08297779,  0.18130077,  0.37545684,
                              0.01042234,  0.16931378,  0.08593655,  0.1249035 ,  0.17468905,
@@ -3571,6 +3631,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatType eps = 1e-6;
 
     unsigned int nterms = dimension * dimension * dimension;
@@ -3608,6 +3670,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
                                         hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
@@ -3647,6 +3713,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
                                         hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
@@ -3684,6 +3754,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
                                         hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
@@ -3723,6 +3797,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
                                         hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
@@ -3760,6 +3838,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
                                         hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
@@ -3799,6 +3881,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
                                         hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
@@ -3911,6 +3997,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     floatVector answer1 = { -2.96204445,  2.37087437,  3.42033939,  0.43233628, -2.39932744,
                             -2.27084966,  2.93494409, -0.63956264, -2.94263772,  0.7463599 ,
@@ -4038,6 +4126,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+    hydra.initialize( );
+
     floatType eps = 1e-6;
 
     unsigned int nterms = dimension * dimension * dimension;
@@ -4075,6 +4165,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
                                         hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
@@ -4114,6 +4208,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
                                         hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
@@ -4152,11 +4250,19 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
                                         hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
         floatVector valm = floatVector( hydram.get_previousGradientMicroConfigurations( )->begin( ),
                                         hydram.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -4189,6 +4295,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
                                         hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
@@ -4228,6 +4338,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
                                         hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
@@ -4266,6 +4380,10 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
                                         hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
@@ -4381,6 +4499,8 @@ BOOST_AUTO_TEST_CASE( test_ResidualBaseMicromorphic, * boost::unit_test::toleran
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     residualMock residual( &hydra, 10 );
 
@@ -4525,6 +4645,8 @@ BOOST_AUTO_TEST_CASE( test_updateUnknownVector, * boost::unit_test::tolerance( D
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    hydra.initialize( );
 
     hydra.callUpdateUnknownVector( unknownVector );
 

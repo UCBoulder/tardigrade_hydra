@@ -531,6 +531,8 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests, * boost::unit_test::tolera
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::linearTestMaterial::residual R( &hydra, 22, parameters );
 
     tardigradeHydra::linearTestMaterial::unit_test::residualTester::runBasicGetTests( R );
@@ -611,13 +613,13 @@ BOOST_AUTO_TEST_CASE( test_residual_getXPred, * boost::unit_test::tolerance( DEF
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    try{
+    hydra.initialize( );
+
     tardigradeHydra::linearTestMaterial::residual R( &hydra, 22, parameters );
 
     BOOST_TEST( ( *tardigradeHydra::linearTestMaterial::unit_test::residualTester::getXPred( R ) ) == XPred, CHECK_PER_ELEMENT );
 
     BOOST_TEST( ( *tardigradeHydra::linearTestMaterial::unit_test::residualTester::getStress( R ) ) == stress, CHECK_PER_ELEMENT );
-    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
 
 }
 
@@ -689,6 +691,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::linearTestMaterial::residual R( &hydra, 22, parameters );
 
     floatVector unknownVector( XPred.size( ) );
@@ -733,6 +737,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                 additionalDOF, previousAdditionalDOF,
                                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+            hydra_p.initialize( );
+
+            hydra_m.initialize( );
+
             tardigradeHydra::linearTestMaterial::residual R_p( &hydra_p, 22, parameters );
 
             tardigradeHydra::linearTestMaterial::residual R_m( &hydra_m, 22, parameters );
@@ -774,6 +782,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
             tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient,
                                                 additionalDOF, previousAdditionalDOF,
                                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydra_p.initialize( );
+
+            hydra_m.initialize( );
 
             tardigradeHydra::linearTestMaterial::residual R_p( &hydra_p, 22, parameters );
 
@@ -817,6 +829,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                 additionalDOF, previousAdditionalDOF,
                                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+            hydra_p.initialize( );
+
+            hydra_m.initialize( );
+
             tardigradeHydra::linearTestMaterial::residual R_p( &hydra_p, 22, parameters );
 
             tardigradeHydra::linearTestMaterial::residual R_m( &hydra_m, 22, parameters );
@@ -858,6 +874,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
             tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                                 xm, previousAdditionalDOF,
                                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydra_p.initialize( );
+
+            hydra_m.initialize( );
 
             tardigradeHydra::linearTestMaterial::residual R_p( &hydra_p, 22, parameters );
 

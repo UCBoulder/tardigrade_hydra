@@ -237,6 +237,8 @@ BOOST_AUTO_TEST_CASE( test_setTrialStress, * boost::unit_test::tolerance( DEFAUL
         tolr, tola, maxIterations, maxLSIterations, lsAlpha
     );
 
+    hydra.initialize( );
+
     residualMock residual( &hydra, 45, parameters );
 
     BOOST_TEST( residual.answer == *residual.publicGetTrialStress( ) );
@@ -353,6 +355,8 @@ BOOST_AUTO_TEST_CASE( test_setdTrialStressdD, * boost::unit_test::tolerance( DEF
         tolr, tola, maxIterations, maxLSIterations, lsAlpha
     );
 
+    hydra.initialize( );
+
     residualMock residual( &hydra, 45, parameters );
 
     BOOST_TEST( *residual.getStress( ) == *residual.publicGetTrialStress( ), CHECK_PER_ELEMENT );
@@ -407,7 +411,11 @@ BOOST_AUTO_TEST_CASE( test_setdTrialStressdD, * boost::unit_test::tolerance( DEF
                 dimension, configuration_unknown_count,
                 tolr, tola, maxIterations, maxLSIterations, lsAlpha
             );
-            
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             residualMock Rp( &hydrap, 45, parameters );
             residualMock Rm( &hydram, 45, parameters );
 
@@ -564,6 +572,8 @@ BOOST_AUTO_TEST_CASE( test_setResidaul, * boost::unit_test::tolerance( DEFAULT_T
         tolr, tola, maxIterations, maxLSIterations, lsAlpha
     );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock residual( &hydra, 45, parameters );
@@ -676,6 +686,8 @@ BOOST_AUTO_TEST_CASE( test_residual_jacobians, * boost::unit_test::tolerance( DE
         tolr, tola, maxIterations, maxLSIterations, lsAlpha
     );
 
+    hydra.initialize( );
+
     residualMock residual( &hydra, 45, parameters );
 
     residual.publicGetTrialStress( );
@@ -731,6 +743,10 @@ BOOST_AUTO_TEST_CASE( test_residual_jacobians, * boost::unit_test::tolerance( DE
                 dimension, configuration_unknown_count,
                 tolr, tola, maxIterations, maxLSIterations, lsAlpha
             );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             residualMock residualp( &hydrap, 45, parameters );
 
@@ -806,6 +822,10 @@ BOOST_AUTO_TEST_CASE( test_residual_jacobians, * boost::unit_test::tolerance( DE
                 dimension, configuration_unknown_count,
                 tolr, tola, maxIterations, maxLSIterations, lsAlpha
             );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             residualMock residualp( &hydrap, 45, parameters );
 

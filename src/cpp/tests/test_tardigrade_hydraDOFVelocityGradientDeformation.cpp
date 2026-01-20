@@ -188,6 +188,8 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 11, 1, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -329,6 +331,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofPrecedingDeformationGradient_1, * boost::
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
@@ -475,6 +479,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofPrecedingDeformationGradient_2, * boost::
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R( &hydra, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters );
@@ -508,6 +514,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofPrecedingDeformationGradient_2, * boost::
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, Fm, previousDeformationGradient,
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -554,6 +564,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofPrecedingDeformationGradient_2, * boost::
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, xp );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
@@ -595,6 +609,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofPrecedingDeformationGradient_2, * boost::
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -640,6 +658,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofPrecedingDeformationGradient_2, * boost::
                 , previousDeformationGradient,
                               additionalDOF, previousAdditionalDOF,
                               xm, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -768,6 +790,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_1, * boost::
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
@@ -916,6 +940,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R( &hydra, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters );
@@ -955,6 +981,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, Fm, previousDeformationGradient,
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -1000,6 +1030,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, xp );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
@@ -1044,6 +1078,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
                               xm, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -1085,6 +1123,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -1130,6 +1172,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
                               additionalDOF, previousAdditionalDOF,
                               xm, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -1173,6 +1219,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                               additionalDOF, xm,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -1364,6 +1414,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_1, * boost::unit_test
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatVector answer = { 1.95711900e+10, 2.40473864e+10, 2.85235828e+10, 4.43210244e+10,
@@ -1501,6 +1553,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType alpha = 0.67;
@@ -1542,6 +1596,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, Fm, previousDeformationGradient,
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -1587,6 +1645,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, xp );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
@@ -1631,6 +1693,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
                               xm, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -1672,6 +1738,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -1717,6 +1787,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
                               additionalDOF, previousAdditionalDOF,
                               xm, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -1760,6 +1834,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                               additionalDOF, xm,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -1951,6 +2029,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_3, * boost::unit_test
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatVector answer = { 3.612667141e-01, -3.072550304e-01, 2.422322512e-02, -3.719571754e-01, 5.956917520e-01, -4.366593205e-01, -1.051810650e-01, -5.013614655e-01, 1.024581339e-01 };
@@ -2090,6 +2170,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_4, * boost::unit_test
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType alpha = 0.67;
@@ -2132,6 +2214,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_4, * boost::unit_test
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, Fm, previousDeformationGradient,
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -2181,6 +2267,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_4, * boost::unit_test
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, xp );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
@@ -2229,6 +2319,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_4, * boost::unit_test
                               xm, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -2274,6 +2368,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_4, * boost::unit_test
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
                               additionalDOF, previousAdditionalDOF,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -2323,6 +2421,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_4, * boost::unit_test
                               additionalDOF, previousAdditionalDOF,
                               xm, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( );
+
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -2370,6 +2472,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_4, * boost::unit_test
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                               additionalDOF, xm,
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.initialize( );
+
+        hydram.initialize( );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -2509,6 +2615,8 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeRate_1, * boost::unit_test::tolera
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType answer = 0.78 * 0.22 * ( 0.44 + 0.88 + 1.33 );
@@ -2644,6 +2752,8 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeRate_2, * boost::unit_test::tolera
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType alpha = 0.67;
@@ -2681,6 +2791,10 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeRate_2, * boost::unit_test::tolera
             hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                   Xm, previousAdditionalDOF,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -2826,6 +2940,8 @@ BOOST_AUTO_TEST_CASE( test_residual_internalHeatGenerationRate_1, * boost::unit_
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType answer = 0.89 * 1.44 / 0.22 * ( 0.44 + 0.88 + 1.33 );
@@ -2963,6 +3079,8 @@ BOOST_AUTO_TEST_CASE( test_residual_internalHeatGenerationRate_2, * boost::unit_
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType alpha = 0.67;
@@ -3000,6 +3118,10 @@ BOOST_AUTO_TEST_CASE( test_residual_internalHeatGenerationRate_2, * boost::unit_
             hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                   Xm, previousAdditionalDOF,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -3146,6 +3268,8 @@ BOOST_AUTO_TEST_CASE( test_residual_internalHeatGenerationRate_3, * boost::unit_
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType answer = 0.89 * 1.44 * ( 0.44 + 0.88 + 1.33 );
@@ -3283,6 +3407,8 @@ BOOST_AUTO_TEST_CASE( test_residual_internalHeatGenerationRate_4, * boost::unit_
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType alpha = 0.67;
@@ -3320,6 +3446,10 @@ BOOST_AUTO_TEST_CASE( test_residual_internalHeatGenerationRate_4, * boost::unit_
             hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                   Xm, previousAdditionalDOF,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.initialize( );
+
+            hydram.initialize( );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -3503,6 +3633,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual, * boost::unit_test::tolerance( 
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType alpha = 0.67;
@@ -3637,6 +3769,8 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual_2, * boost::unit_test::tolerance
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     floatType alpha = 0.67;
@@ -3681,6 +3815,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual_2, * boost::unit_test::tolerance
                                   additionalDOF, previousAdditionalDOF,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
     
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, xp );
     
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
@@ -3733,6 +3871,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual_2, * boost::unit_test::tolerance
                                   additionalDOF, previousAdditionalDOF,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
     
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
     
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -3785,6 +3927,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual_2, * boost::unit_test::tolerance
                                   additionalDOF, previousAdditionalDOF,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
     
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
     
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -3839,6 +3985,10 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual_2, * boost::unit_test::tolerance
                                   xm, previousAdditionalDOF,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
     
+            hydrap.initialize( );
+
+            hydram.initialize( );
+
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
     
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -3956,6 +4106,8 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance(
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     floatVector dXdF( 20 * 9, 0 );
 
@@ -4205,6 +4357,8 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel2, * boost::unit_test::tolerance
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     floatVector dXdF( 20 * 9, 0 );
 
@@ -4488,6 +4642,8 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_t
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 

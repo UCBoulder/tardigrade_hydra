@@ -210,6 +210,8 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -320,6 +322,8 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tol
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -428,6 +432,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrain, * boost::unit
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -526,6 +532,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives, * 
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -549,7 +557,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives, * 
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - deltas, previousDeformationGradient,
                               { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-    
+
+        hydrap.initialize( );
+
+        hydram.initialize( ); 
     
         residualMock Rp( &hydrap, 9, 1, hydra.thermalParameters );
         
@@ -577,6 +588,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives, * 
                               { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
     
+        hydrap.initialize( );
+
+        hydram.initialize( );  
     
         residualMock Rp( &hydrap, 9, 1, hydra.thermalParameters );
         
@@ -712,6 +726,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradient, * boost::unit
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
     R.thermalGreenLagrangeStrain = E;
@@ -814,6 +830,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives, * 
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -838,7 +856,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives, * 
                               { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
     
-    
+        hydrap.initialize( );
+
+        hydram.initialize( ); 
+ 
         residualMock Rp( &hydrap, 9, 1, hydra.thermalParameters );
         
         residualMock Rm( &hydram, 9, 1, hydra.thermalParameters );
@@ -865,6 +886,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives, * 
                               { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
     
+        hydrap.initialize( );
+
+        hydram.initialize( ); 
     
         residualMock Rp( &hydrap, 9, 1, hydra.thermalParameters );
         
@@ -988,6 +1012,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual, * boost::unit_test::tolerance( 
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
     R.thermalDeformationGradient = thermalDeformationGradient;
@@ -1088,6 +1114,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.initialize( );
+
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -1114,6 +1142,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::
                               { }, { },
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( ); 
+    
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + deltas );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - deltas );
@@ -1144,6 +1176,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::
                               { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( ); 
+    
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -1174,6 +1210,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::
                               { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+        hydrap.initialize( );
+
+        hydram.initialize( ); 
+    
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
@@ -1287,6 +1327,8 @@ BOOST_AUTO_TEST_CASE( test_residual_addParameterizationInfo, * boost::unit_test:
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.initialize( );
 
     residualMock R( &hydra, 9, 1, hydra.thermalParameters );
 
