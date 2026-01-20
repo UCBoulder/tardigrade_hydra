@@ -332,7 +332,7 @@ namespace tardigradeHydra{
 
         trial_step->computeTrial( );
 
-        if ( getUseSQPSolver( ) ){
+        if ( trial_step->getUseSQPSolver( ) ){
 
             solveConstrainedQP( deltaX );
 

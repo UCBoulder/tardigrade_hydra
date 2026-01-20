@@ -127,13 +127,6 @@ namespace tardigradeHydra{
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
 
-            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-            //! Return a flag for whether to use the SQP solver
-            const bool getUseSQPSolver( ){ return _useSQPSolver; }
-
-            // END SQP SOLVER FUNCTIONS
-
             void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
 
             TrialStepBase *trial_step; //!< The trial step class which proposes a step to reduce the residual
@@ -166,13 +159,6 @@ namespace tardigradeHydra{
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
-            /*!
-             * Set whether to use the SQP solver
-             *
-             * \param &value: The updated value
-             */
-            void setUseSQPSolver( const unsigned int &value ){ _useSQPSolver = value; }
-
             virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
 
             virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
@@ -201,12 +187,6 @@ namespace tardigradeHydra{
             bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
 
             // END LM Functions
-
-            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-            bool _useSQPSolver = false; //!< The flag for whether to use the SQP solver
-
-            // END SQP SOLVER FUNCTIONS
 
     };
 
