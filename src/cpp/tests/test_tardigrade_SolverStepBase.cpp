@@ -196,6 +196,36 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test
 
             }
 
+            virtual void assembleKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ) override{
+
+                const unsigned int numConstraints = getNumConstraints( );
+
+                K = tardigradeHydra::floatVector( ( 2 + 5 ) * ( 2 + 5 ), 0 );
+
+                K[ 7 * 0 + 0 ] = 2;
+                K[ 7 * 1 + 1 ] = 2;
+
+                for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+                    if ( active_constraints[ i ] ){
+
+                        K[ 7 * 0 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * 1 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
+
+                        K[ 7 * ( i + 2 ) + 0 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * ( i + 2 ) + 1 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
+
+                    }
+                    else{
+
+                        K[ 7 * ( i + 2 ) + i + 2 ] = 1;
+
+                    }
+
+                }
+
+            }
+
     };
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
@@ -211,36 +241,6 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test
             virtual void initializeActiveConstraints( std::vector< bool > &active_constraints ) override{
 
                 active_constraints = { false, false, true, false, true };
-
-            }
-
-            virtual void assembleKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ) override{
-
-                const unsigned int numConstraints = solver->hydra->getNumConstraints( );
-
-                K = tardigradeHydra::floatVector( ( 2 + 5 ) * ( 2 + 5 ), 0 );
-
-                K[ 7 * 0 + 0 ] = 2;
-                K[ 7 * 1 + 1 ] = 2;
-
-                for ( unsigned int i = 0; i < numConstraints; i++ ){
-
-                    if ( active_constraints[ i ] ){
-
-                        K[ 7 * 0 + i + 2 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 0 ];
-                        K[ 7 * 1 + i + 2 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 1 ];
-
-                        K[ 7 * ( i + 2 ) + 0 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 0 ];
-                        K[ 7 * ( i + 2 ) + 1 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 1 ];
-
-                    }
-                    else{
-
-                        K[ 7 * ( i + 2 ) + i + 2 ] = 1;
-
-                    }
-
-                }
 
             }
 
@@ -492,19 +492,27 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_initializeActiveConstraints, * boost::
 
 }
 
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_assembleKKTMatrix, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_TrialStepBase_assembleKKTMatrix, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
+    class TrialStepBaseMock : public tardigradeHydra::TrialStepBase{
 
         public:
 
-            using tardigradeHydra::SolverStepBase::SolverStepBase;
+            using tardigradeHydra::TrialStepBase::TrialStepBase;
 
             virtual void public_assembleKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ){
 
                 assembleKKTMatrix( K, active_constraints );
 
             }
+
+    };
+
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
+
+        public:
+
+            using tardigradeHydra::SolverStepBase::SolverStepBase;
 
             virtual void public_updateKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ){
 
@@ -613,6 +621,10 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_assembleKKTMatrix, * boost::unit_test:
 
     tardigradeHydra::SolverBase solver;
     SolverStepBaseMock step;
+    TrialStepBaseMock trial_step;
+
+    step.trial_step = &trial_step;
+    trial_step.step = &step;
 
     hydra.set_solver( &solver );
 
@@ -642,7 +654,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_assembleKKTMatrix, * boost::unit_test:
                                       0.        ,  0.        ,  0.,  0.,  0.,  1.,  0.,
                                       0.        ,  1.        ,  0.,  0.,  0.,  0.,  0. };
 
-    step.public_assembleKKTMatrix( result_KKT, active_constraints );
+    trial_step.public_assembleKKTMatrix( result_KKT, active_constraints );
 
     BOOST_TEST( answer1_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
 
@@ -655,7 +667,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_assembleKKTMatrix, * boost::unit_test:
 
     result_KKT.clear( );
 
-    step.public_assembleKKTMatrix( result_KKT, active_constraints );
+    trial_step.public_assembleKKTMatrix( result_KKT, active_constraints );
 
     BOOST_TEST( answer2_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
 

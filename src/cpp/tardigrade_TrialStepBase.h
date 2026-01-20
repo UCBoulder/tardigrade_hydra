@@ -89,6 +89,8 @@ namespace tardigradeHydra{
 
             virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
 
+            virtual void assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
+
             // END SQP SOLVER FUNCTIONS
 
         private:
