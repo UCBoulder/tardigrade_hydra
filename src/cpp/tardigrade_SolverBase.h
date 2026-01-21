@@ -116,6 +116,12 @@ namespace tardigradeHydra{
 
             void resetToleranceScaleFactor( );
 
+            void setCurrentResidualIndexMeaningful( const bool &value );
+
+            void setCurrentResidualIndex( const unsigned int &value );
+
+            const std::vector< tardigradeHydra::ResidualBase<>* >* getResidualClasses( );
+
             /*!
              * Add a general iterable object to the output string
              * 

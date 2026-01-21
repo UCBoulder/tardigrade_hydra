@@ -238,6 +238,37 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Set if the current residual index is meaningful or not
+     *
+     * \param &value: The boolean indicating if the residual index is or isn't meaningful
+     */
+    void SolverBase::setCurrentResidualIndexMeaningful( const bool &value ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
+        hydra->setCurrentResidualIndexMeaningful( value );
+
+    }
+
+    /*!
+     * Set the current residual index
+     *
+     * \param &value: The value of the current residual's index
+     */
+    void SolverBase::setCurrentResidualIndex( const unsigned int &value ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
+        hydra->setCurrentResidualIndex( value );
+
+    }
+
+    const std::vector< tardigradeHydra::ResidualBase<>* >* SolverBase::getResidualClasses( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
+        return hydra->getResidualClasses( );
+
+    }
+
+    /*!
      * Reset the solver
      */
     void SolverBase::reset( ){
@@ -354,17 +385,17 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
         hydra->setAllowModifyGlobalResidual( true );
 
-        hydra->setCurrentResidualIndexMeaningful( true );
+        setCurrentResidualIndexMeaningful( true );
 
-        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
+        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){
 
-            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
+            setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
 
             ( *residual_ptr )->successfulNLStep( );
 
         }
 
-        hydra->setCurrentResidualIndexMeaningful( false );
+        setCurrentResidualIndexMeaningful( false );
 
         hydra->setAllowModifyGlobalResidual( false );
 
@@ -376,17 +407,17 @@ namespace tardigradeHydra{
     void SolverBase::callResidualPreNLSolve( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
-        hydra->setCurrentResidualIndexMeaningful( true );
+        setCurrentResidualIndexMeaningful( true );
 
-        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
+        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *hydra->getResidualClasses( ) ); ++residual_ptr ){
 
-            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
+            setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
 
             ( *residual_ptr )->preNLSolve( );
 
         }
 
-        hydra->setCurrentResidualIndexMeaningful( false );
+        setCurrentResidualIndexMeaningful( false );
 
     }
 
@@ -397,11 +428,11 @@ namespace tardigradeHydra{
     void SolverBase::callResidualPostNLSolve( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
-        hydra->setCurrentResidualIndexMeaningful( true );
+        setCurrentResidualIndexMeaningful( true );
 
-        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
+        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){
 
-            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
+            setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
 
             try{
 
@@ -412,7 +443,7 @@ namespace tardigradeHydra{
 
                 if ( getFailureVerbosityLevel( ) > 0 ){
 
-                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) ) + "\n" );
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - std::begin( *getResidualClasses( ) ) ) + "\n" );
                     std::string message;
                     tardigradeErrorTools::captureNestedExceptions(e, message);
                     addToFailureOutput( message );
@@ -425,7 +456,7 @@ namespace tardigradeHydra{
 
         }
 
-        hydra->setCurrentResidualIndexMeaningful( false );
+        setCurrentResidualIndexMeaningful( false );
 
     }
 
