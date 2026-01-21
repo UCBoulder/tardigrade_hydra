@@ -226,37 +226,19 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test
 
             }
 
-    };
-
-    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
-
-        public:
-
-            using tardigradeHydra::SolverStepBase::SolverStepBase;
-
-            void setTrialStep( tardigradeHydra::TrialStepBase *ptr ){ trial_step = ptr; }
-
-        protected:
-
-            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints ) override{
-
-                active_constraints = { false, false, true, false, true };
-
-            }
-
             virtual void updateKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ) override{
 
-                const unsigned int numConstraints = solver->hydra->getNumConstraints( );
+                const unsigned int numConstraints = getNumConstraints( );
 
                 for ( unsigned int i = 0; i < numConstraints; i++ ){
 
                     if ( active_constraints[ i ] ){
 
-                        K[ 7 * 0 + i + 2 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 0 ];
-                        K[ 7 * 1 + i + 2 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 1 ];
+                        K[ 7 * 0 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * 1 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
 
-                        K[ 7 * ( i + 2 ) + 0 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 0 ];
-                        K[ 7 * ( i + 2 ) + 1 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 1 ];
+                        K[ 7 * ( i + 2 ) + 0 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * ( i + 2 ) + 1 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
 
                         K[ 7 * ( i + 2 ) + i + 2 ] = 0;
 
@@ -274,6 +256,24 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test
                     }
 
                 }
+
+            }
+
+    };
+
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
+
+        public:
+
+            using tardigradeHydra::SolverStepBase::SolverStepBase;
+
+            void setTrialStep( tardigradeHydra::TrialStepBase *ptr ){ trial_step = ptr; }
+
+        protected:
+
+            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints ) override{
+
+                active_constraints = { false, false, true, false, true };
 
             }
 
@@ -489,187 +489,6 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_initializeActiveConstraints, * boost::
     step.public_initializeActiveConstraints( result );
 
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_TrialStepBase_assembleKKTMatrix, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    class TrialStepBaseMock : public tardigradeHydra::TrialStepBase{
-
-        public:
-
-            using tardigradeHydra::TrialStepBase::TrialStepBase;
-
-            virtual void public_assembleKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ){
-
-                assembleKKTMatrix( K, active_constraints );
-
-            }
-
-    };
-
-    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
-
-        public:
-
-            using tardigradeHydra::SolverStepBase::SolverStepBase;
-
-            virtual void public_updateKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ){
-
-                updateKKTMatrix( K, active_constraints );
-
-            }
-
-    };
-
-    class hydraBaseMock : public tardigradeHydra::hydraBase{
-
-        public:
-
-            using tardigradeHydra::hydraBase::hydraBase;
-
-            using tardigradeHydra::hydraBase::setResidualClasses;
-
-            tardigradeHydra::floatVector initialUnknownVector = { 2, 1 };
-
-            auto public_setMuk( const tardigradeHydra::floatType &value ){ tardigradeHydra::unit_test::StepDampingBaseTester::setMuk( *(solver->step->damping), value ); }
-
-            auto set_solver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
-
-        protected:
-
-            virtual void setConstraints( ) override{
-
-                auto constraints = get_SetDataStorage_constraints( );
-
-                *constraints.value = { 2, 6, 2, 0, 0 };
-
-                for ( unsigned int i = 0; i < 5; i++ ){
-
-                    for ( unsigned int j = 0; j < 2; j++ ){
-
-                        ( *constraints.value )[ i ] += ( *getConstraintJacobians( ) )[ 2 * i + j ] * initialUnknownVector[ j ];
-
-                    }
-
-                }
-
-            }
-
-            virtual void setConstraintJacobians( ) override{
-
-                auto constraintJacobians = get_SetDataStorage_constraintJacobians( );
-
-                *constraintJacobians.value = { 1, -2,
-                                              -1, -2,
-                                              -1,  2,
-                                               1,  0,
-                                               0,  1 };
-
-            }
-
-            virtual void formNonLinearDerivatives( ) override{
-
-                tardigradeHydra::floatVector jacobian = { std::pow( 2, 0.5 ), 0.4, -0.1, std::pow( 2, 0.5 ) };
-
-                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
-
-            }
-
-            virtual const unsigned int getNumUnknowns( ) override{ return initialUnknownVector.size( ); }
-
-            virtual const unsigned int getNumConstraints( ) override{ return 5; }
-
-    };
-
-    tardigradeHydra::floatType time = 1.1;
-
-    tardigradeHydra::floatType deltaTime = 2.2;
-
-    tardigradeHydra::floatType temperature = 5.3;
-
-    tardigradeHydra::floatType previousTemperature = 23.4;
-
-    tardigradeHydra::floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
-                                        0.10262954,  0.43893794, -0.15378708,
-                                        0.9615284 ,  0.36965948, -0.0381362 };
-
-    tardigradeHydra::floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
-                                                -0.12285551, -0.88064421, -0.20391149,
-                                                 0.47599081, -0.63501654, -0.64909649 };
-
-    tardigradeHydra::floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
-                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
-                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
-                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
-                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
-                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
-                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
-                                           0.54506801, 0.34276383, 0.30412079, 0.0,        0.1 }; 
-
-    tardigradeHydra::floatVector parameters = { 1, 2, 3, 4, 5 };
-
-    unsigned int numConfigurations = 4;
-
-    unsigned int numNonLinearSolveStateVariables = 5;
-
-    unsigned int dimension = 3;
-
-    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                         { }, { },
-                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-
-    tardigradeHydra::SolverBase solver;
-    SolverStepBaseMock step;
-    TrialStepBaseMock trial_step;
-
-    step.trial_step = &trial_step;
-    trial_step.step = &step;
-
-    hydra.set_solver( &solver );
-
-    solver.hydra = &hydra;
-    solver.step = &step;
-
-    step.setSolver( &solver );
-
-    hydra.public_setMuk( 0.1 );
-
-    tardigradeHydra::floatVector result_KKT;
-    std::vector< bool > active_constraints( 5, false );
-
-    tardigradeHydra::floatVector answer1_KKTMatrix = { 2.11      , 0.42426407, 0., 0., 0., 0., 0.,
-                                      0.42426407, 2.26      , 0., 0., 0., 0., 0.,
-                                      0.        , 0.        , 1., 0., 0., 0., 0.,
-                                      0.        , 0.        , 0., 1., 0., 0., 0.,
-                                      0.        , 0.        , 0., 0., 1., 0., 0.,
-                                      0.        , 0.        , 0., 0., 0., 1., 0.,
-                                      0.        , 0.        , 0., 0., 0., 0., 1. };
-
-    tardigradeHydra::floatVector answer2_KKTMatrix = { 2.11      ,  0.42426407,  0.,  0., -1.,  0.,  0.,
-                                      0.42426407,  2.26      ,  0.,  0.,  2.,  0.,  1.,
-                                      0.        ,  0.        ,  1.,  0.,  0.,  0.,  0.,
-                                      0.        ,  0.        ,  0.,  1.,  0.,  0.,  0.,
-                                     -1.        ,  2.        ,  0.,  0.,  0.,  0.,  0.,
-                                      0.        ,  0.        ,  0.,  0.,  0.,  1.,  0.,
-                                      0.        ,  1.        ,  0.,  0.,  0.,  0.,  0. };
-
-    trial_step.public_assembleKKTMatrix( result_KKT, active_constraints );
-
-    BOOST_TEST( answer1_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
-
-    active_constraints[ 2 ] = true;
-    active_constraints[ 4 ] = true;
-
-    step.public_updateKKTMatrix( result_KKT, active_constraints );
-
-    BOOST_TEST( answer2_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
-
-    result_KKT.clear( );
-
-    trial_step.public_assembleKKTMatrix( result_KKT, active_constraints );
-
-    BOOST_TEST( answer2_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
 
 }
 
