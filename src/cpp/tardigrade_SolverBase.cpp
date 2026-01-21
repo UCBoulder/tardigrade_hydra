@@ -261,10 +261,23 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the residual classes
+     */
     const std::vector< tardigradeHydra::ResidualBase<>* >* SolverBase::getResidualClasses( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
         return hydra->getResidualClasses( );
+
+    }
+
+    /*!
+     * Set that the global residual can be modified
+     */
+    void SolverBase::setAllowModifyGlobalResidual( const bool &value ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
+        return hydra->setAllowModifyGlobalResidual( value );
 
     }
 
@@ -382,8 +395,7 @@ namespace tardigradeHydra{
      */
     void SolverBase::callResidualSuccessfulNLStep( ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
-        hydra->setAllowModifyGlobalResidual( true );
+        setAllowModifyGlobalResidual( true );
 
         setCurrentResidualIndexMeaningful( true );
 
@@ -397,7 +409,7 @@ namespace tardigradeHydra{
 
         setCurrentResidualIndexMeaningful( false );
 
-        hydra->setAllowModifyGlobalResidual( false );
+        setAllowModifyGlobalResidual( false );
 
     }
 
@@ -406,10 +418,9 @@ namespace tardigradeHydra{
      */
     void SolverBase::callResidualPreNLSolve( ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
         setCurrentResidualIndexMeaningful( true );
 
-        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *hydra->getResidualClasses( ) ); ++residual_ptr ){
+        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){
 
             setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
 
@@ -423,11 +434,10 @@ namespace tardigradeHydra{
 
 
     /*!
-     * Signal to the residuals that we have finisehd a nonlinear solve
+     * Signal to the residuals that we have finished a nonlinear solve
      */
     void SolverBase::callResidualPostNLSolve( ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
         setCurrentResidualIndexMeaningful( true );
 
         for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){

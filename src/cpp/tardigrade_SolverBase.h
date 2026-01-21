@@ -122,6 +122,8 @@ namespace tardigradeHydra{
 
             const std::vector< tardigradeHydra::ResidualBase<>* >* getResidualClasses( );
 
+            void setAllowModifyGlobalResidual( const bool &value );
+
             /*!
              * Add a general iterable object to the output string
              * 
