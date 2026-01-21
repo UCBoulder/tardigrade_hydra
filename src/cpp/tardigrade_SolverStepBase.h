@@ -106,6 +106,12 @@ namespace tardigradeHydra{
 
             void addToFailureOutput( const floatType &value, bool add_endline = true );
 
+            void setCurrentResidualIndexMeaningful( const bool &value );
+
+            void setCurrentResidualIndex( const unsigned int &value );
+
+            const std::vector< tardigradeHydra::ResidualBase<>* >* getResidualClasses( );
+
             // END PASS-THROUGH FUNCTIONS
 
             //! Get the number of undamped steps performed
@@ -117,6 +123,8 @@ namespace tardigradeHydra{
             const bool getUseLevenbergMarquardt( ){ return _use_LM_step; }
 
             void setUseLevenbergMarquardt( const bool &value );
+
+            void enableProjection( );
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
 

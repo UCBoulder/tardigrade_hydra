@@ -262,6 +262,40 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Set if the current residual index is meaningful or not
+     *
+     * \param &value: The boolean indicating if the residual index is or isn't meaningful
+     */
+    void SolverStepBase::setCurrentResidualIndexMeaningful( const bool &value ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        solver->setCurrentResidualIndexMeaningful( value );
+
+    }
+
+    /*!
+     * Set the current residual index
+     *
+     * \param &value: The value of the current residual's index
+     */
+    void SolverStepBase::setCurrentResidualIndex( const unsigned int &value ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        solver->setCurrentResidualIndex( value );
+
+    }
+
+    /*!
+     * Get the residual classes
+     */
+    const std::vector< tardigradeHydra::ResidualBase<>* >* SolverStepBase::getResidualClasses( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getResidualClasses( );
+
+    }
+
+    /*!
      * Increment the solution of the problem
      */
     void SolverStepBase::incrementSolution( ){
@@ -305,6 +339,24 @@ namespace tardigradeHydra{
     
     }
 
+    /*!
+     * Enable projection of the proposed solution back into the allowable space
+     */
+    void SolverStepBase::enableProjection( ){
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            ( *residual_ptr )->setUseProjection( true );
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+    }
 // END LM FUNCTIONS
 
 }
