@@ -122,17 +122,17 @@ namespace tardigradeHydra{
      */
     void RelaxedSolver::initializeResiduals( ){
 
-        hydra->setCurrentResidualIndexMeaningful( true );
+        setCurrentResidualIndexMeaningful( true );
 
-        for ( auto residual = std::begin( *( hydra->getResidualClasses( ) ) ); residual != std::end( *( hydra->getResidualClasses( ) ) ); ++residual ){
-            hydra->setCurrentResidualIndex( residual - std::begin( *( hydra->getResidualClasses( ) ) ) );
+        for ( auto residual = std::begin( *getResidualClasses( ) ); residual != std::end( *getResidualClasses( ) ); ++residual ){
+            setCurrentResidualIndex( residual - std::begin( *getResidualClasses( ) ) );
 
             // Prepare the residuals to take a relaxed step
             ( *residual )->setupRelaxedStep( getRelaxedIteration( ) );
 
         }
 
-        hydra->setCurrentResidualIndexMeaningful( false );
+        setCurrentResidualIndexMeaningful( false );
     }
 
     /*!
@@ -142,10 +142,10 @@ namespace tardigradeHydra{
 
         bool relaxedConverged = true;
 
-        hydra->setCurrentResidualIndexMeaningful( true );
+        setCurrentResidualIndexMeaningful( true );
 
-        for ( auto residual = std::begin( *( hydra->getResidualClasses( ) ) ); residual != std::end( *( hydra->getResidualClasses( ) ) ); ++residual ){
-            hydra->setCurrentResidualIndex( residual - std::begin( *( hydra->getResidualClasses( ) ) ) );
+        for ( auto residual = std::begin( *getResidualClasses( ) ); residual != std::end( *getResidualClasses( ) ); ++residual ){
+            setCurrentResidualIndex( residual - std::begin( *getResidualClasses( ) ) );
 
             if ( !( *residual )->checkRelaxedConvergence( ) ){
 
@@ -156,7 +156,7 @@ namespace tardigradeHydra{
 
         }
 
-        hydra->setCurrentResidualIndexMeaningful( false );
+        setCurrentResidualIndexMeaningful( false );
 
         return relaxedConverged;
 
@@ -170,11 +170,11 @@ namespace tardigradeHydra{
 
         bool attempt_relaxed_step = false;
 
-        hydra->setCurrentResidualIndexMeaningful( true );
+        setCurrentResidualIndexMeaningful( true );
 
-        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
+        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){
 
-            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
+            setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
 
             try{
 
@@ -187,7 +187,7 @@ namespace tardigradeHydra{
 
                 if ( getFailureVerbosityLevel( ) > 0 ){
 
-                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) ) + "\n" );
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - std::begin( *getResidualClasses( ) ) ) + "\n" );
                     std::string message;
                     tardigradeErrorTools::captureNestedExceptions( e, message );
                     addToFailureOutput( message );
@@ -200,7 +200,7 @@ namespace tardigradeHydra{
 
         }
 
-        hydra->setCurrentResidualIndexMeaningful( false );
+        setCurrentResidualIndexMeaningful( false );
 
         return attempt_relaxed_step;
 
