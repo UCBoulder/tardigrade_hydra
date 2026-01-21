@@ -136,6 +136,11 @@ namespace tardigradeHydra{
 
             }
 
+            // Levenberg marquardt functions (move to own class)
+            
+            void performLevenbergMarquardtSolve( ); //TEMP remove this
+
+            // end Levenberg marquard functions
         protected:
 
             // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)

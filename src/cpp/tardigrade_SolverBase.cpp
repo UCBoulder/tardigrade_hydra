@@ -585,4 +585,44 @@ namespace tardigradeHydra{
 
 // END NONLINEAR FUNCTIONS
 
+// BEGIN LEVENBERG MARQUARDT FUNCTIONS
+
+    /*!
+     * Temporary function used in extraction of Levenberg Marquardt
+     */
+    void SolverBase::performLevenbergMarquardtSolve( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        //Try a Levenberg-Marquardt solve if there is a convergence error
+        setRankDeficientError( false );
+        
+        step->setUseLevenbergMarquardt( true );
+        
+        // Turn on projection
+        step->enableProjection( );
+        
+        resetIterations( );
+        updateUnknownVector( initial_unknown );
+        
+        try{
+        
+            solve( );
+        
+        }
+        catch( const convergence_error &e ){
+        
+            throw;
+        
+        }
+        catch( std::exception &e ){
+        
+            step->setUseLevenbergMarquardt( false );
+        
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+        
+        }
+
+    }
+// END LEVENBERG MARQUARDT FUNCTIONS
+
 }

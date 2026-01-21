@@ -1797,34 +1797,7 @@ namespace tardigradeHydra{
             }
             catch( convergence_error &e ){
 
-                //Try a Levenberg-Marquardt solve if there is a convergence error
-                solver->setRankDeficientError( false );
-        
-                solver->step->setUseLevenbergMarquardt( true );
-        
-                // Turn on projection
-                solver->step->enableProjection( );
-        
-                solver->resetIterations( );
-                updateUnknownVector( solver->initial_unknown );
-        
-                try{
-        
-                    solver->solve( );
-        
-                }
-                catch( const convergence_error &e ){
-        
-                    throw;
-        
-                }
-                catch( std::exception &e ){
-        
-                    solver->step->setUseLevenbergMarquardt( false );
-        
-                    TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
-        
-                }
+                solver->performLevenbergMarquardtSolve( );
 
             }
             catch( std::exception &e ){
