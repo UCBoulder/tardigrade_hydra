@@ -52,6 +52,12 @@ namespace tardigradeHydra{
 
             virtual void computeTrial( );
 
+            // CACHED DATA STORAGE OPERATIONS
+            virtual void addIterationData( dataBase *data ) override;
+
+            virtual void addNLStepData( dataBase *data ) override;
+            // END CACHED DATA STORAGE OPERATIONS
+
             // PASS-THROUGH FUNCTIONS
 
             const floatType getRelativeTolerance( );

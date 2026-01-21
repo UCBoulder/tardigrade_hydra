@@ -37,6 +37,30 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Add data to the vector of values which will be cleared after each iteration
+     * 
+     * \param *data: The dataBase object to be cleared
+     */
+    void TrialStepBase::addIterationData( dataBase *data ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->addIterationData( data );
+
+    }
+
+    /*!
+     * Add data to the vector of values which will be cleared after each nonlinear step
+     * 
+     * \param *data: The dataBase object to be cleared
+     */
+    void TrialStepBase::addNLStepData( dataBase *data ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->addNLStepData( data );
+
+    }
+
+    /*!
      * Get the relative tolerance value
      */
     const floatType TrialStepBase::getRelativeTolerance( ){
