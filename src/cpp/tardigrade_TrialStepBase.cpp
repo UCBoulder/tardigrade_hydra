@@ -7,6 +7,8 @@
  */
 
 #include"tardigrade_TrialStepBase.h"
+#define USE_EIGEN
+#include"tardigrade_vector_tools.h"
 #include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra{
@@ -34,6 +36,25 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the relative tolerance value
+     */
+    const floatType TrialStepBase::getRelativeTolerance( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        return step->getRelativeTolerance( );
+
+    }
+
+    /*!
+     * Get the absolute tolerance value
+     */
+    const floatType TrialStepBase::getAbsoluteTolerance( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        return step->getAbsoluteTolerance( );
+
+    }
     /*!
      * Get the residual vector
      */
@@ -91,6 +112,25 @@ namespace tardigradeHydra{
     }
 
     // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+    /*!
+     * Initialize the active constraint vector
+     * 
+     * \param &active_constraints: The current constraints that are active
+     */
+    void TrialStepBase::initializeActiveConstraints( std::vector< bool > &active_constraints ){
+
+        active_constraints = std::vector< bool >( getNumConstraints( ), false );
+
+        for ( auto c = getConstraints( )->begin( ); c != getConstraints( )->end( ); c++ ){
+
+            unsigned int index = ( unsigned int )( c - getConstraints( )->begin( ) );
+
+            active_constraints[ index ] = ( ( *c ) < 0. );
+
+        }
+
+    }
 
     /*!
      * Assemble the right hand side vector for the KKT matrix
@@ -222,6 +262,178 @@ namespace tardigradeHydra{
                 KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + numUnknowns + i ] = 1;
 
             }
+
+        }
+
+    }
+
+    /*!
+     * Solve the constrained QP problem to estimate the desired step size
+     * 
+     * \param &dx: The change in the unknown vector
+     * \param kmax: The maximum number of iterations (defaults to 100)
+     */
+    void TrialStepBase::solveConstrainedQP( floatVector &dx, const unsigned int kmax ){
+
+        const unsigned int numUnknowns = getNumUnknowns( );
+
+        const unsigned int numConstraints = getNumConstraints( );
+
+        floatVector K;
+
+        floatVector RHS;
+
+        std::vector< bool > active_constraints;
+        initializeActiveConstraints( active_constraints );
+
+        assembleKKTRHSVector( dx, RHS, active_constraints );
+
+        assembleKKTMatrix( K, active_constraints );
+
+        floatType tol = getRelativeTolerance( ) * ( tardigradeVectorTools::l2norm( RHS ) ) + getAbsoluteTolerance( );
+
+        unsigned int k = 0;
+
+        floatVector y( numUnknowns + numConstraints, 0 );
+
+        floatVector ck = *getConstraints( );
+
+        floatVector ctilde( numConstraints, 0 );
+
+        floatVector negp( numUnknowns, 0 );
+
+        floatVector lambda( numConstraints, 0 );
+
+        floatVector P( numUnknowns + numConstraints, 0 );
+
+        for ( unsigned int i = 0; i < ( numUnknowns + numConstraints ); i++ ){
+
+            P[ i ] = 1 / std::max( std::fabs( *std::max_element( K.begin( ) + ( numUnknowns + numConstraints ) * i,
+                                                                 K.begin( ) + ( numUnknowns + numConstraints ) * ( i + 1 ),
+                                                                 [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
+
+        }
+
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > _P( P.data( ), numUnknowns + numConstraints );
+
+        tardigradeVectorTools::solverType< floatType > linearSolver;
+
+        while ( k < kmax ){
+
+            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > _K( K.data( ), numConstraints + numUnknowns, numConstraints + numUnknowns );
+            Eigen::Map< const Eigen::Vector< floatType, -1 > > _RHS( RHS.data( ), numConstraints + numUnknowns );
+            Eigen::Map< Eigen::Vector< floatType, -1 > > _y( y.data( ), numConstraints + numUnknowns );
+
+            linearSolver = tardigradeVectorTools::solverType< floatType >( _P.asDiagonal( ) * _K );
+
+            _y = linearSolver.solve( _P.asDiagonal( ) * _RHS );
+
+            std::copy( y.begin( ), y.begin( ) + numUnknowns, negp.begin( ) );
+
+            std::copy( y.begin( ) + numUnknowns, y.end( ), lambda.begin( ) );
+
+            if ( tardigradeVectorTools::l2norm( negp ) <= tol ){
+
+                bool negLambda = false;
+
+                floatType minLambda = 1;
+
+                unsigned int imin = 0;
+
+                for ( auto v = std::begin( lambda ); v != std::end( lambda ); v++ ){
+
+                    if ( *v < 0 ){
+
+                        negLambda = true;
+
+                        if ( ( *v ) < minLambda ){
+
+                            imin = ( unsigned int )( v - std::begin( lambda ) );
+
+                            minLambda = *v;
+
+                        }
+
+                    }
+
+                }
+
+                if ( negLambda ){
+
+                    active_constraints[ imin ] = false;
+
+                }
+                else{
+
+                    return;
+
+                }
+
+            }
+            else{
+
+                ck     = *getConstraints( );
+                ctilde = *getConstraints( );
+                for ( unsigned int i = 0; i < numConstraints; i++ ){
+                    for ( unsigned int j = 0; j < numUnknowns; j++ ){
+                        ck[ i ]     += ( *getConstraintJacobians( ) )[ numUnknowns * i + j ] * dx[ j ];
+                        ctilde[ i ] += ( *getConstraintJacobians( ) )[ numUnknowns * i + j ] * ( dx[ j ] - negp[ j ] );
+                    }
+                }
+
+                floatType alpha = 1.0;
+
+                unsigned int iblock = 0;
+
+                bool newBlock = false;
+
+                for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+                    if ( !active_constraints[ i ] ){
+
+                        if ( ctilde[ i ] < -tol ){
+
+                            floatType alpha_trial = -ck[ i ] / ( ctilde[ i ] - ck[ i ] );
+
+                            if ( alpha_trial <= alpha ){
+
+                                iblock = i;
+
+                                alpha = alpha_trial;
+
+                                newBlock = true;
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                if ( newBlock ){
+
+                    active_constraints[ iblock ] = true;
+
+                }
+
+                dx -= alpha * negp;
+
+            }
+
+            updateKKTMatrix( K, active_constraints );
+
+            assembleKKTRHSVector(  dx, RHS, active_constraints );
+
+            for ( unsigned int i = 0; i < ( numUnknowns + numConstraints ); i++ ){
+
+                P[ i ] = 1 / std::max( std::fabs( *std::max_element( K.begin( ) + ( numUnknowns + numConstraints ) * i,
+                                                                     K.begin( ) + ( numUnknowns + numConstraints ) * ( i + 1 ),
+                                                                     [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
+
+            }
+
+            k++;
 
         }
 

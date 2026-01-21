@@ -54,6 +54,10 @@ namespace tardigradeHydra{
 
             // PASS-THROUGH FUNCTIONS
 
+            const floatType getRelativeTolerance( );
+
+            const floatType getAbsoluteTolerance( );
+
             const floatVector *getResidual( );
 
             const unsigned int getNumUnknowns( );
@@ -87,11 +91,15 @@ namespace tardigradeHydra{
 
             void setUseSQPSolver( const unsigned int &value ){ _useSQPSolver = value; }
 
+            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
+
             virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
 
             virtual void assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
 
             virtual void updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
+
+            virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
 
             // END SQP SOLVER FUNCTIONS
 

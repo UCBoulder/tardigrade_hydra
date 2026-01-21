@@ -159,10 +159,6 @@ namespace tardigradeHydra{
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
-            virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
-
-            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
-
             // END SQP SOLVER FUNCTIONS
 
         private:
