@@ -467,14 +467,6 @@ BOOST_AUTO_TEST_CASE( test_TrialStepBase_getNonlinearTerms, * boost::unit_test::
 
     };
 
-    tardigradeHydra::floatVector answerRHS = { -0.04830576,  1.38601851, -2.74506611, -2.78478784,  2.6566859 };
-
-    tardigradeHydra::floatVector answerLHS = {  1.88621891, -0.30808058, -0.01417759,  0.51788095,  0.15427055,
-                              -0.30808058,  3.44245776,  1.17530079, -0.21093811, -0.10279234,
-                              -0.01417759,  1.17530079,  2.40995212,  0.377036  , -0.03867597,
-                               0.51788095, -0.21093811,  0.377036  ,  2.34049101,  0.18253039,
-                               0.15427055, -0.10279234, -0.03867597,  0.18253039,  1.69872961 };
-
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
