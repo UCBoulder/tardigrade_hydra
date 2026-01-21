@@ -62,10 +62,8 @@ namespace tardigradeHydra{
          */
 
         // TEMP
-        _internal_solver.hydra = this;
-
         _solver.hydra = this;
-        _solver.internal_solver = &_internal_solver;
+        _solver.internal_solver->hydra = this;
 
         solver->setMaxIterations( maxIterations );
         solver->step->_damping.setLSAlpha( lsAlpha );
