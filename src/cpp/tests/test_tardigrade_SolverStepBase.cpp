@@ -376,7 +376,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_performPreconditionedSolve, * boost::u
 
 }
 
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getNonlinearTerms, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_TrialStepBase_getNonlinearTerms, * boost::unit_test::tolerance( 1e-5 ) ){
     /*!
      * Test checking the gradient convergence
      */
@@ -459,6 +459,14 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_getNonlinearTerms, * boost::unit_test:
 
     };
 
+    class TrialStepBaseMock : public tardigradeHydra::TrialStepBase{
+
+        public:
+
+            using tardigradeHydra::TrialStepBase::TrialStepBase;
+
+    };
+
     tardigradeHydra::floatVector answerRHS = { -0.04830576,  1.38601851, -2.74506611, -2.78478784,  2.6566859 };
 
     tardigradeHydra::floatVector answerLHS = {  1.88621891, -0.30808058, -0.01417759,  0.51788095,  0.15427055,
@@ -472,6 +480,10 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_getNonlinearTerms, * boost::unit_test:
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     SolverStepBaseMock step;
+    TrialStepBaseMock trial_step;
+
+    step.trial_step = &trial_step;
+    trial_step.step = &step;
 
     hydra.getSolver( )->step = &step;
     step.setSolver( hydra.getSolver( ) );
@@ -482,8 +494,8 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_getNonlinearTerms, * boost::unit_test:
 
     hydra.getSolver( )->step->setUseLevenbergMarquardt( false );
 
-    BOOST_TEST( hydra.residual == *hydra.getSolver( )->step->getNonlinearRHS( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( hydra.residual == *trial_step.getNonlinearRHS( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( hydra.jacobian == *hydra.getSolver( )->step->getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( hydra.jacobian == *trial_step.getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
 
 }
