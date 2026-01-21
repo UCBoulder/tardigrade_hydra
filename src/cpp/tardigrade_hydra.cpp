@@ -68,7 +68,6 @@ namespace tardigradeHydra{
         _solver.internal_solver = &_internal_solver;
 
         solver->setMaxIterations( maxIterations );
-        solver->step->setSolver( solver );
         solver->step->_damping.setLSAlpha( lsAlpha );
         solver->step->_damping.setMaxLSIterations( maxLSIterations );
         solver->step->trial_step->preconditioner->trial_step = solver->step->trial_step;
@@ -76,7 +75,6 @@ namespace tardigradeHydra{
         solver->step->trial_step->preconditioner->_preconditioner_type = preconditioner_type;
 
         _solver.internal_solver->setMaxIterations( maxIterations );
-        _solver.internal_solver->step->setSolver( solver );
         _solver.internal_solver->step->_damping.setLSAlpha( lsAlpha );
         _solver.internal_solver->step->_damping.setMaxLSIterations( maxLSIterations );
         _solver.internal_solver->step->trial_step->preconditioner->trial_step = _solver.internal_solver->step->trial_step;
@@ -1809,12 +1807,7 @@ namespace tardigradeHydra{
                 solver->step->setUseLevenbergMarquardt( true );
         
                 // Turn on projection
-                setCurrentResidualIndexMeaningful( true );
-                for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
-                    setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
-                    ( *residual_ptr )->setUseProjection( true );
-                }
-                setCurrentResidualIndexMeaningful( false );
+                solver->step->enableProjection( );
         
                 solver->resetIterations( );
                 updateUnknownVector( solver->initial_unknown );

@@ -36,7 +36,7 @@ namespace tardigradeHydra{
      * Constructor for SolverBase
      *
      * \param *_hydra: The containing hydraBase object
-     * \param *_step: The SolverStepBase object that the solver will use to try and solve
+     * \param *_step_ptr: The SolverStepBase object that the solver will use to try and solve
      *     the problem
      */
     SolverBase::SolverBase( hydraBase *_hydra, SolverStepBase *_step_ptr ) : hydra( _hydra ), step( _step_ptr ){
