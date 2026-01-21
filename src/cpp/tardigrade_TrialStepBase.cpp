@@ -14,6 +14,43 @@
 
 namespace tardigradeHydra{
 
+
+
+    /*!
+     * The constructor for TrialStepBase
+     */
+    TrialStepBase::TrialStepBase( ) : step(NULL){
+
+        preconditioner->trial_step = this;
+
+    }
+
+    /*!
+     * The constructor for TrialStepBase
+     *
+     * \param *_step: The containing step object
+     */
+    TrialStepBase::TrialStepBase( SolverStepBase *_step ) : step( _step ){
+
+        step->trial_step = this;
+        preconditioner->trial_step = this;
+
+    }
+
+    /*!
+     * The constructor for TrialStepBase
+     *
+     * \param *_step: The containing step object
+     * \param *_preconditioner_ptr: The preconditioner object used by the trial step
+     */
+    TrialStepBase::TrialStepBase( SolverStepBase *_step, PreconditionerBase *_preconditioner_ptr )
+        : step( _step ), preconditioner( _preconditioner_ptr ){
+
+        step->trial_step = this;
+        preconditioner->trial_step = this;
+
+    }
+
     /*!
      * Reset the counters
      */

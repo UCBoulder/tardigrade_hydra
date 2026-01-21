@@ -29,21 +29,11 @@ namespace tardigradeHydra{
 
         public:
 
-            /*!
-             * The constructor for TrialStepBase
-             */
-            TrialStepBase( ) : step(NULL){
+            TrialStepBase( );
 
-            }
+            TrialStepBase( SolverStepBase *_step );
 
-            /*!
-             * The constructor for TrialStepBase
-             *
-             * \param *_step: The containing step object
-             */
-            TrialStepBase( SolverStepBase *_step ) : step( _step ){
-
-            }
+            TrialStepBase( SolverStepBase *_step, PreconditionerBase *_preconditioner_ptr );
 
             SolverStepBase *step; //!< The containing step class
 
