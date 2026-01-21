@@ -54,6 +54,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_ArmijoLineSearchStep"
     "tardigrade_ArmijoGradientDamping"
     "tardigrade_SolverStepBase"
+    "tardigrade_NonlinearSolverBase"
     "tardigrade_PreconditionerBase"
     "tardigrade_StepDampingBase"
     "tardigrade_TrialStepBase"

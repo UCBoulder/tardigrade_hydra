@@ -27,6 +27,8 @@ namespace tardigradeHydra{
 
         public:
 
+            using tardigradeHydra::SolverBase::SolverBase;
+
     };
 
 }
