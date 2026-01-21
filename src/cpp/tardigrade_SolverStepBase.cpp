@@ -33,7 +33,7 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::reset( ){
 
-        resetNumNewton( );
+        resetNumUndamped( );
         damping->resetCounts( );
 
     }
@@ -349,7 +349,7 @@ namespace tardigradeHydra{
             addToFailureOutput( deltaX );
         }
 
-        if( !damping->applyDamping( ) ){ incrementNumNewton( ); }
+        if( !damping->applyDamping( ) ){ incrementNumUndamped( ); }
 
     }
 // BEGIN NONLINEAR SOLVER FUNCTIONS

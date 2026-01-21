@@ -113,10 +113,10 @@ namespace tardigradeHydra{
 
             virtual const floatVector* getFlatNonlinearLHS( );
 
-            //! Get the number of Newton steps performed
-            unsigned int getNumNewton( ){ return _NUM_NEWTON; }
-
             // END NONLINEAR FUNCTIONS
+
+            //! Get the number of undamped steps performed
+            unsigned int getNumUndamped( ){ return _NUM_UNDAMPED; }
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
@@ -141,17 +141,13 @@ namespace tardigradeHydra{
 
             void initializeDefaults( );
 
-            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+            //! Reset the number of undamped steps
+            void resetNumUndamped( ){ _NUM_UNDAMPED = 0; }
 
-            //! Reset the number of Newton steps
-            void resetNumNewton( ){ _NUM_NEWTON = 0; }
+            //! Increment the number of undamped steps
+            void incrementNumUndamped( ){ _NUM_UNDAMPED++; }
 
-            //! Increment the number of Newton steps
-            void incrementNumNewton( ){ _NUM_NEWTON++; }
-
-            // END NONLINEAR FUNCTIONS
-
-            // NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+            // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
             void solveNewtonUpdate( floatVector &deltaX_tr );
 
@@ -166,11 +162,7 @@ namespace tardigradeHydra{
             friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
             friend class tardigradeHydra::unit_test::SolverStepBaseTester; //!< The unit tester for the class
 
-            // NONLINEAR DATA STORAGE
-
-            unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
-
-            // END NONLINEAR DATA STORAGE
+            unsigned int _NUM_UNDAMPED = 0; //!< The number of undamped steps performed
 
             // LM Functions (MOVE TO OWN CLASS)
 
