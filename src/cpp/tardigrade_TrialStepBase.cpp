@@ -195,6 +195,30 @@ namespace tardigradeHydra{
         step->addToFailureOutput( value, add_endline );
 
     }
+
+// BEGIN NONLINEAR SOLVER FUNCTIONS
+
+    /*!
+     * Get the RHS vector for the non-linear problem
+     */
+    const floatVector* TrialStepBase::getNonlinearRHS( ){
+
+        return getResidual( );
+
+    }
+
+    /*!
+     * Get the flat LHS matrix for the non-linear problem
+     */
+    const floatVector* TrialStepBase::getFlatNonlinearLHS( ){
+
+        return getFlatJacobian( );
+
+    }
+
+// END NONLINEAR SOLVER FUNCTIONS
+
+
     // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
     /*!

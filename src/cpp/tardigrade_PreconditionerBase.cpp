@@ -83,6 +83,9 @@ namespace tardigradeHydra{
      */
     void PreconditionerBase::formMaxRowPreconditioner( ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" ); //TODO: Move the preconditioner to the trial step
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->step != nullptr, "The solver has not been defined" ); //TODO: Move the preconditioner to the trial step
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->step->trial_step != nullptr, "The solver's trial step has not been defined" ); //TODO: Move the preconditioner to the trial step
         const unsigned int problem_size = solver->getNumUnknowns( );
 
         _preconditioner.second = floatVector( problem_size, 0 );
@@ -90,8 +93,8 @@ namespace tardigradeHydra{
         // Find the absolute maximum value in each row
         for ( unsigned int i = 0; i < problem_size; i++ ){
 
-            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( solver->getFlatNonlinearLHS( )->begin( ) + problem_size * i,
-                                                                                      solver->getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
+            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( solver->step->trial_step->getFlatNonlinearLHS( )->begin( ) + problem_size * i,
+                                                                                      solver->step->trial_step->getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
                                                                                       [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
 
         }

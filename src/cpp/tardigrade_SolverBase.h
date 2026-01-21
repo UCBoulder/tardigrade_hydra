@@ -120,8 +120,6 @@ namespace tardigradeHydra{
 
             void resetToleranceScaleFactor( );
 
-            const floatVector *getFlatNonlinearLHS( ); //TODO: Want to generalize this
-
             /*!
              * Add a general iterable object to the output string
              * 

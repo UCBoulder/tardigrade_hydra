@@ -238,16 +238,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Get a pointer to the nonlinear LHS vector
-     */
-    const floatVector *SolverBase::getFlatNonlinearLHS( ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
-        return step->getFlatNonlinearLHS( );
-
-    }
-
-    /*!
      * Reset the solver
      */
     void SolverBase::reset( ){

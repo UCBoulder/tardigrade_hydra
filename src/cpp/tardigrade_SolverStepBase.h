@@ -108,13 +108,6 @@ namespace tardigradeHydra{
 
             // END PASS-THROUGH FUNCTIONS
 
-            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-            virtual const floatVector* getNonlinearRHS( );
-
-            virtual const floatVector* getFlatNonlinearLHS( );
-
-            // END NONLINEAR FUNCTIONS
-
             //! Get the number of undamped steps performed
             unsigned int getNumUndamped( ){ return _NUM_UNDAMPED; }
 

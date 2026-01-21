@@ -270,13 +270,14 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
+                                                                                                              TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
         tardigradeVectorTools::solverType< floatType > linearSolver;
 
         auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
 
-        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( trial_step->getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
-        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( trial_step->getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
         if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 
@@ -352,29 +353,6 @@ namespace tardigradeHydra{
         if( !damping->applyDamping( ) ){ incrementNumUndamped( ); }
 
     }
-// BEGIN NONLINEAR SOLVER FUNCTIONS
-
-    /*!
-     * Get the RHS vector for the non-linear problem
-     */
-    const floatVector* SolverStepBase::getNonlinearRHS( ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        return getResidual( );
-
-    }
-
-    /*!
-     * Get the flat LHS matrix for the non-linear problem
-     */
-    const floatVector* SolverStepBase::getFlatNonlinearLHS( ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        return solver->getFlatJacobian( );
-
-    }
-
-// END NONLINEAR SOLVER FUNCTIONS
 
 // BEGIN NEWTON SOLVER FUNCTIONS
 
@@ -387,6 +365,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
+                                                                                                              TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
         if ( solver->preconditioner->getUsePreconditioner( ) ){
 
             performPreconditionedSolve( deltaX_tr );
@@ -396,9 +375,9 @@ namespace tardigradeHydra{
 
             auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
 
-            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( trial_step->getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
-            auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+            auto R_map = tardigradeHydra::getDynamicSizeVectorMap( trial_step->getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
             tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
             dx_map = -linearSolver.solve( R_map );

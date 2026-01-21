@@ -88,6 +88,14 @@ namespace tardigradeHydra{
 
             // END PASS-THROUGH FUNCTIONS
 
+            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+
+            virtual const floatVector* getNonlinearRHS( );
+
+            virtual const floatVector* getFlatNonlinearLHS( );
+
+            // END NONLINEAR FUNCTIONS
+
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
             //! Return a flag for whether to use the SQP solver
