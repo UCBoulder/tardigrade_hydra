@@ -18,6 +18,7 @@ namespace tardigradeHydra{
     RelaxedSolver::RelaxedSolver( ) : SolverBase( ){
 
         internal_solver->hydra = NULL;
+        step = internal_solver->step;
 
     }
 
@@ -29,6 +30,7 @@ namespace tardigradeHydra{
     RelaxedSolver::RelaxedSolver( hydraBase * _hydra ) : SolverBase( _hydra ){
 
         internal_solver->hydra = _hydra;
+        step = internal_solver->step;
 
     }
 
@@ -43,6 +45,7 @@ namespace tardigradeHydra{
 
         internal_solver = _internal_solver_ptr;
         internal_solver->hydra = hydra;
+        step = internal_solver->step;
 
     }
 
