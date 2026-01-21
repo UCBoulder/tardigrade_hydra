@@ -29,7 +29,11 @@ namespace tardigradeHydra{
 
         public:
 
-            using tardigradeHydra::SolverBase::SolverBase;
+            RelaxedSolver( );
+
+            RelaxedSolver( hydraBase * _hydra );
+
+            RelaxedSolver( hydraBase *_hydra, SolverBase *_internal_solver_ptr );
 
             using tardigradeHydra::SolverBase::solve;
 
@@ -51,7 +55,9 @@ namespace tardigradeHydra{
 
         protected:
 
-            SolverBase *internal_solver = NULL; //!< A pointer to the solver which will be relaxed
+            SolverBase _internal_solver; //!< The default internal solver
+
+            SolverBase *internal_solver = &_internal_solver; //!< A pointer to the solver which will be relaxed
 
             void setRelaxedIteration( const unsigned int &value );
 

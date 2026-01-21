@@ -13,6 +13,40 @@
 namespace tardigradeHydra{
 
     /*!
+     * Default constructor for RelaxedSolver
+     */
+    RelaxedSolver::RelaxedSolver( ) : SolverBase( ){
+
+        internal_solver->hydra = NULL;
+
+    }
+
+    /*!
+     * Constructor for RelaxedSolver
+     *
+     * \param *_hydra: The containing hydra object
+     */
+    RelaxedSolver::RelaxedSolver( hydraBase * _hydra ) : SolverBase( _hydra ){
+
+        internal_solver->hydra = _hydra;
+
+    }
+
+    /*!
+     * Constructor for RelaxedSolver
+     *
+     * \param *_hydra: The containing hydra object
+     * \param *_internal_solver_ptr: The pointer for the internal solver
+     */
+    RelaxedSolver::RelaxedSolver( hydraBase *_hydra, SolverBase *_internal_solver_ptr )
+        : SolverBase( _hydra ){
+
+        internal_solver = _internal_solver_ptr;
+        internal_solver->hydra = hydra;
+
+    }
+
+    /*!
      * Reset the solver
      */
     void RelaxedSolver::reset( ){

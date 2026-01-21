@@ -70,14 +70,12 @@ namespace tardigradeHydra{
         solver->setMaxIterations( maxIterations );
         solver->step->_damping.setLSAlpha( lsAlpha );
         solver->step->_damping.setMaxLSIterations( maxLSIterations );
-//        solver->step->trial_step->preconditioner->trial_step = solver->step->trial_step;
         solver->step->trial_step->preconditioner->_use_preconditioner = use_preconditioner;
         solver->step->trial_step->preconditioner->_preconditioner_type = preconditioner_type;
 
         _solver.internal_solver->setMaxIterations( maxIterations );
         _solver.internal_solver->step->_damping.setLSAlpha( lsAlpha );
         _solver.internal_solver->step->_damping.setMaxLSIterations( maxLSIterations );
-//        _solver.internal_solver->step->trial_step->preconditioner->trial_step = _solver.internal_solver->step->trial_step;
         _solver.internal_solver->step->trial_step->preconditioner->_use_preconditioner = use_preconditioner;
         _solver.internal_solver->step->trial_step->preconditioner->_preconditioner_type = preconditioner_type;
         // END TEMP
