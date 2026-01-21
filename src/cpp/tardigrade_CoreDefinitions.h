@@ -19,6 +19,7 @@ namespace tardigradeHydra{
     class ResidualBase; //!< The base residual class
     class SolverBase; //!< The base solver class
     class SolverStepBase; //!< The base solver step class
+    class TrialStepBase; //!< The base trial-step class
     class PreconditionerBase; //!< The base preconditioner class
 
     namespace unit_test{

@@ -11,6 +11,7 @@
 
 #include"tardigrade_CoreDefinitions.h"
 #include"tardigrade_SetDataStorage.h"
+#include"tardigrade_PreconditionerBase.h"
 
 namespace tardigradeHydra{
 
@@ -102,6 +103,9 @@ namespace tardigradeHydra{
             const bool getUseSQPSolver( ){ return _useSQPSolver; }
 
             // END SQP SOLVER FUNCTIONS
+
+            PreconditionerBase _preconditioner; //!< Temporary object
+            PreconditionerBase *preconditioner = &_preconditioner; //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
         protected:
 

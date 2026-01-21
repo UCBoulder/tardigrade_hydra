@@ -240,10 +240,10 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveNewtonUpdate, * boost::unit_test:
 
     solver.hydra = &hydra;
     solver.step  = &step;
-    solver.preconditioner = &preconditioner;
+    step.trial_step->preconditioner = &preconditioner;
 
     step.setSolver( &solver );
-    preconditioner.setSolver( &solver );
+    preconditioner.trial_step = step.trial_step;
 
     tardigradeHydra::floatVector answer = { 1./3, -2./3, 0 };
 
@@ -270,10 +270,10 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveNewtonUpdate, * boost::unit_test:
 
     solver_pre.hydra = &hydra_pre;
     solver_pre.step  = &step_pre;
-    solver_pre.preconditioner = &preconditioner_pre;
+    step_pre.trial_step->preconditioner = &preconditioner_pre;
 
     step_pre.setSolver( &solver_pre );
-    preconditioner_pre.setSolver( &solver_pre );
+    preconditioner_pre.trial_step = step_pre.trial_step;
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra_pre );
     tardigradeHydra::unit_test::SolverStepBaseTester::solveNewtonUpdate( step_pre, result );
@@ -359,10 +359,10 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_performPreconditionedSolve, * boost::u
 
     solver.hydra = &hydra;
     solver.step  = &step;
-    solver.preconditioner = &preconditioner;
+    step.trial_step->preconditioner = &preconditioner;
 
     step.setSolver( &solver );
-    preconditioner.setSolver( &solver );
+    preconditioner.trial_step = step.trial_step;
 
     tardigradeHydra::floatVector answer = { 1./3, -2./3, 0 };
 

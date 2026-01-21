@@ -1038,10 +1038,10 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     solver.hydra = &hydra;
     solver.step  = &step;
-    solver.preconditioner = &preconditioner;
+    trial_step.preconditioner = &preconditioner;
 
     step.setSolver( &solver );
-    preconditioner.setSolver( &solver );
+    preconditioner.trial_step = &trial_step;
 
     hydra.getSolver( )->step->damping->setUseGradientDescent( true );
 
@@ -1088,10 +1088,10 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     solver_pre.hydra = &hydra_pre;
     solver_pre.step  = &step_pre;
-    solver_pre.preconditioner = &preconditioner_pre;
+    trial_step_pre.preconditioner = &preconditioner_pre;
 
     step_pre.setSolver( &solver_pre );
-    preconditioner_pre.setSolver( &solver_pre );
+    preconditioner_pre.trial_step = &trial_step_pre;
 
     hydra_pre.getSolver( )->step->damping->setUseGradientDescent( true );
 

@@ -3901,6 +3901,10 @@ BOOST_AUTO_TEST_CASE( test_computeTangents, * boost::unit_test::tolerance( 2e-6 
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
                              9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
 
+    try{
+    hydra_pre.getFlatdXdF( );
+    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
+
     BOOST_TEST( dXdF == *hydra_pre.getFlatdXdF( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( dXdT == *hydra_pre.getFlatdXdT( ), CHECK_PER_ELEMENT );

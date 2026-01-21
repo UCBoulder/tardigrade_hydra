@@ -12,7 +12,6 @@
 #include"tardigrade_CoreDefinitions.h"
 #include"tardigrade_SetDataStorage.h"
 #include"tardigrade_SolverStepBase.h"
-#include"tardigrade_PreconditionerBase.h"
 
 namespace tardigradeHydra{
 
@@ -41,9 +40,6 @@ namespace tardigradeHydra{
 
             SolverStepBase _step; //!< Temporary object
             SolverStepBase *step = &_step; //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
-
-            PreconditionerBase _preconditioner; //!< Temporary object
-            PreconditionerBase *preconditioner = &_preconditioner; //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
             floatVector initial_unknown; //!< The initial unknown vector for the solver
 

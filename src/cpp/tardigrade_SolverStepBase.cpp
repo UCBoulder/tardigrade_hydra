@@ -268,8 +268,8 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::performPreconditionedSolve( floatVector &deltaX_tr ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
+        TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( trial_step->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
                                                                                                               TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
         tardigradeVectorTools::solverType< floatType > linearSolver;
 
@@ -279,9 +279,9 @@ namespace tardigradeHydra{
 
         auto R_map = tardigradeHydra::getDynamicSizeVectorMap( trial_step->getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
-        if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
+        if( trial_step->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( trial_step->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
 
@@ -290,7 +290,7 @@ namespace tardigradeHydra{
         }
         else{
 
-            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( trial_step->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
 
@@ -363,10 +363,10 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::solveNewtonUpdate( floatVector &deltaX_tr ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
+        TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( trial_step->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
                                                                                                               TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
-        if ( solver->preconditioner->getUsePreconditioner( ) ){
+        if ( trial_step->preconditioner->getUsePreconditioner( ) ){
 
             performPreconditionedSolve( deltaX_tr );
 

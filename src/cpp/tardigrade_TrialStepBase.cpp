@@ -26,6 +26,8 @@ namespace tardigradeHydra{
     void TrialStepBase::reset( ){
 
         resetCounts( );
+        TARDIGRADE_ERROR_TOOLS_CHECK( preconditioner != nullptr, "The preconditioner has not been defined" );
+        preconditioner->reset( );
 
     }
 

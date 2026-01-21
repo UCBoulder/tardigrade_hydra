@@ -27,17 +27,6 @@ namespace tardigradeHydra{
                  */
             }
 
-            void setSolver( SolverBase *_solver ){
-                /*!
-                 * Set the containing solver object
-                 *
-                 * \param *_solver: The containing solver object
-                 */
-
-                solver = _solver;
-
-            };
-
             virtual void reset( );
 
             //! Get whether to use a preconditioner
@@ -52,7 +41,7 @@ namespace tardigradeHydra{
             //! Get a pointer to the row-major form of the preconditioner
             const floatVector * getFlatPreconditioner( );
 
-            SolverBase *solver; //!< Pointer to the containing solver class
+            TrialStepBase *trial_step; //!< Pointer to the containing trial_step class
 
             // TEMP
             bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not

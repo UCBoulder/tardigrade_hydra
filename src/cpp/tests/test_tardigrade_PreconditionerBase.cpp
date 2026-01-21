@@ -124,6 +124,30 @@ namespace tardigradeHydra{
 
         };
 
+        class SolverBaseTester{
+
+            public:
+
+                static hydraBase* get_hydra( SolverBase &solver ){
+
+                    return solver.hydra;
+
+                }
+
+        };
+
+        class SolverStepBaseTester{
+
+            public:
+
+                static SolverBase* get_solver( SolverStepBase &step ){
+
+                    return step.solver;
+
+                }
+
+        };
+
     }
 
 }
@@ -261,8 +285,8 @@ BOOST_AUTO_TEST_CASE( test_PreconditionerBase_formPreconditioner, * boost::unit_
 
     PreconditionerBaseMock preconditioner;
 
-    hydra.getSolver( )->preconditioner = &preconditioner;
-    preconditioner.solver = hydra.getSolver( );
+    hydra.getSolver( )->step->trial_step->preconditioner = &preconditioner;
+    preconditioner.trial_step = hydra.getSolver( )->step->trial_step;
 
     BOOST_TEST( preconditioner.expected_preconditioner == *preconditioner.getFlatPreconditioner( ), CHECK_PER_ELEMENT );
 
@@ -274,8 +298,8 @@ BOOST_AUTO_TEST_CASE( test_PreconditionerBase_formPreconditioner, * boost::unit_
 
     bad_preconditioner.setPreconditionerType( 7 );
 
-    bad_hydra.getSolver( )->preconditioner = &bad_preconditioner;
-    bad_preconditioner.solver = hydra.getSolver( );
+    bad_hydra.getSolver( )->step->trial_step->preconditioner = &bad_preconditioner;
+    bad_preconditioner.trial_step = hydra.getSolver( )->step->trial_step;
 
     BOOST_CHECK_THROW( bad_preconditioner.getFlatPreconditioner( ), std::nested_exception );
 
@@ -339,9 +363,12 @@ BOOST_AUTO_TEST_CASE( test_PreconditionerBase_formMaxRowPreconditioner, * boost:
 
             virtual void formMaxRowPreconditioner( ) override{
 
-                tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *(solver->hydra), tardigradeHydra::floatVector( 5, 0 ) );
+                auto solver = tardigradeHydra::unit_test::SolverStepBaseTester::get_solver( *( trial_step->step ) );
+                auto hydra = tardigradeHydra::unit_test::SolverBaseTester::get_hydra( *solver );
 
-                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *(solver->hydra), jacobian );
+                tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *hydra, tardigradeHydra::floatVector( 5, 0 ) );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *hydra, jacobian );
 
                 tardigradeHydra::PreconditionerBase::formMaxRowPreconditioner( );
 
@@ -367,8 +394,8 @@ BOOST_AUTO_TEST_CASE( test_PreconditionerBase_formMaxRowPreconditioner, * boost:
 
     MaxRowPreconditionerMock preconditioner;
 
-    hydra.getSolver( )->preconditioner = &preconditioner;
-    preconditioner.setSolver( hydra.getSolver( ) );
+    hydra.getSolver( )->step->trial_step->preconditioner = &preconditioner;
+    preconditioner.trial_step = hydra.getSolver( )->step->trial_step;
 
     tardigradeHydra::floatVector answer = { 1.        , 1.        , 0.02080022, 0.05410385, 1.        };
 

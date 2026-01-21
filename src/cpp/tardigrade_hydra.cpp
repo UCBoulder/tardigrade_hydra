@@ -71,18 +71,17 @@ namespace tardigradeHydra{
         solver->step->setSolver( solver );
         solver->step->_damping.setLSAlpha( lsAlpha );
         solver->step->_damping.setMaxLSIterations( maxLSIterations );
-        solver->preconditioner->setSolver( solver );
-        solver->preconditioner->_use_preconditioner = use_preconditioner;
-        solver->preconditioner->_preconditioner_type = preconditioner_type;
-
+        solver->step->trial_step->preconditioner->trial_step = solver->step->trial_step;
+        solver->step->trial_step->preconditioner->_use_preconditioner = use_preconditioner;
+        solver->step->trial_step->preconditioner->_preconditioner_type = preconditioner_type;
 
         _solver.internal_solver->setMaxIterations( maxIterations );
         _solver.internal_solver->step->setSolver( solver );
         _solver.internal_solver->step->_damping.setLSAlpha( lsAlpha );
         _solver.internal_solver->step->_damping.setMaxLSIterations( maxLSIterations );
-        _solver.internal_solver->preconditioner->setSolver( solver );
-        _solver.internal_solver->preconditioner->_use_preconditioner = use_preconditioner;
-        _solver.internal_solver->preconditioner->_preconditioner_type = preconditioner_type;
+        _solver.internal_solver->step->trial_step->preconditioner->trial_step = _solver.internal_solver->step->trial_step;
+        _solver.internal_solver->step->trial_step->preconditioner->_use_preconditioner = use_preconditioner;
+        _solver.internal_solver->step->trial_step->preconditioner->_preconditioner_type = preconditioner_type;
         // END TEMP
 
     }
@@ -1853,6 +1852,11 @@ namespace tardigradeHydra{
          * Compute the values of the consistent tangents
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->step != nullptr, "The step has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->step->trial_step != nullptr, "The trial step has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->step->trial_step->preconditioner != nullptr, "The preconditioner has not been defined" );
+
         //Form the solver based on the current value of the jacobian
         auto Amat = tardigradeHydra::getDynamicSizeMatrixMap( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
@@ -1871,11 +1875,11 @@ namespace tardigradeHydra{
         // Solve
         tardigradeVectorTools::solverType< floatType > linear_solver;
 
-        if ( solver->preconditioner->getUsePreconditioner( ) ){
+        if ( solver->step->trial_step->preconditioner->getUsePreconditioner( ) ){
 
-            if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
+            if( solver->step->trial_step->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->step->trial_step->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
                 linear_solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
@@ -1886,7 +1890,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->step->trial_step->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
                 linear_solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 
@@ -1930,6 +1934,11 @@ namespace tardigradeHydra{
          * Compute the consistent tangent w.r.t. the additional dof
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->step != nullptr, "The step has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->step->trial_step != nullptr, "The trial step has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->step->trial_step->preconditioner != nullptr, "The preconditioner has not been defined" );
+
         //Form the solver based on the current value of the jacobian
         auto Amat = tardigradeHydra::getDynamicSizeMatrixMap( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
@@ -1942,11 +1951,11 @@ namespace tardigradeHydra{
         // Solve
         tardigradeVectorTools::solverType< floatType > linear_solver;
 
-        if ( solver->preconditioner->getUsePreconditioner( ) ){
+        if ( solver->step->trial_step->preconditioner->getUsePreconditioner( ) ){
 
-            if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
+            if( solver->step->trial_step->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->step->trial_step->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
                 linear_solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
@@ -1955,7 +1964,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->step->trial_step->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
                 linear_solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 

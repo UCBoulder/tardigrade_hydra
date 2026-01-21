@@ -28,7 +28,7 @@
 #include"tardigrade_SolverBase.h"
 #include"tardigrade_RelaxedSolver.h"
 #include"tardigrade_ResidualBase.h"
-#include"tardigrade_PreconditionerBase.h"
+//#include"tardigrade_PreconditionerBase.h"
 //#include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra{

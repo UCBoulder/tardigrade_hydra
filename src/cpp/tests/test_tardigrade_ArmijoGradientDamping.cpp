@@ -214,10 +214,10 @@ BOOST_AUTO_TEST_CASE( test_ArmijoGradientDamping_getLSResidualNorm, * boost::uni
 
     solver.hydra = &hydra;
     solver.step  = &step;
-    solver.preconditioner = &preconditioner;
+    step.trial_step->preconditioner = &preconditioner;
 
     step.setSolver( &solver );
-    preconditioner.setSolver( &solver );
+    preconditioner.trial_step = step.trial_step;
 
     step.damping = &damping;
     damping.step = &step;
