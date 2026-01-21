@@ -77,6 +77,8 @@ namespace tardigradeHydra{
 
             const floatVector *getConstraintJacobians( );
 
+            bool getRankDeficientError( );
+
             const unsigned int getFailureVerbosityLevel( );
 
             void addToFailureOutput( const std::string &string );
@@ -97,12 +99,20 @@ namespace tardigradeHydra{
 
             // END NONLINEAR FUNCTIONS
 
+            // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            void solveNewtonUpdate( floatVector &deltaX_tr );
+
+            // END NEWTON SOLVER FUNCTIONS
+
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
             //! Return a flag for whether to use the SQP solver
             const bool getUseSQPSolver( ){ return _useSQPSolver; }
 
             // END SQP SOLVER FUNCTIONS
+
+            void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
 
             PreconditionerBase _preconditioner; //!< Temporary object
             PreconditionerBase *preconditioner = &_preconditioner; //!< The object that defines the preconditioner TODO: Make this an incoming pointer

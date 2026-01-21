@@ -9,6 +9,7 @@
 #include"tardigrade_TrialStepBase.h"
 #define USE_EIGEN
 #include"tardigrade_vector_tools.h"
+#include"tardigrade_CustomErrors.h"
 #include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra{
@@ -138,6 +139,15 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get whether a rank-deficient matrix will throw an error
+     */
+    bool TrialStepBase::getRankDeficientError( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        return step->getRankDeficientError( );
+
+    }
+    /*!
      * Get the failure verbosity level
      */
     const unsigned int TrialStepBase::getFailureVerbosityLevel( ){
@@ -219,6 +229,46 @@ namespace tardigradeHydra{
     }
 
 // END NONLINEAR SOLVER FUNCTIONS
+
+// BEGIN NEWTON SOLVER FUNCTIONS
+
+    /*!
+     * Solve the Newton update returning the trial value of the unknown vector
+     *
+     * \param &deltaX_tr: The trial change in the unknown vector
+     */
+    void TrialStepBase::solveNewtonUpdate( floatVector &deltaX_tr ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
+        if ( preconditioner->getUsePreconditioner( ) ){
+
+            performPreconditionedSolve( deltaX_tr );
+
+        }
+        else{
+
+            auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
+
+            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+
+            auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+
+            tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
+            dx_map = -linearSolver.solve( R_map );
+
+            unsigned int rank = linearSolver.rank( );
+
+            if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
+
+            }
+
+        }
+
+    }
+
+// END NEWTON SOLVER FUNCTIONS
 
 
     // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
@@ -550,5 +600,50 @@ namespace tardigradeHydra{
     }
 
     // END SQP SOLVER FUNCTIONS
+
+    /*!
+     * Perform a pre-conditioned solve
+     *
+     * \param &deltaX_tr: The trial chcange in the unknown vector
+     */
+    void TrialStepBase::performPreconditionedSolve( floatVector &deltaX_tr ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
+        tardigradeVectorTools::solverType< floatType > linearSolver;
+
+        auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
+
+        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+
+        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+
+        if( preconditioner->getPreconditionerIsDiagonal( ) ){
+
+            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
+
+            linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
+
+            dx_map = -linearSolver.solve( p_map.asDiagonal( ) * R_map );
+
+        }
+        else{
+
+            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+
+            linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
+
+            dx_map = -linearSolver.solve( p_map * R_map );
+
+        }
+
+        unsigned int rank = linearSolver.rank( );
+
+        if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
+
+        }
+
+    }
 
 }

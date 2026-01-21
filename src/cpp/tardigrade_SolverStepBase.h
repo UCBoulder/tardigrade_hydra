@@ -111,12 +111,6 @@ namespace tardigradeHydra{
             //! Get the number of undamped steps performed
             unsigned int getNumUndamped( ){ return _NUM_UNDAMPED; }
 
-            // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-            void solveNewtonUpdate( floatVector &deltaX_tr );
-
-            // END NEWTON SOLVER FUNCTIONS
-
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
             //! Get if the Newton step should be a LevenbergMarquardt step
@@ -125,8 +119,6 @@ namespace tardigradeHydra{
             void setUseLevenbergMarquardt( const bool &value );
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
-
-            void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
 
             TrialStepBase *trial_step; //!< The trial step class which proposes a step to reduce the residual
             StepDampingBase *damping; //!< The damping class which reduces the proposed step to improve stability

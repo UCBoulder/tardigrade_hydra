@@ -122,12 +122,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void solveNewtonUpdate( SolverStepBase &step, tardigradeHydra::floatVector &deltaX ){
-
-                    step.solveNewtonUpdate( deltaX );
-
-                }
-
         };
 
         class TrialStepBaseTester{
@@ -137,6 +131,12 @@ namespace tardigradeHydra{
                 static void solveConstrainedQP( TrialStepBase &trial_step, tardigradeHydra::floatVector &dx, const unsigned int kmax=100 ){
 
                     trial_step.solveConstrainedQP( dx, kmax );
+
+                }
+
+                static void solveNewtonUpdate( TrialStepBase &trial_step, tardigradeHydra::floatVector &deltaX ){
+
+                    trial_step.solveNewtonUpdate( deltaX );
 
                 }
 
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveNewtonUpdate, * boost::unit_test:
     tardigradeHydra::floatVector result( 3, 0 );
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra );
-    tardigradeHydra::unit_test::SolverStepBaseTester::solveNewtonUpdate( step, result );
+    tardigradeHydra::unit_test::TrialStepBaseTester::solveNewtonUpdate( *step.trial_step, result );
 
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
 
@@ -276,13 +276,13 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveNewtonUpdate, * boost::unit_test:
     preconditioner_pre.trial_step = step_pre.trial_step;
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra_pre );
-    tardigradeHydra::unit_test::SolverStepBaseTester::solveNewtonUpdate( step_pre, result );
+    tardigradeHydra::unit_test::TrialStepBaseTester::solveNewtonUpdate( *step_pre.trial_step, result );
 
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_performPreconditionedSolve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_TrialStepBase_performPreconditionedSolve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
 
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_performPreconditionedSolve, * boost::u
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra );
 
-    step.performPreconditionedSolve( result );
+    step.trial_step->performPreconditionedSolve( result );
 
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
 
