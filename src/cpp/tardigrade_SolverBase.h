@@ -22,19 +22,11 @@ namespace tardigradeHydra{
 
         public:
 
-            /*!
-             * Default constructor of SolverBase
-             */
-            SolverBase( ) : hydra(NULL){//, step(NULL){ ///!< TODO: Re-enable this
+            SolverBase( );
 
-            }
+            SolverBase( hydraBase * _hydra );
 
-            /*!
-             * Constructor for NonlinearStepBase
-             *
-             * \param *_hydra: The containing hydraBase object
-             */
-            SolverBase( hydraBase * _hydra ) : hydra( _hydra ){ }
+            SolverBase( hydraBase *_hydra, SolverStepBase *_step_ptr );
 
             hydraBase *hydra; //!< Pointer to the containing hydra object
 

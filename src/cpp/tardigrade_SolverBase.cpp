@@ -11,6 +11,40 @@
 
 namespace tardigradeHydra{
 
+
+    /*!
+     * Default constructor of SolverBase
+     */
+    SolverBase::SolverBase( ) : hydra(NULL), step(&_step){
+
+        step->setSolver( this );
+
+    }
+
+    /*!
+     * Constructor for SolverBase
+     *
+     * \param *_hydra: The containing hydraBase object
+     */
+    SolverBase::SolverBase( hydraBase * _hydra ) : hydra( _hydra ), step(&_step){
+
+        step->setSolver( this );
+
+    }
+
+    /*!
+     * Constructor for SolverBase
+     *
+     * \param *_hydra: The containing hydraBase object
+     * \param *_step: The SolverStepBase object that the solver will use to try and solve
+     *     the problem
+     */
+    SolverBase::SolverBase( hydraBase *_hydra, SolverStepBase *_step_ptr ) : hydra( _hydra ), step( _step_ptr ){
+
+        step->setSolver( this );
+
+    }
+
     /*!
      * Get whether the Jacobian being rank-deficient will throw an error
      */
