@@ -286,23 +286,6 @@ namespace tardigradeHydra{
 
         trial_step->computeTrial( );
 
-        if ( trial_step->getUseSQPSolver( ) ){
-
-            trial_step->solveConstrainedQP( deltaX );
-
-        }
-        else{
-
-            trial_step->solveNewtonUpdate( deltaX );
-
-        }
-
-        if ( getFailureVerbosityLevel( ) > 0 ){
-            addToFailureOutput( "  trial deltaX:\n" );
-            addToFailureOutput( "  " );
-            addToFailureOutput( deltaX );
-        }
-
         if( !damping->applyDamping( ) ){ incrementNumUndamped( ); }
 
     }

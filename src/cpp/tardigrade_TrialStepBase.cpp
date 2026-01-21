@@ -34,8 +34,27 @@ namespace tardigradeHydra{
 
     /*!
      * Compute the trial step
+     *
+     * Must set the containing step's deltaX variable
      */
     void TrialStepBase::computeTrial( ){
+
+        if ( getUseSQPSolver( ) ){
+
+            solveConstrainedQP( step->deltaX );
+
+        }
+        else{
+
+            solveNewtonUpdate( step->deltaX );
+
+        }
+
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "  trial deltaX:\n" );
+            addToFailureOutput( "  " );
+            addToFailureOutput( step->deltaX );
+        }
 
     }
 
