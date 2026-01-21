@@ -76,6 +76,16 @@ namespace tardigradeHydra{
 
             const floatVector *getConstraintJacobians( );
 
+            const unsigned int getFailureVerbosityLevel( );
+
+            void addToFailureOutput( const std::string &string );
+
+            void addToFailureOutput( const floatVector &value, bool add_endline = true );
+
+            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true );
+
+            void addToFailureOutput( const floatType &value, bool add_endline = true );
+
             // END PASS-THROUGH FUNCTIONS
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)

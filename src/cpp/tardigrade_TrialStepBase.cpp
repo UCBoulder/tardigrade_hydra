@@ -135,6 +135,66 @@ namespace tardigradeHydra{
         return step->getConstraintJacobians( );
     }
 
+    /*!
+     * Get the failure verbosity level
+     */
+    const unsigned int TrialStepBase::getFailureVerbosityLevel( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        return step->getFailureVerbosityLevel( );
+
+    }
+
+    /*!
+     * Add the string to the failure output message
+     *
+     * \param &string: The string to add to the failure output message
+     */
+    void TrialStepBase::addToFailureOutput( const std::string &string ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->addToFailureOutput( string );
+
+    }
+
+    /*!
+     * Add a floatVector to the failure output message
+     *
+     * \param &value: The floatVector to add to the failure output message
+     * \param add_endline: Whether to add an endline after the value or not
+     */
+    void TrialStepBase::addToFailureOutput( const floatVector &value, bool add_endline ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->addToFailureOutput( value, add_endline );
+
+    }
+
+    /*!
+     * Add a vector of booleans to the failure output message
+     *
+     * \param &value: The vector of booleans to add to the failure output message
+     * \param add_endline: Whether to add an endline after the value or not
+     */
+    void TrialStepBase::addToFailureOutput( const std::vector<bool> &value, bool add_endline ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->addToFailureOutput( value, add_endline );
+
+    }
+
+    /*!
+     * Add a floatType to the failure output message
+     *
+     * \param &value: The floatType to add to the failure output message
+     * \param add_endline: Whether to add an endline after the value or not
+     */
+    void TrialStepBase::addToFailureOutput( const floatType &value, bool add_endline ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->addToFailureOutput( value, add_endline );
+
+    }
     // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
     /*!
