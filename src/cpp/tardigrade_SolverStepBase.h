@@ -111,6 +111,12 @@ namespace tardigradeHydra{
             //! Get the number of undamped steps performed
             unsigned int getNumUndamped( ){ return _NUM_UNDAMPED; }
 
+            // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            void solveNewtonUpdate( floatVector &deltaX_tr );
+
+            // END NEWTON SOLVER FUNCTIONS
+
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
             //! Get if the Newton step should be a LevenbergMarquardt step
@@ -139,16 +145,6 @@ namespace tardigradeHydra{
 
             //! Increment the number of undamped steps
             void incrementNumUndamped( ){ _NUM_UNDAMPED++; }
-
-            // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-            void solveNewtonUpdate( floatVector &deltaX_tr );
-
-            // END NEWTON SOLVER FUNCTIONS
-
-            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-            // END SQP SOLVER FUNCTIONS
 
         private:
 
