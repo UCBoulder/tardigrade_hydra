@@ -537,6 +537,8 @@ namespace tardigradeHydra{
 
             void updatePseudoTimestep( );
 
+            void performSubcyclerStep( );
+
             void subcyclerStepSuccess( );
 
             void subcyclerStepFailure( );

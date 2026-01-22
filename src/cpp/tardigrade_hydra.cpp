@@ -1802,7 +1802,22 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Attempt to solve the problem using the subcycler
+     * Perform a subcycler step
+     */
+    void hydraBase::performSubcyclerStep( ){
+
+        addSubcyclerStepHeader( );
+
+        setScaleFactor( sp + ds ); // Update the scaling factor
+
+        solver->resetIterations( ); // Reset the non-linear iteration count
+
+        evaluateInternal( ); // Try to solve the non-linear problem
+
+    }
+
+    /*!
+     * Solve the problem using the subcycler
      */
     void hydraBase::performSubcyclerSolve( ){
 
@@ -1812,13 +1827,7 @@ namespace tardigradeHydra{
 
             try{
 
-                addSubcyclerStepHeader( );
-
-                setScaleFactor( sp + ds ); // Update the scaling factor
-
-                solver->resetIterations( ); // Reset the non-linear iteration count
-
-                evaluateInternal( ); // Try to solve the non-linear problem
+                performSubcyclerStep( );
 
                 subcyclerStepSuccess( );
 
