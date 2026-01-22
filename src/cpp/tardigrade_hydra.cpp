@@ -1720,7 +1720,7 @@ namespace tardigradeHydra{
         }
         catch( std::exception &e ){
 
-            if ( !use_subcycler ){
+            if ( !_use_subcycler ){
 
                 throw;
 
