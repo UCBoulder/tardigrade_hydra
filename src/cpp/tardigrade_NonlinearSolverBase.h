@@ -31,6 +31,8 @@ namespace tardigradeHydra{
 
             virtual void initialSolveAttempt( ) override;
 
+            virtual bool checkConvergence( );
+
         protected:
 
             virtual void callResidualPreNLSolve( );

@@ -73,8 +73,6 @@ namespace tardigradeHydra{
             //! Check if the number of nonlinear iterations has exceeded the allowable count
             bool checkIteration( ){ return getIteration( ) < getMaxIterations( ); }
 
-            virtual bool checkConvergence( );
-
             const floatVector* getTolerance( );
 
             // END NONLINEAR FUNCTIONS
