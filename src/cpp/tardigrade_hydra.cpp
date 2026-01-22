@@ -1655,20 +1655,67 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * The initial attempt at solving the problem
+     */
+    void hydraBase::initialSolveAttempt( ){
+
+        evaluateInternal( );
+
+    }
+
+    /*!
+     * The function that is called if there is a convergence
+     * error thrown in the initial solve attempt
+     */
+    void hydraBase::convergenceErrorFunction( ){
+
+        if ( _use_subcycler ){
+            performSubcyclerSolve( );
+        }
+        else{
+            throw;
+        }
+
+    }
+
+    /*!
+     * The function that is called if there is a unexpected
+     * error thrown in the initial solve attempt
+     */
+
+    void hydraBase::unexpectedErrorFunction( ){
+
+        if ( _use_subcycler ){
+            performSubcyclerSolve( );
+        }
+        else{
+            throw;
+        }
+
+    }
+
+    /*!
+     * Attempt to solve the problem using the subcycler
+     */
+    void hydraBase::performSubcyclerSolve( ){
+
+    }
+
+    /*!
+     * Solve the non-linear problem and update the variables
+     * 
+     * \param &use_subcycler: Flag for if the subcycler should be used for difficult analyses (defaults to false) TODO: Remove this parameter
+     */
     void hydraBase::evaluate( const bool &use_subcycler ){
-        /*!
-         * Solve the non-linear problem and update the variables
-         * 
-         * \param &use_subcycler: Flag for if the subcycler should be used for difficult analyses (defaults to false)
-         */
+
+        _use_subcycler = use_subcycler;
 
         initialize( );
 
         try{
 
-            evaluateInternal( );
-
-            return;
+            initialSolveAttempt( );
 
         }
         catch( std::exception &e ){
