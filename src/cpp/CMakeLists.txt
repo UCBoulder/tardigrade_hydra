@@ -25,7 +25,7 @@ foreach(package ${PROJECT_NAME})
     )
     get_target_property(target_sources ${package} SOURCES)
     foreach(source ${target_sources})
-        set_property(GLOBAL APPEND PROPERTY CLANG_FORMAT_SOURCE_FILES "${PROJECT_SOURCE_DIR}/${source}")
+        set_property(GLOBAL APPEND PROPERTY CLANG_FORMAT_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
     endforeach(source)
 endforeach(package)
 
