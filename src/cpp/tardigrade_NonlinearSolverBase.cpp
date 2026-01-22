@@ -75,6 +75,25 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Signal to the residuals that we are about to start a nonlinear solve
+     */
+    void NonlinearSolverBase::callResidualPreNLSolve( ){
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
+
+            ( *residual_ptr )->preNLSolve( );
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    /*!
      * Signal to the residuals that a successful nonlinear step has been performed
      */
     void NonlinearSolverBase::callResidualSuccessfulNLStep( ){
