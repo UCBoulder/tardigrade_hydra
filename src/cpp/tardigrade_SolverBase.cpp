@@ -431,56 +431,6 @@ namespace tardigradeHydra{
 
     }
 
-    /*!
-     * Set the tolerance
-     * 
-     * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
-     */
-    void SolverBase::setTolerance( ){
-
-        auto tolerance = get_SetDataStorage_tolerance( );
-
-        *tolerance.value = tardigradeVectorTools::abs( *getResidual( ) ) + tardigradeVectorTools::abs( *getUnknownVector( ) );
-
-        *tolerance.value = getRelativeTolerance( ) * ( *tolerance.value ) + getAbsoluteTolerance( );
-
-    }
-
-    /*!
-     * Set the tolerance
-     *
-     * \param tolerance: The tolerance vector for each value of the residual
-     */
-    void SolverBase::setTolerance( const floatVector &tolerance ){
-
-        setConstantData( tolerance, _tolerance );
-
-    }
-
-    /*!
-     * Return a SetDataStorageConstant setter for the tolerance
-     */
-    SolverBase::SetDataStorageConstant<floatVector> SolverBase::get_SetDataStorage_tolerance( ){
-
-        return SetDataStorageConstant<floatVector>( &_tolerance );
-
-    }
-
-    /*!
-     * Get the tolerance
-     */
-    const floatVector* SolverBase::getTolerance( ){
-
-        if ( !_tolerance.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setTolerance( ) );
-
-        }
-
-        return &_tolerance.second;
-
-    }
-
 // END NONLINEAR FUNCTIONS
 
 // BEGIN LEVENBERG MARQUARDT FUNCTIONS

@@ -73,8 +73,6 @@ namespace tardigradeHydra{
             //! Check if the number of nonlinear iterations has exceeded the allowable count
             bool checkIteration( ){ return getIteration( ) < getMaxIterations( ); }
 
-            const floatVector* getTolerance( );
-
             // END NONLINEAR FUNCTIONS
 
             // Pass-through functions
@@ -157,12 +155,6 @@ namespace tardigradeHydra{
 
             void incrementIteration( );
 
-            virtual void setTolerance( );
-
-            void setTolerance( const floatVector &tolerance );
-
-            virtual tardigradeHydra::SolverBase::SetDataStorageConstant<floatVector> get_SetDataStorage_tolerance( );
-
             // END NONLINEAR FUNCTIONS
 
         private:
@@ -179,8 +171,6 @@ namespace tardigradeHydra{
             unsigned int _maxIterations = 20; //!< The maximum number of allowable iterations
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
-
-            DataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
 
             // END NONLINEAR FUNCTIONS
 

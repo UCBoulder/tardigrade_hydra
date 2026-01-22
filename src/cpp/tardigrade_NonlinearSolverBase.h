@@ -33,6 +33,8 @@ namespace tardigradeHydra{
 
             virtual bool checkConvergence( );
 
+            const floatVector* getTolerance( );
+
         protected:
 
             virtual void callResidualPreNLSolve( );
@@ -40,6 +42,16 @@ namespace tardigradeHydra{
             virtual void callResidualSuccessfulNLStep( );
 
             virtual void callResidualPostNLSolve( );
+
+            virtual void setTolerance( );
+
+            void setTolerance( const floatVector &tolerance );
+
+            virtual tardigradeHydra::SolverBase::SetDataStorageConstant<floatVector> get_SetDataStorage_tolerance( );
+
+        private:
+
+            DataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
 
     };
 

@@ -181,4 +181,54 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the tolerance
+     */
+    const floatVector* NonlinearSolverBase::getTolerance( ){
+
+        if ( !_tolerance.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setTolerance( ) );
+
+        }
+
+        return &_tolerance.second;
+
+    }
+
+    /*!
+     * Set the tolerance
+     * 
+     * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
+     */
+    void NonlinearSolverBase::setTolerance( ){
+
+        auto tolerance = get_SetDataStorage_tolerance( );
+
+        *tolerance.value = tardigradeVectorTools::abs( *getResidual( ) ) + tardigradeVectorTools::abs( *getUnknownVector( ) );
+
+        *tolerance.value = getRelativeTolerance( ) * ( *tolerance.value ) + getAbsoluteTolerance( );
+
+    }
+
+    /*!
+     * Set the tolerance
+     *
+     * \param tolerance: The tolerance vector for each value of the residual
+     */
+    void NonlinearSolverBase::setTolerance( const floatVector &tolerance ){
+
+        setConstantData( tolerance, _tolerance );
+
+    }
+
+    /*!
+     * Return a SetDataStorageConstant setter for the tolerance
+     */
+    NonlinearSolverBase::SetDataStorageConstant<floatVector> NonlinearSolverBase::get_SetDataStorage_tolerance( ){
+
+        return SetDataStorageConstant<floatVector>( &_tolerance );
+
+    }
+
 }
