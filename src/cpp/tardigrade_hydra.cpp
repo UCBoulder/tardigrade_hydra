@@ -1657,7 +1657,7 @@ namespace tardigradeHydra{
 
     void hydraBase::evaluate( const bool &use_subcycler ){
         /*!
-         * Solver the non-linear problem and update the variables
+         * Solve the non-linear problem and update the variables
          * 
          * \param &use_subcycler: Flag for if the subcycler should be used for difficult analyses (defaults to false)
          */
@@ -1777,11 +1777,6 @@ namespace tardigradeHydra{
         /*!
          * Solve the non-linear problem with the current scaling and update the variables
          */
-
-        // Reset the counters for the number of steps being performed
-        solver->step->reset( );
-
-        solver->setRankDeficientError( false );
 
         if ( getUseRelaxedSolve( ) ){
 

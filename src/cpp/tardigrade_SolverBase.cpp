@@ -333,6 +333,12 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+
+        // Reset the internal steps
+        step->reset( );
+
+        setRankDeficientError( false );
+
         // Form the initial unknown vector
         if ( getInitializeUnknownVector( ) ){
             TARDIGRADE_ERROR_TOOLS_CATCH( hydra->initializeUnknownVector( ) );
