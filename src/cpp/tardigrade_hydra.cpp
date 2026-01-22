@@ -1742,6 +1742,48 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Called when there is a failure in a subcycler step
+     */
+    void hydraBase::subcyclerStepFailure( ){
+
+        callResidualPostSubcyclerFailure( );
+
+        // Reduce the time-step and try again
+        num_good = 0;
+
+        ds *= getCutbackFactor( );
+
+        setX( solver->initial_unknown ); // Reset X to the last good point
+
+        if ( ds < getMinDS( ) ){
+
+            throw;
+
+        }
+
+    }
+
+    /*!
+     * Update the pseudo-timestep
+     */
+    void hydraBase::updatePseudoTimestep( ){
+
+        // Grow the step if possible
+        if ( allowStepGrowth( num_good ) ){
+
+            ds *= getGrowthFactor( );
+
+        }
+
+        // Make sure s will be less than or equal to 1
+        if ( sp + ds > 1.0 ){
+
+            ds = 1.0 - sp;
+
+        }
+    }
+
+    /*!
      * Attempt to solve the problem using the subcycler
      */
     void hydraBase::performSubcyclerSolve( ){
@@ -1768,41 +1810,17 @@ namespace tardigradeHydra{
 
                 num_good++; // Update the number of good iterations
 
-                // Grow the step if possible
-                if ( allowStepGrowth( num_good ) ){
-
-                    ds *= getGrowthFactor( );
-
-                }
-
-                // Make sure s will be less than or equal to 1
-                if ( sp + ds > 1.0 ){
-
-                    ds = 1.0 - sp;
-
-                }
+                updatePseudoTimestep( );
 
             }
             catch( std::exception &e ){
 
-                callResidualPostSubcyclerFailure( ); // Let the residuals know the subcycle step failed
-
-                // Reduce the time-step and try again
-                num_good = 0;
-
-                ds *= getCutbackFactor( );
-
-                setX( solver->initial_unknown ); // Reset X to the last good point
-
-                if ( ds < getMinDS( ) ){
-
-                    throw;
-
-                }
+                subcyclerStepFailure( );
 
             }
 
         }
+
     }
 
     /*!

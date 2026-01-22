@@ -535,6 +535,10 @@ namespace tardigradeHydra{
 
             void initializeSubcycler( );
 
+            void updatePseudoTimestep( );
+
+            void subcyclerStepFailure( );
+
             bool _use_subcycler = false; //!< Flag for whether to use the subcycler or not TODO: Remove this
 
             floatType sp; //!< The previous subcycler pseudo-time
