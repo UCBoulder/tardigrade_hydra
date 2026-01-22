@@ -16,11 +16,7 @@ set(TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS
     CACHE BOOL
     "Flag for whether the python bindings should be built for hydra"
 )
-set(TARDIGRADE_HYDRA_USE_LIBXSMM
-    OFF
-    CACHE BOOL
-    "Flag for whether to use libxsmm for matrix math"
-)
+set(TARDIGRADE_HYDRA_USE_LIBXSMM OFF CACHE BOOL "Flag for whether to use libxsmm for matrix math")
 
 # Add a flag for if a full build of all tardigrade repositories should be performed
 set(TARDIGRADE_FULL_BUILD
@@ -70,11 +66,7 @@ set(ADDITIONAL_HEADER_ONLY_LIBRARIES
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
-    set(PROJECT_SOURCE_FILES
-        ${PROJECT_SOURCE_FILES}
-        ${package}.cpp
-        ${package}.h
-    )
+    set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
 endforeach(package)
 if(TARDIGRADE_HYDRA_USE_LIBXSMM)
@@ -84,35 +76,17 @@ if(TARDIGRADE_HYDRA_USE_LIBXSMM)
     set(PROJECT_LINK_LIBRARIES ${PROJECT_LINK_LIBRARIES} "xsmm" "blas")
 endif()
 # Upstream libraries for each sub-library
-set(TARDIGRADE_HYDRAMICROMORPHIC_UPSTREAM_LIBRARIES
-    "tardigrade_constitutive_tools"
-)
-set(TARDIGRADE_HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES
-    "tardigrade_constitutive_tools"
-)
-set(TARDIGRADE_HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES
-    "tardigrade_constitutive_tools"
-    "tardigrade_stress_tools"
-)
-set(TARDIGRADE_HYDRATHERMALEXPANSION_UPSTREAM_LIBRARIES
-    "tardigrade_constitutive_tools"
-)
-set(TARDIGRADE_HYDRAPERYZNAVISCOPLASTICITY_UPSTREAM_LIBRARIES
-    "tardigrade_constitutive_tools"
-    "tardigrade_stress_tools"
-)
-set(TARDIGRADE_HYDRAPERYZNAVISCODAMAGE_UPSTREAM_LIBRARIES
-    "tardigrade_constitutive_tools"
-    "tardigrade_stress_tools"
-)
+set(TARDIGRADE_HYDRAMICROMORPHIC_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
+set(TARDIGRADE_HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
+set(TARDIGRADE_HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
+set(TARDIGRADE_HYDRATHERMALEXPANSION_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
+set(TARDIGRADE_HYDRAPERYZNAVISCOPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
+set(TARDIGRADE_HYDRAPERYZNAVISCODAMAGE_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
 set(TARDIGRADE_HYDRAPERYZNAJ2VISCOPLASTICITY_UPSTREAM_LIBRARIES
     "tardigrade_constitutive_tools"
     "tardigrade_stress_tools"
 )
-set(TARDIGRADE_HYDRAMASSCHANGE_UPSTREAM_LIBRARIES
-    "tardigrade_constitutive_tools"
-    "tardigrade_stress_tools"
-)
+set(TARDIGRADE_HYDRAMASSCHANGE_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
 set(TARDIGRADE_HYDRAMICROMORPHICLINEARELASTICITY_UPSTREAM_LIBRARIES
     "tardigrade_constitutive_tools"
     "tardigrade_micromorphic_tools"
@@ -125,15 +99,10 @@ set(TARDIGRADE_HYDRAMICROMORPHICDRUCKERPRAGERPLASTICITY_UPSTREAM_LIBRARIES
     "tardigrade_constitutive_tools"
     "tardigrade_micromorphic_tools"
 )
-set(TARDIGRADE_HYDRAMASSCHANGEDOF_UPSTREAM_LIBRARIES
-    "tardigrade_constitutive_tools"
-)
+set(TARDIGRADE_HYDRAMASSCHANGEDOF_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 
 # Add the cmake folder to locate project CMake module(s)
-set(CMAKE_MODULE_PATH
-    "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}"
-    ${CMAKE_MODULE_PATH}
-)
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_PATH})
 
 # Set build type checks
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
@@ -148,19 +117,12 @@ endif()
 
 if(${not_conda_test} STREQUAL "true")
     foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
-        add_library(
-            ${package}
-            INTERFACE
-            "${CPP_SRC_PATH}/${package}.cpp"
-            "${CPP_SRC_PATH}/${package}.h"
-        )
+        add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
     endforeach(package)
 endif()
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
-    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES
-        ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}
-    )
+    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 endif()
 
 # Get version number from Git
@@ -179,12 +141,7 @@ if(${not_conda_test} STREQUAL "true")
     if(${${PROJECT_NAME}_VERSION_STRING_FULL} STREQUAL "")
         set(${PROJECT_NAME}_VERSION 0.0.0)
     else()
-        string(
-            REGEX MATCH
-            "[0-9]+\.[0-9]+\.[0-9]+"
-            ${PROJECT_NAME}_VERSION
-            ${${PROJECT_NAME}_VERSION_STRING_FULL}
-        )
+        string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION_STRING_FULL})
     endif()
     project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
 endif()
@@ -252,26 +209,18 @@ foreach(package ${upstream_packages})
         message(STATUS "Found ${package}: ${${package}_DIR}")
     else()
         # Find related, but external, projects using FetchContent and building locally
-        message(
-            WARNING
-            "Did not find an installed ${package} package. Attempting local build with FetchContent."
-        )
+        message(WARNING "Did not find an installed ${package} package. Attempting local build with FetchContent.")
         if(NOT DEFINED ${package_upper}_FETCHCONTENT_VERSION)
             set(${package_upper}_FETCHCONTENT_VERSION "origin/dev")
         endif()
-        message(
-            "${package_upper} is being built with version ${${package_upper}_FETCHCONTENT_VERSION}"
-        )
+        message("${package_upper} is being built with version ${${package_upper}_FETCHCONTENT_VERSION}")
         FetchContent_Declare(
             ${package}
             GIT_REPOSITORY https://github.com/UCBoulder/${package}.git
             GIT_TAG ${${package_upper}_FETCHCONTENT_VERSION}
         )
         FetchContent_MakeAvailable(${package})
-        set(LOCAL_BUILD_INCLUDE_DIRECTORIES
-            ${LOCAL_BUILD_INCLUDE_DIRECTORIES}
-            ${${package}_SOURCE_DIR}/${CPP_SRC_PATH}
-        )
+        set(LOCAL_BUILD_INCLUDE_DIRECTORIES ${LOCAL_BUILD_INCLUDE_DIRECTORIES} ${${package}_SOURCE_DIR}/${CPP_SRC_PATH})
     endif()
 endforeach(package)
 
@@ -279,10 +228,7 @@ foreach(package ${upstream_packages})
     if(NOT cmake_build_type_lower STREQUAL "release")
         string(TOLOWER "${package}" lower_package)
         foreach(sub_package ${${upper_package}_UPSTREAM_LIBRARIES})
-            target_include_directories(
-                ${package}
-                PUBLIC ${${sub_package}_SOURCE_DIR}/${CPP_SRC_PATH}
-            )
+            target_include_directories(${package} PUBLIC ${${sub_package}_SOURCE_DIR}/${CPP_SRC_PATH})
         endforeach(sub_package)
     endif()
 endforeach(package)
@@ -332,38 +278,24 @@ if(${not_conda_test} STREQUAL "true")
         endif()
 
         install(
-            FILES
-                "${PROJECT_BINARY_DIR}/${package}Config.cmake"
-                "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
+            FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake" "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake
         )
     endforeach(package)
-    install(
-        FILES ${CPP_SRC_PATH}/${PROJECT_NAME}.cpp
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    )
+    install(FILES ${CPP_SRC_PATH}/${PROJECT_NAME}.cpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
-        install(
-            FILES ${CPP_SRC_PATH}/${package}.cpp
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        )
+        install(FILES ${CPP_SRC_PATH}/${package}.cpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     endforeach(package)
 endif()
 
 #================================================================================== SETUP CLANG FORMATTING TARGETS ===
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    get_property(
-        CLANG_FORMAT_SOURCE_FILES_VALUE
-        GLOBAL
-        PROPERTY CLANG_FORMAT_SOURCE_FILES
-    )
+    get_property(CLANG_FORMAT_SOURCE_FILES_VALUE GLOBAL PROPERTY CLANG_FORMAT_SOURCE_FILES)
 
     add_custom_target(
         cpp-format-check
-        COMMAND
-            ${CLANG_FORMAT_EXECUTABLE} -style=file --dry-run -Werror
-            ${CLANG_FORMAT_SOURCE_FILES_VALUE}
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file --dry-run -Werror ${CLANG_FORMAT_SOURCE_FILES_VALUE}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Check the C++ code format with clang-format"
     )
@@ -371,9 +303,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     add_custom_target(
         cpp-format
-        COMMAND
-            ${CLANG_FORMAT_EXECUTABLE} -style=file -i
-            ${CLANG_FORMAT_SOURCE_FILES_VALUE}
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${CLANG_FORMAT_SOURCE_FILES_VALUE}
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         COMMENT "Format the C++ code with clang-format"
     )

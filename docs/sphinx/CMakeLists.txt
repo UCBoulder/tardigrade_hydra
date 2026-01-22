@@ -9,11 +9,7 @@ set(SPHINX_OUT ${CMAKE_CURRENT_BINARY_DIR}/conf.py)
 
 # Replace variables inside @@ with the current values
 configure_file(${SPHINX_IN} ${SPHINX_OUT} @ONLY)
-configure_file(
-    ${PROJECT_SOURCE_DIR}/README.rst
-    ${CMAKE_CURRENT_BINARY_DIR}/README.txt
-    COPYONLY
-)
+configure_file(${PROJECT_SOURCE_DIR}/README.rst ${CMAKE_CURRENT_BINARY_DIR}/README.txt COPYONLY)
 
 # Explicit list of documentation source files because globbing won't trigger CMake config on re-builds
 set(DOCUMENTATION_SOURCE
@@ -35,12 +31,8 @@ set(DOCUMENTATION_SOURCE
 # Add sphinx command
 add_custom_command(
     OUTPUT ${SPHINX_HTML_FILE}
-    COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND
-        ${SPHINX_EXECUTABLE} -M html ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${SPHINX_EXECUTABLE} -M html ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS
         ${DOXYGEN_INDEX_FILE}
