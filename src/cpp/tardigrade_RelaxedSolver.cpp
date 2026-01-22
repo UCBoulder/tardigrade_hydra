@@ -284,6 +284,41 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * The function that is called for the first solve attempt
+     */
+    void RelaxedSolver::initialSolveAttempt( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The internal solver points to a null pointer")
+
+        internal_solver->solve( );
+
+    }
+
+    /*!
+     * The function that is called when there is a convergence error
+     * thrown by the initial solve
+     */
+    void RelaxedSolver::convergenceErrorFunction( ){
+
+        try{
+
+            performRelaxedSolve( );
+
+        }
+        catch( const convergence_error &e ){
+
+            throw;
+
+        }
+        catch( std::exception *e ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+        }
+
+    }
+
+    /*!
      * Solve the non-linear problem by relaxing difficult sub-problems
      * to achieve a series of solutions.
      */
@@ -328,30 +363,14 @@ namespace tardigradeHydra{
      */
     void RelaxedSolver::solve( ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The internal solver points to a null pointer")
-
         try{
 
-            internal_solver->solve( );
+            initialSolveAttempt( );
 
         }
         catch( const convergence_error &e ){
 
-            try{
-
-                performRelaxedSolve( );
-
-            }
-            catch( const convergence_error &e ){
-
-                throw;
-
-            }
-            catch( std::exception *e ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
-
-            }
+            convergenceErrorFunction( );
 
         }
         catch( std::exception &e ){

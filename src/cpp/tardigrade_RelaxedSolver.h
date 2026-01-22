@@ -37,6 +37,10 @@ namespace tardigradeHydra{
 
             using tardigradeHydra::SolverBase::solve;
 
+            virtual void initialSolveAttempt( );
+
+            virtual void convergenceErrorFunction( );
+
             const unsigned int getRelaxedIteration( );
 
             const unsigned int getMaxRelaxedIterations( );
