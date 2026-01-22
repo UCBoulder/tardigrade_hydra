@@ -400,6 +400,16 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * The function that is called if there is an unexpected
+     * error thrown in the initial solve attempt
+     */
+    void SolverBase::unexpectedErrorFunction( ){
+
+        TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+    }
+
+    /*!
      * Solve the problem
      */
     void SolverBase::solve( ){
@@ -416,7 +426,7 @@ namespace tardigradeHydra{
         }
         catch( std::exception &e ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+            unexpectedErrorFunction( );
 
         }
 
