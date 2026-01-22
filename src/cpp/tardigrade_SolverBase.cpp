@@ -129,6 +129,16 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Initialize the unknown vector
+     */
+    void SolverBase::initializeUnknownVector( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
+        hydra->initializeUnknownVector( );
+
+    }
+
+    /*!
      * Update the unknown vector
      *
      * \param &value: The new value of the unknown vector
