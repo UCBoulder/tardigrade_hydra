@@ -358,27 +358,4 @@ namespace tardigradeHydra{
 
     }
 
-    /*!
-     * Solve the residual equation
-     */
-    void RelaxedSolver::solve( ){
-
-        try{
-
-            initialSolveAttempt( );
-
-        }
-        catch( const convergence_error &e ){
-
-            convergenceErrorFunction( );
-
-        }
-        catch( std::exception &e ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
-
-        }
-
-    }
-
 }

@@ -35,11 +35,11 @@ namespace tardigradeHydra{
 
             RelaxedSolver( hydraBase *_hydra, SolverBase *_internal_solver_ptr );
 
-            using tardigradeHydra::SolverBase::solve;
+            virtual void initialSolveAttempt( ) override;
 
-            virtual void initialSolveAttempt( );
+            virtual void convergenceErrorFunction( ) override;
 
-            virtual void convergenceErrorFunction( );
+            virtual void reset( ) override;
 
             const unsigned int getRelaxedIteration( );
 
@@ -51,11 +51,7 @@ namespace tardigradeHydra{
 
             void setInternalSolver( SolverBase *_solver );
 
-            virtual void reset( ) override;
-
             virtual void performRelaxedSolve( );
-
-            virtual void solve( ) override;
 
         protected:
 

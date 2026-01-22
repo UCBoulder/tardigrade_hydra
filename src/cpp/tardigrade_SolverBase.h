@@ -37,6 +37,10 @@ namespace tardigradeHydra{
 
             virtual void solve( );
 
+            virtual void initialSolveAttempt( );
+
+            virtual void convergenceErrorFunction( );
+
             virtual void reset( );
 
             const bool getRankDeficientError( );

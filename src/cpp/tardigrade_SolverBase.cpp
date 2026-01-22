@@ -327,9 +327,10 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Solve the problem
+     * The function that is called when first attempting to
+     * solve the problem
      */
-    void SolverBase::solve( ){
+    void SolverBase::initialSolveAttempt( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
@@ -385,6 +386,39 @@ namespace tardigradeHydra{
         }
 
         callResidualPostNLSolve( );
+
+    }
+
+    /*!
+     * The function that is called if there is a convergence
+     * error thrown in the initial solve attempt
+     */
+    void SolverBase::convergenceErrorFunction( ){
+
+        throw;
+
+    }
+
+    /*!
+     * Solve the problem
+     */
+    void SolverBase::solve( ){
+
+        try{
+
+            initialSolveAttempt( );
+
+        }
+        catch( convergence_error &e ){
+
+            convergenceErrorFunction( );
+
+        }
+        catch( std::exception &e ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+        }
 
     }
 
