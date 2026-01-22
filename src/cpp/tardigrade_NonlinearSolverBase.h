@@ -31,6 +31,11 @@ namespace tardigradeHydra{
 
             virtual void initialSolveAttempt( ) override;
 
+        protected:
+
+            virtual void callResidualSuccessfulNLStep( );
+
+
     };
 
 }
