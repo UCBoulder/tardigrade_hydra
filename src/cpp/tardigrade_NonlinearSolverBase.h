@@ -29,6 +29,8 @@ namespace tardigradeHydra{
 
             using tardigradeHydra::SolverBase::SolverBase;
 
+            virtual void initialSolveAttempt( ) override;
+
     };
 
 }
