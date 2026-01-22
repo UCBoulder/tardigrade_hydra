@@ -537,6 +537,8 @@ namespace tardigradeHydra{
 
             void updatePseudoTimestep( );
 
+            void subcyclerStepSuccess( );
+
             void subcyclerStepFailure( );
 
             bool _use_subcycler = false; //!< Flag for whether to use the subcycler or not TODO: Remove this

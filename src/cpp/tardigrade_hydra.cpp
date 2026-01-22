@@ -1768,6 +1768,8 @@ namespace tardigradeHydra{
      */
     void hydraBase::updatePseudoTimestep( ){
 
+        sp += ds; // Update the pseudo-time
+
         // Grow the step if possible
         if ( allowStepGrowth( num_good ) ){
 
@@ -1781,6 +1783,22 @@ namespace tardigradeHydra{
             ds = 1.0 - sp;
 
         }
+
+    }
+
+    /*!
+     * Post-successful subcycler increment updates
+     */
+    void hydraBase::subcyclerStepSuccess( ){
+
+        setPreviouslyConvergedStress( *getStress( ) ); // Set the previously converged stress
+
+        callResidualPostSubcyclerSuccess( ); // Let the residuals know the subcycle step was successful
+
+        num_good++; // Update the number of good iterations
+
+        updatePseudoTimestep( );
+
     }
 
     /*!
@@ -1802,15 +1820,7 @@ namespace tardigradeHydra{
 
                 evaluateInternal( ); // Try to solve the non-linear problem
 
-                setPreviouslyConvergedStress( *getStress( ) ); // Set the previously converged stress
-
-                callResidualPostSubcyclerSuccess( ); // Let the residuals know the subcycle step was successful
-
-                sp += ds; // Update the pseudo-time
-
-                num_good++; // Update the number of good iterations
-
-                updatePseudoTimestep( );
+                subcyclerStepSuccess( );
 
             }
             catch( std::exception &e ){
