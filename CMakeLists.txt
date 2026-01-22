@@ -295,7 +295,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     add_custom_target(
         cpp-format-check
-        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file --dry-run -Werror ${CLANG_FORMAT_SOURCE_FILES_VALUE}
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file --dry-run -Werror -i ${CLANG_FORMAT_SOURCE_FILES_VALUE}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Check the C++ code format with clang-format"
     )
