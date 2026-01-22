@@ -1700,6 +1700,95 @@ namespace tardigradeHydra{
      */
     void hydraBase::performSubcyclerSolve( ){
 
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "\n\n" );
+            addToFailureOutput( "#########################################\n" );
+            addToFailureOutput( "###        ENTERING SUB-CYCLER        ###\n" );
+            addToFailureOutput( "#########################################\n" );
+            addToFailureOutput( "\n\n" );
+        }
+
+        floatType sp = 0.0;
+
+        floatType ds = getCutbackFactor( );
+
+        unsigned int num_good = 0;
+
+        callResidualPreSubcycler( );
+
+        resetProblem( );
+
+        while ( sp < 1.0 ){
+
+            try{
+
+                if ( getFailureVerbosityLevel( ) > 0 ){
+                    addToFailureOutput( "\n\n" );
+                    addToFailureOutput( "######### PSEUDO-TIME INCREMENT #########\n" );
+                    addToFailureOutput( "\n\n    sp, ds: " + std::to_string( sp ) + ", " + std::to_string( ds ) );
+                    addToFailureOutput( "\n" );
+                }
+
+                setScaleFactor( sp + ds ); // Update the scaling factor
+
+                solver->resetIterations( ); // Reset the non-linear iteration count
+
+                evaluateInternal( ); // Try to solve the non-linear problem
+
+                setPreviouslyConvergedStress( *getStress( ) ); // Set the previously converged stress
+
+                callResidualPostSubcyclerSuccess( ); // Let the residuals know the subcycle step was successful
+
+                sp += ds; // Update the pseudo-time
+
+                num_good++; // Update the number of good iterations
+
+                // Grow the step if possible
+                if ( allowStepGrowth( num_good ) ){
+
+                    ds *= getGrowthFactor( );
+
+                }
+
+                // Make sure s will be less than or equal to 1
+                if ( sp + ds > 1.0 ){
+
+                    ds = 1.0 - sp;
+
+                }
+
+            }
+            catch( std::exception &e ){
+
+                callResidualPostSubcyclerFailure( ); // Let the residuals know the subcycle step failed
+
+                // Reduce the time-step and try again
+                num_good = 0;
+
+                ds *= getCutbackFactor( );
+
+                if ( getUseRelaxedSolve( ) ){
+
+                    // TEMP
+                    auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
+                    TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
+                    TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The internal solver has not been set" );
+                    // END TEMP
+                    solver->initial_unknown = local_solver->internal_solver->initial_unknown;
+
+                }
+
+                setX( solver->initial_unknown ); // Reset X to the last good point
+
+                if ( ds < getMinDS( ) ){
+
+                    throw;
+
+                }
+
+            }
+
+        }
     }
 
     /*!
@@ -1718,103 +1807,14 @@ namespace tardigradeHydra{
             initialSolveAttempt( );
 
         }
+        catch( convergence_error &e ){
+
+            convergenceErrorFunction( );
+
+        }
         catch( std::exception &e ){
 
-            if ( !_use_subcycler ){
-
-                throw;
-
-            }
-
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "\n\n" );
-                addToFailureOutput( "#########################################\n" );
-                addToFailureOutput( "###        ENTERING SUB-CYCLER        ###\n" );
-                addToFailureOutput( "#########################################\n" );
-                addToFailureOutput( "\n\n" );
-            }
-
-            floatType sp = 0.0;
-
-            floatType ds = getCutbackFactor( );
-
-            unsigned int num_good = 0;
-
-            callResidualPreSubcycler( );
-
-            resetProblem( );
-
-            while ( sp < 1.0 ){
-
-                try{
-
-                    if ( getFailureVerbosityLevel( ) > 0 ){
-                        addToFailureOutput( "\n\n" );
-                        addToFailureOutput( "######### PSEUDO-TIME INCREMENT #########\n" );
-                        addToFailureOutput( "\n\n    sp, ds: " + std::to_string( sp ) + ", " + std::to_string( ds ) );
-                        addToFailureOutput( "\n" );
-                    }
-
-                    setScaleFactor( sp + ds ); // Update the scaling factor
-
-                    solver->resetIterations( ); // Reset the non-linear iteration count
-
-                    evaluateInternal( ); // Try to solve the non-linear problem
-
-                    setPreviouslyConvergedStress( *getStress( ) ); // Set the previously converged stress
-
-                    callResidualPostSubcyclerSuccess( ); // Let the residuals know the subcycle step was successful
-
-                    sp += ds; // Update the pseudo-time
-
-                    num_good++; // Update the number of good iterations
-
-                    // Grow the step if possible
-                    if ( allowStepGrowth( num_good ) ){
-
-                        ds *= getGrowthFactor( );
-
-                    }
-
-                    // Make sure s will be less than or equal to 1
-                    if ( sp + ds > 1.0 ){
-
-                        ds = 1.0 - sp;
-
-                    }
-
-                }
-                catch( std::exception &e ){
-
-                    callResidualPostSubcyclerFailure( ); // Let the residuals know the subcycle step failed
-
-                    // Reduce the time-step and try again
-                    num_good = 0;
-
-                    ds *= getCutbackFactor( );
-
-                    if ( getUseRelaxedSolve( ) ){
-
-                        // TEMP
-                        auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
-                        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
-                        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The internal solver has not been set" );
-                        // END TEMP
-                        solver->initial_unknown = local_solver->internal_solver->initial_unknown;
-
-                    }
-
-                    setX( solver->initial_unknown ); // Reset X to the last good point
-
-                    if ( ds < getMinDS( ) ){
-
-                        throw;
-
-                    }
-
-                }
-
-            }
+            unexpectedErrorFunction( );
 
         }
 
