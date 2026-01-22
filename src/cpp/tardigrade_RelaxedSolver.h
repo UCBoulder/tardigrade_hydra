@@ -12,6 +12,7 @@
 
 #include"tardigrade_CoreDefinitions.h"
 #include"tardigrade_SolverBase.h"
+#include"tardigrade_NonlinearSolverBase.h"
 
 namespace tardigradeHydra{
 
@@ -55,7 +56,7 @@ namespace tardigradeHydra{
 
         protected:
 
-            SolverBase _internal_solver; //!< The default internal solver
+            NonlinearSolverBase _internal_solver; //!< The default internal solver
 
             SolverBase *internal_solver = &_internal_solver; //!< A pointer to the solver which will be relaxed
 
