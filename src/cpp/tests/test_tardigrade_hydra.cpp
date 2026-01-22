@@ -5449,12 +5449,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getResidualParameterizationInfo, * boost::u
 
             using tardigradeHydra::SolverBase::SolverBase;
 
-            virtual void public_callResidualPostNLSolve( ){
-
-                callResidualPostNLSolve( );
-
-            }
-
     };
 
     floatType time = 1.1;
