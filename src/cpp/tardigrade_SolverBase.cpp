@@ -342,60 +342,7 @@ namespace tardigradeHydra{
      */
     void SolverBase::initialSolveAttempt( ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
-        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
-
-        // Reset the internal steps
-        step->reset( );
-
-        setRankDeficientError( false );
-
-        // Form the initial unknown vector
-        if ( getInitializeUnknownVector( ) ){
-            TARDIGRADE_ERROR_TOOLS_CATCH( hydra->initializeUnknownVector( ) );
-        }
-
-        initial_unknown = *getUnknownVector( );
-
-        floatVector deltaX( getNumUnknowns( ), 0 );
-
-        callResidualPreNLSolve( );
-
-        step->damping->reset( );
-
-        if ( getFailureVerbosityLevel( ) > 0 ){
-            addToFailureOutput( "Initial Unknown:\n" );
-            addToFailureOutput( *getUnknownVector( ) );
-        }
-
-        while( !checkConvergence( ) && checkIteration( ) ){
-
-            step->incrementSolution( );
-
-            // Call residual end of a successful nonlinear step functions
-            callResidualSuccessfulNLStep( );
-
-            // Increment the iteration count
-            incrementIteration( );
-
-            // Reset the nonlinear step data
-            resetNLStepData( );
-
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "  final residual: " );
-                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-                addToFailureOutput( "\n" );
-            }
-
-        }
-
-        if ( !checkConvergence( ) ){
-
-            throw convergence_error( "Failure to converge main loop\n" );
-
-        }
-
-        callResidualPostNLSolve( );
+        TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "initialSolveAttempt must be defined for all classes inheriting from SolverBase" ) );
 
     }
 
