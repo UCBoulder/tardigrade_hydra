@@ -154,8 +154,6 @@ namespace tardigradeHydra{
             // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
             void setInitializeUnknownVector( const bool &value );
 
-            virtual void callResidualPostNLSolve( );
-
             //! Reset the number of iterations
             void resetIterations( ){ _iteration = 0; }
 
