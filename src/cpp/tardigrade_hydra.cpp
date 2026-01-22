@@ -1696,9 +1696,9 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Attempt to solve the problem using the subcycler
+     * Add the header for the subcycler to the output failure string
      */
-    void hydraBase::performSubcyclerSolve( ){
+    void hydraBase::addSubcyclerHeader( ){
 
         if ( getFailureVerbosityLevel( ) > 0 ){
             addToFailureOutput( "\n\n" );
@@ -1708,26 +1708,51 @@ namespace tardigradeHydra{
             addToFailureOutput( "\n\n" );
         }
 
-        floatType sp = 0.0;
+    }
 
-        floatType ds = getCutbackFactor( );
+    /*!
+     * Add the subcycler step header to the output failure string
+     */
+    void hydraBase::addSubcyclerStepHeader( ){
 
-        unsigned int num_good = 0;
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "\n\n" );
+            addToFailureOutput( "######### PSEUDO-TIME INCREMENT #########\n" );
+            addToFailureOutput( "\n\n    sp, ds: " + std::to_string( sp ) + ", " + std::to_string( ds ) );
+            addToFailureOutput( "\n" );
+        }
+
+    }
+
+    /*!
+     * Initialize the subcycler
+     */
+    void hydraBase::initializeSubcycler( ){
+
+        sp = 0.0;
+
+        ds = getCutbackFactor( );
+
+        num_good = 0;
 
         callResidualPreSubcycler( );
 
         resetProblem( );
 
+    }
+
+    /*!
+     * Attempt to solve the problem using the subcycler
+     */
+    void hydraBase::performSubcyclerSolve( ){
+
+        initializeSubcycler( );
+
         while ( sp < 1.0 ){
 
             try{
 
-                if ( getFailureVerbosityLevel( ) > 0 ){
-                    addToFailureOutput( "\n\n" );
-                    addToFailureOutput( "######### PSEUDO-TIME INCREMENT #########\n" );
-                    addToFailureOutput( "\n\n    sp, ds: " + std::to_string( sp ) + ", " + std::to_string( ds ) );
-                    addToFailureOutput( "\n" );
-                }
+                addSubcyclerStepHeader( );
 
                 setScaleFactor( sp + ds ); // Update the scaling factor
 
@@ -1766,17 +1791,6 @@ namespace tardigradeHydra{
                 num_good = 0;
 
                 ds *= getCutbackFactor( );
-
-                if ( getUseRelaxedSolve( ) ){
-
-                    // TEMP
-                    auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
-                    TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
-                    TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The internal solver has not been set" );
-                    // END TEMP
-                    solver->initial_unknown = local_solver->internal_solver->initial_unknown;
-
-                }
 
                 setX( solver->initial_unknown ); // Reset X to the last good point
 
