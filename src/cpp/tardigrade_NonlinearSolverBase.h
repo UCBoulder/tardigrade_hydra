@@ -35,6 +35,8 @@ namespace tardigradeHydra{
 
             const floatVector* getTolerance( );
 
+            bool checkIteration( );
+
         protected:
 
             virtual void callResidualPreNLSolve( );
