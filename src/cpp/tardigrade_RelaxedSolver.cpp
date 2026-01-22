@@ -332,7 +332,7 @@ namespace tardigradeHydra{
 
         initial_unknown = internal_solver->initial_unknown;
         internal_solver->reset( );
-        updateUnknownVector( initial_unknown ); // This causes issues in the tests
+        updateUnknownVector( initial_unknown );
 
         resetRelaxedIteration( );
 
