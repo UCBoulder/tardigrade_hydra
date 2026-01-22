@@ -4,11 +4,12 @@
   * Tests for tardigrade_hydra
   */
 
-#include<tardigrade_hydra.h>
-#include<tardigrade_SolverBase.h>
-#include<tardigrade_RelaxedSolver.h>
-#include<tardigrade_hydraLinearElasticity.h>
-#include<tardigrade_constitutive_tools.h>
+#include"tardigrade_hydra.h"
+#include"tardigrade_SolverBase.h"
+#include"tardigrade_NonlinearSolverBase.h"
+#include"tardigrade_RelaxedSolver.h"
+#include"tardigrade_hydraLinearElasticity.h"
+#include"tardigrade_constitutive_tools.h"
 #include<sstream>
 #include<fstream>
 
@@ -5307,11 +5308,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getCurrentResidualOffset, * boost::unit_tes
 
     };
 
-    class SolverBaseMock : public tardigradeHydra::SolverBase {
+    class NonlinearSolverBaseMock : public tardigradeHydra::NonlinearSolverBase {
 
         public:
 
-            using tardigradeHydra::SolverBase::SolverBase;
+            using tardigradeHydra::NonlinearSolverBase::NonlinearSolverBase;
 
             virtual void public_callResidualSuccessfulNLStep( ){
 
@@ -5358,7 +5359,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getCurrentResidualOffset, * boost::unit_tes
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    SolverBaseMock solver;
+    NonlinearSolverBaseMock solver;
     hydra.setSolver( &solver );
     solver.hydra = &hydra;
 
