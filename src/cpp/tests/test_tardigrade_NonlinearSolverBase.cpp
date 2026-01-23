@@ -7,7 +7,7 @@
 #include "tardigrade_ArmijoGradientDamping.h"
 #include "tardigrade_NonlinearSolverBase.h"
 #include "tardigrade_ResidualBase.h"
-#include "tardigrade_TrialStepBase.h"
+#include "tardigrade_NonlinearStepBase.h"
 #include "tardigrade_hydra.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_NonlinearSolverBase
@@ -232,9 +232,9 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
         }
     };
 
-    class TrialStepBaseMock : public tardigradeHydra::TrialStepBase {
+    class NonlinearStepBaseMock : public tardigradeHydra::NonlinearStepBase {
        public:
-        using tardigradeHydra::TrialStepBase::TrialStepBase;
+        using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
     };
 
     class ArmijoGradientDampingMock : public tardigradeHydra::ArmijoGradientDamping {
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
     NonlinearSolverBaseMock   solver;
     SolverStepBaseMock        step;
     ArmijoGradientDampingMock damping;
-    TrialStepBaseMock         trial_step;
+    NonlinearStepBaseMock     trial_step;
 
     step.trial_step = &trial_step;
     step.damping    = &damping;
@@ -436,7 +436,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
     NonlinearSolverBaseMock   solver_pre;
     SolverStepBaseMock        step_pre;
     ArmijoGradientDampingMock damping_pre;
-    TrialStepBaseMock         trial_step_pre;
+    NonlinearStepBaseMock     trial_step_pre;
 
     step_pre.trial_step = &trial_step_pre;
     step_pre.damping    = &damping_pre;
