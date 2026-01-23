@@ -30,6 +30,12 @@ namespace tardigradeHydra{
 
             // END NEWTON SOLVER FUNCTIONS
 
+            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            virtual void solveConstrainedQP(floatVector &dx, const unsigned int kmax = 100);
+
+            // END SQP SOLVER FUNCTIONS
+
         protected:
 
         private:

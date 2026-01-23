@@ -120,8 +120,6 @@ namespace tardigradeHydra {
 
         virtual void updateKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
 
-        virtual void solveConstrainedQP(floatVector &dx, const unsigned int kmax = 100);
-
         // END SQP SOLVER FUNCTIONS
 
        private:
