@@ -9,198 +9,191 @@
 #ifndef TARDIGRADE_STEPDAMPINGBASE
 #define TARDIGRADE_STEPDAMPINGBASE
 
-#include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SetDataStorage.h"
+#include "tardigrade_CoreDefinitions.h"
+#include "tardigrade_SetDataStorage.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
-    namespace unit_test{
+    namespace unit_test {
 
-        class StepDampingBaseTester; //!< Forward declaration of the unit tester for the class
+        class StepDampingBaseTester;  //!< Forward declaration of the unit tester for the class
 
     }
     /*!
      * The base class for step damping operations to improve
      * stability
      */
-    class StepDampingBase : public CachingDataBase{
+    class StepDampingBase : public CachingDataBase {
+       public:
+        /*!
+         * The constructor for StepDampingBase
+         */
+        StepDampingBase() : step(NULL) {}
 
-        public:
+        /*!
+         * The constructor for StepDampingBase
+         *
+         * \param *_step: The containing step object
+         */
+        StepDampingBase(SolverStepBase *_step) : step(_step) {}
 
-            /*!
-             * The constructor for StepDampingBase
-             */
-            StepDampingBase( ) : step(NULL){
+        SolverStepBase *step;  //!< The containing step class
 
-            }
+        virtual void setBaseQuantities();
 
-            /*!
-             * The constructor for StepDampingBase
-             *
-             * \param *_step: The containing step object
-             */
-            StepDampingBase( SolverStepBase *_step ) : step( _step ){
+        virtual void reset();
 
-            }
+        virtual void resetCounts();
 
-            SolverStepBase *step; //!< The containing step class
+        virtual const bool applyDamping();
 
-            virtual void setBaseQuantities( );
+        // CACHED DATA STORAGE OPERATIONS
+        virtual void addIterationData(dataBase *data) override;
 
-            virtual void reset( );
+        virtual void addNLStepData(dataBase *data) override;
+        // END CACHED DATA STORAGE OPERATIONS
 
-            virtual void resetCounts( );
+        // PASS-THROUGH functions
 
-            virtual const bool applyDamping( );
+        const floatType getToleranceScaleFactor();
 
-            // CACHED DATA STORAGE OPERATIONS
-            virtual void addIterationData( dataBase *data ) override;
+        void resetToleranceScaleFactor();
 
-            virtual void addNLStepData( dataBase *data ) override;
-            // END CACHED DATA STORAGE OPERATIONS
+        const floatVector *getResidual();
 
-            // PASS-THROUGH functions
+        const unsigned int getNumUnknowns();
 
-            const floatType getToleranceScaleFactor( );
+        const floatVector *getUnknownVector();
 
-            void resetToleranceScaleFactor( );
+        void updateUnknownVector(const floatVector &value);
 
-            const floatVector *getResidual( );
+        const floatVector *getFlatJacobian();
 
-            const unsigned int getNumUnknowns( );
+        // END PASS-THROUGH FUNCTIONS
 
-            const floatVector *getUnknownVector( );
+        // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 
-            void updateUnknownVector( const floatVector &value );
+        //!< Get whether Gradient descent is allowed
+        const bool getUseGradientDescent() { return _use_gradient_descent; }
 
-            const floatVector *getFlatJacobian( );
+        void setUseGradientDescent(const bool &value);
 
-            // END PASS-THROUGH FUNCTIONS
+        //! Get the gradient descent rho parameter
+        const floatType getGradientRho() { return _gradientRho; }
 
-            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
+        //! Get the gradient descent p parameter
+        const floatType getGradientP() { return _gradientP; }
 
-            //!< Get whether Gradient descent is allowed
-            const bool getUseGradientDescent( ){ return _use_gradient_descent; }
+        //! Get the gradient descent beta parameter
+        const floatType getGradientBeta() { return _gradientBeta; }
 
-            void setUseGradientDescent( const bool &value );
+        //! Get the gradient descent sigma parameter
+        const floatType getGradientSigma() { return _gradientSigma; }
 
-            //! Get the gradient descent rho parameter
-            const floatType getGradientRho( ){ return _gradientRho; }
+        void setGradientRho(const floatType &value);
 
-            //! Get the gradient descent p parameter
-            const floatType getGradientP( ){ return _gradientP; }
+        void setGradientP(const floatType &value);
 
-            //! Get the gradient descent beta parameter
-            const floatType getGradientBeta( ){ return _gradientBeta; }
+        void setGradientBeta(const floatType &value);
 
-            //! Get the gradient descent sigma parameter
-            const floatType getGradientSigma( ){ return _gradientSigma; }
+        void setGradientSigma(const floatType &value);
 
-            void setGradientRho( const floatType &value );
+        virtual bool checkDescentDirection(const floatVector &dx);
 
-            void setGradientP( const floatType &value );
+        //! Get the max allowable number of gradient iterations
+        const unsigned int getMaxGradientIterations() { return _maxGradientIterations; }
 
-            void setGradientBeta( const floatType &value );
+        //! Get the current gradient iteration
+        const unsigned int getGradientIteration() { return _gradientIteration; }
 
-            void setGradientSigma( const floatType &value );
+        //! Reset the number of gradient descent steps
+        void resetGradientIteration() { _gradientIteration = 0; }
 
-            virtual bool checkDescentDirection( const floatVector &dx );
+        void setMaxGradientIterations(const unsigned int &value);
 
-            //! Get the max allowable number of gradient iterations
-            const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
+        bool checkGradientIteration();
 
-            //! Get the current gradient iteration
-            const unsigned int getGradientIteration( ){ return _gradientIteration; }
+        virtual bool checkGradientConvergence(const floatVector &X0);
 
-            //! Reset the number of gradient descent steps
-            void resetGradientIteration( ){ _gradientIteration = 0; }
+        //! Get the number of gradient descent steps performed
+        unsigned int getNumGrad() { return _NUM_GRAD; }
 
-            void setMaxGradientIterations( const unsigned int &value );
+        virtual void performGradientStep(const floatVector &X0);
 
-            bool checkGradientIteration( );
+        //! Get the current value of mu_k
+        const floatType getMuk() { return _mu_k; }
 
-            virtual bool checkGradientConvergence( const floatVector &X0 );
+        //! Get the Levenberg-Marquardt mu parameter
+        const floatType getLMMu() { return _lm_mu; }
 
-            //! Get the number of gradient descent steps performed
-            unsigned int getNumGrad( ){ return _NUM_GRAD; }
+        const floatType *get_baseResidualNorm();
 
-            virtual void performGradientStep( const floatVector &X0 );
+        const floatVector *get_basedResidualNormdX();
 
-            //! Get the current value of mu_k
-            const floatType getMuk( ){ return _mu_k; }
+        // END GRADIENT DESCENT FUNCTIONS
+       protected:
+        // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 
-            //! Get the Levenberg-Marquardt mu parameter
-            const floatType getLMMu( ){ return _lm_mu; }
+        //! Increment the number of gradient descent steps
+        void incrementGradientIteration() { _gradientIteration++; }
 
-            const floatType *get_baseResidualNorm( );
+        //! Reset the number of gradient descent steps
+        void resetNumGrad() { _NUM_GRAD = 0; }
 
-            const floatVector *get_basedResidualNormdX( );
+        //! Increment the number of gradient descent steps
+        void incrementNumGrad() { _NUM_GRAD++; }
 
-            // END GRADIENT DESCENT FUNCTIONS
-        protected:
+        virtual void setResidualNorm();
 
-            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
+        virtual void setdResidualNormdX();
 
-            //! Increment the number of gradient descent steps
-            void incrementGradientIteration( ){ _gradientIteration++; }
+        void setMuk(const floatType &value);
 
-            //! Reset the number of gradient descent steps
-            void resetNumGrad( ){ _NUM_GRAD = 0; }
+        void setLMMu(const floatType &value);
 
-            //! Increment the number of gradient descent steps
-            void incrementNumGrad( ){ _NUM_GRAD++; }
+        void set_baseResidualNorm(const floatType &value);
 
-            virtual void setResidualNorm( );
+        void set_basedResidualNormdX(const floatVector &value);
 
-            virtual void setdResidualNormdX( );
+        // END GRADIENT DESCENT FUNCTIONS
 
-            void setMuk( const floatType &value );
+       private:
+        friend class tardigradeHydra::unit_test::StepDampingBaseTester;  //!< The unit tester for the class
+        friend class tardigradeHydra::SolverStepBase;                    //!< TODO: REMOVE THIS
 
-            void setLMMu( const floatType &value );
+        // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 
-            void set_baseResidualNorm( const floatType &value );
+        bool _use_gradient_descent = false;  //!< Flag for whether to attempt a gradient descent step
 
-            void set_basedResidualNormdX( const floatVector &value );
+        floatType _gradientRho = 1e-8;  //!< The rho parameter for the gradient descent step
 
-            // END GRADIENT DESCENT FUNCTIONS
+        floatType _gradientP = 2.1;  //!< The p parameter for the gradient descent step
 
-        private:
+        floatType _gradientBeta = 0.9;  //!< The beta parameter for the gradient descent step
 
-            friend class tardigradeHydra::unit_test::StepDampingBaseTester; //!< The unit tester for the class
-            friend class tardigradeHydra::SolverStepBase; //!< TODO: REMOVE THIS
+        floatType _gradientSigma = 1e-4;  //!< The sigma parameter for the gradient descent step
 
-            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
+        unsigned int _gradientIteration = 0;  //!< The current gradient iteration of the non-linear problem
 
-            bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
+        unsigned int _maxGradientIterations = 10;  //!< The maximum number of gradient iterations
 
-            floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
+        unsigned int _NUM_GRAD = 0;  //!< The number of gradient descent steps performed
 
-            floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
+        floatType _mu_k = -1;  //!< The Gradient-descent scaling parameter
 
-            floatType _gradientBeta  = 0.9; //!< The beta parameter for the gradient descent step
+        floatType _lm_mu = 1e-8;  //!< The mu parameter for Levenberg-Marquardt iterations
 
-            floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, residualNorm, floatType, setResidualNorm)
 
-            unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dResidualNormdX, floatVector, setdResidualNormdX)
 
-            unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
+        DataStorage<floatType> _baseResidualNorm;  //!< The base value of the norm of the residual
 
-            unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
-
-            floatType _mu_k = -1; //!< The Gradient-descent scaling parameter
-
-            floatType _lm_mu = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
-
-            DataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
-
-            DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
-            // END GRADIENT DESCENT FUNCTIONS
+        DataStorage<floatVector> _basedResidualNormdX;  //!< The base value of the derivative of the norm of the
+                                                        //!< residual w.r.t. the unknown vector
+                                                        // END GRADIENT DESCENT FUNCTIONS
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

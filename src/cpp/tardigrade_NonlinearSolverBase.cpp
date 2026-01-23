@@ -6,209 +6,177 @@
  ******************************************************************************
  */
 
-#include"tardigrade_NonlinearSolverBase.h"
-#include"tardigrade_hydra.h"
+#include "tardigrade_NonlinearSolverBase.h"
 
-namespace tardigradeHydra{
+#include "tardigrade_hydra.h"
+
+namespace tardigradeHydra {
 
     /*!
      * The function that is called when first attempting to
      * solve the problem
      */
-    void NonlinearSolverBase::initialSolveAttempt( ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+    void NonlinearSolverBase::initialSolveAttempt() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
 
         // Reset the internal steps
-        step->reset( );
+        step->reset();
 
-        setRankDeficientError( false );
+        setRankDeficientError(false);
 
         // Form the initial unknown vector
-        if ( getInitializeUnknownVector( ) ){
-            TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+        if (getInitializeUnknownVector()) {
+            TARDIGRADE_ERROR_TOOLS_CATCH(initializeUnknownVector());
         }
 
-        initial_unknown = *getUnknownVector( );
+        initial_unknown = *getUnknownVector();
 
-        floatVector deltaX( getNumUnknowns( ), 0 );
+        floatVector deltaX(getNumUnknowns(), 0);
 
-        callResidualPreNLSolve( );
+        callResidualPreNLSolve();
 
-        step->damping->reset( );
+        step->damping->reset();
 
-        if ( getFailureVerbosityLevel( ) > 0 ){
-            addToFailureOutput( "Initial Unknown:\n" );
-            addToFailureOutput( *getUnknownVector( ) );
+        if (getFailureVerbosityLevel() > 0) {
+            addToFailureOutput("Initial Unknown:\n");
+            addToFailureOutput(*getUnknownVector());
         }
 
-        while( !checkConvergence( ) && checkIteration( ) ){
-
-            step->incrementSolution( );
+        while (!checkConvergence() && checkIteration()) {
+            step->incrementSolution();
 
             // Call residual end of a successful nonlinear step functions
-            callResidualSuccessfulNLStep( );
+            callResidualSuccessfulNLStep();
 
             // Increment the iteration count
-            incrementIteration( );
+            incrementIteration();
 
             // Reset the nonlinear step data
-            resetNLStepData( );
+            resetNLStepData();
 
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "  final residual: " );
-                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-                addToFailureOutput( "\n" );
+            if (getFailureVerbosityLevel() > 0) {
+                addToFailureOutput("  final residual: ");
+                addToFailureOutput(tardigradeVectorTools::l2norm(*getResidual()));
+                addToFailureOutput("\n");
             }
-
         }
 
-        if ( !checkConvergence( ) ){
-
-            throw convergence_error( "Failure to converge main loop\n" );
-
+        if (!checkConvergence()) {
+            throw convergence_error("Failure to converge main loop\n");
         }
 
-        callResidualPostNLSolve( );
-
+        callResidualPostNLSolve();
     }
 
     /*!
      * Signal to the residuals that we are about to start a nonlinear solve
      */
-    void NonlinearSolverBase::callResidualPreNLSolve( ){
+    void NonlinearSolverBase::callResidualPreNLSolve() {
+        setCurrentResidualIndexMeaningful(true);
 
-        setCurrentResidualIndexMeaningful( true );
+        for (auto residual_ptr = std::begin(*getResidualClasses()); residual_ptr != std::end(*getResidualClasses());
+             ++residual_ptr) {
+            setCurrentResidualIndex(residual_ptr - std::begin(*getResidualClasses()));
 
-        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){
-
-            setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
-
-            ( *residual_ptr )->preNLSolve( );
-
+            (*residual_ptr)->preNLSolve();
         }
 
-        setCurrentResidualIndexMeaningful( false );
-
+        setCurrentResidualIndexMeaningful(false);
     }
 
     /*!
      * Signal to the residuals that a successful nonlinear step has been performed
      */
-    void NonlinearSolverBase::callResidualSuccessfulNLStep( ){
+    void NonlinearSolverBase::callResidualSuccessfulNLStep() {
+        setAllowModifyGlobalResidual(true);
 
-        setAllowModifyGlobalResidual( true );
+        setCurrentResidualIndexMeaningful(true);
 
-        setCurrentResidualIndexMeaningful( true );
+        for (auto residual_ptr = std::begin(*getResidualClasses()); residual_ptr != std::end(*getResidualClasses());
+             ++residual_ptr) {
+            setCurrentResidualIndex(residual_ptr - std::begin(*getResidualClasses()));
 
-        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){
-
-            setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
-
-            ( *residual_ptr )->successfulNLStep( );
-
+            (*residual_ptr)->successfulNLStep();
         }
 
-        setCurrentResidualIndexMeaningful( false );
+        setCurrentResidualIndexMeaningful(false);
 
-        setAllowModifyGlobalResidual( false );
-
+        setAllowModifyGlobalResidual(false);
     }
 
     /*!
      * Signal to the residuals that we have finished a nonlinear solve
      */
-    void NonlinearSolverBase::callResidualPostNLSolve( ){
+    void NonlinearSolverBase::callResidualPostNLSolve() {
+        setCurrentResidualIndexMeaningful(true);
 
-        setCurrentResidualIndexMeaningful( true );
+        for (auto residual_ptr = std::begin(*getResidualClasses()); residual_ptr != std::end(*getResidualClasses());
+             ++residual_ptr) {
+            setCurrentResidualIndex(residual_ptr - std::begin(*getResidualClasses()));
 
-        for ( auto residual_ptr = std::begin( *getResidualClasses( ) ); residual_ptr != std::end( *getResidualClasses( ) ); ++residual_ptr ){
+            try {
+                (*residual_ptr)->postNLSolve();
 
-            setCurrentResidualIndex( residual_ptr - std::begin( *getResidualClasses( ) ) );
-
-            try{
-
-                ( *residual_ptr )->postNLSolve( );
-
-            }
-            catch( std::exception &e ){
-
-                if ( getFailureVerbosityLevel( ) > 0 ){
-
-                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - std::begin( *getResidualClasses( ) ) ) + "\n" );
+            } catch (std::exception &e) {
+                if (getFailureVerbosityLevel() > 0) {
+                    addToFailureOutput("Failure in residual " +
+                                       std::to_string(residual_ptr - std::begin(*getResidualClasses())) + "\n");
                     std::string message;
                     tardigradeErrorTools::captureNestedExceptions(e, message);
-                    addToFailureOutput( message );
-
+                    addToFailureOutput(message);
                 }
 
                 throw;
-
             }
-
         }
 
-        setCurrentResidualIndexMeaningful( false );
-
+        setCurrentResidualIndexMeaningful(false);
     }
 
     /*!
      * Check the convergence
      */
-    bool NonlinearSolverBase::checkConvergence( ){
+    bool NonlinearSolverBase::checkConvergence() {
+        const floatVector *tolerance = getTolerance();
 
-        const floatVector *tolerance = getTolerance( );
+        const floatVector *residual = getResidual();
 
-        const floatVector *residual = getResidual( );
+        TARDIGRADE_ERROR_TOOLS_CHECK(tolerance->size() == residual->size(),
+                                     "The residual and tolerance vectors don't have the same size\n  tolerance: " +
+                                         std::to_string(tolerance->size()) +
+                                         "\n  residual:  " + std::to_string(residual->size()) + "\n");
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            tolerance->size( ) == residual->size( ),
-            "The residual and tolerance vectors don't have the same size\n  tolerance: " + std::to_string( tolerance->size( ) ) +
-            "\n  residual:  " + std::to_string( residual->size( ) ) + "\n" 
-        );
-
-        for ( unsigned int i = 0; i < tolerance->size( ); i++ ){
-
-            if ( std::fabs( ( *residual )[ i ] ) > ( *tolerance )[ i ] ){
-
+        for (unsigned int i = 0; i < tolerance->size(); i++) {
+            if (std::fabs((*residual)[i]) > (*tolerance)[i]) {
                 return false;
-
             }
-
         }
 
         return true;
-
     }
 
     /*!
      * Get the tolerance
      */
-    const floatVector* NonlinearSolverBase::getTolerance( ){
-
-        if ( !_tolerance.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setTolerance( ) );
-
+    const floatVector *NonlinearSolverBase::getTolerance() {
+        if (!_tolerance.first) {
+            TARDIGRADE_ERROR_TOOLS_CATCH(setTolerance());
         }
 
         return &_tolerance.second;
-
     }
 
     /*!
      * Set the tolerance
-     * 
+     *
      * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
      */
-    void NonlinearSolverBase::setTolerance( ){
+    void NonlinearSolverBase::setTolerance() {
+        auto tolerance = get_SetDataStorage_tolerance();
 
-        auto tolerance = get_SetDataStorage_tolerance( );
+        *tolerance.value = tardigradeVectorTools::abs(*getResidual()) + tardigradeVectorTools::abs(*getUnknownVector());
 
-        *tolerance.value = tardigradeVectorTools::abs( *getResidual( ) ) + tardigradeVectorTools::abs( *getUnknownVector( ) );
-
-        *tolerance.value = getRelativeTolerance( ) * ( *tolerance.value ) + getAbsoluteTolerance( );
-
+        *tolerance.value = getRelativeTolerance() * (*tolerance.value) + getAbsoluteTolerance();
     }
 
     /*!
@@ -216,27 +184,17 @@ namespace tardigradeHydra{
      *
      * \param tolerance: The tolerance vector for each value of the residual
      */
-    void NonlinearSolverBase::setTolerance( const floatVector &tolerance ){
-
-        setConstantData( tolerance, _tolerance );
-
-    }
+    void NonlinearSolverBase::setTolerance(const floatVector &tolerance) { setConstantData(tolerance, _tolerance); }
 
     /*!
      * Return a SetDataStorageConstant setter for the tolerance
      */
-    NonlinearSolverBase::SetDataStorageConstant<floatVector> NonlinearSolverBase::get_SetDataStorage_tolerance( ){
-
-        return SetDataStorageConstant<floatVector>( &_tolerance );
-
+    NonlinearSolverBase::SetDataStorageConstant<floatVector> NonlinearSolverBase::get_SetDataStorage_tolerance() {
+        return SetDataStorageConstant<floatVector>(&_tolerance);
     }
 
     /*!
      * Check if the number of nonlinear iterations has exceeded the allowable count
      */
-    bool NonlinearSolverBase::checkIteration( ){
-
-        return getIteration( ) < getMaxIterations( );
-
-    }
-}
+    bool NonlinearSolverBase::checkIteration() { return getIteration() < getMaxIterations(); }
+}  // namespace tardigradeHydra

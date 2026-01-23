@@ -9,13 +9,13 @@
 #ifndef TARDIGRADE_TRIALSTEPBASE
 #define TARDIGRADE_TRIALSTEPBASE
 
-#include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SetDataStorage.h"
-#include"tardigrade_PreconditionerBase.h"
+#include "tardigrade_CoreDefinitions.h"
+#include "tardigrade_PreconditionerBase.h"
+#include "tardigrade_SetDataStorage.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
-    namespace unit_test{
+    namespace unit_test {
 
         class TrialStepBaseTester;
 
@@ -25,124 +25,121 @@ namespace tardigradeHydra{
      * The base class for step damping operations to improve
      * stability
      */
-    class TrialStepBase : public CachingDataBase{
+    class TrialStepBase : public CachingDataBase {
+       public:
+        TrialStepBase();
 
-        public:
+        TrialStepBase(SolverStepBase *_step);
 
-            TrialStepBase( );
+        TrialStepBase(SolverStepBase *_step, PreconditionerBase *_preconditioner_ptr);
 
-            TrialStepBase( SolverStepBase *_step );
+        SolverStepBase *step;  //!< The containing step class
 
-            TrialStepBase( SolverStepBase *_step, PreconditionerBase *_preconditioner_ptr );
+        virtual void resetCounts();
 
-            SolverStepBase *step; //!< The containing step class
+        virtual void reset();
 
-            virtual void resetCounts( );
+        virtual void computeTrial();
 
-            virtual void reset( );
+        // CACHED DATA STORAGE OPERATIONS
+        virtual void addIterationData(dataBase *data) override;
 
-            virtual void computeTrial( );
+        virtual void addNLStepData(dataBase *data) override;
+        // END CACHED DATA STORAGE OPERATIONS
 
-            // CACHED DATA STORAGE OPERATIONS
-            virtual void addIterationData( dataBase *data ) override;
+        // PASS-THROUGH FUNCTIONS
 
-            virtual void addNLStepData( dataBase *data ) override;
-            // END CACHED DATA STORAGE OPERATIONS
+        const floatType getRelativeTolerance();
 
-            // PASS-THROUGH FUNCTIONS
+        const floatType getAbsoluteTolerance();
 
-            const floatType getRelativeTolerance( );
+        const floatVector *getResidual();
 
-            const floatType getAbsoluteTolerance( );
+        const unsigned int getNumUnknowns();
 
-            const floatVector *getResidual( );
+        const floatVector *getFlatJacobian();
 
-            const unsigned int getNumUnknowns( );
+        const unsigned int getNumConstraints();
 
-            const floatVector *getFlatJacobian( );
+        const floatVector *getConstraints();
 
-            const unsigned int getNumConstraints( );
+        const floatVector *getConstraintJacobians();
 
-            const floatVector *getConstraints( );
+        bool getRankDeficientError();
 
-            const floatVector *getConstraintJacobians( );
+        const unsigned int getFailureVerbosityLevel();
 
-            bool getRankDeficientError( );
+        void addToFailureOutput(const std::string &string);
 
-            const unsigned int getFailureVerbosityLevel( );
+        void addToFailureOutput(const floatVector &value, bool add_endline = true);
 
-            void addToFailureOutput( const std::string &string );
+        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
 
-            void addToFailureOutput( const floatVector &value, bool add_endline = true );
+        void addToFailureOutput(const floatType &value, bool add_endline = true);
 
-            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true );
+        // END PASS-THROUGH FUNCTIONS
 
-            void addToFailureOutput( const floatType &value, bool add_endline = true );
+        // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
 
-            // END PASS-THROUGH FUNCTIONS
+        virtual const floatVector *getNonlinearRHS();
 
-            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+        virtual const floatVector *getFlatNonlinearLHS();
 
-            virtual const floatVector* getNonlinearRHS( );
+        // END NONLINEAR FUNCTIONS
 
-            virtual const floatVector* getFlatNonlinearLHS( );
+        // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
-            // END NONLINEAR FUNCTIONS
+        void solveNewtonUpdate(floatVector &deltaX_tr);
 
-            // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+        // END NEWTON SOLVER FUNCTIONS
 
-            void solveNewtonUpdate( floatVector &deltaX_tr );
+        // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
-            // END NEWTON SOLVER FUNCTIONS
+        //! Return a flag for whether to use the SQP solver
+        const bool getUseSQPSolver() { return _useSQPSolver; }
 
-            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+        // END SQP SOLVER FUNCTIONS
 
-            //! Return a flag for whether to use the SQP solver
-            const bool getUseSQPSolver( ){ return _useSQPSolver; }
+        void performPreconditionedSolve(floatVector &deltaX_tr);  // TEMP REMOVE THIS
 
-            // END SQP SOLVER FUNCTIONS
+        PreconditionerBase  _preconditioner;  //!< Temporary object
+        PreconditionerBase *preconditioner =
+            &_preconditioner;  //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
-            void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
+       protected:
+        // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
-            PreconditionerBase _preconditioner; //!< Temporary object
-            PreconditionerBase *preconditioner = &_preconditioner; //!< The object that defines the preconditioner TODO: Make this an incoming pointer
+        /*!
+         * Set whether to use the SQP solver
+         *
+         * \param &value: The updated value
+         */
 
-        protected:
+        void setUseSQPSolver(const unsigned int &value) { _useSQPSolver = value; }
 
-            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+        virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
 
-            /*!
-             * Set whether to use the SQP solver
-             *
-             * \param &value: The updated value
-             */
+        virtual void assembleKKTRHSVector(const floatVector &dx, floatVector &KKTRHSVector,
+                                          const std::vector<bool> &active_constraints);
 
-            void setUseSQPSolver( const unsigned int &value ){ _useSQPSolver = value; }
+        virtual void assembleKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
 
-            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
+        virtual void updateKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
 
-            virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
+        virtual void solveConstrainedQP(floatVector &dx, const unsigned int kmax = 100);
 
-            virtual void assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
+        // END SQP SOLVER FUNCTIONS
 
-            virtual void updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
+       private:
+        friend class tardigradeHydra::SolverStepBase;                  //!< TEMP REMOVE THIS
+        friend class tardigradeHydra::unit_test::TrialStepBaseTester;  //!< The unit tester for the class
+        // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
-            virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
+        bool _useSQPSolver = false;  //!< The flag for whether to use the SQP solver
 
-            // END SQP SOLVER FUNCTIONS
-
-        private:
-
-            friend class tardigradeHydra::SolverStepBase; //!< TEMP REMOVE THIS
-            friend class tardigradeHydra::unit_test::TrialStepBaseTester; //!< The unit tester for the class
-            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-            bool _useSQPSolver = false; //!< The flag for whether to use the SQP solver
-
-            // END SQP SOLVER FUNCTIONS
-
+        // END SQP SOLVER FUNCTIONS
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

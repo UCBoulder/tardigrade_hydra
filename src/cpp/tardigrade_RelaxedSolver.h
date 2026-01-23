@@ -1,24 +1,24 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_RelaxedSolver.h
-  ******************************************************************************
-  * A C++ library for the nonlinear solvers which attempt to relax the problem
-  * during its solution
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_RelaxedSolver.h
+ ******************************************************************************
+ * A C++ library for the nonlinear solvers which attempt to relax the problem
+ * during its solution
+ ******************************************************************************
+ */
 
 #ifndef TARDIGRADE_RELAXEDSOLVER_H
 #define TARDIGRADE_RELAXEDSOLVER_H
 
-#include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SolverBase.h"
-#include"tardigrade_NonlinearSolverBase.h"
+#include "tardigrade_CoreDefinitions.h"
+#include "tardigrade_NonlinearSolverBase.h"
+#include "tardigrade_SolverBase.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
-    namespace unit_test{
+    namespace unit_test {
 
-        class RelaxedSolverTester; //!< Friend class for RelaxedSolver unit testing
+        class RelaxedSolverTester;  //!< Friend class for RelaxedSolver unit testing
 
     }
 
@@ -26,67 +26,62 @@ namespace tardigradeHydra{
      * Class which controls a solve of a problem which may need to be
      * systematically relaxed in order to achieve the solution
      */
-    class RelaxedSolver : public SolverBase{
+    class RelaxedSolver : public SolverBase {
+       public:
+        RelaxedSolver();
 
-        public:
+        RelaxedSolver(hydraBase *_hydra);
 
-            RelaxedSolver( );
+        RelaxedSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr);
 
-            RelaxedSolver( hydraBase * _hydra );
+        virtual void initialSolveAttempt() override;
 
-            RelaxedSolver( hydraBase *_hydra, SolverBase *_internal_solver_ptr );
+        virtual void convergenceErrorFunction() override;
 
-            virtual void initialSolveAttempt( ) override;
+        virtual void reset() override;
 
-            virtual void convergenceErrorFunction( ) override;
+        const unsigned int getRelaxedIteration();
 
-            virtual void reset( ) override;
+        const unsigned int getMaxRelaxedIterations();
 
-            const unsigned int getRelaxedIteration( );
+        const void setMaxRelaxedIterations(const unsigned int &value);
 
-            const unsigned int getMaxRelaxedIterations( );
+        bool checkRelaxedConvergence();
 
-            const void setMaxRelaxedIterations( const unsigned int &value );
+        void setInternalSolver(SolverBase *_solver);
 
-            bool checkRelaxedConvergence( );
+        virtual void performRelaxedSolve();
 
-            void setInternalSolver( SolverBase *_solver );
+       protected:
+        NonlinearSolverBase _internal_solver;  //!< The default internal solver
 
-            virtual void performRelaxedSolve( );
+        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
 
-        protected:
+        void setRelaxedIteration(const unsigned int &value);
 
-            NonlinearSolverBase _internal_solver; //!< The default internal solver
+        void resetRelaxedIteration();
 
-            SolverBase *internal_solver = &_internal_solver; //!< A pointer to the solver which will be relaxed
+        void incrementRelaxedIteration();
 
-            void setRelaxedIteration( const unsigned int &value );
+        void initializeResiduals();
 
-            void resetRelaxedIteration( );
+        bool attemptInternalSolve();
 
-            void incrementRelaxedIteration( );
+        virtual bool callResidualRelaxedStepFailure();
 
-            void initializeResiduals( );
+        void setupNextRelaxedStep();
 
-            bool attemptInternalSolve( );
+       private:
+        friend class tardigradeHydra::hydraBase;                       //!< The base class for hydra TEMP
+        friend class tardigradeHydra::unit_test::RelaxedSolverTester;  //!< The unit tester for the class
 
-            virtual bool callResidualRelaxedStepFailure( );
+        unsigned int _relaxedIteration = 0;  //!< The current relaxed iteration of the non-linear problem
 
-            void setupNextRelaxedStep( );
+        unsigned int _maxRelaxedIterations = 5;  //!< The number of allowed relaxed iterations
 
-        private:
-
-            friend class tardigradeHydra::hydraBase; //!< The base class for hydra TEMP
-            friend class tardigradeHydra::unit_test::RelaxedSolverTester; //!< The unit tester for the class
-
-            unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
-
-            unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
-
-            void logRelaxedIterationHeader( );
-
+        void logRelaxedIterationHeader();
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

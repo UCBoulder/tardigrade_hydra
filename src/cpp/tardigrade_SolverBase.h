@@ -1,178 +1,177 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_SolverBase.h
-  ******************************************************************************
-  * A C++ library for the base classes for solvers
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_SolverBase.h
+ ******************************************************************************
+ * A C++ library for the base classes for solvers
+ ******************************************************************************
+ */
 
 #ifndef TARDIGRADE_SOLVERBASE_H
 #define TARDIGRADE_SOLVERBASE_H
 
-#include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SetDataStorage.h"
-#include"tardigrade_SolverStepBase.h"
+#include "tardigrade_CoreDefinitions.h"
+#include "tardigrade_SetDataStorage.h"
+#include "tardigrade_SolverStepBase.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
     /*!
      * Base Solver class
      */
     class SolverBase : public CachingDataBase {
+       public:
+        SolverBase();
 
-        public:
+        SolverBase(hydraBase *_hydra);
 
-            SolverBase( );
+        SolverBase(hydraBase *_hydra, SolverStepBase *_step_ptr);
 
-            SolverBase( hydraBase * _hydra );
+        hydraBase *hydra;  //!< Pointer to the containing hydra object
 
-            SolverBase( hydraBase *_hydra, SolverStepBase *_step_ptr );
+        SolverStepBase  _step;  //!< Temporary object
+        SolverStepBase *step =
+            &_step;  //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
 
-            hydraBase *hydra; //!< Pointer to the containing hydra object
+        floatVector initial_unknown;  //!< The initial unknown vector for the solver
 
-            SolverStepBase _step; //!< Temporary object
-            SolverStepBase *step = &_step; //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
+        virtual void solve();
 
-            floatVector initial_unknown; //!< The initial unknown vector for the solver
+        virtual void initialSolveAttempt();
 
-            virtual void solve( );
+        virtual void convergenceErrorFunction();
 
-            virtual void initialSolveAttempt( );
+        virtual void unexpectedErrorFunction();
 
-            virtual void convergenceErrorFunction( );
+        virtual void reset();
 
-            virtual void unexpectedErrorFunction( );
+        const bool getRankDeficientError();
 
-            virtual void reset( );
+        void setRankDeficientError(const bool &value);
 
-            const bool getRankDeficientError( );
+        // CACHED DATA STORAGE OPERATIONS
+        virtual void addIterationData(dataBase *data) override;
 
-            void setRankDeficientError( const bool &value );
+        virtual void addNLStepData(dataBase *data) override;
+        // END CACHED DATA STORAGE OPERATIONS
 
-            // CACHED DATA STORAGE OPERATIONS
-            virtual void addIterationData( dataBase *data ) override;
+        // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
 
-            virtual void addNLStepData( dataBase *data ) override;
-            // END CACHED DATA STORAGE OPERATIONS
+        //! Return the flag which indicates whether hydra should initialize the unknown vector
+        const bool getInitializeUnknownVector() { return _initializeUnknownVector; }
 
-            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+        void resetNLStepData();
 
-            //! Return the flag which indicates whether hydra should initialize the unknown vector
-            const bool getInitializeUnknownVector( ){ return _initializeUnknownVector; }
+        //! Return the maximum number of allowable iterations
+        const unsigned int getMaxIterations() { return _maxIterations; }
 
-            void resetNLStepData( );
+        void setMaxIterations(const unsigned int &value);
 
-            //! Return the maximum number of allowable iterations
-            const unsigned int getMaxIterations( ){ return _maxIterations; }
+        //! Get the current nonlinear iteration number
+        const unsigned int getIteration() { return _iteration; }
 
-            void setMaxIterations( const unsigned int &value );
+        // END NONLINEAR FUNCTIONS
 
-            //! Get the current nonlinear iteration number
-            const unsigned int getIteration( ){ return _iteration; }
+        // Pass-through functions
+        const floatType getRelativeTolerance();  // TODO: Want to allow this to be constexpr
 
-            // END NONLINEAR FUNCTIONS
+        const floatType getAbsoluteTolerance();  // TODO: Want to allow this to be constexpr
 
-            // Pass-through functions
-            const floatType getRelativeTolerance( ); //TODO: Want to allow this to be constexpr
+        const unsigned int getNumUnknowns();  // TODO: Want to allow this to be constexpr
 
-            const floatType getAbsoluteTolerance( ); //TODO: Want to allow this to be constexpr
+        const floatVector *getUnknownVector();  // TODO: Want to generalize this
 
-            const unsigned int getNumUnknowns( ); //TODO: Want to allow this to be constexpr
+        void initializeUnknownVector();
 
-            const floatVector *getUnknownVector( ); //TODO: Want to generalize this
+        void updateUnknownVector(const floatVector &value);  // TODO: Want to generalize this
 
-            void initializeUnknownVector( );
+        const floatVector *getResidual();  // TODO: Want to generalize this
 
-            void updateUnknownVector( const floatVector &value ); //TODO: Want to generalize this
+        const floatVector *getFlatJacobian();  // TODO: Want to generalize this
 
-            const floatVector *getResidual( ); //TODO: Want to generalize this
+        const unsigned int getNumConstraints();  // TODO: Want to allow this to be constexpr
 
-            const floatVector *getFlatJacobian( ); //TODO: Want to generalize this
+        const floatVector *getConstraints();  // TODO: Want to generalize this
 
-            const unsigned int getNumConstraints( ); //TODO: Want to allow this to be constexpr
+        const floatVector *getConstraintJacobians();  // TODO: Want to generalize this
 
-            const floatVector *getConstraints( ); //TODO: Want to generalize this
+        const unsigned int getFailureVerbosityLevel();
 
-            const floatVector *getConstraintJacobians( ); //TODO: Want to generalize this
+        void addToFailureOutput(const std::string &string);
 
-            const unsigned int getFailureVerbosityLevel( );
+        void addToFailureOutput(const floatVector &value, bool add_endline = true);
 
-            void addToFailureOutput( const std::string &string );
+        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
 
-            void addToFailureOutput( const floatVector &value, bool add_endline = true );
+        void addToFailureOutput(const floatType &value, bool add_endline = true);
 
-            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true );
+        const floatType getToleranceScaleFactor();
 
-            void addToFailureOutput( const floatType &value, bool add_endline = true );
+        void resetToleranceScaleFactor();
 
-            const floatType getToleranceScaleFactor( );
+        void setCurrentResidualIndexMeaningful(const bool &value);
 
-            void resetToleranceScaleFactor( );
+        void setCurrentResidualIndex(const unsigned int &value);
 
-            void setCurrentResidualIndexMeaningful( const bool &value );
+        const std::vector<tardigradeHydra::ResidualBase<> *> *getResidualClasses();
 
-            void setCurrentResidualIndex( const unsigned int &value );
+        void setAllowModifyGlobalResidual(const bool &value);
 
-            const std::vector< tardigradeHydra::ResidualBase<>* >* getResidualClasses( );
+        /*!
+         * Add a general iterable object to the output string
+         *
+         * \param &v_begin: The starting iterator
+         * \param &v_end: The stopping iterator
+         * \param add_endline: Whether to add an endline to the string or not
+         */
+        template <class v_iterator>
+        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true) {
+            std::stringstream failure_output;
 
-            void setAllowModifyGlobalResidual( const bool &value );
-
-            /*!
-             * Add a general iterable object to the output string
-             * 
-             * \param &v_begin: The starting iterator
-             * \param &v_end: The stopping iterator
-             * \param add_endline: Whether to add an endline to the string or not
-             */
-            template< class v_iterator >
-            void addToFailureOutput( const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true ){
-
-                std::stringstream failure_output;
-
-                for ( auto v = v_begin; v != v_end; ++v ){ failure_output << *v << ", "; }
-
-                if ( add_endline ){ failure_output << "\n"; }
-
-                addToFailureOutput( failure_output.str( ) );
-
+            for (auto v = v_begin; v != v_end; ++v) {
+                failure_output << *v << ", ";
             }
 
-            // Levenberg marquardt functions (move to own class)
-            
-            void performLevenbergMarquardtSolve( ); //TEMP remove this
+            if (add_endline) {
+                failure_output << "\n";
+            }
 
-            // end Levenberg marquard functions
-        protected:
+            addToFailureOutput(failure_output.str());
+        }
 
-            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-            void setInitializeUnknownVector( const bool &value );
+        // Levenberg marquardt functions (move to own class)
 
-            //! Reset the number of iterations
-            void resetIterations( ){ _iteration = 0; }
+        void performLevenbergMarquardtSolve();  // TEMP remove this
 
-            void incrementIteration( );
+        // end Levenberg marquard functions
+       protected:
+        // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+        void setInitializeUnknownVector(const bool &value);
 
-            // END NONLINEAR FUNCTIONS
+        //! Reset the number of iterations
+        void resetIterations() { _iteration = 0; }
 
-        private:
+        void incrementIteration();
 
-            bool _rank_deficient_error = false; //!< Flag for whether a rank-deficient Jacobian should cause an error
+        // END NONLINEAR FUNCTIONS
 
-            friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
-            friend class tardigradeHydra::unit_test::SolverBaseTester; //!< The unit tester for the class
+       private:
+        bool _rank_deficient_error = false;  //!< Flag for whether a rank-deficient Jacobian should cause an error
 
-            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+        friend class tardigradeHydra::hydraBase;                    //!< TEMP REMOVE THIS
+        friend class tardigradeHydra::unit_test::SolverBaseTester;  //!< The unit tester for the class
 
-            bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
+        // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
 
-            unsigned int _maxIterations = 20; //!< The maximum number of allowable iterations
+        bool _initializeUnknownVector =
+            true;  //!< Flag for whether to initialize the unknown vector in the non-linear solve
 
-            unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
+        unsigned int _maxIterations = 20;  //!< The maximum number of allowable iterations
 
-            // END NONLINEAR FUNCTIONS
+        unsigned int _iteration = 0;  //!< The current iteration of the non-linear problem
 
+        // END NONLINEAR FUNCTIONS
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

@@ -9,158 +9,143 @@
 #ifndef TARDIGRADE_SOLVERSTEPBASE
 #define TARDIGRADE_SOLVERSTEPBASE
 
-#include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SetDataStorage.h"
-#include"tardigrade_TrialStepBase.h"
-#include"tardigrade_StepDampingBase.h"
-//Default classes
-#include"tardigrade_ArmijoGradientDamping.h"
+#include "tardigrade_CoreDefinitions.h"
+#include "tardigrade_SetDataStorage.h"
+#include "tardigrade_StepDampingBase.h"
+#include "tardigrade_TrialStepBase.h"
+// Default classes
+#include "tardigrade_ArmijoGradientDamping.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
     /*!
      * Base class for Solver Steps
      */
     class SolverStepBase : public CachingDataBase {
+       public:
+        /*!
+         * Constructor for NonlinearStepBase
+         */
+        SolverStepBase() : solver(NULL) { initializeDefaults(); }
 
-        public:
+        /*!
+         * Constructor for NonlinearStepBase
+         *
+         * \param *_solver: The containing solver object
+         */
+        SolverStepBase(SolverBase *_solver) : solver(_solver) { initializeDefaults(); }
 
-            /*!
-             * Constructor for NonlinearStepBase
-             */
-            SolverStepBase( ) : solver(NULL){
+        virtual void reset();
 
-                initializeDefaults( );
+        void incrementSolution();
 
-            }
+        floatVector X0;  //!< The initial value of the unknown vector
 
-            /*!
-             * Constructor for NonlinearStepBase
-             *
-             * \param *_solver: The containing solver object
-             */
-            SolverStepBase( SolverBase *_solver ) : solver(_solver){
+        floatVector deltaX;  //!< The change in the unknown vector
 
-                initializeDefaults( );
+        /*! Set the containing solver object
+         * \param *_solver: The containing solver object
+         */
+        void setSolver(SolverBase *_solver) { solver = _solver; }
 
-            }
+        // CACHED DATA STORAGE OPERATIONS
+        virtual void addIterationData(dataBase *data) override;
 
-            virtual void reset( );
+        virtual void addNLStepData(dataBase *data) override;
+        // END CACHED DATA STORAGE OPERATIONS
 
-            void incrementSolution( );
+        // PASS-THROUGH functions
 
-            floatVector X0; //!< The initial value of the unknown vector
+        const floatType getRelativeTolerance();
 
-            floatVector deltaX; //!< The change in the unknown vector
+        const floatType getAbsoluteTolerance();
 
-            /*! Set the containing solver object
-             * \param *_solver: The containing solver object
-             */
-            void setSolver( SolverBase *_solver ){
-                solver = _solver;
-            }
+        const unsigned int getIteration();
 
-            // CACHED DATA STORAGE OPERATIONS
-            virtual void addIterationData( dataBase *data ) override;
+        const floatVector *getResidual();
 
-            virtual void addNLStepData( dataBase *data ) override;
-            // END CACHED DATA STORAGE OPERATIONS
+        const unsigned int getNumUnknowns();
 
-            // PASS-THROUGH functions
+        const floatVector *getUnknownVector();
 
-            const floatType getRelativeTolerance( );
+        void updateUnknownVector(const floatVector &value);
 
-            const floatType getAbsoluteTolerance( );
+        const floatVector *getFlatJacobian();
 
-            const unsigned int getIteration( );
+        const unsigned int getNumConstraints();
 
-            const floatVector *getResidual( );
+        const floatVector *getConstraints();
 
-            const unsigned int getNumUnknowns( );
+        const floatVector *getConstraintJacobians();
 
-            const floatVector *getUnknownVector( );
+        const floatType getToleranceScaleFactor();
 
-            void updateUnknownVector( const floatVector &value );
+        void resetToleranceScaleFactor();
 
-            const floatVector *getFlatJacobian( );
+        bool getRankDeficientError();
 
-            const unsigned int getNumConstraints( );
+        const unsigned int getFailureVerbosityLevel();
 
-            const floatVector *getConstraints( );
+        void addToFailureOutput(const std::string &string);
 
-            const floatVector *getConstraintJacobians( );
+        void addToFailureOutput(const floatVector &value, bool add_endline = true);
 
-            const floatType getToleranceScaleFactor( );
+        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
 
-            void resetToleranceScaleFactor( );
+        void addToFailureOutput(const floatType &value, bool add_endline = true);
 
-            bool getRankDeficientError( );
+        void setCurrentResidualIndexMeaningful(const bool &value);
 
-            const unsigned int getFailureVerbosityLevel( );
+        void setCurrentResidualIndex(const unsigned int &value);
 
-            void addToFailureOutput( const std::string &string );
+        const std::vector<tardigradeHydra::ResidualBase<> *> *getResidualClasses();
 
-            void addToFailureOutput( const floatVector &value, bool add_endline = true );
+        // END PASS-THROUGH FUNCTIONS
 
-            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true );
+        //! Get the number of undamped steps performed
+        unsigned int getNumUndamped() { return _NUM_UNDAMPED; }
 
-            void addToFailureOutput( const floatType &value, bool add_endline = true );
+        // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
-            void setCurrentResidualIndexMeaningful( const bool &value );
+        //! Get if the Newton step should be a LevenbergMarquardt step
+        const bool getUseLevenbergMarquardt() { return _use_LM_step; }
 
-            void setCurrentResidualIndex( const unsigned int &value );
+        void setUseLevenbergMarquardt(const bool &value);
 
-            const std::vector< tardigradeHydra::ResidualBase<>* >* getResidualClasses( );
+        void enableProjection();
 
-            // END PASS-THROUGH FUNCTIONS
+        // END LEVENBERG-MARQUARDT FUNCTIONS
 
-            //! Get the number of undamped steps performed
-            unsigned int getNumUndamped( ){ return _NUM_UNDAMPED; }
+        TrialStepBase   *trial_step;  //!< The trial step class which proposes a step to reduce the residual
+        StepDampingBase *damping;     //!< The damping class which reduces the proposed step to improve stability
 
-            // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
+       protected:
+        SolverBase *solver;  //!< Pointer to the containing SolverBase object
 
-            //! Get if the Newton step should be a LevenbergMarquardt step
-            const bool getUseLevenbergMarquardt( ){ return _use_LM_step; }
+        ArmijoGradientDamping _damping;     //!< The default step damping
+        TrialStepBase         _trial_step;  //!< The default trial step
 
-            void setUseLevenbergMarquardt( const bool &value );
+        void initializeDefaults();
 
-            void enableProjection( );
+        //! Reset the number of undamped steps
+        void resetNumUndamped() { _NUM_UNDAMPED = 0; }
 
-            // END LEVENBERG-MARQUARDT FUNCTIONS
+        //! Increment the number of undamped steps
+        void incrementNumUndamped() { _NUM_UNDAMPED++; }
 
-            TrialStepBase *trial_step; //!< The trial step class which proposes a step to reduce the residual
-            StepDampingBase *damping; //!< The damping class which reduces the proposed step to improve stability
+       private:
+        friend class tardigradeHydra::hydraBase;                        //!< TEMP REMOVE THIS
+        friend class tardigradeHydra::unit_test::SolverStepBaseTester;  //!< The unit tester for the class
 
-        protected:
+        unsigned int _NUM_UNDAMPED = 0;  //!< The number of undamped steps performed
 
-            SolverBase *solver; //!< Pointer to the containing SolverBase object
+        // LM Functions (MOVE TO OWN CLASS)
 
-            ArmijoGradientDamping _damping; //!< The default step damping
-            TrialStepBase _trial_step; //!< The default trial step
+        bool _use_LM_step = false;  //!< Flag for whether to attempt a Levenberg-Marquardt step
 
-            void initializeDefaults( );
-
-            //! Reset the number of undamped steps
-            void resetNumUndamped( ){ _NUM_UNDAMPED = 0; }
-
-            //! Increment the number of undamped steps
-            void incrementNumUndamped( ){ _NUM_UNDAMPED++; }
-
-        private:
-
-            friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
-            friend class tardigradeHydra::unit_test::SolverStepBaseTester; //!< The unit tester for the class
-
-            unsigned int _NUM_UNDAMPED = 0; //!< The number of undamped steps performed
-
-            // LM Functions (MOVE TO OWN CLASS)
-
-            bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
-
-            // END LM Functions
-
+        // END LM Functions
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

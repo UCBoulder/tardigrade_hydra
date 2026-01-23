@@ -9,11 +9,11 @@
 #ifndef TARDIGRADE_NONLINEARSOLVERBASE
 #define TARDIGRADE_NONLINEARSOLVERBASE
 
-#include"tardigrade_SolverBase.h"
+#include "tardigrade_SolverBase.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
-    namespace unit_test{
+    namespace unit_test {
 
         class NonlinearSolveBaseTester;
 
@@ -23,40 +23,35 @@ namespace tardigradeHydra{
      * The base class for step damping operations to improve
      * stability
      */
-    class NonlinearSolverBase : public SolverBase{
+    class NonlinearSolverBase : public SolverBase {
+       public:
+        using tardigradeHydra::SolverBase::SolverBase;
 
-        public:
+        virtual void initialSolveAttempt() override;
 
-            using tardigradeHydra::SolverBase::SolverBase;
+        virtual bool checkConvergence();
 
-            virtual void initialSolveAttempt( ) override;
+        const floatVector *getTolerance();
 
-            virtual bool checkConvergence( );
+        bool checkIteration();
 
-            const floatVector* getTolerance( );
+       protected:
+        virtual void callResidualPreNLSolve();
 
-            bool checkIteration( );
+        virtual void callResidualSuccessfulNLStep();
 
-        protected:
+        virtual void callResidualPostNLSolve();
 
-            virtual void callResidualPreNLSolve( );
+        virtual void setTolerance();
 
-            virtual void callResidualSuccessfulNLStep( );
+        void setTolerance(const floatVector &tolerance);
 
-            virtual void callResidualPostNLSolve( );
+        virtual tardigradeHydra::SolverBase::SetDataStorageConstant<floatVector> get_SetDataStorage_tolerance();
 
-            virtual void setTolerance( );
-
-            void setTolerance( const floatVector &tolerance );
-
-            virtual tardigradeHydra::SolverBase::SetDataStorageConstant<floatVector> get_SetDataStorage_tolerance( );
-
-        private:
-
-            DataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
-
+       private:
+        DataStorage<floatVector> _tolerance;  //!< The tolerance vector for the non-linear solve
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif
