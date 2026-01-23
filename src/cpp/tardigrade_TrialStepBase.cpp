@@ -61,18 +61,7 @@ namespace tardigradeHydra {
      * Must set the containing step's deltaX variable
      */
     void TrialStepBase::computeTrial() {
-        if (getUseSQPSolver()) {
-            solveConstrainedQP(step->deltaX);
-
-        } else {
-            solveNewtonUpdate(step->deltaX);
-        }
-
-        if (getFailureVerbosityLevel() > 0) {
-            addToFailureOutput("  trial deltaX:\n");
-            addToFailureOutput("  ");
-            addToFailureOutput(step->deltaX);
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error("computeTrial must be defined for any class inheriting from TrialStepBase"));
     }
 
     /*!

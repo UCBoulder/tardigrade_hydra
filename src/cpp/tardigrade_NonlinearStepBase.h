@@ -22,6 +22,8 @@ namespace tardigradeHydra{
 
             using tardigradeHydra::TrialStepBase::TrialStepBase;
 
+            virtual void computeTrial() override;
+
         protected:
 
         private:
