@@ -41,4 +41,49 @@ namespace tardigradeHydra {
         addIterationData(&_preconditioner);
     }
 
+    /*!
+     * Precondition the incoming vector \f$X\f$ via \f$Y_I = P_{IJ} X_J\f$
+     *
+     * \param &X: The incoming vector to be preconditioned
+     * \param &Y: The preconditioned vector
+     */
+    void MaxRowPreconditioner::preconditionVector( const floatVector &X, floatVector &Y ){
+
+        Y = floatVector(X.size(),0);
+
+        auto X_map =
+            tardigradeHydra::getDynamicSizeVectorMap(X.data(), X.size());
+
+        auto Y_map =
+            tardigradeHydra::getDynamicSizeVectorMap(Y.data(), Y.size());
+
+        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
+                                                              getFlatPreconditioner()->size()); //Current preconditioner is flat
+
+        Y_map = p_map.asDiagonal( ) * X_map;
+
+    }
+
+    /*!
+     * Precondition the incoming matrix \f$A\f$ via \f$B_{IJ} = P_{IK} A_{KJ}\f$
+     *
+     * \param &A: The incoming matrix to be preconditioned
+     * \param &B: The preconditined matrix
+     */
+    void MaxRowPreconditioner::preconditionMatrix( const floatVector &A, floatVector &B ){
+
+        B = floatVector(A.size(),0);
+
+        auto A_map =
+            tardigradeHydra::getDynamicSizeMatrixMap(A.data(), getNumUnknowns(), getNumUnknowns());
+
+        auto B_map =
+            tardigradeHydra::getDynamicSizeMatrixMap(B.data(), getNumUnknowns(), getNumUnknowns());
+
+        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
+                                                              getFlatPreconditioner()->size()); //Current preconditioner is flat
+
+        B_map = p_map.asDiagonal( ) * A_map;
+
+    }
 }

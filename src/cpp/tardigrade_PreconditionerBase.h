@@ -62,7 +62,7 @@ namespace tardigradeHydra {
         bool _preconditioner_is_diagonal = true;  //!< Flag for if the pre-conditioner only stores the diagonal elements
 
         virtual void formMaxRowPreconditioner();  //!< Temporary function. We won't use it in the future.
-                                                  // END TEMP
+        // END TEMP
 
         virtual void preconditionVector( const floatVector &X, floatVector &Y );
 
