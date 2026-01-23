@@ -7,3 +7,7 @@
  */
 
 #include "tardigrade_NewtonStep.h"
+
+namespace tardigradeHydra{
+
+}
