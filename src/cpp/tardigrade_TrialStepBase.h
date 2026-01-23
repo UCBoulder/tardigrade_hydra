@@ -113,8 +113,6 @@ namespace tardigradeHydra {
 
         virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
 
-        virtual void updateKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
-
         // END SQP SOLVER FUNCTIONS
 
        private:
