@@ -45,6 +45,9 @@ namespace tardigradeHydra{
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
+            //! Return a flag for whether to use the SQP solver
+            const bool getUseSQPSolver() { return _useSQPSolver; }
+
             virtual void solveConstrainedQP(floatVector &dx, const unsigned int kmax = 100);
 
             // END SQP SOLVER FUNCTIONS
@@ -56,6 +59,13 @@ namespace tardigradeHydra{
         protected:
 
             // SQP SOLVER FUNCTIONS
+
+            /*!
+             * Set whether to use the SQP solver
+             *
+             * \param &value: The updated value
+             */
+            void setUseSQPSolver(const unsigned int &value) { _useSQPSolver = value; }
 
             virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
 
@@ -70,6 +80,11 @@ namespace tardigradeHydra{
 
         private:
 
+            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            bool _useSQPSolver = false;  //!< The flag for whether to use the SQP solver
+
+            // END SQP SOLVER FUNCTIONS
     };
 
 }

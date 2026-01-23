@@ -76,34 +76,11 @@ namespace tardigradeHydra {
 
         // END PASS-THROUGH FUNCTIONS
 
-        // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-        //! Return a flag for whether to use the SQP solver
-        const bool getUseSQPSolver() { return _useSQPSolver; }
-
-        // END SQP SOLVER FUNCTIONS
-
        protected:
-        // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-        /*!
-         * Set whether to use the SQP solver
-         *
-         * \param &value: The updated value
-         */
-
-        void setUseSQPSolver(const unsigned int &value) { _useSQPSolver = value; }
-
-        // END SQP SOLVER FUNCTIONS
 
        private:
         friend class tardigradeHydra::SolverStepBase;                  //!< TEMP REMOVE THIS
         friend class tardigradeHydra::unit_test::TrialStepBaseTester;  //!< The unit tester for the class
-        // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-        bool _useSQPSolver = false;  //!< The flag for whether to use the SQP solver
-
-        // END SQP SOLVER FUNCTIONS
     };
 
 }  // namespace tardigradeHydra
