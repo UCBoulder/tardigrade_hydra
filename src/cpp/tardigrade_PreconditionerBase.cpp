@@ -1,9 +1,9 @@
 
 /**
  ******************************************************************************
- * \file tardigrade_SolverBase.cpp
+ * \file tardigrade_PreconditionerBase.cpp
  ******************************************************************************
- * A C++ library for the base classes for solvers
+ * A C++ library for the base classes for preconditioners
  ******************************************************************************
  */
 

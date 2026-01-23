@@ -14,16 +14,21 @@
 
 namespace tardigradeHydra {
 
+    namespace unit_test {
+
+        class PreconditionerBaseTester; //!< Friend class for PreconditionerBase testing
+
+    }
+
     /*!
      * The base class for preconditioners to be used in tardigrade hydra solves
      */
     class PreconditionerBase : public CachingDataBase {
        public:
-        PreconditionerBase() {
-            /*!
-             * Initialize the preconditioner object
-             */
-        }
+        /*!
+         * Initialize the preconditioner object
+         */
+        PreconditionerBase() { }
 
         virtual void reset();
 
