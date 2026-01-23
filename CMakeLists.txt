@@ -55,6 +55,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_StepDampingBase"
     "tardigrade_TrialStepBase"
     "tardigrade_NonlinearStepBase"
+    "tardigrade_NewtonStep"
 )
 set(ADDITIONAL_HEADER_ONLY_LIBRARIES
     "tardigrade_DeformationBase"
