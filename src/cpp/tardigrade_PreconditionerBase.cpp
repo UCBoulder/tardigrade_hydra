@@ -8,8 +8,7 @@
  */
 
 #include "tardigrade_PreconditionerBase.h"
-
-#include "tardigrade_SolverBase.h"
+#include "tardigrade_NonlinearStepBase.h"
 
 namespace tardigradeHydra {
 

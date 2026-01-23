@@ -70,14 +70,18 @@ namespace tardigradeHydra {
         solver->setMaxIterations(maxIterations);
         solver->step->_damping.setLSAlpha(lsAlpha);
         solver->step->_damping.setMaxLSIterations(maxLSIterations);
-        solver->step->trial_step->preconditioner->_use_preconditioner  = use_preconditioner;
-        solver->step->trial_step->preconditioner->_preconditioner_type = preconditioner_type;
+        auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(solver->step->trial_step);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The local trial step is not a NonlinearStepBase")
+        local_trial_step->preconditioner->_use_preconditioner  = use_preconditioner;
+        local_trial_step->preconditioner->_preconditioner_type = preconditioner_type;
 
         _solver.internal_solver->setMaxIterations(maxIterations);
         _solver.internal_solver->step->_damping.setLSAlpha(lsAlpha);
         _solver.internal_solver->step->_damping.setMaxLSIterations(maxLSIterations);
-        _solver.internal_solver->step->trial_step->preconditioner->_use_preconditioner  = use_preconditioner;
-        _solver.internal_solver->step->trial_step->preconditioner->_preconditioner_type = preconditioner_type;
+        auto local_internal_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(_solver.internal_solver->step->trial_step);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_internal_trial_step != nullptr, "The local internal trial step is not a NonlinearStepBase")
+        local_internal_trial_step->preconditioner->_use_preconditioner  = use_preconditioner;
+        local_internal_trial_step->preconditioner->_preconditioner_type = preconditioner_type;
         // END TEMP
     }
 
@@ -1671,7 +1675,9 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(solver->step != nullptr, "The step has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(solver->step->trial_step != nullptr, "The trial step has not been defined");
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver->step->trial_step->preconditioner != nullptr,
+        auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(solver->step->trial_step);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The trial_step is not a NonlinearStepBase object");
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step->preconditioner != nullptr,
                                      "The preconditioner has not been defined");
 
         // Form the solver based on the current value of the jacobian
@@ -1695,10 +1701,10 @@ namespace tardigradeHydra {
         // Solve
         tardigradeVectorTools::solverType<floatType> linear_solver;
 
-        if (solver->step->trial_step->preconditioner->getUsePreconditioner()) {
-            if (solver->step->trial_step->preconditioner->getPreconditionerIsDiagonal()) {
+        if (local_trial_step->preconditioner->getUsePreconditioner()) {
+            if (local_trial_step->preconditioner->getPreconditionerIsDiagonal()) {
                 auto p_map = tardigradeHydra::getDynamicSizeVectorMap(
-                    solver->step->trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size());
+                    local_trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size());
 
                 linear_solver = tardigradeVectorTools::solverType<floatType>(p_map.asDiagonal() * Amat);
 
@@ -1708,7 +1714,7 @@ namespace tardigradeHydra {
 
             } else {
                 auto p_map = tardigradeHydra::getDynamicSizeMatrixMap(
-                    solver->step->trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size(),
+                    local_trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size(),
                     getResidual()->size());
 
                 linear_solver = tardigradeVectorTools::solverType<floatType>(p_map * Amat);
@@ -1748,7 +1754,8 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(solver->step != nullptr, "The step has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(solver->step->trial_step != nullptr, "The trial step has not been defined");
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver->step->trial_step->preconditioner != nullptr,
+        auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(solver->step->trial_step);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step->preconditioner != nullptr,
                                      "The preconditioner has not been defined");
 
         // Form the solver based on the current value of the jacobian
@@ -1767,10 +1774,10 @@ namespace tardigradeHydra {
         // Solve
         tardigradeVectorTools::solverType<floatType> linear_solver;
 
-        if (solver->step->trial_step->preconditioner->getUsePreconditioner()) {
-            if (solver->step->trial_step->preconditioner->getPreconditionerIsDiagonal()) {
+        if (local_trial_step->preconditioner->getUsePreconditioner()) {
+            if (local_trial_step->preconditioner->getPreconditionerIsDiagonal()) {
                 auto p_map = tardigradeHydra::getDynamicSizeVectorMap(
-                    solver->step->trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size());
+                    local_trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size());
 
                 linear_solver = tardigradeVectorTools::solverType<floatType>(p_map.asDiagonal() * Amat);
 
@@ -1778,7 +1785,7 @@ namespace tardigradeHydra {
 
             } else {
                 auto p_map = tardigradeHydra::getDynamicSizeMatrixMap(
-                    solver->step->trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size(),
+                    local_trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size(),
                     getResidual()->size());
 
                 linear_solver = tardigradeVectorTools::solverType<floatType>(p_map * Amat);

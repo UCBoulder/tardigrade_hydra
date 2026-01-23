@@ -213,9 +213,13 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
                         numNonLinearSolveStateVariables, dimension);
 
     PreconditionerBaseMock preconditioner;
+    tardigradeHydra::NonlinearStepBase trial_step;
 
-    hydra.getSolver()->step->trial_step->preconditioner = &preconditioner;
-    preconditioner.trial_step                           = hydra.getSolver()->step->trial_step;
+    trial_step.step = hydra.getSolver()->step;
+    hydra.getSolver()->step->trial_step = &trial_step;
+
+    trial_step.preconditioner = &preconditioner;
+    preconditioner.trial_step = &trial_step;
 
     BOOST_TEST(preconditioner.expected_preconditioner == *preconditioner.getFlatPreconditioner(), CHECK_PER_ELEMENT);
 
@@ -224,11 +228,15 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
                             numNonLinearSolveStateVariables, dimension);
 
     PreconditionerBaseMock bad_preconditioner;
+    tardigradeHydra::NonlinearStepBase bad_trial_step;
+
+    bad_trial_step.step = bad_hydra.getSolver()->step;
+    bad_hydra.getSolver()->step->trial_step = &bad_trial_step;
+
+    bad_trial_step.preconditioner = &bad_preconditioner;
+    bad_preconditioner.trial_step = &bad_trial_step;
 
     bad_preconditioner.setPreconditionerType(7);
-
-    bad_hydra.getSolver()->step->trial_step->preconditioner = &bad_preconditioner;
-    bad_preconditioner.trial_step                           = hydra.getSolver()->step->trial_step;
 
     BOOST_CHECK_THROW(bad_preconditioner.getFlatPreconditioner(), std::nested_exception);
 }
@@ -309,10 +317,14 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formMaxRowPreconditioner,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
+    tardigradeHydra::NonlinearStepBase trial_step;
     MaxRowPreconditionerMock preconditioner;
 
-    hydra.getSolver()->step->trial_step->preconditioner = &preconditioner;
-    preconditioner.trial_step                           = hydra.getSolver()->step->trial_step;
+    trial_step.preconditioner = &preconditioner;
+    preconditioner.trial_step = &trial_step;
+
+    hydra.getSolver()->step->trial_step = &trial_step;
+    trial_step.step = hydra.getSolver()->step;
 
     tardigradeHydra::floatVector answer = {1., 1., 0.02080022, 0.05410385, 1.};
 

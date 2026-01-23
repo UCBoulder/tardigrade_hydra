@@ -10,7 +10,6 @@
 #define TARDIGRADE_TRIALSTEPBASE
 
 #include "tardigrade_CoreDefinitions.h"
-#include "tardigrade_PreconditionerBase.h"
 #include "tardigrade_SetDataStorage.h"
 
 namespace tardigradeHydra {
@@ -30,8 +29,6 @@ namespace tardigradeHydra {
         TrialStepBase();
 
         TrialStepBase(SolverStepBase *_step);
-
-        TrialStepBase(SolverStepBase *_step, PreconditionerBase *_preconditioner_ptr);
 
         SolverStepBase *step;  //!< The containing step class
 
@@ -79,24 +76,12 @@ namespace tardigradeHydra {
 
         // END PASS-THROUGH FUNCTIONS
 
-        // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-
-        virtual const floatVector *getNonlinearRHS();
-
-        virtual const floatVector *getFlatNonlinearLHS();
-
-        // END NONLINEAR FUNCTIONS
-
         // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
         //! Return a flag for whether to use the SQP solver
         const bool getUseSQPSolver() { return _useSQPSolver; }
 
         // END SQP SOLVER FUNCTIONS
-
-        PreconditionerBase  _preconditioner;  //!< Temporary object
-        PreconditionerBase *preconditioner =
-            &_preconditioner;  //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
        protected:
         // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)

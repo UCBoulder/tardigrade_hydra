@@ -150,17 +150,17 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_getLSResidualNorm,
     hydraBaseMock                          hydra;
     tardigradeHydra::SolverBase            solver;
     tardigradeHydra::SolverStepBase        step;
-    tardigradeHydra::PreconditionerBase    preconditioner;
+//    tardigradeHydra::PreconditionerBase    preconditioner;
     tardigradeHydra::ArmijoGradientDamping damping;
 
     hydra.setSolver(&solver);
 
     solver.hydra                    = &hydra;
     solver.step                     = &step;
-    step.trial_step->preconditioner = &preconditioner;
+//    step.trial_step->preconditioner = &preconditioner;
 
     step.setSolver(&solver);
-    preconditioner.trial_step = step.trial_step;
+//    preconditioner.trial_step = step.trial_step;
 
     step.damping = &damping;
     damping.step = &step;

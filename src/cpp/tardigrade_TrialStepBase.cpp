@@ -17,7 +17,7 @@ namespace tardigradeHydra {
     /*!
      * The constructor for TrialStepBase
      */
-    TrialStepBase::TrialStepBase() : step(NULL) { preconditioner->trial_step = this; }
+    TrialStepBase::TrialStepBase() : step(NULL) { }
 
     /*!
      * The constructor for TrialStepBase
@@ -26,19 +26,6 @@ namespace tardigradeHydra {
      */
     TrialStepBase::TrialStepBase(SolverStepBase *_step) : step(_step) {
         step->trial_step           = this;
-        preconditioner->trial_step = this;
-    }
-
-    /*!
-     * The constructor for TrialStepBase
-     *
-     * \param *_step: The containing step object
-     * \param *_preconditioner_ptr: The preconditioner object used by the trial step
-     */
-    TrialStepBase::TrialStepBase(SolverStepBase *_step, PreconditionerBase *_preconditioner_ptr)
-        : step(_step), preconditioner(_preconditioner_ptr) {
-        step->trial_step           = this;
-        preconditioner->trial_step = this;
     }
 
     /*!
@@ -51,8 +38,6 @@ namespace tardigradeHydra {
      */
     void TrialStepBase::reset() {
         resetCounts();
-        TARDIGRADE_ERROR_TOOLS_CHECK(preconditioner != nullptr, "The preconditioner has not been defined");
-        preconditioner->reset();
     }
 
     /*!
@@ -203,19 +188,5 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
         step->addToFailureOutput(value, add_endline);
     }
-
-    // BEGIN NONLINEAR SOLVER FUNCTIONS
-
-    /*!
-     * Get the RHS vector for the non-linear problem
-     */
-    const floatVector *TrialStepBase::getNonlinearRHS() { return getResidual(); }
-
-    /*!
-     * Get the flat LHS matrix for the non-linear problem
-     */
-    const floatVector *TrialStepBase::getFlatNonlinearLHS() { return getFlatJacobian(); }
-
-    // END NONLINEAR SOLVER FUNCTIONS
 
 }  // namespace tardigradeHydra

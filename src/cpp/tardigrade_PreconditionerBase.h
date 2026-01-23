@@ -39,7 +39,7 @@ namespace tardigradeHydra {
         //! Get a pointer to the row-major form of the preconditioner
         const floatVector *getFlatPreconditioner();
 
-        TrialStepBase *trial_step;  //!< Pointer to the containing trial_step class
+        NonlinearStepBase *trial_step;  //!< Pointer to the containing NonlinearStepBase class
 
         // TEMP
         bool _use_preconditioner;  //!< Flag for whether to pre-condition the Jacobian or not

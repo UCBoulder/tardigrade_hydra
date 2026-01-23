@@ -15,6 +15,32 @@
 namespace tardigradeHydra{
 
     /*!
+     * The constructor for NonlinearStepBase
+     */
+    NonlinearStepBase::NonlinearStepBase() : TrialStepBase() { preconditioner->trial_step = this; }
+
+    /*!
+     * The constructor for NonlinearStepBase
+     *
+     * \param *_step: The containing step object
+     */
+    NonlinearStepBase::NonlinearStepBase(SolverStepBase *_step) : TrialStepBase(_step) {
+        preconditioner->trial_step = this;
+    }
+
+    /*!
+     * The constructor for NonlinearStepBase
+     *
+     * \param *_step: The containing step object
+     * \param *_preconditioner_ptr: The preconditioner object used by the trial step
+     */
+    NonlinearStepBase::NonlinearStepBase(SolverStepBase *_step, PreconditionerBase *_preconditioner_ptr)
+        : TrialStepBase(_step), preconditioner(_preconditioner_ptr) {
+        step->trial_step           = this;
+        preconditioner->trial_step = this;
+    }
+
+    /*!
      * Compute the trial step
      *
      * Must set the containing step's deltaX variable
@@ -33,6 +59,25 @@ namespace tardigradeHydra{
             addToFailureOutput(step->deltaX);
         }
     }
+
+    /*!
+     * Reset the trial step class
+     */
+    void NonlinearStepBase::reset() {
+        TrialStepBase::reset();
+        TARDIGRADE_ERROR_TOOLS_CHECK(preconditioner != nullptr, "The preconditioner has not been defined");
+        preconditioner->reset();
+    }
+
+    /*!
+     * Get the RHS vector for the non-linear problem
+     */
+    const floatVector *NonlinearStepBase::getNonlinearRHS() { return getResidual(); }
+
+    /*!
+     * Get the flat LHS matrix for the non-linear problem
+     */
+    const floatVector *NonlinearStepBase::getFlatNonlinearLHS() { return getFlatJacobian(); }
 
     /*!
      * Perform a pre-conditioned solve

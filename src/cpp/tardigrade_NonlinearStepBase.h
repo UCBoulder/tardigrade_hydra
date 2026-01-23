@@ -10,6 +10,7 @@
 #define TARDIGRADE_NONLINEARSTEPBASE_H
 
 #include"tardigrade_TrialStepBase.h"
+#include "tardigrade_PreconditionerBase.h"
 
 namespace tardigradeHydra{
 
@@ -20,9 +21,19 @@ namespace tardigradeHydra{
 
         public:
 
-            using tardigradeHydra::TrialStepBase::TrialStepBase;
+            NonlinearStepBase();
+
+            NonlinearStepBase(SolverStepBase *_step);
+
+            NonlinearStepBase(SolverStepBase *_step, PreconditionerBase *_preconditioner);
+
+            virtual void reset() override;
 
             virtual void computeTrial() override;
+
+            virtual const floatVector *getNonlinearRHS();
+
+            virtual const floatVector *getFlatNonlinearLHS();
 
             // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
@@ -37,6 +48,10 @@ namespace tardigradeHydra{
             virtual void solveConstrainedQP(floatVector &dx, const unsigned int kmax = 100);
 
             // END SQP SOLVER FUNCTIONS
+
+            PreconditionerBase  _preconditioner;  //!< Temporary object
+            PreconditionerBase *preconditioner =
+                &_preconditioner;  //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
         protected:
 
