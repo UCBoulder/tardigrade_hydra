@@ -23,13 +23,6 @@ namespace tardigradeHydra {
     class NonlinearStepBase;   //!< The base nonlinear trial-step class
     class PreconditionerBase;  //!< The base preconditioner class
 
-    namespace unit_test {
-        class hydraBaseTester;           //!< Friend class for hydraBase for unit testing
-        class SolverStepBaseTester;      //!< Friend class for SolverStepBase for unit testing
-        class SolverBaseTester;          //!< Friend class for SolverBase for unit testing
-        class PreconditionerBaseTester;  //!< Friend class for PreconditionerBase for unit testing
-    }  // namespace unit_test
-
     typedef double                               floatType;    //!< Define the float values type.
     typedef std::vector<floatType>               floatVector;  //!< Define a vector of floats
     typedef std::vector<std::vector<floatType> > floatMatrix;  //!< Define a matrix of floats

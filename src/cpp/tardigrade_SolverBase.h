@@ -15,6 +15,10 @@
 
 namespace tardigradeHydra {
 
+    namespace unit_test {
+        class SolverBaseTester;          //!< Friend class for SolverBase for unit testing
+    }  // namespace unit_test
+
     /*!
      * Base Solver class
      */

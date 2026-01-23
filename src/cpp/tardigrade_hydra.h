@@ -51,6 +51,10 @@ namespace tardigradeHydra {
         throw std::runtime_error("Zeroing the ResidualBase pointer vector is not allowed");
     }
 
+    namespace unit_test {
+        class hydraBaseTester;           //!< Friend class for hydraBase for unit testing
+    }  // namespace unit_test
+
     /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
      *

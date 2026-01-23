@@ -18,6 +18,10 @@
 
 namespace tardigradeHydra {
 
+    namespace unit_test {
+        class SolverStepBaseTester;      //!< Friend class for SolverStepBase for unit testing
+    }  // namespace unit_test
+
     /*!
      * Base class for Solver Steps
      */
