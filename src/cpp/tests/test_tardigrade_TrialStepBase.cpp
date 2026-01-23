@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(test_TrialStepBase_getNonlinearTerms, *boost::unit_test::to
     BOOST_TEST(hydra.jacobian == *trial_step.getFlatNonlinearLHS(), CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_TrialStepBase_performPreconditionedSolve,
+BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_performPreconditionedSolve,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
@@ -247,16 +247,20 @@ BOOST_AUTO_TEST_CASE(test_TrialStepBase_performPreconditionedSolve,
 
     tardigradeHydra::SolverStepBase step;
 
+    tardigradeHydra::NonlinearStepBase trial_step;
+
     tardigradeHydra::PreconditionerBase preconditioner;
 
     hydra.setSolver(&solver);
 
     solver.hydra                    = &hydra;
     solver.step                     = &step;
-    step.trial_step->preconditioner = &preconditioner;
+    step.trial_step                 = &trial_step;
+    trial_step.step                 = &step;
+    trial_step.preconditioner       = &preconditioner;
+    preconditioner.trial_step = step.trial_step;
 
     step.setSolver(&solver);
-    preconditioner.trial_step = step.trial_step;
 
     tardigradeHydra::floatVector answer = {1. / 3, -2. / 3, 0};
 
@@ -264,7 +268,7 @@ BOOST_AUTO_TEST_CASE(test_TrialStepBase_performPreconditionedSolve,
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector(hydra);
 
-    step.trial_step->performPreconditionedSolve(result);
+    trial_step.performPreconditionedSolve(result);
 
     BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
 }
