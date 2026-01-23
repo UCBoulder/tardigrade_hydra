@@ -6,6 +6,8 @@
   ******************************************************************************
   */
 
+#include"tardigrade_NonlinearStepBase.h"
+
 namespace tardigradeHydra{
 
 }
