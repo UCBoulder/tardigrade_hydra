@@ -87,12 +87,6 @@ namespace tardigradeHydra {
 
         // END NONLINEAR FUNCTIONS
 
-        // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-        void solveNewtonUpdate(floatVector &deltaX_tr);
-
-        // END NEWTON SOLVER FUNCTIONS
-
         // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
         //! Return a flag for whether to use the SQP solver

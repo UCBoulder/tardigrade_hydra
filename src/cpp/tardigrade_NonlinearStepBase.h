@@ -24,6 +24,12 @@ namespace tardigradeHydra{
 
             virtual void computeTrial() override;
 
+            // BEGIN NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            void solveNewtonUpdate(floatVector &deltaX_tr);
+
+            // END NEWTON SOLVER FUNCTIONS
+
         protected:
 
         private:
