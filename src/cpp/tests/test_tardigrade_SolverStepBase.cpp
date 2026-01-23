@@ -7,6 +7,7 @@
 
 #include "tardigrade_SolverBase.h"
 #include "tardigrade_SolverStepBase.h"
+#include "tardigrade_NonlinearStepBase.h"
 #include "tardigrade_hydra.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_SolverStepBase
@@ -96,10 +97,6 @@ namespace tardigradeHydra {
                                            const unsigned int kmax = 100) {
                 trial_step.solveConstrainedQP(dx, kmax);
             }
-
-            static void solveNewtonUpdate(TrialStepBase &trial_step, tardigradeHydra::floatVector &deltaX) {
-                trial_step.solveNewtonUpdate(deltaX);
-            }
         };
 
     }  // namespace unit_test
@@ -124,7 +121,7 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_setUseLevenbergMarquardt,
     BOOST_TEST(true == step.damping->getUseGradientDescent());
 }
 
-BOOST_AUTO_TEST_CASE(test_SolverStepBase_solveNewtonUpdate, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_solveNewtonUpdate, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
@@ -181,6 +178,7 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_solveNewtonUpdate, *boost::unit_test::t
 
     tardigradeHydra::SolverBase         solver;
     tardigradeHydra::SolverStepBase     step;
+    tardigradeHydra::NonlinearStepBase  trial_step;
     tardigradeHydra::PreconditionerBase preconditioner;  // TODO: Replace with null preconditioner
     preconditioner._use_preconditioner = false;
 
@@ -188,6 +186,8 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_solveNewtonUpdate, *boost::unit_test::t
 
     solver.hydra                    = &hydra;
     solver.step                     = &step;
+    step.trial_step                 = &trial_step;
+    trial_step.step                 = &step;
     step.trial_step->preconditioner = &preconditioner;
 
     step.setSolver(&solver);
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_solveNewtonUpdate, *boost::unit_test::t
     tardigradeHydra::floatVector result(3, 0);
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector(hydra);
-    tardigradeHydra::unit_test::TrialStepBaseTester::solveNewtonUpdate(*step.trial_step, result);
+    trial_step.solveNewtonUpdate( result );
 
     BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
 
@@ -210,6 +210,7 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_solveNewtonUpdate, *boost::unit_test::t
 
     tardigradeHydra::SolverBase         solver_pre;
     tardigradeHydra::SolverStepBase     step_pre;
+    tardigradeHydra::NonlinearStepBase  trial_step_pre;
     tardigradeHydra::PreconditionerBase preconditioner_pre;
     preconditioner_pre._use_preconditioner = true;
 
@@ -217,13 +218,15 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_solveNewtonUpdate, *boost::unit_test::t
 
     solver_pre.hydra                    = &hydra_pre;
     solver_pre.step                     = &step_pre;
+    step_pre.trial_step                 = &trial_step_pre;
+    trial_step_pre.step                 = &step;
     step_pre.trial_step->preconditioner = &preconditioner_pre;
 
     step_pre.setSolver(&solver_pre);
     preconditioner_pre.trial_step = step_pre.trial_step;
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector(hydra_pre);
-    tardigradeHydra::unit_test::TrialStepBaseTester::solveNewtonUpdate(*step_pre.trial_step, result);
+    trial_step_pre.solveNewtonUpdate( result );
 
     BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
 }
