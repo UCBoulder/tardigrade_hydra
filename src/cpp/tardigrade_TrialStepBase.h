@@ -111,8 +111,6 @@ namespace tardigradeHydra {
 
         void setUseSQPSolver(const unsigned int &value) { _useSQPSolver = value; }
 
-        virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
-
         // END SQP SOLVER FUNCTIONS
 
        private:

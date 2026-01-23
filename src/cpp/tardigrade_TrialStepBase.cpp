@@ -218,25 +218,6 @@ namespace tardigradeHydra {
 
     // END NONLINEAR SOLVER FUNCTIONS
 
-    // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-    /*!
-     * Initialize the active constraint vector
-     *
-     * \param &active_constraints: The current constraints that are active
-     */
-    void TrialStepBase::initializeActiveConstraints(std::vector<bool> &active_constraints) {
-        active_constraints = std::vector<bool>(getNumConstraints(), false);
-
-        for (auto c = getConstraints()->begin(); c != getConstraints()->end(); c++) {
-            unsigned int index = (unsigned int)(c - getConstraints()->begin());
-
-            active_constraints[index] = ((*c) < 0.);
-        }
-    }
-
-    // END SQP SOLVER FUNCTIONS
-
     /*!
      * Perform a pre-conditioned solve
      *

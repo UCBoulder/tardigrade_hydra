@@ -40,6 +40,8 @@ namespace tardigradeHydra{
 
             // SQP SOLVER FUNCTIONS
 
+            virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
+
             virtual void assembleKKTRHSVector(const floatVector &dx, floatVector &KKTRHSVector,
                                               const std::vector<bool> &active_constraints);
 
