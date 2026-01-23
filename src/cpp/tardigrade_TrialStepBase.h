@@ -94,8 +94,6 @@ namespace tardigradeHydra {
 
         // END SQP SOLVER FUNCTIONS
 
-        void performPreconditionedSolve(floatVector &deltaX_tr);  // TEMP REMOVE THIS
-
         PreconditionerBase  _preconditioner;  //!< Temporary object
         PreconditionerBase *preconditioner =
             &_preconditioner;  //!< The object that defines the preconditioner TODO: Make this an incoming pointer

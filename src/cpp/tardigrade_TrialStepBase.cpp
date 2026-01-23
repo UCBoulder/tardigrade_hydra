@@ -218,45 +218,4 @@ namespace tardigradeHydra {
 
     // END NONLINEAR SOLVER FUNCTIONS
 
-    /*!
-     * Perform a pre-conditioned solve
-     *
-     * \param &deltaX_tr: The trial chcange in the unknown vector
-     */
-    void TrialStepBase::performPreconditionedSolve(floatVector &deltaX_tr) {
-        TARDIGRADE_ERROR_TOOLS_CHECK(preconditioner != nullptr,
-                                     "The preconditioner has not been defined");  // TODO: Move to the trial_step class
-        tardigradeVectorTools::solverType<floatType> linearSolver;
-
-        auto dx_map = tardigradeHydra::getDynamicSizeVectorMap(deltaX_tr.data(), getNumUnknowns());
-
-        auto J_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(getFlatNonlinearLHS()->data(), getNumUnknowns(), getNumUnknowns());
-
-        auto R_map = tardigradeHydra::getDynamicSizeVectorMap(getNonlinearRHS()->data(), getNumUnknowns());
-
-        if (preconditioner->getPreconditionerIsDiagonal()) {
-            auto p_map = tardigradeHydra::getDynamicSizeVectorMap(preconditioner->getFlatPreconditioner()->data(),
-                                                                  getNumUnknowns());
-
-            linearSolver = tardigradeVectorTools::solverType<floatType>(p_map.asDiagonal() * J_map);
-
-            dx_map = -linearSolver.solve(p_map.asDiagonal() * R_map);
-
-        } else {
-            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap(preconditioner->getFlatPreconditioner()->data(),
-                                                                  getNumUnknowns(), getNumUnknowns());
-
-            linearSolver = tardigradeVectorTools::solverType<floatType>(p_map * J_map);
-
-            dx_map = -linearSolver.solve(p_map * R_map);
-        }
-
-        unsigned int rank = linearSolver.rank();
-
-        if (getRankDeficientError() && (rank != getResidual()->size())) {
-            TARDIGRADE_ERROR_TOOLS_CATCH(throw convergence_error("The Jacobian is not full rank"));
-        }
-    }
-
 }  // namespace tardigradeHydra
