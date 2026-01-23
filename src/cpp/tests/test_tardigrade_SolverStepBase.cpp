@@ -91,14 +91,6 @@ namespace tardigradeHydra {
             }
         };
 
-        class TrialStepBaseTester {
-           public:
-            static void solveConstrainedQP(TrialStepBase &trial_step, tardigradeHydra::floatVector &dx,
-                                           const unsigned int kmax = 100) {
-                trial_step.solveConstrainedQP(dx, kmax);
-            }
-        };
-
     }  // namespace unit_test
 
 }  // namespace tardigradeHydra
