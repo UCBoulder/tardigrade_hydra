@@ -111,7 +111,7 @@ namespace tardigradeHydra {
         auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
                                                               getFlatPreconditioner()->size()); //Current preconditioner is flat
 
-        Y_map = p_map * X_map;
+        Y_map = p_map.asDiagonal( ) * X_map;
 
     }
 
@@ -134,7 +134,7 @@ namespace tardigradeHydra {
         auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
                                                               getFlatPreconditioner()->size()); //Current preconditioner is flat
 
-        B_map = p_map * A_map;
+        B_map = p_map.asDiagonal( ) * A_map;
 
     }
 }  // namespace tardigradeHydra

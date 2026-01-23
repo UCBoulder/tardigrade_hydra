@@ -87,31 +87,24 @@ namespace tardigradeHydra{
     void NonlinearStepBase::performPreconditionedSolve(floatVector &deltaX_tr) {
         TARDIGRADE_ERROR_TOOLS_CHECK(preconditioner != nullptr,
                                      "The preconditioner has not been defined");  // TODO: Move to the trial_step class
-        tardigradeVectorTools::solverType<floatType> linearSolver;
 
         auto dx_map = tardigradeHydra::getDynamicSizeVectorMap(deltaX_tr.data(), getNumUnknowns());
 
-        auto J_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(getFlatNonlinearLHS()->data(), getNumUnknowns(), getNumUnknowns());
+        floatVector P_R;
+        floatVector P_J;
 
-        auto R_map = tardigradeHydra::getDynamicSizeVectorMap(getNonlinearRHS()->data(), getNumUnknowns());
+        preconditioner->preconditionVector( *getNonlinearRHS(), P_R );
+        preconditioner->preconditionMatrix( *getFlatNonlinearLHS(), P_J );
 
-        if (preconditioner->getPreconditionerIsDiagonal()) {
-            auto p_map = tardigradeHydra::getDynamicSizeVectorMap(preconditioner->getFlatPreconditioner()->data(),
-                                                                  getNumUnknowns());
+        auto P_R_map =
+            tardigradeHydra::getDynamicSizeVectorMap(P_R.data(), getNumUnknowns());
 
-            linearSolver = tardigradeVectorTools::solverType<floatType>(p_map.asDiagonal() * J_map);
+        auto P_J_map =
+            tardigradeHydra::getDynamicSizeMatrixMap(P_J.data(), getNumUnknowns(), getNumUnknowns());
 
-            dx_map = -linearSolver.solve(p_map.asDiagonal() * R_map);
+        tardigradeVectorTools::solverType<floatType> linearSolver(P_J_map);
 
-        } else {
-            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap(preconditioner->getFlatPreconditioner()->data(),
-                                                                  getNumUnknowns(), getNumUnknowns());
-
-            linearSolver = tardigradeVectorTools::solverType<floatType>(p_map * J_map);
-
-            dx_map = -linearSolver.solve(p_map * R_map);
-        }
+        dx_map = -linearSolver.solve(P_R_map);
 
         unsigned int rank = linearSolver.rank();
 
