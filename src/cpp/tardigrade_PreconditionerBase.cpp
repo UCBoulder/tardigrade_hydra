@@ -38,6 +38,14 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get the number of unknowns
+     */
+    const unsigned int PreconditionerBase::getNumUnknowns(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step has not been defined");
+        return trial_step->getNumUnknowns();
+    }
+
+    /*!
      * Get the flattened row-major preconditioner for the non-linear problem
      */
     const floatVector *PreconditionerBase::getFlatPreconditioner() {
@@ -84,4 +92,49 @@ namespace tardigradeHydra {
         }
     }
 
+    /*!
+     * Precondition the incoming vector \f$X\f$ via \f$Y_I = P_{IJ} X_J\f$
+     *
+     * \param &X: The incoming vector to be preconditioned
+     * \param &Y: The preconditioned vector
+     */
+    void PreconditionerBase::preconditionVector( const floatVector &X, floatVector &Y ){
+
+        Y = floatVector(X.size(),0);
+
+        auto X_map =
+            tardigradeHydra::getDynamicSizeVectorMap(X.data(), X.size());
+
+        auto Y_map =
+            tardigradeHydra::getDynamicSizeVectorMap(Y.data(), Y.size());
+
+        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
+                                                              getFlatPreconditioner()->size()); //Current preconditioner is flat
+
+        Y_map = p_map * X_map;
+
+    }
+
+    /*!
+     * Precondition the incoming matrix \f$A\f$ via \f$B_{IJ} = P_{IK} A_{KJ}\f$
+     *
+     * \param &A: The incoming matrix to be preconditioned
+     * \param &B: The preconditined matrix
+     */
+    void PreconditionerBase::preconditionMatrix( const floatVector &A, floatVector &B ){
+
+        B = floatVector(A.size(),0);
+
+        auto A_map =
+            tardigradeHydra::getDynamicSizeMatrixMap(A.data(), getNumUnknowns(), getNumUnknowns());
+
+        auto B_map =
+            tardigradeHydra::getDynamicSizeMatrixMap(B.data(), getNumUnknowns(), getNumUnknowns());
+
+        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
+                                                              getFlatPreconditioner()->size()); //Current preconditioner is flat
+
+        B_map = p_map * A_map;
+
+    }
 }  // namespace tardigradeHydra

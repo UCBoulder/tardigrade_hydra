@@ -41,6 +41,10 @@ namespace tardigradeHydra {
 
         NonlinearStepBase *trial_step;  //!< Pointer to the containing NonlinearStepBase class
 
+        // PASS THROUGH FUNCTIONS
+        const unsigned int getNumUnknowns();
+        // END PASS THROUGH FUNCTIONS
+
         // TEMP
         bool _use_preconditioner;  //!< Flag for whether to pre-condition the Jacobian or not
 
@@ -50,6 +54,10 @@ namespace tardigradeHydra {
 
         virtual void formMaxRowPreconditioner();  //!< Temporary function. We won't use it in the future.
                                                   // END TEMP
+
+        virtual void preconditionVector( const floatVector &X, floatVector &Y );
+
+        virtual void preconditionMatrix( const floatVector &A, floatVector &B );
 
        protected:
         virtual void formPreconditioner();
