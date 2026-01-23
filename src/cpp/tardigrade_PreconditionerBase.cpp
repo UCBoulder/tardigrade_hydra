@@ -46,6 +46,22 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get the row-major nonlinear left hand side
+     */
+    const floatVector* PreconditionerBase::getFlatNonlinearLHS(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step has not been defined");
+        return trial_step->getFlatNonlinearLHS();
+    }
+
+    /*!
+     * Get the nonlinear right hand side
+     */
+    const floatVector* PreconditionerBase::getNonlinearRHS(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step has not been defined");
+        return trial_step->getNonlinearRHS();
+    }
+
+    /*!
      * Get the flattened row-major preconditioner for the non-linear problem
      */
     const floatVector *PreconditionerBase::getFlatPreconditioner() {
@@ -76,7 +92,6 @@ namespace tardigradeHydra {
      * Form a left preconditioner comprised of the inverse of the maximum value of each row
      */
     void PreconditionerBase::formMaxRowPreconditioner() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step has not been defined");
         const unsigned int problem_size = trial_step->getNumUnknowns();
 
         _preconditioner.second = floatVector(problem_size, 0);
@@ -85,8 +100,8 @@ namespace tardigradeHydra {
         for (unsigned int i = 0; i < problem_size; i++) {
             _preconditioner.second[i] =
                 1 / std::max(std::fabs(*std::max_element(
-                                 trial_step->getFlatNonlinearLHS()->begin() + problem_size * i,
-                                 trial_step->getFlatNonlinearLHS()->begin() + problem_size * (i + 1),
+                                 getFlatNonlinearLHS()->begin() + problem_size * i,
+                                 getFlatNonlinearLHS()->begin() + problem_size * (i + 1),
                                  [](const floatType &a, const floatType &b) { return std::fabs(a) < std::fabs(b); })),
                              1e-15);
         }

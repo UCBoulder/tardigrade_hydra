@@ -48,6 +48,10 @@ namespace tardigradeHydra {
 
         // PASS THROUGH FUNCTIONS
         const unsigned int getNumUnknowns();
+
+        const floatVector *getFlatNonlinearLHS();
+
+        const floatVector *getNonlinearRHS();
         // END PASS THROUGH FUNCTIONS
 
         // TEMP
@@ -71,12 +75,12 @@ namespace tardigradeHydra {
         virtual void addIterationData(dataBase *data) override;
 
         virtual void addNLStepData(dataBase *data) override;
+
+        DataStorage<floatVector>
+            _preconditioner;  //!< The pre-conditioner matrix in row-major form for the global solve
         // END CACHED DATA STORAGE OPERATIONS
 
        private:
-        DataStorage<floatVector>
-            _preconditioner;  //!< The pre-conditioner matrix in row-major form for the global solve
-
         friend class tardigradeHydra::unit_test::PreconditionerBaseTester;  //!< The unit tester for the class
     };
 
