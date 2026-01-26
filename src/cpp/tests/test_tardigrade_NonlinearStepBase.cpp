@@ -6,6 +6,7 @@
 
 #include "tardigrade_NonlinearStepBase.h"
 #include "tardigrade_hydra.h"
+#include "tardigrade_MaxRowPreconditioner.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_NonlinearStepBase
 #include <boost/test/included/unit_test.hpp>
@@ -182,7 +183,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_solveNewtonUpdate, *boost::unit_test
     tardigradeHydra::SolverBase         solver_pre;
     tardigradeHydra::SolverStepBase     step_pre;
     tardigradeHydra::NonlinearStepBase  trial_step_pre;
-    tardigradeHydra::PreconditionerBase preconditioner_pre;
+    tardigradeHydra::MaxRowPreconditioner preconditioner_pre;
     preconditioner_pre._use_preconditioner = true;
 
     hydra_pre.set_solver(&solver_pre);
@@ -821,7 +822,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_performPreconditionedSolve,
 
     tardigradeHydra::NonlinearStepBase trial_step;
 
-    tardigradeHydra::PreconditionerBase preconditioner;
+    tardigradeHydra::MaxRowPreconditioner preconditioner;
 
     hydra.setSolver(&solver);
 
