@@ -65,10 +65,6 @@ namespace tardigradeHydra {
                 preconditioner.addIterationData(&preconditioner._preconditioner);
             }
 
-            static void set_preconditionerType(PreconditionerBase &preconditioner, const unsigned int &value) {
-                preconditioner._preconditioner_type = value;
-            }
-
             static void set_flatPreconditioner(PreconditionerBase &preconditioner, const floatVector &value) {
                 preconditioner._preconditioner.second = value;
                 preconditioner._preconditioner.first  = true;
@@ -105,15 +101,6 @@ namespace tardigradeHydra {
     }  // namespace unit_test
 
 }  // namespace tardigradeHydra
-
-BOOST_AUTO_TEST_CASE(test_PreconditionerBase_getPreconditionerType,
-                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::PreconditionerBase preconditioner;
-
-    preconditioner._preconditioner_type = 123;
-
-    BOOST_TEST(preconditioner.getPreconditionerType() == 123);
-}
 
 BOOST_AUTO_TEST_CASE(test_PreconditionerBase_getFlatPreconditioner,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
@@ -178,11 +165,7 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
 
         tardigradeHydra::floatVector expected_preconditioner = {1, 2, 3, 4, 5, 6, 7};
 
-        void setPreconditionerType(const unsigned int val) {
-            tardigradeHydra::unit_test::PreconditionerBaseTester::set_preconditionerType(*this, val);
-        }
-
-        virtual void formMaxRowPreconditioner() override {
+        virtual void formPreconditioner() override {
             tardigradeHydra::unit_test::PreconditionerBaseTester::set_flatPreconditioner(*this,
                                                                                          expected_preconditioner);
         }
@@ -210,20 +193,4 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
 
     BOOST_TEST(preconditioner.expected_preconditioner == *preconditioner.getFlatPreconditioner(), CHECK_PER_ELEMENT);
 
-    hydraBaseMock bad_hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                            previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                            numNonLinearSolveStateVariables, dimension);
-
-    PreconditionerBaseMock bad_preconditioner;
-    tardigradeHydra::NonlinearStepBase bad_trial_step;
-
-    bad_trial_step.step = bad_hydra.getSolver()->step;
-    bad_hydra.getSolver()->step->trial_step = &bad_trial_step;
-
-    bad_trial_step.preconditioner = &bad_preconditioner;
-    bad_preconditioner.trial_step = &bad_trial_step;
-
-    bad_preconditioner.setPreconditionerType(7);
-
-    BOOST_CHECK_THROW(bad_preconditioner.getFlatPreconditioner(), std::nested_exception);
 }

@@ -65,10 +65,6 @@ namespace tardigradeHydra {
                 preconditioner.addIterationData(&preconditioner._preconditioner);
             }
 
-            static void set_preconditionerType(PreconditionerBase &preconditioner, const unsigned int &value) {
-                preconditioner._preconditioner_type = value;
-            }
-
             static void set_flatPreconditioner(PreconditionerBase &preconditioner, const floatVector &value) {
                 preconditioner._preconditioner.second = value;
                 preconditioner._preconditioner.first  = true;
@@ -153,10 +149,6 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
         tardigradeHydra::floatVector jacobian = {1., 0., 0.,          0., 0., 0.,          1., 0., 0.,
                                                  0., 0., 48.07641984, 1., 0., -7.68935399, 0., 0., 18.48297386,
                                                  1., 0., 0.,          0., 0., 0.,          1.};
-
-        void setPreconditionerType(const unsigned int val) {
-            tardigradeHydra::unit_test::PreconditionerBaseTester::set_preconditionerType(*this, val);
-        }
 
         virtual void formMaxRowPreconditioner() override {
             auto solver = tardigradeHydra::unit_test::SolverStepBaseTester::get_solver(*(trial_step->step));
