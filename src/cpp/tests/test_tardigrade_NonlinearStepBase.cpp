@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_solveNewtonUpdate, *boost::unit_test
 
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9, 20, 5, 1e-4);
+                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9, 20);
 
     tardigradeHydra::SolverBase         solver_pre;
     tardigradeHydra::SolverStepBase     step_pre;

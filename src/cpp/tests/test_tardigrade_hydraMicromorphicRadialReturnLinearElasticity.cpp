@@ -172,10 +172,6 @@ BOOST_AUTO_TEST_CASE(test_setTrialStress, *boost::unit_test::tolerance(DEFAULT_T
 
     unsigned int maxIterations = 24;
 
-    unsigned int maxLSIterations = 45;
-
-    floatType lsAlpha = 2.3;
-
     class residualMock : public tardigradeHydra::micromorphicRadialReturnLinearElasticity::residual {
        public:
         std::vector<double> answer = {1, 2, 3, 4};
@@ -201,8 +197,7 @@ BOOST_AUTO_TEST_CASE(test_setTrialStress, *boost::unit_test::tolerance(DEFAULT_T
                                                  previousMicroDeformation, gradientMicroDeformation,
                                                  previousGradientMicroDeformation, {}, {}, previousStateVariables,
                                                  parameters, numConfigurations, numNonLinearSolveStateVariables,
-                                                 dimension, configuration_unknown_count, tolr, tola, maxIterations,
-                                                 maxLSIterations, lsAlpha);
+                                                 dimension, configuration_unknown_count, tolr, tola, maxIterations);
 
     hydra.initialize();
 
@@ -279,10 +274,6 @@ BOOST_AUTO_TEST_CASE(test_setdTrialStressdD, *boost::unit_test::tolerance(DEFAUL
 
     unsigned int maxIterations = 24;
 
-    unsigned int maxLSIterations = 45;
-
-    floatType lsAlpha = 2.3;
-
     class residualMock : public tardigradeHydra::micromorphicRadialReturnLinearElasticity::residual {
        public:
         using tardigradeHydra::micromorphicRadialReturnLinearElasticity::residual::residual;
@@ -299,8 +290,7 @@ BOOST_AUTO_TEST_CASE(test_setdTrialStressdD, *boost::unit_test::tolerance(DEFAUL
                                                  previousMicroDeformation, gradientMicroDeformation,
                                                  previousGradientMicroDeformation, {}, {}, previousStateVariables,
                                                  parameters, numConfigurations, numNonLinearSolveStateVariables,
-                                                 dimension, configuration_unknown_count, tolr, tola, maxIterations,
-                                                 maxLSIterations, lsAlpha);
+                                                 dimension, configuration_unknown_count, tolr, tola, maxIterations);
 
     hydra.initialize();
 
@@ -343,16 +333,14 @@ BOOST_AUTO_TEST_CASE(test_setdTrialStressdD, *boost::unit_test::tolerance(DEFAUL
                                                           gradChip, previousGradientMicroDeformation, {}, {},
                                                           previousStateVariables, parameters, numConfigurations,
                                                           numNonLinearSolveStateVariables, dimension,
-                                                          configuration_unknown_count, tolr, tola, maxIterations,
-                                                          maxLSIterations, lsAlpha);
+                                                          configuration_unknown_count, tolr, tola, maxIterations);
 
             tardigradeHydra::hydraBaseMicromorphic hydram(time, deltaTime, temperature, previousTemperature, Fm,
                                                           previousDeformationGradient, chim, previousMicroDeformation,
                                                           gradChim, previousGradientMicroDeformation, {}, {},
                                                           previousStateVariables, parameters, numConfigurations,
                                                           numNonLinearSolveStateVariables, dimension,
-                                                          configuration_unknown_count, tolr, tola, maxIterations,
-                                                          maxLSIterations, lsAlpha);
+                                                          configuration_unknown_count, tolr, tola, maxIterations);
 
             hydrap.initialize();
 
@@ -439,10 +427,6 @@ BOOST_AUTO_TEST_CASE(test_setResidaul, *boost::unit_test::tolerance(DEFAULT_TEST
 
     unsigned int maxIterations = 24;
 
-    unsigned int maxLSIterations = 45;
-
-    floatType lsAlpha = 2.3;
-
     class residualMock : public tardigradeHydra::micromorphicRadialReturnLinearElasticity::residual {
        public:
         std::vector<double> trialStress = buildTrialStress();
@@ -486,8 +470,7 @@ BOOST_AUTO_TEST_CASE(test_setResidaul, *boost::unit_test::tolerance(DEFAULT_TEST
                                                  previousMicroDeformation, gradientMicroDeformation,
                                                  previousGradientMicroDeformation, {}, {}, previousStateVariables,
                                                  parameters, numConfigurations, numNonLinearSolveStateVariables,
-                                                 dimension, configuration_unknown_count, tolr, tola, maxIterations,
-                                                 maxLSIterations, lsAlpha);
+                                                 dimension, configuration_unknown_count, tolr, tola, maxIterations);
 
     hydra.initialize();
 
@@ -566,10 +549,6 @@ BOOST_AUTO_TEST_CASE(test_residual_jacobians, *boost::unit_test::tolerance(DEFAU
 
     unsigned int maxIterations = 24;
 
-    unsigned int maxLSIterations = 45;
-
-    floatType lsAlpha = 2.3;
-
     class residualMock : public tardigradeHydra::micromorphicRadialReturnLinearElasticity::residual {
        public:
         using tardigradeHydra::micromorphicRadialReturnLinearElasticity::residual::residual;
@@ -584,8 +563,7 @@ BOOST_AUTO_TEST_CASE(test_residual_jacobians, *boost::unit_test::tolerance(DEFAU
                                                  previousMicroDeformation, gradientMicroDeformation,
                                                  previousGradientMicroDeformation, {}, {}, previousStateVariables,
                                                  parameters, numConfigurations, numNonLinearSolveStateVariables,
-                                                 dimension, configuration_unknown_count, tolr, tola, maxIterations,
-                                                 maxLSIterations, lsAlpha);
+                                                 dimension, configuration_unknown_count, tolr, tola, maxIterations);
 
     hydra.initialize();
 
@@ -622,13 +600,13 @@ BOOST_AUTO_TEST_CASE(test_residual_jacobians, *boost::unit_test::tolerance(DEFAU
                 time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                 microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
                 {}, {}, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables,
-                dimension, configuration_unknown_count, tolr, tola, maxIterations, maxLSIterations, lsAlpha);
+                dimension, configuration_unknown_count, tolr, tola, maxIterations);
 
             tardigradeHydra::hydraBaseMicromorphic hydram(
                 time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                 microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
                 {}, {}, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables,
-                dimension, configuration_unknown_count, tolr, tola, maxIterations, maxLSIterations, lsAlpha);
+                dimension, configuration_unknown_count, tolr, tola, maxIterations);
 
             hydrap.initialize();
 
@@ -689,16 +667,14 @@ BOOST_AUTO_TEST_CASE(test_residual_jacobians, *boost::unit_test::tolerance(DEFAU
                                                           gradChip, previousGradientMicroDeformation, {}, {},
                                                           previousStateVariables, parameters, numConfigurations,
                                                           numNonLinearSolveStateVariables, dimension,
-                                                          configuration_unknown_count, tolr, tola, maxIterations,
-                                                          maxLSIterations, lsAlpha);
+                                                          configuration_unknown_count, tolr, tola, maxIterations);
 
             tardigradeHydra::hydraBaseMicromorphic hydram(time, deltaTime, temperature, previousTemperature, Fm,
                                                           previousDeformationGradient, chim, previousMicroDeformation,
                                                           gradChim, previousGradientMicroDeformation, {}, {},
                                                           previousStateVariables, parameters, numConfigurations,
                                                           numNonLinearSolveStateVariables, dimension,
-                                                          configuration_unknown_count, tolr, tola, maxIterations,
-                                                          maxLSIterations, lsAlpha);
+                                                          configuration_unknown_count, tolr, tola, maxIterations);
 
             hydrap.initialize();
 
