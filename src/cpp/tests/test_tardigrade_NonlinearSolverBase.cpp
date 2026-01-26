@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
     test_SolverBase_solve_in_gradient_convergence = 0;
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0);
+                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9, 20, 5, 1e-4);
 
     NonlinearSolverBaseMock   solver_pre;
     SolverStepBaseMock        step_pre;
@@ -446,7 +446,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
 
     damping_pre.setMaxLSIterations(5);
     damping_pre.setLSAlpha(1e-4);
-    tardigradeHydra::PreconditionerBase preconditioner_pre;
+    tardigradeHydra::MaxRowPreconditioner preconditioner_pre;
 
     hydra_pre.setSolver(&solver_pre);
 
