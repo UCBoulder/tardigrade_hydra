@@ -72,7 +72,6 @@ namespace tardigradeHydra {
         solver->step->_damping.setMaxLSIterations(maxLSIterations);
         auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(solver->step->trial_step);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The local trial step is not a NonlinearStepBase")
-        local_trial_step->preconditioner->_use_preconditioner  = use_preconditioner;
         local_trial_step->preconditioner->_preconditioner_type = preconditioner_type;
 
         _solver.internal_solver->setMaxIterations(maxIterations);
@@ -80,7 +79,6 @@ namespace tardigradeHydra {
         _solver.internal_solver->step->_damping.setMaxLSIterations(maxLSIterations);
         auto local_internal_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(_solver.internal_solver->step->trial_step);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_internal_trial_step != nullptr, "The local internal trial step is not a NonlinearStepBase")
-        local_internal_trial_step->preconditioner->_use_preconditioner  = use_preconditioner;
         local_internal_trial_step->preconditioner->_preconditioner_type = preconditioner_type;
         // END TEMP
     }

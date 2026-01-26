@@ -32,9 +32,6 @@ namespace tardigradeHydra {
 
         virtual void reset();
 
-        //! Get whether to use a preconditioner
-        constexpr bool getUsePreconditioner() { return _use_preconditioner; }
-
         //! Get the preconditioner type
         constexpr unsigned int getPreconditionerType() { return _preconditioner_type; }
 
@@ -52,8 +49,6 @@ namespace tardigradeHydra {
         // END PASS THROUGH FUNCTIONS
 
         // TEMP
-        bool _use_preconditioner;  //!< Flag for whether to pre-condition the Jacobian or not
-
         unsigned int _preconditioner_type = 0;  //!< The type of preconditioner to use
 
         virtual void formMaxRowPreconditioner();  //!< Temporary function. We won't use it in the future.
