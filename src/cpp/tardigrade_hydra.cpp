@@ -1735,11 +1735,17 @@ namespace tardigradeHydra {
                                      "The preconditioner has not been defined");
 
         // Form the solver based on the current value of the jacobian
-        auto Amat = tardigradeHydra::getDynamicSizeMatrixMap(getFlatJacobian()->data(), getResidual()->size(),
+        floatVector P_A;
+        floatVector P_dRdAdditionalDOF;
+
+        local_trial_step->preconditioner->preconditionMatrix(*getFlatJacobian(), P_A);
+        local_trial_step->preconditioner->preconditionMatrix(*getFlatdRdAdditionalDOF(),P_dRdAdditionalDOF);
+
+        auto P_Amat = tardigradeHydra::getDynamicSizeMatrixMap(P_A.data(), getResidual()->size(),
                                                              getResidual()->size());
 
-        auto dRdAdditionalDOF =
-            tardigradeHydra::getDynamicSizeMatrixMap(getFlatdRdAdditionalDOF()->data(), getResidual()->size(),
+        auto P_dRdAdditionalDOFmat =
+            tardigradeHydra::getDynamicSizeMatrixMap(P_dRdAdditionalDOF.data(), getResidual()->size(),
                                                      getAdditionalDOF()->size());
 
         // Form the map for dXdF
@@ -1748,32 +1754,9 @@ namespace tardigradeHydra {
                                                                                 getNumUnknowns(), getAdditionalDOF()->size());
 
         // Solve
-        tardigradeVectorTools::solverType<floatType> linear_solver;
+        tardigradeVectorTools::solverType<floatType> linear_solver(P_Amat);
 
-        if (local_trial_step->preconditioner->getUsePreconditioner()) {
-            if (local_trial_step->preconditioner->getPreconditionerIsDiagonal()) {
-                auto p_map = tardigradeHydra::getDynamicSizeVectorMap(
-                    local_trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size());
-
-                linear_solver = tardigradeVectorTools::solverType<floatType>(p_map.asDiagonal() * Amat);
-
-                dXdAdditionalDOF = -linear_solver.solve(p_map.asDiagonal() * dRdAdditionalDOF);
-
-            } else {
-                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap(
-                    local_trial_step->preconditioner->getFlatPreconditioner()->data(), getResidual()->size(),
-                    getResidual()->size());
-
-                linear_solver = tardigradeVectorTools::solverType<floatType>(p_map * Amat);
-
-                dXdAdditionalDOF = -linear_solver.solve(p_map * dRdAdditionalDOF);
-            }
-
-        } else {
-            linear_solver = tardigradeVectorTools::solverType<floatType>(Amat);
-
-            dXdAdditionalDOF = -linear_solver.solve(dRdAdditionalDOF);
-        }
+        dXdAdditionalDOF = -linear_solver.solve(P_dRdAdditionalDOFmat);
 
         _flatdXdAdditionalDOF.first = true;
     }
