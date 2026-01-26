@@ -484,12 +484,12 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulIterativeSte
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
-        unsigned int numSuccessfulNLStepCalls = 0;
+        unsigned int numSuccessfulIterativeStepCalls = 0;
 
-        virtual void successfulNLStep() override {
+        virtual void successfulIterativeStep() override {
             BOOST_TEST(hydra->getMutableResidual());
 
-            numSuccessfulNLStepCalls++;
+            numSuccessfulIterativeStepCalls++;
         }
 
        protected:
@@ -582,11 +582,11 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulIterativeSte
 
     solver.public_callResidualSuccessfulIterativeStep();
 
-    BOOST_TEST(hydra.r1.numSuccessfulNLStepCalls == 1);
+    BOOST_TEST(hydra.r1.numSuccessfulIterativeStepCalls == 1);
 
-    BOOST_TEST(hydra.r2.numSuccessfulNLStepCalls == 1);
+    BOOST_TEST(hydra.r2.numSuccessfulIterativeStepCalls == 1);
 
-    BOOST_TEST(hydra.r3.numSuccessfulNLStepCalls == 1);
+    BOOST_TEST(hydra.r3.numSuccessfulIterativeStepCalls == 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,

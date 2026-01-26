@@ -410,7 +410,7 @@ namespace tardigradeHydra {
             std::copy(std::begin(*getResidual()), std::end(*getResidual()), std::begin(*globalResidual) + offset);
         }
 
-        void residual::successfulNLStep() {
+        void residual::successfulIterativeStep() {
             /*!
              * Function that runs after a successful nonlinear step
              */

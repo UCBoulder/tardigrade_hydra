@@ -3002,7 +3002,7 @@ BOOST_AUTO_TEST_CASE(test_correctResiduals, *boost::unit_test::tolerance(DEFAULT
     BOOST_TEST(*hydra.getResidual() == answer, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_successfulNLStep, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_successfulIterativeStep, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     /*!
      * Test correcting the global residual after the active set update
      */
@@ -3244,7 +3244,7 @@ BOOST_AUTO_TEST_CASE(test_successfulNLStep, *boost::unit_test::tolerance(DEFAULT
 
     residualMock residual(&hydra, 55, 1, stateVariableIndices, parameters, 0.27);
 
-    residual.successfulNLStep();
+    residual.successfulIterativeStep();
 
     BOOST_TEST(residual.num_updateActiveConstraints_calls == 1);
     BOOST_TEST(residual.num_correctResiduals_calls == 1);

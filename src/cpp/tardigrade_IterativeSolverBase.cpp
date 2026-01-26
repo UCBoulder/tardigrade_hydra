@@ -69,7 +69,7 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Signal to the residuals that we are about to start a nonlinear solve
+     * Signal to the residuals that we are about to start an iterative solve
      */
     void IterativeSolverBase::callResidualPreIterativeSolve() {
         setCurrentResidualIndexMeaningful(true);
@@ -85,7 +85,7 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Signal to the residuals that a successful nonlinear step has been performed
+     * Signal to the residuals that a successful iterative step has been performed
      */
     void IterativeSolverBase::callResidualSuccessfulIterativeStep() {
         setAllowModifyGlobalResidual(true);
@@ -96,7 +96,7 @@ namespace tardigradeHydra {
              ++residual_ptr) {
             setCurrentResidualIndex(residual_ptr - std::begin(*getResidualClasses()));
 
-            (*residual_ptr)->successfulNLStep();
+            (*residual_ptr)->successfulIterativeStep();
         }
 
         setCurrentResidualIndexMeaningful(false);
@@ -105,7 +105,7 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Signal to the residuals that we have finished a nonlinear solve
+     * Signal to the residuals that we have finished an iterative solve
      */
     void IterativeSolverBase::callResidualPostNLSolve() {
         setCurrentResidualIndexMeaningful(true);

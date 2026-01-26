@@ -257,9 +257,9 @@ namespace tardigradeHydra {
              */
         };
 
-        virtual void successfulNLStep() {
+        virtual void successfulIterativeStep() {
             /*!
-             * Function that is called whenever a successful nonlinear step is taken
+             * Function that is called whenever a successful iterative step is taken
              */
         };
 

@@ -4369,7 +4369,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getCurrentResidualOffset, *boost::unit_test:
 
         unsigned int offset = 0;
 
-        virtual void successfulNLStep() override { offset = hydra->getCurrentResidualOffset(); }
+        virtual void successfulIterativeStep() override { offset = hydra->getCurrentResidualOffset(); }
 
        protected:
     };
