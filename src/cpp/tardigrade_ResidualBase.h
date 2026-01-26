@@ -251,9 +251,9 @@ namespace tardigradeHydra {
              */
         };
 
-        virtual void postNLSolve() {
+        virtual void postIterativeSolve() {
             /*!
-             * Function that is called after a nonlinear solve
+             * Function that is called after an interative solve
              */
         };
 

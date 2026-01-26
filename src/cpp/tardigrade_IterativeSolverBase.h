@@ -40,7 +40,7 @@ namespace tardigradeHydra {
 
         virtual void callResidualSuccessfulIterativeStep();
 
-        virtual void callResidualPostNLSolve();
+        virtual void callResidualPostIterativeSolve();
 
         virtual void setTolerance();
 

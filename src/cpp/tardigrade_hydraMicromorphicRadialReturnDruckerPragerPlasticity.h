@@ -126,7 +126,7 @@ namespace tardigradeHydra {
 
             virtual void preIterativeSolve() override;
 
-            virtual void postNLSolve() override;
+            virtual void postIterativeSolve() override;
 
             virtual void setupRelaxedStep(const unsigned int &relaxedStep) override;
 

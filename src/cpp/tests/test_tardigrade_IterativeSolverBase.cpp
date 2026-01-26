@@ -318,23 +318,23 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
             {{7, 6, 5}, {4, 3, 2}, {1, 1, 1}},
         };
 
-        unsigned int num_pre_nlsolve_calls = 0;
+        unsigned int num_pre_iterativesolve_calls = 0;
 
-        unsigned int num_successful_nlstep_calls = 0;
+        unsigned int num_successful_iterativestep_calls = 0;
 
-        unsigned int num_post_nlsolve_calls = 0;
+        unsigned int num_post_iterativesolve_calls = 0;
 
         using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
-        virtual void callResidualPreIterativeSolve() override { num_pre_nlsolve_calls++; }
+        virtual void callResidualPreIterativeSolve() override { num_pre_iterativesolve_calls++; }
 
         virtual void callResidualSuccessfulIterativeStep() override {
             tardigradeHydra::IterativeSolverBase::callResidualSuccessfulIterativeStep();
 
-            num_successful_nlstep_calls++;
+            num_successful_iterativestep_calls++;
         }
 
-        virtual void callResidualPostNLSolve() override { num_post_nlsolve_calls++; }
+        virtual void callResidualPostIterativeSolve() override { num_post_iterativesolve_calls++; }
 
         virtual bool checkConvergence() override {
             getResidual();
@@ -414,11 +414,11 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
     BOOST_TEST(step.getNumUndamped() == 2);
 
-    BOOST_TEST(solver.num_pre_nlsolve_calls == 1);
+    BOOST_TEST(solver.num_pre_iterativesolve_calls == 1);
 
-    BOOST_TEST(solver.num_post_nlsolve_calls == 1);
+    BOOST_TEST(solver.num_post_iterativesolve_calls == 1);
 
-    BOOST_TEST(solver.num_successful_nlstep_calls == 4);
+    BOOST_TEST(solver.num_successful_iterativestep_calls == 4);
 
     BOOST_TEST(damping.getNumLS() == 1);
 
@@ -463,11 +463,11 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
     BOOST_TEST(step_pre.getNumUndamped() == 2);
 
-    BOOST_TEST(solver_pre.num_pre_nlsolve_calls == 1);
+    BOOST_TEST(solver_pre.num_pre_iterativesolve_calls == 1);
 
-    BOOST_TEST(solver_pre.num_post_nlsolve_calls == 1);
+    BOOST_TEST(solver_pre.num_post_iterativesolve_calls == 1);
 
-    BOOST_TEST(solver_pre.num_successful_nlstep_calls == 4);
+    BOOST_TEST(solver_pre.num_successful_iterativestep_calls == 4);
 
     BOOST_TEST(damping.getNumLS() == 1);
 
@@ -696,15 +696,15 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,
     BOOST_TEST(hydra.r3.numPreIterativeSolveCalls == 1);
 }
 
-BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostNLSolve,
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostIterativeSolve,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
-        unsigned int numPostNLSolveCalls = 0;
+        unsigned int numPostIterativeSolveCalls = 0;
 
-        virtual void postNLSolve() override { numPostNLSolveCalls++; }
+        virtual void postIterativeSolve() override { numPostIterativeSolveCalls++; }
 
        protected:
     };
@@ -752,7 +752,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostNLSolve,
        public:
         using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
-        virtual void public_callResidualPostNLSolve() { callResidualPostNLSolve(); }
+        virtual void public_callResidualPostIterativeSolve() { callResidualPostIterativeSolve(); }
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -793,13 +793,13 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostNLSolve,
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
 
-    solver.public_callResidualPostNLSolve();
+    solver.public_callResidualPostIterativeSolve();
 
-    BOOST_TEST(hydra.r1.numPostNLSolveCalls == 1);
+    BOOST_TEST(hydra.r1.numPostIterativeSolveCalls == 1);
 
-    BOOST_TEST(hydra.r2.numPostNLSolveCalls == 1);
+    BOOST_TEST(hydra.r2.numPostIterativeSolveCalls == 1);
 
-    BOOST_TEST(hydra.r3.numPostNLSolveCalls == 1);
+    BOOST_TEST(hydra.r3.numPostIterativeSolveCalls == 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_checkConvergence, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {

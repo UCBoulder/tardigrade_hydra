@@ -4472,9 +4472,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getResidualParameterizationInfo,
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
-        unsigned int numPostNLSolveCalls = 0;
+        unsigned int numPostIterativeSolveCalls = 0;
 
-        virtual void postNLSolve() override { numPostNLSolveCalls++; }
+        virtual void postIterativeSolve() override { numPostIterativeSolveCalls++; }
 
         virtual void addParameterizationInfo(std::string &parameterization_info) override {
             parameterization_info += "Changing the information\n";

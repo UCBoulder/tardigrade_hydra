@@ -430,9 +430,9 @@ namespace tardigradeHydra {
             setActiveConstraints();
         }
 
-        void residual::postNLSolve() {
+        void residual::postIterativeSolve() {
             /*!
-             * Function that runs after a nonlinear solve
+             * Function that runs after an iterative solve
              */
 
             // Assemble the yield surface values

@@ -65,7 +65,7 @@ namespace tardigradeHydra {
             throw convergence_error("Failure to converge main loop\n");
         }
 
-        callResidualPostNLSolve();
+        callResidualPostIterativeSolve();
     }
 
     /*!
@@ -107,7 +107,7 @@ namespace tardigradeHydra {
     /*!
      * Signal to the residuals that we have finished an iterative solve
      */
-    void IterativeSolverBase::callResidualPostNLSolve() {
+    void IterativeSolverBase::callResidualPostIterativeSolve() {
         setCurrentResidualIndexMeaningful(true);
 
         for (auto residual_ptr = std::begin(*getResidualClasses()); residual_ptr != std::end(*getResidualClasses());
@@ -115,7 +115,7 @@ namespace tardigradeHydra {
             setCurrentResidualIndex(residual_ptr - std::begin(*getResidualClasses()));
 
             try {
-                (*residual_ptr)->postNLSolve();
+                (*residual_ptr)->postIterativeSolve();
 
             } catch (std::exception &e) {
                 if (getFailureVerbosityLevel() > 0) {
