@@ -21,11 +21,10 @@ namespace tardigradeHydra {
         const floatVector &parameters, const unsigned int numConfigurations,
         const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
         const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola,
-        const unsigned int maxIterations, const unsigned int maxLSIterations, const floatType lsAlpha)
+        const unsigned int maxIterations)
         : hydraBase(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                     additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola, maxIterations,
-                    maxLSIterations, lsAlpha),
+                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola, maxIterations),
           _microDeformation(microDeformation),
           _previousMicroDeformation(previousMicroDeformation),
           _gradientMicroDeformation(gradientMicroDeformation),
@@ -52,9 +51,7 @@ namespace tardigradeHydra {
          * non-linear solve's residual \param &dimension: The dimension of the problem (defaults to 3) \param
          * &configuration_unknown_count: The number of unknowns in each configuration (defaults to 27) \param &tolr: The
          * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9) \param
-         * &maxIterations: The maximum number of non-linear iterations (defaults to 20) \param &maxLSIterations: The
-         * maximum number of line-search iterations (defaults to 5) \param &lsAlpha: The alpha term for the line search
-         * (defaults to 1e-4)
+         * &maxIterations: The maximum number of non-linear iterations (defaults to 20)
          */
     }
 
