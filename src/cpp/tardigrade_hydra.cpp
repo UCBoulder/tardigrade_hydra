@@ -31,9 +31,7 @@ namespace tardigradeHydra {
      * non-linear solve's residual \param &dimension: The dimension of the problem (defaults to 3) \param
      * &configuration_unknown_count: The number of unknowns in each configuration (defaults to 9) \param &tolr: The
      * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9) \param
-     * &maxIterations: The maximum number of non-linear iterations (defaults to 20) \param &maxLSIterations: The
-     * maximum number of line-search iterations (defaults to 5) \param &lsAlpha: The alpha term for the line search
-     * (defaults to 1e-4)
+     * &maxIterations: The maximum number of non-linear iterations (defaults to 20)
      */
     hydraBase::hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
                          const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
@@ -42,7 +40,7 @@ namespace tardigradeHydra {
                          const floatVector &parameters, const unsigned int numConfigurations,
                          const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
                          const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola,
-                         const unsigned int maxIterations, const unsigned int maxLSIterations, const floatType lsAlpha)
+                         const unsigned int maxIterations)
         : _dimension(dimension),
           _configuration_unknown_count(configuration_unknown_count),
           _stress_size(configuration_unknown_count),
@@ -65,12 +63,8 @@ namespace tardigradeHydra {
         _solver.internal_solver->hydra = this;
 
         solver->setMaxIterations(maxIterations);
-        solver->step->_damping.setLSAlpha(lsAlpha);
-        solver->step->_damping.setMaxLSIterations(maxLSIterations);
 
         _solver.internal_solver->setMaxIterations(maxIterations);
-        _solver.internal_solver->step->_damping.setLSAlpha(lsAlpha);
-        _solver.internal_solver->step->_damping.setMaxLSIterations(maxLSIterations);
         // END TEMP
     }
 
