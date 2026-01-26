@@ -1,16 +1,16 @@
 /**
- * \file test_tardigrade_NonlinearSolverBase.cpp
+ * \file test_tardigrade_IterativeSolverBase.cpp
  *
- * Tests for tardigrade_NonlinearSolverBase
+ * Tests for tardigrade_IterativeSolverBase
  */
 
 #include "tardigrade_ArmijoGradientDamping.h"
-#include "tardigrade_NonlinearSolverBase.h"
+#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_ResidualBase.h"
 #include "tardigrade_NonlinearStepBase.h"
 #include "tardigrade_hydra.h"
 
-#define BOOST_TEST_MODULE test_tardigrade_NonlinearSolverBase
+#define BOOST_TEST_MODULE test_tardigrade_IterativeSolverBase
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -88,7 +88,7 @@ namespace tardigradeHydra {
 
 unsigned int test_SolverBase_solve_in_gradient_convergence = 0;
 
-BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
         };
     };
 
-    class NonlinearSolverBaseMock : public tardigradeHydra::NonlinearSolverBase {
+    class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
        public:
         std::vector<std::vector<tardigradeHydra::floatVector> > residual = {
             {{1, 2, 3}},
@@ -324,12 +324,12 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
 
         unsigned int num_post_nlsolve_calls = 0;
 
-        using tardigradeHydra::NonlinearSolverBase::NonlinearSolverBase;
+        using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
         virtual void callResidualPreNLSolve() override { num_pre_nlsolve_calls++; }
 
         virtual void callResidualSuccessfulNLStep() override {
-            tardigradeHydra::NonlinearSolverBase::callResidualSuccessfulNLStep();
+            tardigradeHydra::IterativeSolverBase::callResidualSuccessfulNLStep();
 
             num_successful_nlstep_calls++;
         }
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    NonlinearSolverBaseMock   solver;
+    IterativeSolverBaseMock   solver;
     SolverStepBaseMock        step;
     ArmijoGradientDampingMock damping;
     NonlinearStepBaseMock     trial_step;
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                             numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9, 20);
 
-    NonlinearSolverBaseMock   solver_pre;
+    IterativeSolverBaseMock   solver_pre;
     SolverStepBaseMock        step_pre;
     ArmijoGradientDampingMock damping_pre;
     NonlinearStepBaseMock     trial_step_pre;
@@ -478,7 +478,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_solve, *boost::unit_test::toleranc
     BOOST_TEST(hydra.num_derivative_calls == 3);  // 3 because we initialize the jacobian
 }
 
-BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualSuccessfulNLStep,
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulNLStep,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
@@ -534,9 +534,9 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualSuccessfulNLStep,
         void setSolver(tardigradeHydra::SolverBase *_solver) { solver = solver; }
     };
 
-    class NonlinearSolverBaseMock : public tardigradeHydra::NonlinearSolverBase {
+    class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
        public:
-        using tardigradeHydra::NonlinearSolverBase::NonlinearSolverBase;
+        using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
         virtual void public_callResidualSuccessfulNLStep() { callResidualSuccessfulNLStep(); }
     };
@@ -575,7 +575,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualSuccessfulNLStep,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    NonlinearSolverBaseMock solver;
+    IterativeSolverBaseMock solver;
 
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
@@ -589,7 +589,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualSuccessfulNLStep,
     BOOST_TEST(hydra.r3.numSuccessfulNLStepCalls == 1);
 }
 
-BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualPreNLSolve,
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreNLSolve,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
@@ -642,9 +642,9 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualPreNLSolve,
         tardigradeHydra::SolverBase *getSolver() { return solver; }
     };
 
-    class NonlinearSolverBaseMock : public tardigradeHydra::NonlinearSolverBase {
+    class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
        public:
-        using tardigradeHydra::NonlinearSolverBase::NonlinearSolverBase;
+        using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
         void public_callResidualPreNLSolve() { callResidualPreNLSolve(); }
     };
@@ -683,7 +683,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualPreNLSolve,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    NonlinearSolverBaseMock solver;
+    IterativeSolverBaseMock solver;
     solver.hydra = &hydra;
     hydra.setSolver(&solver);
 
@@ -696,7 +696,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualPreNLSolve,
     BOOST_TEST(hydra.r3.numPreNLSolveCalls == 1);
 }
 
-BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualPostNLSolve,
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostNLSolve,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
@@ -748,9 +748,9 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualPostNLSolve,
         void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
-    class NonlinearSolverBaseMock : public tardigradeHydra::NonlinearSolverBase {
+    class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
        public:
-        using tardigradeHydra::NonlinearSolverBase::NonlinearSolverBase;
+        using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
         virtual void public_callResidualPostNLSolve() { callResidualPostNLSolve(); }
     };
@@ -789,7 +789,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualPostNLSolve,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    NonlinearSolverBaseMock solver;
+    IterativeSolverBaseMock solver;
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
 
@@ -802,7 +802,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_callResidualPostNLSolve,
     BOOST_TEST(hydra.r3.numPostNLSolveCalls == 1);
 }
 
-BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_checkConvergence, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_checkConvergence, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
@@ -844,7 +844,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_checkConvergence, *boost::unit_tes
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    tardigradeHydra::NonlinearSolverBase solver;
+    tardigradeHydra::IterativeSolverBase solver;
 
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
@@ -872,7 +872,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_checkConvergence, *boost::unit_tes
     BOOST_CHECK(solver.checkConvergence());
 }
 
-BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_setTolerance, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_setTolerance, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
@@ -914,7 +914,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearSolverBase_setTolerance, *boost::unit_test::t
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    tardigradeHydra::NonlinearSolverBase solver;
+    tardigradeHydra::IterativeSolverBase solver;
 
     hydra.setSolver(&solver);
     solver.hydra = &hydra;

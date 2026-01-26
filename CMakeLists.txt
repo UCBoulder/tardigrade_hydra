@@ -45,7 +45,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity"
     "tardigrade_hydraDOFVelocityGradientDeformation"
     "tardigrade_SolverBase"
-    "tardigrade_NonlinearSolverBase"
+    "tardigrade_IterativeSolverBase"
     "tardigrade_RelaxedSolver"
     "tardigrade_StepDampingBase"
     "tardigrade_GradientDamping"

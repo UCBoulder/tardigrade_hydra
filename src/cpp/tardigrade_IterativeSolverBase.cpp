@@ -1,12 +1,12 @@
 /**
  ******************************************************************************
- * \file tardigrade_NonlinearSolverBase.cpp
+ * \file tardigrade_IterativeSolverBase.cpp
  ******************************************************************************
- * The base class for nonlinear solver classes
+ * The base class for iterative solver classes
  ******************************************************************************
  */
 
-#include "tardigrade_NonlinearSolverBase.h"
+#include "tardigrade_IterativeSolverBase.h"
 
 #include "tardigrade_hydra.h"
 
@@ -16,7 +16,7 @@ namespace tardigradeHydra {
      * The function that is called when first attempting to
      * solve the problem
      */
-    void NonlinearSolverBase::initialSolveAttempt() {
+    void IterativeSolverBase::initialSolveAttempt() {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
 
         // Reset the internal steps
@@ -71,7 +71,7 @@ namespace tardigradeHydra {
     /*!
      * Signal to the residuals that we are about to start a nonlinear solve
      */
-    void NonlinearSolverBase::callResidualPreNLSolve() {
+    void IterativeSolverBase::callResidualPreNLSolve() {
         setCurrentResidualIndexMeaningful(true);
 
         for (auto residual_ptr = std::begin(*getResidualClasses()); residual_ptr != std::end(*getResidualClasses());
@@ -87,7 +87,7 @@ namespace tardigradeHydra {
     /*!
      * Signal to the residuals that a successful nonlinear step has been performed
      */
-    void NonlinearSolverBase::callResidualSuccessfulNLStep() {
+    void IterativeSolverBase::callResidualSuccessfulNLStep() {
         setAllowModifyGlobalResidual(true);
 
         setCurrentResidualIndexMeaningful(true);
@@ -107,7 +107,7 @@ namespace tardigradeHydra {
     /*!
      * Signal to the residuals that we have finished a nonlinear solve
      */
-    void NonlinearSolverBase::callResidualPostNLSolve() {
+    void IterativeSolverBase::callResidualPostNLSolve() {
         setCurrentResidualIndexMeaningful(true);
 
         for (auto residual_ptr = std::begin(*getResidualClasses()); residual_ptr != std::end(*getResidualClasses());
@@ -136,7 +136,7 @@ namespace tardigradeHydra {
     /*!
      * Check the convergence
      */
-    bool NonlinearSolverBase::checkConvergence() {
+    bool IterativeSolverBase::checkConvergence() {
         const floatVector *tolerance = getTolerance();
 
         const floatVector *residual = getResidual();
@@ -158,7 +158,7 @@ namespace tardigradeHydra {
     /*!
      * Get the tolerance
      */
-    const floatVector *NonlinearSolverBase::getTolerance() {
+    const floatVector *IterativeSolverBase::getTolerance() {
         if (!_tolerance.first) {
             TARDIGRADE_ERROR_TOOLS_CATCH(setTolerance());
         }
@@ -171,7 +171,7 @@ namespace tardigradeHydra {
      *
      * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
      */
-    void NonlinearSolverBase::setTolerance() {
+    void IterativeSolverBase::setTolerance() {
         auto tolerance = get_SetDataStorage_tolerance();
 
         *tolerance.value = tardigradeVectorTools::abs(*getResidual()) + tardigradeVectorTools::abs(*getUnknownVector());
@@ -184,17 +184,17 @@ namespace tardigradeHydra {
      *
      * \param tolerance: The tolerance vector for each value of the residual
      */
-    void NonlinearSolverBase::setTolerance(const floatVector &tolerance) { setConstantData(tolerance, _tolerance); }
+    void IterativeSolverBase::setTolerance(const floatVector &tolerance) { setConstantData(tolerance, _tolerance); }
 
     /*!
      * Return a SetDataStorageConstant setter for the tolerance
      */
-    NonlinearSolverBase::SetDataStorageConstant<floatVector> NonlinearSolverBase::get_SetDataStorage_tolerance() {
+    IterativeSolverBase::SetDataStorageConstant<floatVector> IterativeSolverBase::get_SetDataStorage_tolerance() {
         return SetDataStorageConstant<floatVector>(&_tolerance);
     }
 
     /*!
      * Check if the number of nonlinear iterations has exceeded the allowable count
      */
-    bool NonlinearSolverBase::checkIteration() { return getIteration() < getMaxIterations(); }
+    bool IterativeSolverBase::checkIteration() { return getIteration() < getMaxIterations(); }
 }  // namespace tardigradeHydra

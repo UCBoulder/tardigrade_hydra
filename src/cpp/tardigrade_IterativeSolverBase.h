@@ -1,13 +1,13 @@
 /**
  ******************************************************************************
- * \file tardigrade_NonlinearSolverBase.h
+ * \file tardigrade_IterativeSolverBase.h
  ******************************************************************************
- * The base class for nonlinear solver objects
+ * The base class for iterative solver objects
  ******************************************************************************
  */
 
-#ifndef TARDIGRADE_NONLINEARSOLVERBASE
-#define TARDIGRADE_NONLINEARSOLVERBASE
+#ifndef TARDIGRADE_ITERATIVESOLVERBASE
+#define TARDIGRADE_ITERATIVESOLVERBASE
 
 #include "tardigrade_SolverBase.h"
 
@@ -15,7 +15,7 @@ namespace tardigradeHydra {
 
     namespace unit_test {
 
-        class NonlinearSolveBaseTester;
+        class IterativeSolverBaseTester;
 
     }
 
@@ -23,7 +23,7 @@ namespace tardigradeHydra {
      * The base class for step damping operations to improve
      * stability
      */
-    class NonlinearSolverBase : public SolverBase {
+    class IterativeSolverBase : public SolverBase {
        public:
         using tardigradeHydra::SolverBase::SolverBase;
 
@@ -50,6 +50,8 @@ namespace tardigradeHydra {
 
        private:
         DataStorage<floatVector> _tolerance;  //!< The tolerance vector for the non-linear solve
+
+        friend class tardigradeHydra::unit_test::IterativeSolverBaseTester; //!< The unit test access class
     };
 
 }  // namespace tardigradeHydra

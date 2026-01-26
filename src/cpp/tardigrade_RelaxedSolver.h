@@ -11,7 +11,7 @@
 #define TARDIGRADE_RELAXEDSOLVER_H
 
 #include "tardigrade_CoreDefinitions.h"
-#include "tardigrade_NonlinearSolverBase.h"
+#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_SolverBase.h"
 
 namespace tardigradeHydra {
@@ -53,7 +53,7 @@ namespace tardigradeHydra {
         virtual void performRelaxedSolve();
 
        protected:
-        NonlinearSolverBase _internal_solver;  //!< The default internal solver
+        IterativeSolverBase _internal_solver;  //!< The default internal solver
 
         SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
 

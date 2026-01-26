@@ -7,7 +7,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "tardigrade_NonlinearSolverBase.h"
+#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_RelaxedSolver.h"
 #include "tardigrade_SolverBase.h"
 #include "tardigrade_constitutive_tools.h"
@@ -4413,9 +4413,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getCurrentResidualOffset, *boost::unit_test:
         void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
-    class NonlinearSolverBaseMock : public tardigradeHydra::NonlinearSolverBase {
+    class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
        public:
-        using tardigradeHydra::NonlinearSolverBase::NonlinearSolverBase;
+        using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
         virtual void public_callResidualSuccessfulNLStep() { callResidualSuccessfulNLStep(); }
     };
@@ -4453,7 +4453,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getCurrentResidualOffset, *boost::unit_test:
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    NonlinearSolverBaseMock solver;
+    IterativeSolverBaseMock solver;
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
 
