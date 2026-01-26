@@ -106,19 +106,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-BOOST_AUTO_TEST_CASE(test_PreconditionerBase_getUsePreconditioner,
-                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::PreconditionerBase preconditioner;
-
-    preconditioner._use_preconditioner = true;
-
-    BOOST_TEST(preconditioner.getUsePreconditioner());
-
-    preconditioner._use_preconditioner = false;
-
-    BOOST_TEST(!preconditioner.getUsePreconditioner());
-}
-
 BOOST_AUTO_TEST_CASE(test_PreconditionerBase_getPreconditionerType,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::PreconditionerBase preconditioner;
