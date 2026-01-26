@@ -32,9 +32,6 @@ namespace tardigradeHydra {
 
         virtual void reset();
 
-        //! Get the preconditioner type
-        constexpr unsigned int getPreconditionerType() { return _preconditioner_type; }
-
         //! Get a pointer to the row-major form of the preconditioner
         const floatVector *getFlatPreconditioner();
 
@@ -49,8 +46,6 @@ namespace tardigradeHydra {
         // END PASS THROUGH FUNCTIONS
 
         // TEMP
-        unsigned int _preconditioner_type = 0;  //!< The type of preconditioner to use
-
         virtual void formMaxRowPreconditioner();  //!< Temporary function. We won't use it in the future.
         // END TEMP
 

@@ -76,12 +76,7 @@ namespace tardigradeHydra {
      * Form the preconditioner matrix
      */
     void PreconditionerBase::formPreconditioner() {
-        if (_preconditioner_type == 0) {
-            formMaxRowPreconditioner();
-
-        } else {
-            throw std::runtime_error("Preconditioner type not recognized");
-        }
+        _preconditioner.second = floatVector(trial_step->getNumUnknowns(),1.);
 
         _preconditioner.first = true;
 
