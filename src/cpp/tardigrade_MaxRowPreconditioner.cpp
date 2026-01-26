@@ -72,13 +72,15 @@ namespace tardigradeHydra {
      */
     void MaxRowPreconditioner::preconditionMatrix( const floatVector &A, floatVector &B ){
 
+        auto cols = A.size( ) / getNumUnknowns( );
+
         B = floatVector(A.size(),0);
 
         auto A_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(A.data(), getNumUnknowns(), getNumUnknowns());
+            tardigradeHydra::getDynamicSizeMatrixMap(A.data(), getNumUnknowns(), cols);
 
         auto B_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(B.data(), getNumUnknowns(), getNumUnknowns());
+            tardigradeHydra::getDynamicSizeMatrixMap(B.data(), getNumUnknowns(), cols);
 
         auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
                                                               getFlatPreconditioner()->size()); //Current preconditioner is flat
