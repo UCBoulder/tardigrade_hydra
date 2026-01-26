@@ -150,7 +150,8 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
                                                  0., 0., 48.07641984, 1., 0., -7.68935399, 0., 0., 18.48297386,
                                                  1., 0., 0.,          0., 0., 0.,          1.};
 
-        virtual void formMaxRowPreconditioner() override {
+        void test_initialize(){
+
             auto solver = tardigradeHydra::unit_test::SolverStepBaseTester::get_solver(*(trial_step->step));
             auto hydra  = tardigradeHydra::unit_test::SolverBaseTester::get_hydra(*solver);
 
@@ -158,8 +159,8 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
 
             tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian(*hydra, jacobian);
 
-            tardigradeHydra::PreconditionerBase::formMaxRowPreconditioner();
         }
+
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -183,6 +184,8 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
 
     hydra.getSolver()->step->trial_step = &trial_step;
     trial_step.step = hydra.getSolver()->step;
+
+    preconditioner.test_initialize();
 
     tardigradeHydra::floatVector answer = {1., 1., 0.02080022, 0.05410385, 1.};
 
