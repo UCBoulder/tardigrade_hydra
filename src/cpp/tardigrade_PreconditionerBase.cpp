@@ -116,17 +116,7 @@ namespace tardigradeHydra {
     void PreconditionerBase::preconditionVector( const floatVector &X, floatVector &Y ){
 
         Y = floatVector(X.size(),0);
-
-        auto X_map =
-            tardigradeHydra::getDynamicSizeVectorMap(X.data(), X.size());
-
-        auto Y_map =
-            tardigradeHydra::getDynamicSizeVectorMap(Y.data(), Y.size());
-
-        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
-                                                              getFlatPreconditioner()->size()); //Current preconditioner is flat
-
-        Y_map = p_map.asDiagonal( ) * X_map;
+        std::copy( std::begin( X ), std::end( X ), std::begin( Y ) );
 
     }
 
@@ -139,17 +129,7 @@ namespace tardigradeHydra {
     void PreconditionerBase::preconditionMatrix( const floatVector &A, floatVector &B ){
 
         B = floatVector(A.size(),0);
-
-        auto A_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(A.data(), getNumUnknowns(), getNumUnknowns());
-
-        auto B_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(B.data(), getNumUnknowns(), getNumUnknowns());
-
-        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
-                                                              getFlatPreconditioner()->size()); //Current preconditioner is flat
-
-        B_map = p_map.asDiagonal( ) * A_map;
+        std::copy( std::begin( A ), std::end( A ), std::begin( B ) );
 
     }
 }  // namespace tardigradeHydra
