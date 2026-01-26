@@ -328,8 +328,8 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
         virtual void callResidualPreIterativeSolve() override { num_pre_nlsolve_calls++; }
 
-        virtual void callResidualSuccessfulNLStep() override {
-            tardigradeHydra::IterativeSolverBase::callResidualSuccessfulNLStep();
+        virtual void callResidualSuccessfulIterativeStep() override {
+            tardigradeHydra::IterativeSolverBase::callResidualSuccessfulIterativeStep();
 
             num_successful_nlstep_calls++;
         }
@@ -478,7 +478,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     BOOST_TEST(hydra.num_derivative_calls == 3);  // 3 because we initialize the jacobian
 }
 
-BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulNLStep,
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulIterativeStep,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
@@ -538,7 +538,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulNLStep,
        public:
         using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
-        virtual void public_callResidualSuccessfulNLStep() { callResidualSuccessfulNLStep(); }
+        virtual void public_callResidualSuccessfulIterativeStep() { callResidualSuccessfulIterativeStep(); }
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -580,7 +580,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulNLStep,
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
 
-    solver.public_callResidualSuccessfulNLStep();
+    solver.public_callResidualSuccessfulIterativeStep();
 
     BOOST_TEST(hydra.r1.numSuccessfulNLStepCalls == 1);
 

@@ -46,7 +46,7 @@ namespace tardigradeHydra {
             step->incrementSolution();
 
             // Call residual end of a successful nonlinear step functions
-            callResidualSuccessfulNLStep();
+            callResidualSuccessfulIterativeStep();
 
             // Increment the iteration count
             incrementIteration();
@@ -87,7 +87,7 @@ namespace tardigradeHydra {
     /*!
      * Signal to the residuals that a successful nonlinear step has been performed
      */
-    void IterativeSolverBase::callResidualSuccessfulNLStep() {
+    void IterativeSolverBase::callResidualSuccessfulIterativeStep() {
         setAllowModifyGlobalResidual(true);
 
         setCurrentResidualIndexMeaningful(true);

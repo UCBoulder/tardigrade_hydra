@@ -4417,7 +4417,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getCurrentResidualOffset, *boost::unit_test:
        public:
         using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
-        virtual void public_callResidualSuccessfulNLStep() { callResidualSuccessfulNLStep(); }
+        virtual void public_callResidualSuccessfulIterativeStep() { callResidualSuccessfulIterativeStep(); }
     };
 
     floatType time = 1.1;
@@ -4457,7 +4457,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getCurrentResidualOffset, *boost::unit_test:
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
 
-    solver.public_callResidualSuccessfulNLStep();
+    solver.public_callResidualSuccessfulIterativeStep();
 
     BOOST_TEST(hydra.r1.offset == 0);
 
