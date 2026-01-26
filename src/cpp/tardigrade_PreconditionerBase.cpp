@@ -84,25 +84,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Form a left preconditioner comprised of the inverse of the maximum value of each row
-     */
-    void PreconditionerBase::formMaxRowPreconditioner() {
-        const unsigned int problem_size = trial_step->getNumUnknowns();
-
-        _preconditioner.second = floatVector(problem_size, 0);
-
-        // Find the absolute maximum value in each row
-        for (unsigned int i = 0; i < problem_size; i++) {
-            _preconditioner.second[i] =
-                1 / std::max(std::fabs(*std::max_element(
-                                 getFlatNonlinearLHS()->begin() + problem_size * i,
-                                 getFlatNonlinearLHS()->begin() + problem_size * (i + 1),
-                                 [](const floatType &a, const floatType &b) { return std::fabs(a) < std::fabs(b); })),
-                             1e-15);
-        }
-    }
-
-    /*!
      * Precondition the incoming vector \f$X\f$ via \f$Y_I = P_{IJ} X_J\f$
      *
      * \param &X: The incoming vector to be preconditioned

@@ -45,10 +45,6 @@ namespace tardigradeHydra {
         const floatVector *getNonlinearRHS();
         // END PASS THROUGH FUNCTIONS
 
-        // TEMP
-        virtual void formMaxRowPreconditioner();  //!< Temporary function. We won't use it in the future.
-        // END TEMP
-
         virtual void preconditionVector( const floatVector &X, floatVector &Y );
 
         virtual void preconditionMatrix( const floatVector &A, floatVector &B );
