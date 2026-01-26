@@ -4455,6 +4455,8 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
+        tardigradeHydra::SolverBase *getSolver(){ return solver; }
+
        private:
         virtual void setResidualClasses() {
             std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(2);
@@ -4501,6 +4503,13 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
                         previousDeformationGradient, additionalDOF, previousAdditionalDOF, previousStateVariables,
                         parameters, numConfigurations, numNonLinearSolveStateVariables, dimension);
 
+    tardigradeHydra::PreconditionerBase preconditioner;
+    auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydra.getSolver()->step->trial_step);
+    TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The trial_step is not a NonlinearStepBase object");
+
+    local_trial_step->preconditioner = &preconditioner;
+    preconditioner.trial_step = local_trial_step;
+
     hydra.initialize();
 
     floatVector dStressdF(9 * 9, 0);
@@ -4531,6 +4540,20 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient,
                              additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
                              numConfigurations, numNonLinearSolveStateVariables, dimension);
+
+        tardigradeHydra::PreconditionerBase preconditionerp;
+        auto local_trial_stepp = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydrap.getSolver()->step->trial_step);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_stepp != nullptr, "The trial_step is not a NonlinearStepBase object");
+
+        local_trial_stepp->preconditioner = &preconditionerp;
+        preconditionerp.trial_step = local_trial_stepp;
+
+        tardigradeHydra::PreconditionerBase preconditionerm;
+        auto local_trial_stepm = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydram.getSolver()->step->trial_step);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_stepm != nullptr, "The trial_step is not a NonlinearStepBase object");
+
+        local_trial_stepm->preconditioner = &preconditionerm;
+        preconditionerm.trial_step = local_trial_stepm;
 
         hydrap.evaluate();
 

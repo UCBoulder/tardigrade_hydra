@@ -3232,10 +3232,20 @@ BOOST_AUTO_TEST_CASE(test_computeTangents, *boost::unit_test::tolerance(2e-6)) {
         }
 
         virtual const unsigned int getNumUnknowns() override { return residual.size(); }
+
+        tardigradeHydra::SolverBase *getSolver( ){ return solver; }
     };
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
+    tardigradeHydra::PreconditionerBase preconditioner;
+
+    auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydra.getSolver()->step->trial_step);
+    TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The trial_step is not a NonlinearStepBase object");
+
+    local_trial_step->preconditioner = &preconditioner;
+    preconditioner.trial_step = local_trial_step;
+    hydra.initialize();
 
     floatVector dXdF = {-0.82465846, -0.07170032, -0.6980051,  -0.20331326,   -0.23335885, -0.61372185, -0.10491576,
                         -0.88596209, -0.61044411, -0.68740006, -0.0013611877, -0.58912653, -0.57592882, -0.20858956,
@@ -3257,13 +3267,7 @@ BOOST_AUTO_TEST_CASE(test_computeTangents, *boost::unit_test::tolerance(2e-6)) {
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                             numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0);
-
-    try {
-        hydra_pre.getFlatdXdF();
-    } catch (std::exception &e) {
-        tardigradeErrorTools::printNestedExceptions(e);
-        throw;
-    }
+    hydra.initialize();
 
     BOOST_TEST(dXdF == *hydra_pre.getFlatdXdF(), CHECK_PER_ELEMENT);
 
