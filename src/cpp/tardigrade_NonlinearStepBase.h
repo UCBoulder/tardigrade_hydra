@@ -9,7 +9,8 @@
 #ifndef TARDIGRADE_NONLINEARSTEPBASE_H
 #define TARDIGRADE_NONLINEARSTEPBASE_H
 
-#include"tardigrade_TrialStepBase.h"
+#include "tardigrade_TrialStepBase.h"
+#include "tardigrade_MaxRowPreconditioner.h"
 #include "tardigrade_PreconditionerBase.h"
 
 namespace tardigradeHydra{
@@ -52,7 +53,7 @@ namespace tardigradeHydra{
 
             // END SQP SOLVER FUNCTIONS
 
-            PreconditionerBase  _preconditioner;  //!< Temporary object
+            MaxRowPreconditioner  _preconditioner;  //!< Default preconditioner
             PreconditionerBase *preconditioner =
                 &_preconditioner;  //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
