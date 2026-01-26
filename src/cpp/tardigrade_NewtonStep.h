@@ -13,6 +13,26 @@
 
 namespace tardigradeHydra {
 
+    namespace unit_test {
+
+        class NewtonStepTester; //!< The test class for NewtonStep
+
+    }
+
+    /*!
+     * A class which proposes a Newton-Raphson step to solve a nonlinear
+     * problem
+     */
+    class NewtonStep : public NonlinearStepBase {
+
+        public:
+
+            using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
+
+            void computeTrial() override;
+
+    };
+
 }
 
 #endif
