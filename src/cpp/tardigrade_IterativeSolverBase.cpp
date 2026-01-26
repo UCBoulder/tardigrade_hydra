@@ -33,7 +33,7 @@ namespace tardigradeHydra {
 
         floatVector deltaX(getNumUnknowns(), 0);
 
-        callResidualPreNLSolve();
+        callResidualPreIterativeSolve();
 
         step->damping->reset();
 
@@ -71,14 +71,14 @@ namespace tardigradeHydra {
     /*!
      * Signal to the residuals that we are about to start a nonlinear solve
      */
-    void IterativeSolverBase::callResidualPreNLSolve() {
+    void IterativeSolverBase::callResidualPreIterativeSolve() {
         setCurrentResidualIndexMeaningful(true);
 
         for (auto residual_ptr = std::begin(*getResidualClasses()); residual_ptr != std::end(*getResidualClasses());
              ++residual_ptr) {
             setCurrentResidualIndex(residual_ptr - std::begin(*getResidualClasses()));
 
-            (*residual_ptr)->preNLSolve();
+            (*residual_ptr)->preIterativeSolve();
         }
 
         setCurrentResidualIndexMeaningful(false);

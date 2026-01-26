@@ -3250,7 +3250,7 @@ BOOST_AUTO_TEST_CASE(test_successfulNLStep, *boost::unit_test::tolerance(DEFAULT
     BOOST_TEST(residual.num_correctResiduals_calls == 1);
 }
 
-BOOST_AUTO_TEST_CASE(test_preNLSolve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_preIterativeSolve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     /*!
      * Test correcting the global residual after the active set update
      */
@@ -3489,7 +3489,7 @@ BOOST_AUTO_TEST_CASE(test_preNLSolve, *boost::unit_test::tolerance(DEFAULT_TEST_
 
     residualMock residual(&hydra, 55, 1, stateVariableIndices, parameters, 0.27);
 
-    residual.preNLSolve();
+    residual.preIterativeSolve();
 
     BOOST_TEST(residual.num_setActiveConstraints_calls == 1);
 }

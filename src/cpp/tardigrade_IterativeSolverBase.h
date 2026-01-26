@@ -36,7 +36,7 @@ namespace tardigradeHydra {
         bool checkIteration();
 
        protected:
-        virtual void callResidualPreNLSolve();
+        virtual void callResidualPreIterativeSolve();
 
         virtual void callResidualSuccessfulNLStep();
 

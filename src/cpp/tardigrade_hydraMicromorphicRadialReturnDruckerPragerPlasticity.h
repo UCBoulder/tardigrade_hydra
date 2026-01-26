@@ -124,7 +124,7 @@ namespace tardigradeHydra {
 
             virtual void successfulNLStep() override;
 
-            virtual void preNLSolve() override;
+            virtual void preIterativeSolve() override;
 
             virtual void postNLSolve() override;
 

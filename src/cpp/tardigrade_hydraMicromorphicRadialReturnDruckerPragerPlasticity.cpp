@@ -422,9 +422,9 @@ namespace tardigradeHydra {
             }
         }
 
-        void residual::preNLSolve() {
+        void residual::preIterativeSolve() {
             /*!
-             * Function that runs prior to a nonlinear solve
+             * Function that runs prior to an iterative solve
              */
 
             setActiveConstraints();

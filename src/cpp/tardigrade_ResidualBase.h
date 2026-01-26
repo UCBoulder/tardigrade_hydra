@@ -245,9 +245,9 @@ namespace tardigradeHydra {
              */
         }
 
-        virtual void preNLSolve() {
+        virtual void preIterativeSolve() {
             /*!
-             * Function that is called prior to a nonlinear solve
+             * Function that is called prior to an iterative solve
              */
         };
 

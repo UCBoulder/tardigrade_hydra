@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
         using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
-        virtual void callResidualPreNLSolve() override { num_pre_nlsolve_calls++; }
+        virtual void callResidualPreIterativeSolve() override { num_pre_nlsolve_calls++; }
 
         virtual void callResidualSuccessfulNLStep() override {
             tardigradeHydra::IterativeSolverBase::callResidualSuccessfulNLStep();
@@ -589,15 +589,15 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulNLStep,
     BOOST_TEST(hydra.r3.numSuccessfulNLStepCalls == 1);
 }
 
-BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreNLSolve,
+BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
-        unsigned int numPreNLSolveCalls = 0;
+        unsigned int numPreIterativeSolveCalls = 0;
 
-        virtual void preNLSolve() override { numPreNLSolveCalls++; }
+        virtual void preIterativeSolve() override { numPreIterativeSolveCalls++; }
 
        protected:
     };
@@ -646,7 +646,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreNLSolve,
        public:
         using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
-        void public_callResidualPreNLSolve() { callResidualPreNLSolve(); }
+        void public_callResidualPreIterativeSolve() { callResidualPreIterativeSolve(); }
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -687,13 +687,13 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreNLSolve,
     solver.hydra = &hydra;
     hydra.setSolver(&solver);
 
-    solver.public_callResidualPreNLSolve();
+    solver.public_callResidualPreIterativeSolve();
 
-    BOOST_TEST(hydra.r1.numPreNLSolveCalls == 1);
+    BOOST_TEST(hydra.r1.numPreIterativeSolveCalls == 1);
 
-    BOOST_TEST(hydra.r2.numPreNLSolveCalls == 1);
+    BOOST_TEST(hydra.r2.numPreIterativeSolveCalls == 1);
 
-    BOOST_TEST(hydra.r3.numPreNLSolveCalls == 1);
+    BOOST_TEST(hydra.r3.numPreIterativeSolveCalls == 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostNLSolve,
