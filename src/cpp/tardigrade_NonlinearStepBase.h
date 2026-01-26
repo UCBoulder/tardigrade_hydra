@@ -40,8 +40,6 @@ namespace tardigradeHydra{
 
             void solveNewtonUpdate(floatVector &deltaX_tr);
 
-            void performPreconditionedSolve(floatVector &deltaX_tr);  // TEMP REMOVE THIS
-
             // END NEWTON SOLVER FUNCTIONS
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
