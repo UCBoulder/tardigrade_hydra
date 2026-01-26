@@ -21,12 +21,11 @@ namespace tardigradeHydra {
         const floatVector &parameters, const unsigned int numConfigurations,
         const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
         const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola,
-        const unsigned int maxIterations, const unsigned int maxLSIterations, const floatType lsAlpha,
-        const bool use_preconditioner, const unsigned int preconditioner_type)
+        const unsigned int maxIterations, const unsigned int maxLSIterations, const floatType lsAlpha)
         : hydraBase(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                     additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
                     numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola, maxIterations,
-                    maxLSIterations, lsAlpha, use_preconditioner, preconditioner_type),
+                    maxLSIterations, lsAlpha),
           _microDeformation(microDeformation),
           _previousMicroDeformation(previousMicroDeformation),
           _gradientMicroDeformation(gradientMicroDeformation),
@@ -55,9 +54,7 @@ namespace tardigradeHydra {
          * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9) \param
          * &maxIterations: The maximum number of non-linear iterations (defaults to 20) \param &maxLSIterations: The
          * maximum number of line-search iterations (defaults to 5) \param &lsAlpha: The alpha term for the line search
-         * (defaults to 1e-4) \param use_preconditioner: Boolean for whether to use the preconditioner \param
-         * preconditioner_type: The type of the preconditioner to use.  Options are 0. A diagonal pre-conditioner
-         * populate by the inverse of the absolute largest entries of the Jacobian's rows
+         * (defaults to 1e-4)
          */
     }
 

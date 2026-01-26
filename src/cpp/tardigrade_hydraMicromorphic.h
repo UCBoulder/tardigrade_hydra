@@ -36,8 +36,7 @@ namespace tardigradeHydra {
                               const unsigned int dimension = 3, const unsigned int configuration_unknown_count = 45,
                               const floatType tolr = 1e-9, const floatType tola = 1e-9,
                               const unsigned int maxIterations = 20, const unsigned int maxLSIterations = 5,
-                              const floatType lsAlpha = 1e-4, const bool use_preconditioner = false,
-                              const unsigned int preconditioner_type = 0);
+                              const floatType lsAlpha = 1e-4);
 
         virtual void initialize() override;
 

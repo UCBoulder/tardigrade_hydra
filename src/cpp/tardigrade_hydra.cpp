@@ -33,9 +33,7 @@ namespace tardigradeHydra {
      * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9) \param
      * &maxIterations: The maximum number of non-linear iterations (defaults to 20) \param &maxLSIterations: The
      * maximum number of line-search iterations (defaults to 5) \param &lsAlpha: The alpha term for the line search
-     * (defaults to 1e-4) \param &use_preconditioner: A flag for whether to pre-condition the Jacobian (can help
-     * with scaling issues) \param &preconditioner_type: The type of pre-conditioner to use. Options are 0. A
-     * diagonal pre-conditioner populate by the inverse of the absolute largest entries of the Jacobian's rows
+     * (defaults to 1e-4)
      */
     hydraBase::hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
                          const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
@@ -44,8 +42,7 @@ namespace tardigradeHydra {
                          const floatVector &parameters, const unsigned int numConfigurations,
                          const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
                          const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola,
-                         const unsigned int maxIterations, const unsigned int maxLSIterations, const floatType lsAlpha,
-                         const bool use_preconditioner, const unsigned int preconditioner_type)
+                         const unsigned int maxIterations, const unsigned int maxLSIterations, const floatType lsAlpha)
         : _dimension(dimension),
           _configuration_unknown_count(configuration_unknown_count),
           _stress_size(configuration_unknown_count),
