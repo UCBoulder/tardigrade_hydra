@@ -189,4 +189,11 @@ namespace tardigradeHydra {
         step->addToFailureOutput(value, add_endline);
     }
 
+    /*!
+     * Get a pointer to the damping object
+     */
+    StepDampingBase *TrialStepBase::getDamping( ){
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        return step->damping;
+    }
 }  // namespace tardigradeHydra

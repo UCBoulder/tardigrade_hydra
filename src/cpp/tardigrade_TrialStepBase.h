@@ -74,6 +74,8 @@ namespace tardigradeHydra {
 
         void addToFailureOutput(const floatType &value, bool add_endline = true);
 
+        StepDampingBase *getDamping( );
+
         // END PASS-THROUGH FUNCTIONS
 
        protected:
