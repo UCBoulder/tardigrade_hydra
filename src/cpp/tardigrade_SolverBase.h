@@ -64,11 +64,6 @@ namespace tardigradeHydra {
 
         void resetNLStepData();
 
-        //! Return the maximum number of allowable iterations
-        const unsigned int getMaxIterations() { return _maxIterations; }
-
-        void setMaxIterations(const unsigned int &value);
-
         //! Get the current nonlinear iteration number
         const unsigned int getIteration() { return _iteration; }
 
@@ -162,8 +157,6 @@ namespace tardigradeHydra {
         friend class tardigradeHydra::unit_test::SolverBaseTester;  //!< The unit tester for the class
 
         // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-
-        unsigned int _maxIterations = 20;  //!< The maximum number of allowable iterations
 
         unsigned int _iteration = 0;  //!< The current iteration of the non-linear problem
 

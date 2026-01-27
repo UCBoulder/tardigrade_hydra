@@ -205,4 +205,11 @@ namespace tardigradeHydra {
      */
     void IterativeSolverBase::setInitializeUnknownVector(const bool &value) { _initializeUnknownVector = value; }
 
+    /*!
+     * Set the maximum number of allowable nonlinear iterations
+     *
+     * \param &value: The maximum number of iterations
+     */
+    void IterativeSolverBase::setMaxIterations(const unsigned int &value) { _maxIterations = value; }
+
 }  // namespace tardigradeHydra

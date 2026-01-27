@@ -315,13 +315,6 @@ namespace tardigradeHydra {
     // NONLINEAR FUNCTIONS
 
     /*!
-     * Set the maximum number of allowable nonlinear iterations
-     *
-     * \param &value: The maximum number of iterations
-     */
-    void SolverBase::setMaxIterations(const unsigned int &value) { _maxIterations = value; }
-
-    /*!
      * Increment the iteration
      */
     void SolverBase::incrementIteration() {

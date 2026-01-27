@@ -35,6 +35,11 @@ namespace tardigradeHydra {
 
         bool checkIteration();
 
+        //! Return the maximum number of allowable iterations
+        const unsigned int getMaxIterations() { return _maxIterations; }
+
+        void setMaxIterations(const unsigned int &value);
+
         //! Return the flag which indicates whether hydra should initialize the unknown vector
         const bool getInitializeUnknownVector() { return _initializeUnknownVector; }
 
@@ -60,6 +65,9 @@ namespace tardigradeHydra {
 
         bool _initializeUnknownVector =
             true;  //!< Flag for whether to initialize the unknown vector in the non-linear solve
+
+        unsigned int _maxIterations = 20;  //!< The maximum number of allowable iterations
+
     };
 
 }  // namespace tardigradeHydra
