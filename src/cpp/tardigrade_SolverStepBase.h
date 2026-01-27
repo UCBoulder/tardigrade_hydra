@@ -110,8 +110,6 @@ namespace tardigradeHydra {
 
         // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
-        void setUseLevenbergMarquardt(const bool &value);
-
         void enableProjection();
 
         // END LEVENBERG-MARQUARDT FUNCTIONS
@@ -139,11 +137,6 @@ namespace tardigradeHydra {
 
         unsigned int _NUM_UNDAMPED = 0;  //!< The number of undamped steps performed
 
-        // LM Functions (MOVE TO OWN CLASS)
-
-        bool _use_LM_step = false;  //!< Flag for whether to attempt a Levenberg-Marquardt step
-
-        // END LM Functions
     };
 
 }  // namespace tardigradeHydra

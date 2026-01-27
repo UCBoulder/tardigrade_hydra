@@ -178,8 +178,6 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector(hydra, unknownVector);
 
-    hydra.getSolver()->step->setUseLevenbergMarquardt(false);
-
     BOOST_TEST(hydra.residual == *trial_step.getNonlinearRHS(), CHECK_PER_ELEMENT);
 
     BOOST_TEST(hydra.jacobian == *trial_step.getFlatNonlinearLHS(), CHECK_PER_ELEMENT);

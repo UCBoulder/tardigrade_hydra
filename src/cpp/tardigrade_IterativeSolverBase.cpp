@@ -262,8 +262,6 @@ namespace tardigradeHydra {
 
         setRankDeficientError(false);
 
-        step->setUseLevenbergMarquardt(true);
-
         // Turn on projection
         step->enableProjection();
 
@@ -277,7 +275,6 @@ namespace tardigradeHydra {
             throw;
 
         } catch (std::exception &e) {
-            step->setUseLevenbergMarquardt(false);
 
             TARDIGRADE_ERROR_TOOLS_CATCH(throw;)
         }

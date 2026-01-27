@@ -268,17 +268,6 @@ namespace tardigradeHydra {
     // BEGIN LM FUNCTIONS
 
     /*!
-     * Set whether to attempt a Levenberg-Marquardt step
-     *
-     * \param &value: The value of the parameter
-     */
-    void SolverStepBase::setUseLevenbergMarquardt(const bool &value) {
-        damping->setUseGradientDescent(value);
-
-        _use_LM_step = value;
-    }
-
-    /*!
      * Enable projection of the proposed solution back into the allowable space
      */
     void SolverStepBase::enableProjection() {
