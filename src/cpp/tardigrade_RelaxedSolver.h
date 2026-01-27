@@ -26,7 +26,7 @@ namespace tardigradeHydra {
      * Class which controls a solve of a problem which may need to be
      * systematically relaxed in order to achieve the solution
      */
-    class RelaxedSolver : public SolverBase {
+    class RelaxedSolver : public IterativeSolverBase {
        public:
         RelaxedSolver();
 

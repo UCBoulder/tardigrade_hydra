@@ -16,7 +16,7 @@ namespace tardigradeHydra {
     /*!
      * Default constructor for RelaxedSolver
      */
-    RelaxedSolver::RelaxedSolver() : SolverBase() {
+    RelaxedSolver::RelaxedSolver() : IterativeSolverBase() {
         internal_solver->hydra = NULL;
         step                   = internal_solver->step;
     }
@@ -26,7 +26,7 @@ namespace tardigradeHydra {
      *
      * \param *_hydra: The containing hydra object
      */
-    RelaxedSolver::RelaxedSolver(hydraBase *_hydra) : SolverBase(_hydra) {
+    RelaxedSolver::RelaxedSolver(hydraBase *_hydra) : IterativeSolverBase(_hydra) {
         internal_solver->hydra = _hydra;
         step                   = internal_solver->step;
     }
@@ -37,7 +37,7 @@ namespace tardigradeHydra {
      * \param *_hydra: The containing hydra object
      * \param *_internal_solver_ptr: The pointer for the internal solver
      */
-    RelaxedSolver::RelaxedSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr) : SolverBase(_hydra) {
+    RelaxedSolver::RelaxedSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr) : IterativeSolverBase(_hydra) {
         internal_solver        = _internal_solver_ptr;
         internal_solver->hydra = hydra;
         step                   = internal_solver->step;
@@ -49,7 +49,7 @@ namespace tardigradeHydra {
     void RelaxedSolver::reset() {
         resetRelaxedIteration();
         internal_solver->reset();
-        tardigradeHydra::SolverBase::reset();
+        tardigradeHydra::IterativeSolverBase::reset();
     }
 
     /*!
