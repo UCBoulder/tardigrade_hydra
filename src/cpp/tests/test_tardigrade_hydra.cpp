@@ -3576,8 +3576,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
 
     BOOST_CHECK_THROW(hydra.public_evaluateInternal(), tardigradeHydra::convergence_error);
 
-    BOOST_TEST(hydra.access_solver()->step->getUseLevenbergMarquardt());
-
     BOOST_TEST(!hydra.access_solver()->getRankDeficientError());
 
     BOOST_TEST(solver.num_calls == 2);

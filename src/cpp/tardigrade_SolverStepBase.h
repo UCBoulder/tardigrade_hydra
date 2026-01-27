@@ -110,9 +110,6 @@ namespace tardigradeHydra {
 
         // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
-        //! Get if the Newton step should be a LevenbergMarquardt step
-        const bool getUseLevenbergMarquardt() { return _use_LM_step; }
-
         void setUseLevenbergMarquardt(const bool &value);
 
         void enableProjection();

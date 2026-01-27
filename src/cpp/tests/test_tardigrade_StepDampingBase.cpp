@@ -102,12 +102,6 @@ namespace tardigradeHydra {
 
             static void checkLMMu(StepDampingBase &damping) { BOOST_CHECK(damping._lm_mu == damping.getLMMu()); }
 
-            //                static void checkUseLevenbergMarquardt( SolverStepBase &step ){
-            //
-            //                    BOOST_CHECK( step._use_LM_step == step.getUseLevenbergMarquardt( ) );
-            //
-            //                }
-
             static void checkUseGradientDescent(StepDampingBase &damping) {
                 BOOST_CHECK(damping._use_gradient_descent == damping.getUseGradientDescent());
             }

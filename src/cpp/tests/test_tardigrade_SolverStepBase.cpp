@@ -84,31 +84,8 @@ namespace tardigradeHydra {
             }
         };
 
-        class SolverStepBaseTester {
-           public:
-            static void checkUseLevenbergMarquardt(SolverStepBase &step) {
-                BOOST_CHECK(step._use_LM_step == step.getUseLevenbergMarquardt());
-            }
-        };
-
     }  // namespace unit_test
 
 }  // namespace tardigradeHydra
 
-BOOST_AUTO_TEST_CASE(test_SolverStepBase_getUseLevenbergMarquardt,
-                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::SolverStepBase step;
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkUseLevenbergMarquardt(step);
-}
-
-BOOST_AUTO_TEST_CASE(test_SolverStepBase_setUseLevenbergMarquardt,
-                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::SolverStepBase step;
-
-    step.setUseLevenbergMarquardt(true);
-
-    BOOST_TEST(true == step.getUseLevenbergMarquardt());
-
-    BOOST_TEST(true == step.damping->getUseGradientDescent());
-}
+BOOST_AUTO_TEST_CASE(test_SolverStepBase_placeholder, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) { }

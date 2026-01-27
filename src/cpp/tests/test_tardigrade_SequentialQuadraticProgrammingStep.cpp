@@ -81,13 +81,6 @@ namespace tardigradeHydra {
             }
         };
 
-        class SolverStepBaseTester {
-           public:
-            static void checkUseLevenbergMarquardt(SolverStepBase &step) {
-                BOOST_CHECK(step._use_LM_step == step.getUseLevenbergMarquardt());
-            }
-        };
-
     }  // namespace unit_test
 
 }  // namespace tardigradeHydra
