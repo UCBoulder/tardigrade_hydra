@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     test_SolverBase_solve_in_gradient_convergence = 0;
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9, 20);
+                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
 
     IterativeSolverBaseMock   solver_pre;
     SolverStepBaseMock        step_pre;

@@ -3266,7 +3266,7 @@ BOOST_AUTO_TEST_CASE(test_computeTangents, *boost::unit_test::tolerance(2e-6)) {
 
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9, 20);
+                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
     hydra_pre.initialize();
 
     BOOST_TEST(dXdF == *hydra_pre.getFlatdXdF(), CHECK_PER_ELEMENT);
@@ -3375,8 +3375,7 @@ BOOST_AUTO_TEST_CASE(test_computeFlatdXdAdditionalDOF, *boost::unit_test::tolera
 
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, previousStateVariables,
-                            parameters, numConfigurations, numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9,
-                            20);
+                            parameters, numConfigurations, numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
 
     hydra_pre.initialize();
 
