@@ -40,6 +40,8 @@ namespace tardigradeHydra {
 
         virtual void solve();
 
+        virtual void initializeSolve();
+
         virtual void initialSolveAttempt();
 
         virtual void convergenceErrorFunction();
@@ -59,9 +61,6 @@ namespace tardigradeHydra {
         // END CACHED DATA STORAGE OPERATIONS
 
         // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-
-        //! Return the flag which indicates whether hydra should initialize the unknown vector
-        const bool getInitializeUnknownVector() { return _initializeUnknownVector; }
 
         void resetNLStepData();
 
@@ -149,8 +148,6 @@ namespace tardigradeHydra {
         // end Levenberg marquard functions
        protected:
         // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-        void setInitializeUnknownVector(const bool &value);
-
         //! Reset the number of iterations
         void resetIterations() { _iteration = 0; }
 
@@ -165,9 +162,6 @@ namespace tardigradeHydra {
         friend class tardigradeHydra::unit_test::SolverBaseTester;  //!< The unit tester for the class
 
         // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-
-        bool _initializeUnknownVector =
-            true;  //!< Flag for whether to initialize the unknown vector in the non-linear solve
 
         unsigned int _maxIterations = 20;  //!< The maximum number of allowable iterations
 

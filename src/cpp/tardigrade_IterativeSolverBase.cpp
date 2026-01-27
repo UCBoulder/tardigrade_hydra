@@ -197,4 +197,12 @@ namespace tardigradeHydra {
      * Check if the number of nonlinear iterations has exceeded the allowable count
      */
     bool IterativeSolverBase::checkIteration() { return getIteration() < getMaxIterations(); }
+
+    /*!
+     * Set the initialize unknown vector flag
+     *
+     * \param &value: The value of the flag
+     */
+    void IterativeSolverBase::setInitializeUnknownVector(const bool &value) { _initializeUnknownVector = value; }
+
 }  // namespace tardigradeHydra

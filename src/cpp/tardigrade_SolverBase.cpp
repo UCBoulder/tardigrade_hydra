@@ -270,6 +270,12 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * The function that is called prior to the first attempt
+     * of solving the problem
+     */
+    void SolverBase::initializeSolve() {}
+
+    /*!
      * The function that is called when first attempting to
      * solve the problem
      */
@@ -294,6 +300,7 @@ namespace tardigradeHydra {
      * Solve the problem
      */
     void SolverBase::solve() {
+        initializeSolve();
         try {
             initialSolveAttempt();
 
@@ -306,13 +313,6 @@ namespace tardigradeHydra {
     }
 
     // NONLINEAR FUNCTIONS
-
-    /*!
-     * Set the initialize unknown vector flag
-     *
-     * \param &value: The value of the flag
-     */
-    void SolverBase::setInitializeUnknownVector(const bool &value) { _initializeUnknownVector = value; }
 
     /*!
      * Set the maximum number of allowable nonlinear iterations
@@ -347,7 +347,7 @@ namespace tardigradeHydra {
      */
     void SolverBase::performLevenbergMarquardtSolve() {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
-        // Try a Levenberg-Marquardt solve if there is a convergence error
+
         setRankDeficientError(false);
 
         step->setUseLevenbergMarquardt(true);

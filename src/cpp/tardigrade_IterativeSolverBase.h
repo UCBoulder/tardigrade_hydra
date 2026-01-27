@@ -35,12 +35,17 @@ namespace tardigradeHydra {
 
         bool checkIteration();
 
+        //! Return the flag which indicates whether hydra should initialize the unknown vector
+        const bool getInitializeUnknownVector() { return _initializeUnknownVector; }
+
        protected:
         virtual void callResidualPreIterativeSolve();
 
         virtual void callResidualSuccessfulIterativeStep();
 
         virtual void callResidualPostIterativeSolve();
+
+        void setInitializeUnknownVector(const bool &value);
 
         virtual void setTolerance();
 
@@ -49,9 +54,12 @@ namespace tardigradeHydra {
         virtual tardigradeHydra::SolverBase::SetDataStorageConstant<floatVector> get_SetDataStorage_tolerance();
 
        private:
+        friend class tardigradeHydra::unit_test::IterativeSolverBaseTester; //!< The unit test access class
+
         DataStorage<floatVector> _tolerance;  //!< The tolerance vector for the non-linear solve
 
-        friend class tardigradeHydra::unit_test::IterativeSolverBaseTester; //!< The unit test access class
+        bool _initializeUnknownVector =
+            true;  //!< Flag for whether to initialize the unknown vector in the non-linear solve
     };
 
 }  // namespace tardigradeHydra
