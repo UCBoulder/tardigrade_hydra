@@ -41,8 +41,6 @@ namespace tardigradeHydra{
             //! Return a flag for whether to use the SQP solver
             const bool getUseSQPSolver() { return _useSQPSolver; }
 
-            virtual void solveConstrainedQP(floatVector &dx, const unsigned int kmax = 100);
-
             // END SQP SOLVER FUNCTIONS
 
             MaxRowPreconditioner  _preconditioner;  //!< Default preconditioner
