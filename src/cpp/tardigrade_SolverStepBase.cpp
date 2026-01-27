@@ -74,14 +74,6 @@ namespace tardigradeHydra {
     /*!
      * Get the residual vector
      */
-    const unsigned int SolverStepBase::getIteration() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        return solver->getIteration();
-    }
-
-    /*!
-     * Get the residual vector
-     */
     const floatVector *SolverStepBase::getResidual() {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
         return solver->getResidual();
@@ -254,10 +246,6 @@ namespace tardigradeHydra {
     void SolverStepBase::incrementSolution() {
         TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(damping != nullptr, "The damping has not been defined");
-        if (getFailureVerbosityLevel() > 0) {
-            addToFailureOutput("\n\n  iteration: ");
-            addToFailureOutput(getIteration());
-        }
 
         X0     = *getUnknownVector();
         deltaX = floatVector(getNumUnknowns(), 0);

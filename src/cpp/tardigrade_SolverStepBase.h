@@ -65,8 +65,6 @@ namespace tardigradeHydra {
 
         const floatType getAbsoluteTolerance();
 
-        const unsigned int getIteration();
-
         const floatVector *getResidual();
 
         const unsigned int getNumUnknowns();

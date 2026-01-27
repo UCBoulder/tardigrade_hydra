@@ -1580,7 +1580,9 @@ namespace tardigradeHydra {
 
         setScaleFactor(sp + ds);  // Update the scaling factor
 
-        solver->resetIterations();  // Reset the non-linear iteration count
+        auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
+        local_solver->resetIterations();  // Reset the non-linear iteration count
 
         evaluateInternal();  // Try to solve the non-linear problem
     }
