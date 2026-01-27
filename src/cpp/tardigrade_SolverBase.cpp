@@ -323,39 +323,4 @@ namespace tardigradeHydra {
 
     // END NONLINEAR FUNCTIONS
 
-    // BEGIN LEVENBERG MARQUARDT FUNCTIONS
-
-    /*!
-     * Temporary function used in extraction of Levenberg Marquardt
-     */
-    void SolverBase::performLevenbergMarquardtSolve() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
-
-        setRankDeficientError(false);
-
-        step->setUseLevenbergMarquardt(true);
-
-        // Turn on projection
-        step->enableProjection();
-
-        auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(this);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "This is a hack to be used during extraction");
-
-        local_solver->resetIterations();
-        updateUnknownVector(initial_unknown);
-
-        try {
-            solve();
-
-        } catch (const convergence_error &e) {
-            throw;
-
-        } catch (std::exception &e) {
-            step->setUseLevenbergMarquardt(false);
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(throw;)
-        }
-    }
-    // END LEVENBERG MARQUARDT FUNCTIONS
-
 }  // namespace tardigradeHydra

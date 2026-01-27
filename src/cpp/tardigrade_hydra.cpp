@@ -1639,7 +1639,9 @@ namespace tardigradeHydra {
                 solver->solve();
 
             } catch (convergence_error &e) {
-                solver->performLevenbergMarquardtSolve();
+                auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
+                TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
+                local_solver->performLevenbergMarquardtSolve();
 
             } catch (std::exception &e) {
                 TARDIGRADE_ERROR_TOOLS_CATCH(throw;)

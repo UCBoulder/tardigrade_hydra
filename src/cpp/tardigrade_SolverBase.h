@@ -133,11 +133,6 @@ namespace tardigradeHydra {
             addToFailureOutput(failure_output.str());
         }
 
-        // Levenberg marquardt functions (move to own class)
-
-        void performLevenbergMarquardtSolve();  // TEMP remove this
-
-        // end Levenberg marquard functions
        protected:
 
        private:
