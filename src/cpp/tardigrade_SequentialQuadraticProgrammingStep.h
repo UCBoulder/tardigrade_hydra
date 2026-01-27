@@ -31,19 +31,9 @@ namespace tardigradeHydra {
 
             void computeTrial() override;
 
-            //! Return a flag for whether to use the SQP solver
-            const bool getUseSQPSolver() { return _useSQPSolver; } // TODO: remove this
-
             unsigned int kmax = 100; //!< The maximum number of iterations
 
         protected:
-
-            /*!
-             * Set whether to use the SQP solver
-             *
-             * \param &value: The updated value
-             */
-            void setUseSQPSolver(const unsigned int &value) { _useSQPSolver = value; } // TODO: Remove this
 
             virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
 
@@ -55,8 +45,6 @@ namespace tardigradeHydra {
             virtual void updateKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
 
         private:
-
-            bool _useSQPSolver = false;  //!< The flag for whether to use the SQP solver TODO: Remove this
 
     };
 

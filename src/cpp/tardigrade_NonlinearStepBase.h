@@ -36,39 +36,16 @@ namespace tardigradeHydra{
 
             virtual const floatVector *getFlatNonlinearLHS();
 
-            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-            //! Return a flag for whether to use the SQP solver
-            const bool getUseSQPSolver() { return _useSQPSolver; }
-
-            // END SQP SOLVER FUNCTIONS
-
             MaxRowPreconditioner  _preconditioner;  //!< Default preconditioner
             PreconditionerBase *preconditioner =
                 &_preconditioner;  //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
         protected:
 
-            // SQP SOLVER FUNCTIONS
-
-            /*!
-             * Set whether to use the SQP solver
-             *
-             * \param &value: The updated value
-             */
-            void setUseSQPSolver(const unsigned int &value) { _useSQPSolver = value; }
-
-            // END SQP SOLVER FUNCTIONS
-
             void addTrialStepOutput();
 
         private:
 
-            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
-
-            bool _useSQPSolver = false;  //!< The flag for whether to use the SQP solver
-
-            // END SQP SOLVER FUNCTIONS
     };
 
 }
