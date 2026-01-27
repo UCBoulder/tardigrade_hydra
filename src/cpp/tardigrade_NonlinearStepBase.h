@@ -58,15 +58,6 @@ namespace tardigradeHydra{
              */
             void setUseSQPSolver(const unsigned int &value) { _useSQPSolver = value; }
 
-            virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
-
-            virtual void assembleKKTRHSVector(const floatVector &dx, floatVector &KKTRHSVector,
-                                              const std::vector<bool> &active_constraints);
-
-            virtual void assembleKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
-
-            virtual void updateKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
-
             // END SQP SOLVER FUNCTIONS
 
             void addTrialStepOutput();
