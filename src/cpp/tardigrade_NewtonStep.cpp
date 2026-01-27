@@ -48,6 +48,9 @@ namespace tardigradeHydra{
         if (getRankDeficientError() && (rank != getResidual()->size())) {
             TARDIGRADE_ERROR_TOOLS_CATCH(throw convergence_error("The Jacobian is not full rank"));
         }
+
+        addTrialStepOutput( );
+
     }
 
 }

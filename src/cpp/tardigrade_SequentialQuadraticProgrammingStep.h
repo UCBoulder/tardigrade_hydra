@@ -6,8 +6,8 @@
  ******************************************************************************
  */
 
-#ifndef TARDIGRADE_HYDRA_NEWTONSTEP
-#define TARDIGRADE_HYDRA_NEWTONSTEP
+#ifndef TARDIGRADE_HYDRA_SEQUENTIALQUADRATICPROGRAMMINGSTEP
+#define TARDIGRADE_HYDRA_SEQUENTIALQUADRATICPROGRAMMINGSTEP
 
 #include "tardigrade_NonlinearStepBase.h"
 

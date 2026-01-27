@@ -143,6 +143,7 @@ namespace tardigradeHydra{
                     active_constraints[imin] = false;
 
                 } else {
+                    addTrialStepOutput( );
                     return;
                 }
 
@@ -200,6 +201,9 @@ namespace tardigradeHydra{
 
             k++;
         }
+
+        addTrialStepOutput( );
+
     }
 
     /*!

@@ -77,6 +77,8 @@ namespace tardigradeHydra{
 
             // END SQP SOLVER FUNCTIONS
 
+            void addTrialStepOutput();
+
         private:
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)

@@ -46,14 +46,16 @@ namespace tardigradeHydra{
      * Must set the containing step's deltaX variable
      */
     void NonlinearStepBase::computeTrial() {
-        if (getUseSQPSolver()) {
-            solveConstrainedQP(step->deltaX);
+        TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error("computeTrial must be defined by inheriting classes") );
+    }
 
-        } else {
-            solveNewtonUpdate(step->deltaX);
-        }
+    /*!
+     * Add output to the failure message
+     */
+    void NonlinearStepBase::addTrialStepOutput() {
 
         if (getFailureVerbosityLevel() > 0) {
+            TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
             addToFailureOutput("  trial deltaX:\n");
             addToFailureOutput("  ");
             addToFailureOutput(step->deltaX);
