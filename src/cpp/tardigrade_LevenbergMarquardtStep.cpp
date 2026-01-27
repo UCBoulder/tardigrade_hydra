@@ -7,6 +7,7 @@
   */
 
 #include"tardigrade_LevenbergMarquardtStep.h"
+#include"tardigrade_GradientDamping.h"
 
 namespace tardigradeHydra{
 
@@ -17,15 +18,15 @@ namespace tardigradeHydra{
 
         if ( !_nonlinearRHS.first ){
 
-            const unsigned int xsize = solver->getNumUnknowns( );
+            const unsigned int xsize = getNumUnknowns( );
 
             _nonlinearRHS.first = true;
 
             _nonlinearRHS.second = floatVector( xsize, 0 );
 
-            const floatVector *residual = solver->getResidual( );
+            const floatVector *residual = getResidual( );
 
-            const floatVector *jacobian = solver->getFlatJacobian( );
+            const floatVector *jacobian = getFlatJacobian( );
 
             auto Jmap = tardigradeHydra::getDynamicSizeMatrixMap( jacobian->data( ), xsize, xsize );
 
@@ -48,15 +49,21 @@ namespace tardigradeHydra{
      */
     const floatVector* LevenbergMarquardtStep::getFlatNonlinearLHS( ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK(getDamping() != nullptr, "The damping has not been defined" );
+
+        auto local_damping = dynamic_cast<tardigradeHydra::GradientDamping*>(getDamping());
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_damping != nullptr, "The damping method must be GradientDamping to work with Levenberg-Marquardt")
+
         if ( !_flatNonlinearLHS.first ){
 
-            const unsigned int xsize = solver->getNumUnknowns( );
+            const unsigned int xsize = getNumUnknowns( );
 
             _flatNonlinearLHS.first = true;
 
             _flatNonlinearLHS.second = floatVector( xsize * xsize, 0 );
 
-            const floatVector * jacobian = solver->getFlatJacobian( );
+            const floatVector * jacobian = getFlatJacobian( );
 
             auto Jmap = tardigradeHydra::getDynamicSizeMatrixMap( jacobian->data( ), xsize, xsize );
 
@@ -65,7 +72,7 @@ namespace tardigradeHydra{
             LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
 
             for ( unsigned int i = 0; i < xsize; i++ ){
-                _flatNonlinearLHS.second[ xsize * i + i ] += getMuk( );
+                _flatNonlinearLHS.second[ xsize * i + i ] += local_damping->getMuk( );
             }
 
             addIterationData( &_flatNonlinearLHS );

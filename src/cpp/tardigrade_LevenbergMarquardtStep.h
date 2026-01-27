@@ -10,18 +10,18 @@
 #define TARDIGRADE_LEVENBERGMARQUARDTSTEP_H
 
 #include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_GradientStep.h"
+#include"tardigrade_NewtonStep.h"
 
 namespace tardigradeHydra{
 
     /*!
      * The Levenberg Marquardt step class
      */
-    class LevenbergMarquardtStep : public NonLinearStep {
+    class LevenbergMarquardtStep : public NewtonStep {
 
         public:
 
-            using tardigradeHydra::NonLinearStep::NonLinearStep;
+            using tardigradeHydra::NewtonStep::NewtonStep;
 
             virtual const floatVector* getNonlinearRHS( ) override;
 
@@ -31,10 +31,9 @@ namespace tardigradeHydra{
 
         private:
 
-//            DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
-//
-//            DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
+            DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
 
+            DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
     };
 
