@@ -11,9 +11,10 @@
 
 #include "tardigrade_CoreDefinitions.h"
 #include "tardigrade_SetDataStorage.h"
-#include "tardigrade_StepDampingBase.h"
 #include "tardigrade_NonlinearStepBase.h"
+#include "tardigrade_StepDampingBase.h"
 // Default classes
+#include "tardigrade_NewtonStep.h"
 #include "tardigrade_ArmijoGradientDamping.h"
 
 namespace tardigradeHydra {
@@ -127,7 +128,7 @@ namespace tardigradeHydra {
         SolverBase *solver;  //!< Pointer to the containing SolverBase object
 
         ArmijoGradientDamping _damping;     //!< The default step damping
-        NonlinearStepBase     _trial_step;  //!< The default trial step
+        NewtonStep            _trial_step;  //!< The default trial step
 
         void initializeDefaults();
 
