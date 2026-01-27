@@ -20,11 +20,10 @@ namespace tardigradeHydra {
         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
         const floatVector &parameters, const unsigned int numConfigurations,
         const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
-        const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola,
-        const unsigned int maxIterations)
+        const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola)
         : hydraBase(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                     additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola, maxIterations),
+                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola),
           _microDeformation(microDeformation),
           _previousMicroDeformation(previousMicroDeformation),
           _gradientMicroDeformation(gradientMicroDeformation),
@@ -50,8 +49,7 @@ namespace tardigradeHydra {
          * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
          * non-linear solve's residual \param &dimension: The dimension of the problem (defaults to 3) \param
          * &configuration_unknown_count: The number of unknowns in each configuration (defaults to 27) \param &tolr: The
-         * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9) \param
-         * &maxIterations: The maximum number of non-linear iterations (defaults to 20)
+         * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9)
          */
     }
 
