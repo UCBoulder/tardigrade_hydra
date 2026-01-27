@@ -64,9 +64,6 @@ namespace tardigradeHydra {
 
         void resetNLStepData();
 
-        //! Get the current nonlinear iteration number
-        const unsigned int getIteration() { return _iteration; }
-
         // END NONLINEAR FUNCTIONS
 
         // Pass-through functions
@@ -142,13 +139,6 @@ namespace tardigradeHydra {
 
         // end Levenberg marquard functions
        protected:
-        // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-        //! Reset the number of iterations
-        void resetIterations() { _iteration = 0; }
-
-        void incrementIteration();
-
-        // END NONLINEAR FUNCTIONS
 
        private:
         bool _rank_deficient_error = false;  //!< Flag for whether a rank-deficient Jacobian should cause an error
@@ -156,11 +146,6 @@ namespace tardigradeHydra {
         friend class tardigradeHydra::hydraBase;                    //!< TEMP REMOVE THIS
         friend class tardigradeHydra::unit_test::SolverBaseTester;  //!< The unit tester for the class
 
-        // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-
-        unsigned int _iteration = 0;  //!< The current iteration of the non-linear problem
-
-        // END NONLINEAR FUNCTIONS
     };
 
 }  // namespace tardigradeHydra

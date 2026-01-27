@@ -13,6 +13,14 @@
 namespace tardigradeHydra {
 
     /*!
+     * reset the solver
+     */
+    void IterativeSolverBase::reset() {
+        resetIterations();
+        tardigradeHydra::SolverBase::reset();
+    }
+
+    /*!
      * The function that is called when first attempting to
      * solve the problem
      */
@@ -43,6 +51,9 @@ namespace tardigradeHydra {
         }
 
         while (!checkConvergence() && checkIteration()) {
+
+            addIterationHeader();
+
             step->incrementSolution();
 
             // Call residual end of a successful nonlinear step functions
@@ -54,11 +65,7 @@ namespace tardigradeHydra {
             // Reset the nonlinear step data
             resetNLStepData();
 
-            if (getFailureVerbosityLevel() > 0) {
-                addToFailureOutput("  final residual: ");
-                addToFailureOutput(tardigradeVectorTools::l2norm(*getResidual()));
-                addToFailureOutput("\n");
-            }
+            addIterationFooter();
         }
 
         if (!checkConvergence()) {
@@ -66,6 +73,30 @@ namespace tardigradeHydra {
         }
 
         callResidualPostIterativeSolve();
+    }
+
+    /*!
+     * Add the iteration header to the failure output message
+     */
+    void IterativeSolverBase::addIterationHeader(){
+
+        if (getFailureVerbosityLevel() > 0) {
+            addToFailureOutput("\n\n  iteration: ");
+            addToFailureOutput(getIteration());
+        }
+
+    }
+
+    /*!
+     * Add the iteration footer to the failure output message
+     */
+    void IterativeSolverBase::addIterationFooter(){
+
+        if (getFailureVerbosityLevel() > 0) {
+            addToFailureOutput("  final residual: ");
+            addToFailureOutput(tardigradeVectorTools::l2norm(*getResidual()));
+            addToFailureOutput("\n");
+        }
     }
 
     /*!
@@ -211,5 +242,14 @@ namespace tardigradeHydra {
      * \param &value: The maximum number of iterations
      */
     void IterativeSolverBase::setMaxIterations(const unsigned int &value) { _maxIterations = value; }
+
+    /*!
+     * Increment the iteration
+     */
+    void IterativeSolverBase::incrementIteration() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        _iteration++;
+        step->damping->reset();
+    }
 
 }  // namespace tardigradeHydra

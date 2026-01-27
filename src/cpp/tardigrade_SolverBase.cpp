@@ -265,7 +265,6 @@ namespace tardigradeHydra {
      */
     void SolverBase::reset() {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
-        resetIterations();
         step->reset();
     }
 
@@ -315,15 +314,6 @@ namespace tardigradeHydra {
     // NONLINEAR FUNCTIONS
 
     /*!
-     * Increment the iteration
-     */
-    void SolverBase::incrementIteration() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
-        _iteration++;
-        step->damping->reset();
-    }
-
-    /*!
      * Reset all nonlinear step data
      */
     void SolverBase::resetNLStepData() {
@@ -348,7 +338,10 @@ namespace tardigradeHydra {
         // Turn on projection
         step->enableProjection();
 
-        resetIterations();
+        auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(this);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "This is a hack to be used during extraction");
+
+        local_solver->resetIterations();
         updateUnknownVector(initial_unknown);
 
         try {
