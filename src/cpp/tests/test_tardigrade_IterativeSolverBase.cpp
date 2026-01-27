@@ -166,7 +166,8 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
         }
 
         virtual void formNonLinearResidual() override {
-            unsigned int iteration = solver->getIteration();
+            auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
+            unsigned int iteration = local_solver->getIteration();
 
             auto local_damping = dynamic_cast<tardigradeHydra::ArmijoGradientDamping *>(solver->step->damping);
 
@@ -197,7 +198,8 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
         }
 
         virtual void formNonLinearDerivatives() override {
-            unsigned int iteration = solver->getIteration();
+            auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
+            unsigned int iteration = local_solver->getIteration();
 
             tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian(*this, flatJacobian[iteration][0]);
 
@@ -207,7 +209,8 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
         virtual void updateUnknownVector(const tardigradeHydra::floatVector &newUnknownVector) override {
             tardigradeHydra::unit_test::hydraBaseTester::resetIterationData(*this);
 
-            unsigned int iteration = solver->getIteration();
+            auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
+            unsigned int iteration = local_solver->getIteration();
 
             auto local_damping = dynamic_cast<tardigradeHydra::ArmijoGradientDamping *>(solver->step->damping);
 
@@ -230,83 +233,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
             test_SolverBase_solve_in_gradient_convergence = 0;
         }
-    };
-
-    class NewtonStepMock : public tardigradeHydra::NewtonStep {
-       public:
-        using tardigradeHydra::NewtonStep::NewtonStep;
-    };
-
-    class ArmijoGradientDampingMock : public tardigradeHydra::ArmijoGradientDamping {
-       public:
-        using tardigradeHydra::ArmijoGradientDamping::ArmijoGradientDamping;
-
-        std::vector<std::vector<tardigradeHydra::floatVector> > residual = {
-            {{1, 2, 3}},
-            {{4, 5, 6}, {7, 8, 9}},
-            {{10, 9, 8}},
-            {{7, 6, 5}, {4, 3, 2}, {1, 1, 1}},
-        };
-
-        virtual bool checkLSConvergence() override {
-            unsigned int iteration = step->getIteration();
-
-            unsigned int LSIteration = getLSIteration();
-
-            getResidual();
-
-            if (LSIteration < residual[iteration].size() - 1) {
-                return false;
-            }
-
-            return true;
-        }
-
-        virtual bool checkDescentDirection(const tardigradeHydra::floatVector &dx) override {
-            unsigned int iteration = step->getIteration();
-
-            if (iteration == 1) {
-                return false;
-            }
-
-            return true;
-        }
-
-        virtual bool checkGradientConvergence(const tardigradeHydra::floatVector &X0) override {
-            unsigned int iteration = step->getIteration();
-
-            unsigned int gradientIteration = getGradientIteration();
-
-            test_SolverBase_solve_in_gradient_convergence = 1;
-
-            getResidual();
-
-            if (gradientIteration < residual[iteration].size() - 1) {
-                return false;
-            }
-
-            test_SolverBase_solve_in_gradient_convergence = 0;
-
-            return true;
-        }
-
-        virtual void performGradientStep(const tardigradeHydra::floatVector &X0) override {
-            test_SolverBase_solve_in_gradient_convergence = 1;
-
-            tardigradeHydra::StepDampingBase::performGradientStep(X0);
-        }
-    };
-
-    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
-       public:
-        using tardigradeHydra::SolverStepBase::SolverStepBase;
-
-        std::vector<std::vector<tardigradeHydra::floatVector> > residual = {
-            {{1, 2, 3}},
-            {{4, 5, 6}, {7, 8, 9}},
-            {{10, 9, 8}},
-            {{7, 6, 5}, {4, 3, 2}, {1, 1, 1}},
-        };
     };
 
     class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
@@ -346,6 +272,99 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
             }
 
             return true;
+        }
+    };
+
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
+       public:
+        using tardigradeHydra::SolverStepBase::SolverStepBase;
+
+        std::vector<std::vector<tardigradeHydra::floatVector> > residual = {
+            {{1, 2, 3}},
+            {{4, 5, 6}, {7, 8, 9}},
+            {{10, 9, 8}},
+            {{7, 6, 5}, {4, 3, 2}, {1, 1, 1}},
+        };
+
+        tardigradeHydra::SolverBase* getSolver(){ return solver; }
+
+        unsigned int getIteration(){
+            auto local_solver = dynamic_cast<IterativeSolverBaseMock*>(solver);
+            return local_solver->getIteration();
+        }
+    };
+
+    class NewtonStepMock : public tardigradeHydra::NewtonStep {
+       public:
+        using tardigradeHydra::NewtonStep::NewtonStep;
+
+        unsigned int getIteration(){
+            auto local_step   = dynamic_cast<SolverStepBaseMock*>(step);
+            return local_step->getIteration();
+        }
+
+    };
+
+    class ArmijoGradientDampingMock : public tardigradeHydra::ArmijoGradientDamping {
+       public:
+        using tardigradeHydra::ArmijoGradientDamping::ArmijoGradientDamping;
+
+        std::vector<std::vector<tardigradeHydra::floatVector> > residual = {
+            {{1, 2, 3}},
+            {{4, 5, 6}, {7, 8, 9}},
+            {{10, 9, 8}},
+            {{7, 6, 5}, {4, 3, 2}, {1, 1, 1}},
+        };
+
+        virtual bool checkLSConvergence() override {
+            auto local_step = dynamic_cast<SolverStepBaseMock*>(step);
+            unsigned int iteration = local_step->getIteration();
+
+            unsigned int LSIteration = getLSIteration();
+
+            getResidual();
+
+            if (LSIteration < residual[iteration].size() - 1) {
+                return false;
+            }
+
+            return true;
+        }
+
+        virtual bool checkDescentDirection(const tardigradeHydra::floatVector &dx) override {
+            auto local_step = dynamic_cast<SolverStepBaseMock*>(step);
+            unsigned int iteration = local_step->getIteration();
+
+            if (iteration == 1) {
+                return false;
+            }
+
+            return true;
+        }
+
+        virtual bool checkGradientConvergence(const tardigradeHydra::floatVector &X0) override {
+            auto local_step = dynamic_cast<SolverStepBaseMock*>(step);
+            unsigned int iteration = local_step->getIteration();
+
+            unsigned int gradientIteration = getGradientIteration();
+
+            test_SolverBase_solve_in_gradient_convergence = 1;
+
+            getResidual();
+
+            if (gradientIteration < residual[iteration].size() - 1) {
+                return false;
+            }
+
+            test_SolverBase_solve_in_gradient_convergence = 0;
+
+            return true;
+        }
+
+        virtual void performGradientStep(const tardigradeHydra::floatVector &X0) override {
+            test_SolverBase_solve_in_gradient_convergence = 1;
+
+            tardigradeHydra::StepDampingBase::performGradientStep(X0);
         }
     };
 

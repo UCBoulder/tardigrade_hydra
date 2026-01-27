@@ -10,6 +10,7 @@
 #include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_RelaxedSolver.h"
 #include "tardigrade_SolverBase.h"
+#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_constitutive_tools.h"
 #include "tardigrade_hydra.h"
 #include "tardigrade_hydraLinearElasticity.h"
@@ -3526,9 +3527,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
         using tardigradeHydra::hydraBase::setResidualClasses;
     };
 
-    class SolverBaseMock : public tardigradeHydra::SolverBase {
+    class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
        public:
-        using tardigradeHydra::SolverBase::SolverBase;
+        using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
         unsigned int num_calls = 0;
 
@@ -3566,7 +3567,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    SolverBaseMock solver;
+    IterativeSolverBaseMock solver;
 
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
