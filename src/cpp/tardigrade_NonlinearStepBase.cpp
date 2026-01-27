@@ -81,44 +81,6 @@ namespace tardigradeHydra{
      */
     const floatVector *NonlinearStepBase::getFlatNonlinearLHS() { return getFlatJacobian(); }
 
-    // BEGIN NEWTON SOLVER FUNCTIONS
-
-    /*!
-     * Solve the Newton update returning the trial value of the unknown vector
-     *
-     * \param &deltaX_tr: The trial change in the unknown vector
-     */
-    void NonlinearStepBase::solveNewtonUpdate(floatVector &deltaX_tr) {
-        TARDIGRADE_ERROR_TOOLS_CHECK(preconditioner != nullptr,
-                                     "The preconditioner has not been defined");  // TODO: Move to the Newton step class
-
-        auto dx_map = tardigradeHydra::getDynamicSizeVectorMap(deltaX_tr.data(), getNumUnknowns());
-
-        floatVector P_R;
-        floatVector P_J;
-
-        preconditioner->preconditionVector( *getNonlinearRHS(), P_R );
-        preconditioner->preconditionMatrix( *getFlatNonlinearLHS(), P_J );
-
-        auto P_R_map =
-            tardigradeHydra::getDynamicSizeVectorMap(P_R.data(), getNumUnknowns());
-
-        auto P_J_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(P_J.data(), getNumUnknowns(), getNumUnknowns());
-
-        tardigradeVectorTools::solverType<floatType> linearSolver(P_J_map);
-
-        dx_map = -linearSolver.solve(P_R_map);
-
-        unsigned int rank = linearSolver.rank();
-
-        if (getRankDeficientError() && (rank != getResidual()->size())) {
-            TARDIGRADE_ERROR_TOOLS_CATCH(throw convergence_error("The Jacobian is not full rank"));
-        }
-    }
-
-    // END NEWTON SOLVER FUNCTIONS
-
     // BEGIN SQP SOLVER FUNCTIONS
 
     /*!
