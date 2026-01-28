@@ -14,6 +14,7 @@
 #include "tardigrade_constitutive_tools.h"
 #include "tardigrade_hydra.h"
 #include "tardigrade_hydraLinearElasticity.h"
+#include "tardigrade_LevenbergMarquardtStep.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_hydra
 #include <boost/test/included/unit_test.hpp>
@@ -3563,11 +3564,14 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
 
     unsigned int dimension = 3;
 
+    try{
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
     IterativeSolverBaseMock solver;
+    tardigradeHydra::LevenbergMarquardtStep trial_step(solver.step);
+    hydra.access_solver()->step->trial_step = &trial_step;
 
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
@@ -3576,9 +3580,10 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
 
     BOOST_CHECK_THROW(hydra.public_evaluateInternal(), tardigradeHydra::convergence_error);
 
-    BOOST_TEST(!hydra.access_solver()->getRankDeficientError());
+    BOOST_TEST(!hydra.access_solver()->step->getRankDeficientError());
 
     BOOST_TEST(solver.num_calls == 2);
+    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {

@@ -51,13 +51,6 @@ namespace tardigradeHydra {
 
     namespace unit_test {
 
-        class SolverBaseTester {
-           public:
-            static void checkRankDeficientError(SolverBase &solver) {
-                BOOST_CHECK(solver._rank_deficient_error == solver.getRankDeficientError());
-            }
-        };
-
         class hydraBaseTester {
            public:
             static void set_residual(hydraBase &hydra, const tardigradeHydra::floatVector &value) {
@@ -86,16 +79,4 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-BOOST_AUTO_TEST_CASE(test_SolverBase_getRankDeficientError, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::SolverBase solver;
-
-    tardigradeHydra::unit_test::SolverBaseTester::checkRankDeficientError(solver);
-}
-
-BOOST_AUTO_TEST_CASE(test_SolverBase_setRankDeficientError, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::SolverBase solver;
-
-    solver.setRankDeficientError(false);
-
-    BOOST_TEST(false == solver.getRankDeficientError());
-}
+BOOST_AUTO_TEST_CASE(test_placeholder, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {}

@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_evaluateInternal, *boost::unit_test::tol
 
     hydra.public_evaluateInternal();
 
-    BOOST_TEST(!hydra.access_solver()->getRankDeficientError());
+    BOOST_TEST(!hydra.access_solver()->step->getRankDeficientError());
 
     BOOST_TEST(solver.num_calls == 1);
 

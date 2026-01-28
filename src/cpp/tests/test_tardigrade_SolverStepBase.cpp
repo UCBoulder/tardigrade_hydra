@@ -84,8 +84,27 @@ namespace tardigradeHydra {
             }
         };
 
+        class SolverStepBaseTester {
+           public:
+            static void checkRankDeficientError(SolverStepBase &step) {
+                BOOST_CHECK(step._rank_deficient_error == step.getRankDeficientError());
+            }
+        };
+
     }  // namespace unit_test
 
 }  // namespace tardigradeHydra
 
-BOOST_AUTO_TEST_CASE(test_SolverStepBase_placeholder, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) { }
+BOOST_AUTO_TEST_CASE(test_SolverStepBase_getRankDeficientError, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::SolverStepBase step;
+
+    tardigradeHydra::unit_test::SolverStepBaseTester::checkRankDeficientError(step);
+}
+
+BOOST_AUTO_TEST_CASE(test_SolverStepBase_setRankDeficientError, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::SolverStepBase step;
+
+    step.setRankDeficientError(false);
+
+    BOOST_TEST(false == step.getRankDeficientError());
+}
