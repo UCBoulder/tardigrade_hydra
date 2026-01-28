@@ -263,8 +263,8 @@ namespace tardigradeHydra {
         }
 
         initial_unknown = internal_solver->initial_unknown;
-        internal_solver->reset();
-        updateUnknownVector(initial_unknown);
+        TARDIGRADE_ERROR_TOOLS_CATCH(internal_solver->resetCounts();) //TODO: Maybe this should be a full reset? It causes errors in the tests if it is but I'm of two minds
+        TARDIGRADE_ERROR_TOOLS_CATCH(updateUnknownVector(initial_unknown);)
 
         resetRelaxedIteration();
 
