@@ -585,8 +585,6 @@ namespace tardigradeHydra {
         unsigned int num_good = 0;  //!< The number of good subcycler steps
         // END SUBCYCLER FUNCTIONS
 
-        virtual void evaluateInternal();
-
         virtual void updateUnknownVector(const floatVector &newUnknownVector);
 
         virtual void calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,

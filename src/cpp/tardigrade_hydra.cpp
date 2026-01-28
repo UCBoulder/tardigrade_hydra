@@ -1632,13 +1632,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Solve the non-linear problem with the current scaling and update the variables
-     */
-    void hydraBase::evaluateInternal() {
-        solver->solve();
-    }
-
-    /*!
      * Compute the values of the consistent tangents
      */
     void hydraBase::computeTangents() {

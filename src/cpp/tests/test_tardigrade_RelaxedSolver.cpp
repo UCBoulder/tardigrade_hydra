@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_callResidualRelaxedStepFailure,
     BOOST_TEST(hydra.r3.numRelaxedStepFailureCalls == 2);
 }
 
-BOOST_AUTO_TEST_CASE(test_RelaxedSolver_evaluateInternal, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         bool project_called = false;
@@ -209,8 +209,6 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_evaluateInternal, *boost::unit_test::tol
         using tardigradeHydra::hydraBase::hydraBase;
 
         void setInitialX() { solver->initial_unknown = _mockInitialX; }
-
-        void public_evaluateInternal() { evaluateInternal(); }
 
         auto setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
         auto access_solver() { return solver; }
@@ -292,7 +290,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_evaluateInternal, *boost::unit_test::tol
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
 
-    hydra.public_evaluateInternal();
+    solver.solve();
 
     BOOST_TEST(!hydra.access_solver()->step->getRankDeficientError());
 
