@@ -33,8 +33,6 @@ namespace tardigradeHydra{
 
             virtual void reset( ) override;
 
-            void public_enableProjection(){ enableProjection(); } //TEMP: REMOVE SOON
-
         protected:
 
             void enableProjection();
