@@ -50,10 +50,6 @@ namespace tardigradeHydra {
 
         virtual void reset();
 
-        const bool getRankDeficientError();
-
-        void setRankDeficientError(const bool &value);
-
         // CACHED DATA STORAGE OPERATIONS
         virtual void addIterationData(dataBase *data) override;
 
@@ -136,8 +132,6 @@ namespace tardigradeHydra {
        protected:
 
        private:
-        bool _rank_deficient_error = false;  //!< Flag for whether a rank-deficient Jacobian should cause an error
-
         friend class tardigradeHydra::hydraBase;                    //!< TEMP REMOVE THIS
         friend class tardigradeHydra::unit_test::SolverBaseTester;  //!< The unit tester for the class
 

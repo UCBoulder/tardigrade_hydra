@@ -85,8 +85,6 @@ namespace tardigradeHydra {
 
         void resetToleranceScaleFactor();
 
-        bool getRankDeficientError();
-
         const unsigned int getFailureVerbosityLevel();
 
         void addToFailureOutput(const std::string &string);
@@ -105,14 +103,12 @@ namespace tardigradeHydra {
 
         // END PASS-THROUGH FUNCTIONS
 
+        const bool getRankDeficientError();
+
+        void setRankDeficientError(const bool &value);
+
         //! Get the number of undamped steps performed
         unsigned int getNumUndamped() { return _NUM_UNDAMPED; }
-
-        // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
-
-        void enableProjection();
-
-        // END LEVENBERG-MARQUARDT FUNCTIONS
 
         TrialStepBase   *trial_step;  //!< The trial step class which proposes a step to reduce the residual
         StepDampingBase *damping;     //!< The damping class which reduces the proposed step to improve stability
@@ -134,6 +130,8 @@ namespace tardigradeHydra {
        private:
         friend class tardigradeHydra::hydraBase;                        //!< TEMP REMOVE THIS
         friend class tardigradeHydra::unit_test::SolverStepBaseTester;  //!< The unit tester for the class
+
+        bool _rank_deficient_error = false;  //!< Flag for whether a rank-deficient Jacobian should cause an error
 
         unsigned int _NUM_UNDAMPED = 0;  //!< The number of undamped steps performed
 

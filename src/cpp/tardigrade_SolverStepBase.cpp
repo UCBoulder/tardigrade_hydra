@@ -154,14 +154,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Get whether a rank-deficient matrix will throw an error
-     */
-    bool SolverStepBase::getRankDeficientError() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        return solver->getRankDeficientError();
-    }
-
-    /*!
      * Get the failure verbosity level
      */
     const unsigned int SolverStepBase::getFailureVerbosityLevel() {
@@ -265,23 +257,16 @@ namespace tardigradeHydra {
         }
     }
 
-    // BEGIN LM FUNCTIONS
+    /*!
+     * Get whether the Jacobian being rank-deficient will throw an error
+     */
+    const bool SolverStepBase::getRankDeficientError() { return _rank_deficient_error; }
 
     /*!
-     * Enable projection of the proposed solution back into the allowable space
+     * Set whether the Jacobian being rank-deficient will throw an error
+     *
+     * \param &value: The incoming value
      */
-    void SolverStepBase::enableProjection() {
-        setCurrentResidualIndexMeaningful(true);
-
-        for (auto residual_ptr = getResidualClasses()->begin(); residual_ptr != getResidualClasses()->end();
-             ++residual_ptr) {
-            setCurrentResidualIndex(residual_ptr - getResidualClasses()->begin());
-
-            (*residual_ptr)->setUseProjection(true);
-        }
-
-        setCurrentResidualIndexMeaningful(false);
-    }
-    // END LM FUNCTIONS
+    void SolverStepBase::setRankDeficientError(const bool &value) { _rank_deficient_error = value; }
 
 }  // namespace tardigradeHydra
