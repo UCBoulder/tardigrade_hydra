@@ -259,36 +259,4 @@ namespace tardigradeHydra {
         _iteration++;
         step->damping->reset();
     }
-
-    // BEGIN LEVENBERG MARQUARDT FUNCTIONS
-
-    /*!
-     * Temporary function used in extraction of Levenberg Marquardt
-     */
-    void IterativeSolverBase::performLevenbergMarquardtSolve() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
-
-        step->setRankDeficientError(false); //TODO: Maybe this shouldn't be here?
-
-        // Turn on projection
-        auto local_step = dynamic_cast<tardigradeHydra::LevenbergMarquardtStep*>(step->trial_step);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_step != nullptr, "Failure to convert step to LevenbergMarquardtStep")
-        local_step->public_enableProjection();
-
-        resetIterations();
-        updateUnknownVector(initial_unknown);
-
-        try {
-            solve();
-
-        } catch (const convergence_error &e) {
-            throw;
-
-        } catch (std::exception &e) {
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(throw;)
-        }
-    }
-    // END LEVENBERG MARQUARDT FUNCTIONS
-
 }  // namespace tardigradeHydra
