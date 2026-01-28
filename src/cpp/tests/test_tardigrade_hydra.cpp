@@ -3490,105 +3490,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_updateUnknownVector, *boost::unit_test::tole
     BOOST_TEST(hydra2.checkProjectOff());
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
-       public:
-        bool project_called = false;
-
-        using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
-
-        virtual void projectSuggestedX(std::vector<double> &trialX, const std::vector<double> &Xp) override {
-            project_called = true;
-        }
-    };
-
-    class hydraBaseMock : public tardigradeHydra::hydraBase {
-       public:
-        residualMock r1;
-
-        residualMock r2;
-
-        using tardigradeHydra::hydraBase::hydraBase;
-
-        void setInitialX() { solver->initial_unknown = _mockInitialX; }
-
-        void public_evaluateInternal() { evaluateInternal(); }
-
-        auto access_solver() { return solver; }
-
-        auto setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
-       protected:
-        floatVector _mockInitialX = {1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-
-        virtual void updateUnknownVector(const floatVector &newX) override {
-            BOOST_TEST(solver->initial_unknown == newX, CHECK_PER_ELEMENT);
-        }
-
-        using tardigradeHydra::hydraBase::setResidualClasses;
-    };
-
-    class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
-       public:
-        using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
-
-        unsigned int num_calls = 0;
-
-        virtual void solve() override {
-            num_calls++;
-
-            throw tardigradeHydra::convergence_error("failure to converge");
-        }
-    };
-
-    floatType time = 1.1;
-
-    floatType deltaTime = 2.2;
-
-    floatType temperature = 5.3;
-
-    floatType previousTemperature = 23.4;
-
-    floatVector deformationGradient = {1.05, 0, 0, 0.00, 1, 0, 0.00, 1, 1};
-
-    floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
-
-    floatVector previousStateVariables = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-    floatVector parameters = {123.4, 56.7};
-
-    unsigned int numConfigurations = 2;
-
-    unsigned int numNonLinearSolveStateVariables = 0;
-
-    unsigned int dimension = 3;
-
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
-
-    IterativeSolverBaseMock solver;
-    tardigradeHydra::LevenbergMarquardtStep trial_step(solver.step);
-    hydra.access_solver()->step->trial_step = &trial_step;
-
-    hydra.setSolver(&solver);
-    solver.hydra = &hydra;
-
-    BOOST_CHECK_THROW(hydra.public_evaluateInternal(), tardigradeHydra::convergence_error);
-
-    BOOST_TEST(!hydra.access_solver()->step->getRankDeficientError());
-
-    BOOST_TEST(solver.num_calls == 1);
-
-    for ( auto r = std::begin( *hydra.getResidualClasses( ) ); r != std::end( *hydra.getResidualClasses( ) ); ++r ){
-
-        BOOST_TEST( (*r)->getUseProjection( ) );
-
-    }
-
-}
-
 BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
 
     class SolverBaseMock : public tardigradeHydra::SolverBase {
@@ -3605,8 +3506,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAU
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
-
-        unsigned int num_evaluateInternalCalls = 0;
 
         unsigned int num_updateUnknownVectorCalls = 0;
 
@@ -3719,7 +3618,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
             if (std::find(fail_indices.begin(), fail_indices.end(), num_solveCalls) != fail_indices.end()) {
                 num_solveCalls++;
 
-                throw std::runtime_error("failure in evaluateInternal");
+                throw std::runtime_error("failure in solve");
             }
 
             num_solveCalls++;
@@ -3740,8 +3639,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
         using tardigradeHydra::hydraBase::hydraBase;
 
         using tardigradeHydra::hydraBase::setResidualClasses;
-
-        unsigned int num_evaluateInternalCalls = 0;
 
         unsigned int num_updateUnknownVectorCalls = 0;
 
