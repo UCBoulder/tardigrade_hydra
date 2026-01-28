@@ -22,13 +22,19 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Initialize the solver
+     */
+    void IterativeSolverBase::initializeSolve(){
+        reset();
+    }
+
+    /*!
      * The function that is called when first attempting to
      * solve the problem
      */
     void IterativeSolverBase::initialSolveAttempt() {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
 
-        // Reset the internal steps
         step->reset();
 
         step->setRankDeficientError(false); //TODO: Maybe this shouldn't be here?

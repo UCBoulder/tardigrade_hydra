@@ -29,6 +29,8 @@ namespace tardigradeHydra {
 
         virtual void reset() override;
 
+        virtual void initializeSolve() override;
+
         virtual void initialSolveAttempt() override;
 
         virtual bool checkConvergence();
