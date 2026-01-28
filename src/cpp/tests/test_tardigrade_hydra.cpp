@@ -3564,7 +3564,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
 
     unsigned int dimension = 3;
 
-    try{
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
@@ -3583,7 +3582,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
     BOOST_TEST(!hydra.access_solver()->step->getRankDeficientError());
 
     BOOST_TEST(solver.num_calls == 2);
-    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
