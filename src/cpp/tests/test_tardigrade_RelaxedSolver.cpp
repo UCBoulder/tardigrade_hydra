@@ -408,8 +408,10 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve, *boost::unit_test::
         using tardigradeHydra::SolverBase::SolverBase;
 
         unsigned int numCallSolveNonLinearProblem = 0;
+        unsigned int numCallReset = 0;
 
         virtual void solve() override { numCallSolveNonLinearProblem++; }
+        virtual void reset() override { numCallReset++; };
     };
 
     tardigradeHydra::floatType time = 1.1;
