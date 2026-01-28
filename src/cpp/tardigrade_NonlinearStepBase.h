@@ -30,8 +30,6 @@ namespace tardigradeHydra{
 
             virtual void reset() override;
 
-            virtual void computeTrial() override;
-
             virtual const floatVector *getNonlinearRHS();
 
             virtual const floatVector *getFlatNonlinearLHS();

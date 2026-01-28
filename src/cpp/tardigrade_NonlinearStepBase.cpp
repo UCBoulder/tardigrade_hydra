@@ -41,15 +41,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Compute the trial step
-     *
-     * Must set the containing step's deltaX variable
-     */
-    void NonlinearStepBase::computeTrial() {
-        TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error("computeTrial must be defined by inheriting classes") );
-    }
-
-    /*!
      * Add output to the failure message
      */
     void NonlinearStepBase::addTrialStepOutput() {
