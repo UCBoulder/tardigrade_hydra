@@ -1458,7 +1458,10 @@ namespace tardigradeHydra {
     /*!
      * The initial attempt at solving the problem
      */
-    void hydraBase::initialSolveAttempt() { evaluateInternal(); }
+    void hydraBase::initialSolveAttempt() {
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver hasn't been defined" );
+        solver->solve();
+    }
 
     /*!
      * The function that is called if there is a convergence
@@ -1576,6 +1579,7 @@ namespace tardigradeHydra {
      * Perform a subcycler step
      */
     void hydraBase::performSubcyclerStep() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
         addSubcyclerStepHeader();
 
         setScaleFactor(sp + ds);  // Update the scaling factor
@@ -1584,7 +1588,7 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
         local_solver->resetIterations();  // Reset the non-linear iteration count
 
-        evaluateInternal();  // Try to solve the non-linear problem
+        solver->solve();  // Try to solve the non-linear problem
     }
 
     /*!

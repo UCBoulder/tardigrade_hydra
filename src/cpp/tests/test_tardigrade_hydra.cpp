@@ -3673,42 +3673,10 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
     class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
        public:
         using tardigradeHydra::RelaxedSolver::RelaxedSolver;
-    };
 
-    class SolverBaseMock : public tardigradeHydra::SolverBase {
-       public:
-        using tardigradeHydra::SolverBase::SolverBase;
-
-        unsigned int ncalls_to_regular_solve = 0;
-
-        virtual void solve() override { ncalls_to_regular_solve++; }
-    };
-
-    class hydraBaseMock : public tardigradeHydra::hydraBase {
-       public:
-        using tardigradeHydra::hydraBase::hydraBase;
-
-        using tardigradeHydra::hydraBase::setResidualClasses;
-
-        unsigned int num_evaluateInternalCalls = 0;
-
-        unsigned int num_updateUnknownVectorCalls = 0;
-
-        unsigned int num_updateConfigurationsFromUnknownVectorCalls = 0;
+        unsigned int num_solveCalls = 0;
 
         std::vector<unsigned int> fail_indices = {0, 1, 3};
-
-        ResidualBaseMockStress r1;
-
-        ResidualBaseMock r2;
-
-        ResidualBaseMock r3;
-
-        unsigned int s1 = 9;
-
-        unsigned int s2 = 10;
-
-        unsigned int s3 = 3;
 
         floatVector expected_scale_factors = {1.0, 0.5, 0.25, 0.5, 0.375, 0.50, 0.65, 0.83, 1.0};
 
@@ -3738,7 +3706,60 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
             {2.05,       2.,         3.,         4.,         6.,         6.,         7.,         9.,         10., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0.1, 0.2, 0.3, 0.4}
         };
 
-        void setSolver(tardigradeHydra::SolverBase *_solve) { solver = &_solver; }
+        virtual void solve() override {
+            TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "internal solver not set");
+
+            initial_unknown          = internal_solver->initial_unknown;
+            internal_solver->initial_unknown = *getUnknownVector();
+
+            BOOST_TEST(hydra->getScaleFactor() == expected_scale_factors[num_solveCalls]);
+
+            BOOST_TEST((*getUnknownVector()) == expected_unknownVectors[num_solveCalls], CHECK_PER_ELEMENT);
+
+            if (std::find(fail_indices.begin(), fail_indices.end(), num_solveCalls) != fail_indices.end()) {
+                num_solveCalls++;
+
+                throw std::runtime_error("failure in evaluateInternal");
+            }
+
+            num_solveCalls++;
+        }
+    };
+
+    class SolverBaseMock : public tardigradeHydra::SolverBase {
+       public:
+        using tardigradeHydra::SolverBase::SolverBase;
+
+        unsigned int ncalls_to_regular_solve = 0;
+
+        virtual void solve() override { ncalls_to_regular_solve++; }
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+       public:
+        using tardigradeHydra::hydraBase::hydraBase;
+
+        using tardigradeHydra::hydraBase::setResidualClasses;
+
+        unsigned int num_evaluateInternalCalls = 0;
+
+        unsigned int num_updateUnknownVectorCalls = 0;
+
+        unsigned int num_updateConfigurationsFromUnknownVectorCalls = 0;
+
+        ResidualBaseMockStress r1;
+
+        ResidualBaseMock r2;
+
+        ResidualBaseMock r3;
+
+        unsigned int s1 = 9;
+
+        unsigned int s2 = 10;
+
+        unsigned int s3 = 3;
+
+        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
 
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override {
@@ -3749,28 +3770,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
         virtual void updateConfigurationsFromUnknownVector() override {
             tardigradeHydra::hydraBase::updateConfigurationsFromUnknownVector();
             num_updateConfigurationsFromUnknownVectorCalls++;
-        }
-
-        virtual void evaluateInternal() override {
-            auto local_solver = dynamic_cast<tardigradeHydra::RelaxedSolver *>(solver);
-            TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "solver cannot be converted to RelaxedSolver");
-            auto internal_solver = tardigradeHydra::unit_test::RelaxedSolverTester::get_internal_solver(*local_solver);
-            TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "internal solver not set");
-
-            solver->initial_unknown          = internal_solver->initial_unknown;
-            internal_solver->initial_unknown = *getUnknownVector();
-
-            BOOST_TEST(getScaleFactor() == expected_scale_factors[num_evaluateInternalCalls]);
-
-            BOOST_TEST((*getUnknownVector()) == expected_unknownVectors[num_evaluateInternalCalls], CHECK_PER_ELEMENT);
-
-            if (std::find(fail_indices.begin(), fail_indices.end(), num_evaluateInternalCalls) != fail_indices.end()) {
-                num_evaluateInternalCalls++;
-
-                throw std::runtime_error("failure in evaluateInternal");
-            }
-
-            num_evaluateInternalCalls++;
         }
 
         virtual void setResidualClasses() override {
@@ -3829,7 +3828,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
 
     hydra.evaluate(true);
 
-    BOOST_TEST(hydra.num_evaluateInternalCalls == 9);
+    BOOST_TEST(solver.num_solveCalls == 9);
 
     BOOST_TEST(hydra.num_updateUnknownVectorCalls == 0);
 
@@ -3859,13 +3858,29 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
         }
     };
 
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+       public:
+        using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+
+        unsigned int num_solverCalls = 0;
+
+        unsigned int n_failure = 3;
+
+        virtual void solve() override {
+            if (num_solverCalls < n_failure) {
+                num_solverCalls++;
+                throw std::runtime_error("less than n_failure");
+            }
+            num_solverCalls++;
+        }
+
+    };
+
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
 
         using tardigradeHydra::hydraBase::setResidualClasses;
-
-        unsigned int num_evaluateInternalCalls = 0;
 
         unsigned int num_updateUnknownVectorCalls = 0;
 
@@ -3891,20 +3906,14 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
         unsigned int s2 = 9;
 
+        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
+
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override { num_updateUnknownVectorCalls++; }
 
         virtual void callResidualPreSubcycler() override { num_callResidualPreSubcyclerCalls++; }
 
         virtual void resetProblem() override { num_resetProblemCalls++; }
-
-        virtual void evaluateInternal() override {
-            if (num_evaluateInternalCalls < n_failure) {
-                num_evaluateInternalCalls++;
-                throw std::runtime_error("less than n_failure");
-            }
-            num_evaluateInternalCalls++;
-        }
 
         virtual void callResidualPostSubcyclerSuccess() override { num_callResidualPostSubcyclerSuccessCalls++; }
 
@@ -3954,9 +3963,13 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
+    RelaxedSolverMock solver;
+    solver.hydra = &hydra;
+    hydra.setSolver(&solver);
+
     hydra.evaluate(true);
 
-    BOOST_TEST(hydra.num_evaluateInternalCalls == 9);
+    BOOST_TEST(solver.num_solverCalls == 9);
 
     BOOST_TEST(hydra.num_callResidualPreSubcyclerCalls == 1);
 
