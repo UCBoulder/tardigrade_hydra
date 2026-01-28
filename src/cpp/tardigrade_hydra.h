@@ -171,20 +171,6 @@ namespace tardigradeHydra {
         //! Get the absolute tolerance
         constexpr floatType getAbsoluteTolerance() { return _tola; }
 
-        //!< Get a reference to whether the Newton step should be a relaxed solve
-        const bool getUseRelaxedSolve() { return _use_relaxed_solve; }
-
-        //!< Set whether to attempt a Relaxed-solve
-        void setUseRelaxedSolve(const bool &value) {
-            /*!
-             * Set whether to attempt a relaxed solve
-             *
-             * \param &value: The value of the parameter
-             */
-
-            _use_relaxed_solve = value;
-        }
-
         secondOrderTensor getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
                                               const unsigned int &upperIndex);
 
@@ -769,8 +755,6 @@ namespace tardigradeHydra {
         floatType _tolr;  //!< The relative tolerance
 
         floatType _tola;  //!< The absolute tolerance
-
-        bool _use_relaxed_solve = true;  //!< Flag for whether to attempt a relaxed solve in case of failure
 
         bool _rank_deficient_error = true;  //!< Flag for whether a rank-deficient LHS will throw a convergence error
 

@@ -1631,22 +1631,7 @@ namespace tardigradeHydra {
      * Solve the non-linear problem with the current scaling and update the variables
      */
     void hydraBase::evaluateInternal() {
-        if (getUseRelaxedSolve()) {
-            solver->solve();
-
-        } else {
-            try {
-                solver->solve();
-
-            } catch (convergence_error &e) {
-                auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
-                TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
-                local_solver->performLevenbergMarquardtSolve();
-
-            } catch (std::exception &e) {
-                TARDIGRADE_ERROR_TOOLS_CATCH(throw;)
-            }
-        }
+        solver->solve();
     }
 
     /*!

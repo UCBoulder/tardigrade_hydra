@@ -3575,13 +3575,11 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
     hydra.setSolver(&solver);
     solver.hydra = &hydra;
 
-    hydra.setUseRelaxedSolve(false);
-
     BOOST_CHECK_THROW(hydra.public_evaluateInternal(), tardigradeHydra::convergence_error);
 
     BOOST_TEST(!hydra.access_solver()->step->getRankDeficientError());
 
-    BOOST_TEST(solver.num_calls == 2);
+    BOOST_TEST(solver.num_calls == 1);
 
     for ( auto r = std::begin( *hydra.getResidualClasses( ) ); r != std::end( *hydra.getResidualClasses( ) ); ++r ){
 
