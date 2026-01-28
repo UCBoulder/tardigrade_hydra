@@ -3590,6 +3590,18 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+
+    class SolverBaseMock : public tardigradeHydra::SolverBase {
+
+        public:
+         using tardigradeHydra::SolverBase::SolverBase;
+
+         unsigned int num_solveCalls = 0;
+
+         virtual void solve() override { num_solveCalls++; }
+
+    };
+
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
@@ -3600,10 +3612,11 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAU
 
         floatVector X = {1, 2, 3};
 
+        void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override { num_updateUnknownVectorCalls++; }
 
-        virtual void evaluateInternal() override { num_evaluateInternalCalls++; }
     };
 
     floatType time = 1.1;
@@ -3633,9 +3646,13 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAU
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
+    SolverBaseMock solver;
+    solver.hydra = &hydra;
+    hydra.setSolver(&solver);
+
     hydra.evaluate();
 
-    BOOST_TEST(hydra.num_evaluateInternalCalls == 1);
+    BOOST_TEST(solver.num_solveCalls == 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
