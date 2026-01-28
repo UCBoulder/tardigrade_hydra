@@ -38,6 +38,25 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Reset the Levenberg-Marquardt step
+     */
+    void LevenbergMarquardtStep::reset(){
+
+        // Call the base class reset function
+        tardigradeHydra::NewtonStep::reset();
+
+        // Turn off rank-deficient errors
+        step->setRankDeficientError(false);
+
+        // Test if the damping method is gradient-descent (required)
+        TARDIGRADE_ERROR_TOOLS_CHECK( dynamic_cast<tardigradeHydra::GradientDamping*>(getDamping()) != nullptr, "The damping method must be GradientDamping to work with Levenberg-Marquardt" );
+
+        // Enable projection of the proposed step by the residuals
+        enableProjection();
+
+    }
+
+    /*!
      * Get the RHS vector for the non-linear problem
      */
     const floatVector *LevenbergMarquardtStep::getNonlinearRHS( ){

@@ -31,6 +31,8 @@ namespace tardigradeHydra{
 
             virtual const floatVector* getFlatNonlinearLHS( ) override;
 
+            virtual void reset( ) override;
+
             void public_enableProjection(){ enableProjection(); } //TEMP: REMOVE SOON
 
         protected:
