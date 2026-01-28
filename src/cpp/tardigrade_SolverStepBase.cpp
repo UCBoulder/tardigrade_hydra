@@ -28,11 +28,21 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Reset the counts
+     */
+    void SolverStepBase::resetCounts() {
+        TARDIGRADE_ERROR_TOOLS_CATCH(resetNumUndamped();)
+        TARDIGRADE_ERROR_TOOLS_CATCH(trial_step->resetCounts();)
+        TARDIGRADE_ERROR_TOOLS_CATCH(damping->resetCounts();)
+    }
+
+    /*!
      * Reset the step back to an initial state
      */
     void SolverStepBase::reset() {
-        resetNumUndamped();
-        damping->resetCounts();
+        TARDIGRADE_ERROR_TOOLS_CATCH(resetCounts();)
+        TARDIGRADE_ERROR_TOOLS_CATCH(trial_step->reset();)
+        TARDIGRADE_ERROR_TOOLS_CATCH(damping->reset();)
     }
 
     /*!

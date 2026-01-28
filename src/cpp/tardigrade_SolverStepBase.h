@@ -40,6 +40,8 @@ namespace tardigradeHydra {
          */
         SolverStepBase(SolverBase *_solver) : solver(_solver) { initializeDefaults(); }
 
+        virtual void resetCounts();
+
         virtual void reset();
 
         void incrementSolution();
