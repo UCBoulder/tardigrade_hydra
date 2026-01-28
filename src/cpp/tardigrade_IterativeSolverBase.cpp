@@ -25,6 +25,7 @@ namespace tardigradeHydra {
      * Initialize the solver
      */
     void IterativeSolverBase::initializeSolve(){
+        tardigradeHydra::SolverBase::initializeSolve();
         reset();
     }
 
