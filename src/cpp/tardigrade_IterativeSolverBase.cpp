@@ -9,6 +9,7 @@
 #include "tardigrade_IterativeSolverBase.h"
 
 #include "tardigrade_hydra.h"
+#include "tardigrade_LevenbergMarquardtStep.h"
 
 namespace tardigradeHydra {
 
@@ -30,7 +31,7 @@ namespace tardigradeHydra {
         // Reset the internal steps
         step->reset();
 
-        setRankDeficientError(false);
+        step->setRankDeficientError(false); //TODO: Maybe this shouldn't be here?
 
         // Form the initial unknown vector
         if (getInitializeUnknownVector()) {
@@ -260,10 +261,12 @@ namespace tardigradeHydra {
     void IterativeSolverBase::performLevenbergMarquardtSolve() {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
 
-        setRankDeficientError(false);
+        step->setRankDeficientError(false); //TODO: Maybe this shouldn't be here?
 
         // Turn on projection
-        step->enableProjection();
+        auto local_step = dynamic_cast<tardigradeHydra::LevenbergMarquardtStep*>(step->trial_step);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_step != nullptr, "Failure to convert step to LevenbergMarquardtStep")
+        local_step->public_enableProjection();
 
         resetIterations();
         updateUnknownVector(initial_unknown);

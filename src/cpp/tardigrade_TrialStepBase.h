@@ -76,6 +76,12 @@ namespace tardigradeHydra {
 
         StepDampingBase *getDamping( );
 
+        void setCurrentResidualIndexMeaningful(const bool &value);
+
+        void setCurrentResidualIndex(const unsigned int &value);
+
+        const std::vector<tardigradeHydra::ResidualBase<> *> *getResidualClasses();
+
         // END PASS-THROUGH FUNCTIONS
 
        protected:

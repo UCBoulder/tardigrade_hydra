@@ -21,13 +21,21 @@ namespace tardigradeHydra{
 
         public:
 
-            using tardigradeHydra::NewtonStep::NewtonStep;
+            LevenbergMarquardtStep();
+
+            LevenbergMarquardtStep(SolverStepBase *_step);
+
+            LevenbergMarquardtStep(SolverStepBase *_step, PreconditionerBase *_preconditioner);
 
             virtual const floatVector* getNonlinearRHS( ) override;
 
             virtual const floatVector* getFlatNonlinearLHS( ) override;
 
+            void public_enableProjection(){ enableProjection(); } //TEMP: REMOVE SOON
+
         protected:
+
+            void enableProjection();
 
         private:
 

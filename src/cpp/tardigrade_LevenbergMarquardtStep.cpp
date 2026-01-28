@@ -8,8 +8,34 @@
 
 #include"tardigrade_LevenbergMarquardtStep.h"
 #include"tardigrade_GradientDamping.h"
+#include"tardigrade_ResidualBase.h"
 
 namespace tardigradeHydra{
+
+    /*!
+     * The constructor for LevenbergMarquardtStep
+     */
+    LevenbergMarquardtStep::LevenbergMarquardtStep() : NewtonStep() { }
+
+    /*!
+     * The constructor for LevenbergMarquardtStep
+     *
+     * \param *_step: The containing step object
+     */
+    LevenbergMarquardtStep::LevenbergMarquardtStep(SolverStepBase *_step) : NewtonStep(_step) {
+         step->setRankDeficientError(false);
+    }
+
+    /*!
+     * The constructor for LevenbergMarquardtStep
+     *
+     * \param *_step: The containing step object
+     * \param *_preconditioner_ptr: The preconditioner object used by the trial step
+     */
+    LevenbergMarquardtStep::LevenbergMarquardtStep(SolverStepBase *_step, PreconditionerBase *_preconditioner_ptr)
+        : NewtonStep(_step,_preconditioner_ptr) {
+         step->setRankDeficientError(false);
+    }
 
     /*!
      * Get the RHS vector for the non-linear problem
@@ -83,5 +109,20 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Enable the residual classes to project the unknown vector into the allowable space
+     */
+    void LevenbergMarquardtStep::enableProjection() {
+        setCurrentResidualIndexMeaningful(true);
+
+        for (auto residual_ptr = getResidualClasses()->begin(); residual_ptr != getResidualClasses()->end();
+             ++residual_ptr) {
+            setCurrentResidualIndex(residual_ptr - getResidualClasses()->begin());
+
+            (*residual_ptr)->setUseProjection(true);
+        }
+
+        setCurrentResidualIndexMeaningful(false);
+    }
 
 }

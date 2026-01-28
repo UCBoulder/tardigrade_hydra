@@ -196,4 +196,33 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
         return step->damping;
     }
+
+    /*!
+     * Set if the current residual index is meaningful or not
+     *
+     * \param &value: The boolean indicating if the residual index is or isn't meaningful
+     */
+    void TrialStepBase::setCurrentResidualIndexMeaningful(const bool &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        step->setCurrentResidualIndexMeaningful(value);
+    }
+
+    /*!
+     * Set the current residual index
+     *
+     * \param &value: The value of the current residual's index
+     */
+    void TrialStepBase::setCurrentResidualIndex(const unsigned int &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The solver has not been defined");
+        step->setCurrentResidualIndex(value);
+    }
+
+    /*!
+     * Get the residual classes
+     */
+    const std::vector<tardigradeHydra::ResidualBase<> *> *TrialStepBase::getResidualClasses() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The solver has not been defined");
+        return step->getResidualClasses();
+    }
+
 }  // namespace tardigradeHydra
