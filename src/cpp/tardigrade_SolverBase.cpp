@@ -249,11 +249,19 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Reset the solver counts
+     */
+    void SolverBase::resetCounts() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        TARDIGRADE_ERROR_TOOLS_CATCH(step->resetCounts();)
+    }
+
+    /*!
      * Reset the solver
      */
     void SolverBase::reset() {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
-        step->reset();
+        TARDIGRADE_ERROR_TOOLS_CATCH(step->reset();)
     }
 
     /*!

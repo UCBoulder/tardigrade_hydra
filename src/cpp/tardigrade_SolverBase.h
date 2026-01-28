@@ -48,6 +48,8 @@ namespace tardigradeHydra {
 
         virtual void unexpectedErrorFunction();
 
+        virtual void resetCounts();
+
         virtual void reset();
 
         // CACHED DATA STORAGE OPERATIONS
