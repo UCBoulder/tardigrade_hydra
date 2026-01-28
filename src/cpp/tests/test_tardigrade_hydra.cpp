@@ -3582,6 +3582,13 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluateInternal, *boost::unit_test::toleran
     BOOST_TEST(!hydra.access_solver()->step->getRankDeficientError());
 
     BOOST_TEST(solver.num_calls == 2);
+
+    for ( auto r = std::begin( *hydra.getResidualClasses( ) ); r != std::end( *hydra.getResidualClasses( ) ); ++r ){
+
+        BOOST_TEST( (*r)->getUseProjection( ) );
+
+    }
+
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
