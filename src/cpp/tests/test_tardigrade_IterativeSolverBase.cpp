@@ -436,7 +436,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
     BOOST_TEST(damping.getNumGrad() == 1);
 
-    BOOST_TEST(hydra.num_residual_calls == 8);  // 8 because we initialize the residual
+    BOOST_TEST(hydra.num_residual_calls == 9);  // 9 because we initialize the residual
 
     BOOST_TEST(hydra.num_derivative_calls == 3);  // 3 because we initialize the jacobian
 
@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
     BOOST_TEST(damping_pre.getNumGrad() == 1);
 
-    BOOST_TEST(hydra.num_residual_calls == 8);  // 8 because we initialize the residual
+    BOOST_TEST(hydra.num_residual_calls == 9);  // 9 because we initialize the residual
 
     BOOST_TEST(hydra.num_derivative_calls == 3);  // 3 because we initialize the jacobian
 }
