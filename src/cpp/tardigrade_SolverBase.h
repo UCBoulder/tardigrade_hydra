@@ -11,7 +11,7 @@
 
 #include "tardigrade_CoreDefinitions.h"
 #include "tardigrade_SetDataStorage.h"
-#include "tardigrade_SolverStepBase.h"
+#include "tardigrade_SolverStep.h"
 
 namespace tardigradeHydra {
 
@@ -32,7 +32,7 @@ namespace tardigradeHydra {
 
         hydraBase *hydra;  //!< Pointer to the containing hydra object
 
-        SolverStepBase  _step;  //!< Temporary object
+        SolverStep  _step;  //!< The default solver step (move to default solver class)
         SolverStepBase *step =
             &_step;  //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
 

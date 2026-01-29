@@ -52,6 +52,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_GradientDamping"
     "tardigrade_ArmijoGradientDamping"
     "tardigrade_SolverStepBase"
+    "tardigrade_SolverStep"
     "tardigrade_ArmijoLineSearchStep"
     "tardigrade_PreconditionerBase"
     "tardigrade_MaxRowPreconditioner"
