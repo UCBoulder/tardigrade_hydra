@@ -353,6 +353,8 @@ namespace tardigradeHydra {
             return &_scaled_additionalDOF;
         }
 
+        // SUBCYCLER FUNCTIONS
+
         const floatType getCutbackFactor() { /*! Get the value of the cutback factor */ return _cutback_factor; }
 
         const unsigned int
@@ -392,6 +394,8 @@ namespace tardigradeHydra {
         }
 
         const bool allowStepGrowth(const unsigned int &num_good);
+
+        // END SUBCYCLER FUNCTIONS
 
         floatVector *getMutableResidual() {
             /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
@@ -512,10 +516,6 @@ namespace tardigradeHydra {
 
             return _residual_scale_factor;
         }
-
-        // TEMP REMOVE THESE
-
-        // END TEMP
 
        protected:
         RelaxedSolver _solver;  //!< Default solver
@@ -812,6 +812,7 @@ namespace tardigradeHydra {
         floatType _scale_factor =
             1.0;  //!< A scale factor applied to the incoming loading (deformation, temperature, etc.)
 
+        // SUBCYCLER PARAMETERS
         floatType _cutback_factor = 0.5;  //!< The factor by which the pseudo-time will be scaled if a solve fails
 
         floatType _growth_factor =
@@ -821,6 +822,7 @@ namespace tardigradeHydra {
             2;  //!< The number of good iterations we need to have before we try and increase the timestep
 
         floatType _minDS = 1e-2;  //!< The minimum allowable pseudo-timestep
+        // END SUBCYCLER PARAMETERS
 
         bool _allow_modify_global_residual = false;  //!< Flag for if the global residual can be modified
 
