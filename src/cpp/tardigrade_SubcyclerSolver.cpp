@@ -44,6 +44,36 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * The initial attempt at solving the problem
+     *
+     * Attempts to use the internal solver directly without subcycling
+     */
+    void SubcyclerSolver::initialSolveAttempt() {
+        TARDIGRADE_ERROR_TOOLS_CHECK( internal_solver != nullptr, "The solver hasn't been defined" );
+        internal_solver->solve();
+    }
+
+    /*!
+     * The function that is called if there is a convergence
+     * error thrown in the initial solve attempt
+     *
+     * Attempts a subcycler step
+     */
+    void SubcyclerSolver::convergenceErrorFunction() {
+        performSubcyclerSolve();
+    }
+
+    /*!
+     * The function that is called if there is a unexpected
+     * error thrown in the initial solve attempt
+     *
+     * Attempts a subcycler step
+     */
+    void SubcyclerSolver::unexpectedErrorFunction() {
+        performSubcyclerSolve();
+    }
+
+    /*!
      * Initialize the subcycler
      */
     void SubcyclerSolver::initializeSubcycler() {
@@ -174,6 +204,93 @@ namespace tardigradeHydra {
         }
 
         return false;
+    }
+
+    /*!
+     * Signal to the residuals that we are entering the subcycler
+     */
+    void SubcyclerSolver::callResidualPreSubcycler() {
+        setCurrentResidualIndexMeaningful(true);
+
+        for (auto residual_ptr = getResidualClasses()->begin(); residual_ptr != getResidualClasses()->end();
+             ++residual_ptr) {
+            setCurrentResidualIndex(residual_ptr - getResidualClasses()->begin());
+
+            try {
+                (*residual_ptr)->preSubcycler();
+
+            } catch (std::exception &e) {
+                if (getFailureVerbosityLevel() > 0) {
+                    addToFailureOutput("Failure in residual " +
+                                       std::to_string(residual_ptr - getResidualClasses()->begin()) + "\n");
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions(e, message);
+                    addToFailureOutput(message);
+                }
+
+                throw;
+            }
+        }
+
+        setCurrentResidualIndexMeaningful(false);
+    }
+
+    /*!
+     * Signal to the residuals that we have a successful subcycle increment
+     */
+    void SubcyclerSolver::callResidualPostSubcyclerSuccess() {
+        setCurrentResidualIndexMeaningful(true);
+
+        for (auto residual_ptr = getResidualClasses()->begin(); residual_ptr != getResidualClasses()->end();
+             ++residual_ptr) {
+            setCurrentResidualIndex(residual_ptr - getResidualClasses()->begin());
+
+            try {
+                (*residual_ptr)->postSubcyclerSuccess();
+
+            } catch (std::exception &e) {
+                if (getFailureVerbosityLevel() > 0) {
+                    addToFailureOutput("Failure in residual " +
+                                       std::to_string(residual_ptr - getResidualClasses()->begin()) + "\n");
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions(e, message);
+                    addToFailureOutput(message);
+                }
+
+                throw;
+            }
+        }
+
+        setCurrentResidualIndexMeaningful(false);
+    }
+
+    /*!
+     * Signal to the residuals that we have a failed subcycle increment
+     */
+    void SubcyclerSolver::callResidualPostSubcyclerFailure() {
+        setCurrentResidualIndexMeaningful(true);
+
+        for (auto residual_ptr = getResidualClasses()->begin(); residual_ptr != getResidualClasses()->end();
+             ++residual_ptr) {
+            setCurrentResidualIndex(residual_ptr - getResidualClasses()->begin());
+
+            try {
+                (*residual_ptr)->postSubcyclerFailure();
+
+            } catch (std::exception &e) {
+                if (getFailureVerbosityLevel() > 0) {
+                    addToFailureOutput("Failure in residual " +
+                                       std::to_string(residual_ptr - getResidualClasses()->begin()) + "\n");
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions(e, message);
+                    addToFailureOutput(message);
+                }
+
+                throw;
+            }
+        }
+
+        setCurrentResidualIndexMeaningful(false);
     }
 
 }
