@@ -285,6 +285,11 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
         using tardigradeHydra::SolverStepBase::SolverStepBase;
     };
 
+    class StepDampingBaseMock : public tardigradeHydra::StepDampingBase {
+       public:
+        using tardigradeHydra::StepDampingBase::StepDampingBase;
+    };
+
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
@@ -371,10 +376,13 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
 
     tardigradeHydra::SolverBase solver;
     SolverStepBaseMock          step;
+    StepDampingBaseMock         damping;
     SequentialQuadraticProgrammingStepMock           trial_step;
 
     step.trial_step = &trial_step;
+    step.damping    = &damping;
     trial_step.step = &step;
+    damping.step    = &step;
 
     hydra.set_solver(&solver);
     solver.hydra = &hydra;

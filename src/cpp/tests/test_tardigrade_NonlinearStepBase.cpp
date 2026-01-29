@@ -156,6 +156,11 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
         using tardigradeHydra::SolverStepBase::SolverStepBase;
     };
 
+    class StepDampingBaseMock : public tardigradeHydra::StepDampingBase {
+       public:
+        using tardigradeHydra::StepDampingBase::StepDampingBase;
+    };
+
     class NonlinearStepBaseMock : public tardigradeHydra::NonlinearStepBase {
        public:
         using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
@@ -165,11 +170,14 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    SolverStepBaseMock step;
+    SolverStepBaseMock     step;
+    StepDampingBaseMock    damping;
     NonlinearStepBaseMock  trial_step;
 
     step.trial_step = &trial_step;
+    step.damping    = &damping;
     trial_step.step = &step;
+    damping.step    = &step;
 
     hydra.getSolver()->step = &step;
     step.setSolver(hydra.getSolver());

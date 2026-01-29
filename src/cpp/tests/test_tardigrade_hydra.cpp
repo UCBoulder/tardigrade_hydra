@@ -3240,7 +3240,11 @@ BOOST_AUTO_TEST_CASE(test_computeTangents, *boost::unit_test::tolerance(2e-6)) {
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
-    tardigradeHydra::PreconditionerBase preconditioner;
+    tardigradeHydra::SolverStepBase     step(hydra.getSolver());
+    tardigradeHydra::NonlinearStepBase  trial_step(&step);
+    tardigradeHydra::StepDampingBase    damping(&step);
+    tardigradeHydra::PreconditionerBase preconditioner(&trial_step);
+    hydra.getSolver()->step = &step;
 
     auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydra.getSolver()->step->trial_step);
     TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The trial_step is not a NonlinearStepBase object");
@@ -3269,6 +3273,12 @@ BOOST_AUTO_TEST_CASE(test_computeTangents, *boost::unit_test::tolerance(2e-6)) {
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                             numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
+    tardigradeHydra::SolverStepBase step_pre(hydra_pre.getSolver());
+    tardigradeHydra::TrialStepBase   trial_step_pre(&step_pre);
+    tardigradeHydra::StepDampingBase damping_pre(&step_pre);
+
+    hydra_pre.getSolver()->step = &step;
+
     hydra_pre.initialize();
 
     BOOST_TEST(dXdF == *hydra_pre.getFlatdXdF(), CHECK_PER_ELEMENT);
@@ -3350,10 +3360,12 @@ BOOST_AUTO_TEST_CASE(test_computeFlatdXdAdditionalDOF, *boost::unit_test::tolera
         tardigradeHydra::SolverBase *getSolver(){ return solver; }
 
     };
+
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, previousStateVariables,
                         parameters, numConfigurations, numNonLinearSolveStateVariables, dimension);
 
+    tardigradeHydra::SolverStepBase step(hydra.getSolver());
     tardigradeHydra::PreconditionerBase preconditioner;
 
     auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydra.getSolver()->step->trial_step);
@@ -3378,6 +3390,8 @@ BOOST_AUTO_TEST_CASE(test_computeFlatdXdAdditionalDOF, *boost::unit_test::tolera
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, previousStateVariables,
                             parameters, numConfigurations, numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
+
+    tardigradeHydra::SolverStepBase step_pre(hydra_pre.getSolver());
 
     hydra_pre.initialize();
 
