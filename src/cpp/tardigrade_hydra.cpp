@@ -1336,35 +1336,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Signal to the residuals that we have a failed subcycle increment
-     */
-    void hydraBase::callResidualPostSubcyclerFailure() {
-        setCurrentResidualIndexMeaningful(true);
-
-        for (auto residual_ptr = getResidualClasses()->begin(); residual_ptr != getResidualClasses()->end();
-             ++residual_ptr) {
-            setCurrentResidualIndex(residual_ptr - getResidualClasses()->begin());
-
-            try {
-                (*residual_ptr)->postSubcyclerFailure();
-
-            } catch (std::exception &e) {
-                if (getFailureVerbosityLevel() > 0) {
-                    addToFailureOutput("Failure in residual " +
-                                       std::to_string(residual_ptr - getResidualClasses()->begin()) + "\n");
-                    std::string message;
-                    tardigradeErrorTools::captureNestedExceptions(e, message);
-                    addToFailureOutput(message);
-                }
-
-                throw;
-            }
-        }
-
-        setCurrentResidualIndexMeaningful(false);
-    }
-
-    /*!
      * Set if the current residual index is meaningful
      *
      * \param &value: Set if the current residual index is meaningful or not
@@ -1531,7 +1502,10 @@ namespace tardigradeHydra {
      * Called when there is a failure in a subcycler step
      */
     void hydraBase::subcyclerStepFailure() {
-        callResidualPostSubcyclerFailure();
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
+        local_solver->callResidualPostSubcyclerFailure();
 
         // Reduce the time-step and try again
         num_good = 0;
