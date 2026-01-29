@@ -30,6 +30,13 @@ namespace tardigradeHydra {
          */
         PreconditionerBase() { }
 
+        /*!
+         * Constructor for the preconditioner object
+         *
+         * \param *_trial_step: The containing TrialStepBase object
+         */
+        PreconditionerBase(NonlinearStepBase *_trial_step) { trial_step = _trial_step; }
+
         virtual void reset();
 
         //! Get a pointer to the row-major form of the preconditioner
