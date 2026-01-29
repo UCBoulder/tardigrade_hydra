@@ -307,6 +307,50 @@ namespace tardigradeHydra {
         }
     }
 
+    /*!
+     * Set the previously converged stress value
+     */
+    void SolverBase::setPreviouslyConvergedStress(const floatVector &value){
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
+        hydra->setPreviouslyConvergedStress( value );
+    }
+
+    /*!
+     * Get the current value of the stress
+     */
+    const floatVector *SolverBase::getStress( ){
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
+        return hydra->getStress();
+    }
+
+    /*!
+     * Set the unknown vector
+     *
+     * \param &value: The incoming value
+     */
+    void SolverBase::setX(const floatVector &value){
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
+        return hydra->setX( value );
+    }
+
+    /*!
+     * Reset the problem
+     */
+    void SolverBase::resetProblem(){
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
+        hydra->resetProblem();
+    }
+
+    /*!
+     * Set the scale factor for the incoming degrees of freedom
+     *
+     * \param &value: The incoming value
+     */
+    void SolverBase::setScaleFactor(const floatType &value){
+        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
+        setScaleFactor(value);
+    }
+
     // NONLINEAR FUNCTIONS
 
     /*!

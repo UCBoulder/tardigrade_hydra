@@ -107,7 +107,9 @@ namespace tardigradeHydra {
 
         const std::vector<tardigradeHydra::ResidualBase<> *> *getResidualClasses();
 
-        void setAllowModifyGlobalResidual(const bool &value);
+        const floatVector *getStress( );
+
+        // End pass-through functions
 
         /*!
          * Add a general iterable object to the output string
@@ -132,6 +134,19 @@ namespace tardigradeHydra {
         }
 
        protected:
+
+        // Pass-through functions
+
+        void setAllowModifyGlobalResidual(const bool &value);
+
+        void setPreviouslyConvergedStress(const floatVector &value);
+
+        void setX(const floatVector &value);
+
+        void resetProblem();
+
+        virtual void setScaleFactor(const floatType &value);
+        // End pass-through functions
 
        private:
         friend class tardigradeHydra::hydraBase;                    //!< TEMP REMOVE THIS
