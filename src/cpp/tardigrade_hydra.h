@@ -25,6 +25,7 @@
 #include "tardigrade_CustomErrors.h"
 #include "tardigrade_MatrixMap.h"
 #include "tardigrade_RelaxedSolver.h"
+#include "tardigrade_SubcyclerSolver.h"
 #include "tardigrade_ResidualBase.h"
 #include "tardigrade_SetDataStorage.h"
 #include "tardigrade_SolverBase.h"
@@ -518,7 +519,7 @@ namespace tardigradeHydra {
         }
 
        protected:
-        RelaxedSolver _solver;  //!< Default solver
+        SubcyclerSolver _solver;  //!< Default solver
         SolverBase   *solver =
             &_solver;  //!< The class which performs the material point solve TODO: Make this an incoming pointer
 
