@@ -3583,9 +3583,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
         virtual void setStress() override { setStress(cauchyStress + (*hydra->getDeformationGradient())); }
     };
 
-    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+    class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
        public:
-        using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+        using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
 
         unsigned int num_solveCalls = 0;
 
@@ -3729,7 +3729,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    RelaxedSolverMock solver;
+    SubcyclerSolverMock solver;
     SolverBaseMock    internal_solver;
     solver.setInternalSolver(&internal_solver);
     internal_solver.hydra = &hydra;
@@ -3769,13 +3769,15 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
         }
     };
 
-    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+    class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
        public:
-        using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+        using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
 
         unsigned int num_solverCalls = 0;
 
         unsigned int n_failure = 3;
+
+        unsigned int num_callResidualPostSubcyclerFailureCalls = 0;
 
         virtual void solve() override {
             if (num_solverCalls < n_failure) {
@@ -3784,6 +3786,8 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
             }
             num_solverCalls++;
         }
+
+        virtual void callResidualPostSubcyclerFailure() override { num_callResidualPostSubcyclerFailureCalls++; }
 
     };
 
@@ -3800,8 +3804,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
         unsigned int num_resetProblemCalls = 0;
 
         unsigned int num_callResidualPostSubcyclerSuccessCalls = 0;
-
-        unsigned int num_callResidualPostSubcyclerFailureCalls = 0;
 
         unsigned int num_setScaleFactorCalls = 0;
 
@@ -3827,8 +3829,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
         virtual void resetProblem() override { num_resetProblemCalls++; }
 
         virtual void callResidualPostSubcyclerSuccess() override { num_callResidualPostSubcyclerSuccessCalls++; }
-
-        virtual void callResidualPostSubcyclerFailure() override { num_callResidualPostSubcyclerFailureCalls++; }
 
         virtual void setScaleFactor(const floatType &value) override { num_setScaleFactorCalls++; }
 
@@ -3874,7 +3874,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    RelaxedSolverMock solver;
+    SubcyclerSolverMock solver;
     solver.hydra = &hydra;
     hydra.setSolver(&solver);
 
@@ -3890,7 +3890,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
     BOOST_TEST(hydra.num_callResidualPostSubcyclerSuccessCalls == 6);
 
-    BOOST_TEST(hydra.num_callResidualPostSubcyclerFailureCalls == 2);
+    BOOST_TEST(solver.num_callResidualPostSubcyclerFailureCalls == 2);
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_setConstraints, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
@@ -4228,6 +4228,14 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_callResidualSubcyclerFailure,
        protected:
     };
 
+    class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
+
+        public:
+            using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
+
+            virtual void public_callResidualPostSubcyclerFailure() { callResidualPostSubcyclerFailure(); }
+    };
+
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         residualMock r1;
@@ -4264,7 +4272,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_callResidualSubcyclerFailure,
             setResidualClasses(residuals);
         }
 
-        virtual void public_callResidualPostSubcyclerFailure() { callResidualPostSubcyclerFailure(); }
+        void setSolver(tardigradeHydra::SubcyclerSolver *_solver){solver=_solver;}
+        auto getSolver(){return solver;}
+
     };
 
     floatType time = 1.1;
@@ -4300,7 +4310,11 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_callResidualSubcyclerFailure,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    hydra.public_callResidualPostSubcyclerFailure();
+    SubcyclerSolverMock solver;
+    solver.hydra = &hydra;
+    hydra.setSolver(&solver);
+
+    solver.public_callResidualPostSubcyclerFailure();
 
     BOOST_TEST(hydra.r1.numPostSubcyclerFailureCalls == 1);
 
