@@ -43,7 +43,7 @@ jobs:
         run: gersemi CMakeLists.txt src/ docs/ --check --diff
       - name: Configure
         shell: bash -el {0}
-        run: cmake -S . -B build -DTARDIGRADE_HYDRA_TOOLS_BUILD_PYTHON_BINDINGS=${{ matrix.config_zip.python_bindings }} -DTARDIGRADE_HEADER_ONLY=${{ matrix.config_zip.header_only }} -DTARDIGRADE_ERROR_TOOLS_OPT=${{ matrix.tardigrade_opt }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        run: cmake -S . -B build -DTARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS=${{ matrix.config_zip.python_bindings }} -DTARDIGRADE_HEADER_ONLY=${{ matrix.config_zip.header_only }} -DTARDIGRADE_ERROR_TOOLS_OPT=${{ matrix.tardigrade_opt }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       - name: clang-tidy Lint
         if: ${{ matrix.os == 'ubuntu-latest'}}
         shell: bash -el {0}
