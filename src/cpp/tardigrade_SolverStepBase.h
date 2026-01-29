@@ -31,14 +31,14 @@ namespace tardigradeHydra {
         /*!
          * Constructor for NonlinearStepBase
          */
-        SolverStepBase() : solver(NULL) { initializeDefaults(); }
+        SolverStepBase() : solver(NULL) { }
 
         /*!
          * Constructor for NonlinearStepBase
          *
          * \param *_solver: The containing solver object
          */
-        SolverStepBase(SolverBase *_solver) : solver(_solver) { initializeDefaults(); }
+        SolverStepBase(SolverBase *_solver) : solver(_solver) { }
 
         virtual void resetCounts();
 
@@ -117,11 +117,6 @@ namespace tardigradeHydra {
 
        protected:
         SolverBase *solver;  //!< Pointer to the containing SolverBase object
-
-        ArmijoGradientDamping _damping;     //!< The default step damping
-        NewtonStep            _trial_step;  //!< The default trial step
-
-        void initializeDefaults();
 
         //! Reset the number of undamped steps
         void resetNumUndamped() { _NUM_UNDAMPED = 0; }

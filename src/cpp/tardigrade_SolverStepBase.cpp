@@ -17,17 +17,6 @@
 namespace tardigradeHydra {
 
     /*!
-     * Initialize the default damping and trial step classes
-     */
-    void SolverStepBase::initializeDefaults() {
-        damping       = &_damping;
-        damping->step = this;
-
-        trial_step       = &_trial_step;
-        trial_step->step = this;
-    }
-
-    /*!
      * Reset the counts
      */
     void SolverStepBase::resetCounts() {
