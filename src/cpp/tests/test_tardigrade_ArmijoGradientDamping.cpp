@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_getLSResidualNorm,
     solver.step                     = &step;
 //    step.trial_step->preconditioner = &preconditioner;
 
-    step.setSolver(&solver);
+    step.solver=&solver;
 //    preconditioner.trial_step = step.trial_step;
 
     step.damping = &damping;
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_checkLSConvergence,
     damping.setMaxLSIterations(5);
 
     hydra.getSolver()->step = &step;
-    step.setSolver(hydra.getSolver());
+    step.solver=hydra.getSolver();
 
     tardigradeHydra::floatVector residual = {1, 2, -3, 0};
 

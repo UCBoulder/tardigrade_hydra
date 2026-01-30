@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
     damping.step    = &step;
 
     hydra.getSolver()->step = &step;
-    step.setSolver(hydra.getSolver());
+    step.solver=hydra.getSolver();
 
     tardigradeHydra::floatVector unknownVector = {0.39293837, -0.42772133, -0.54629709, 0.10262954, 0.43893794};
 

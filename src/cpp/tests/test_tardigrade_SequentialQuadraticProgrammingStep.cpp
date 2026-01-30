@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial, *boos
 
     solver.hydra = &hydra;
     solver.step  = &step;
-    step.setSolver(&solver);
+    step.solver = &solver;
 
     hydra.set_solver(&solver);
 
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
     hydra.set_solver(&solver);
     solver.hydra = &hydra;
     solver.step  = &step;
-    step.setSolver(&solver);
+    step.solver  = &solver;
 
     tardigradeHydra::floatVector dx = {-0.2, 1.4};
 
@@ -433,6 +433,11 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix, 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
        public:
         using tardigradeHydra::SolverStepBase::SolverStepBase;
+    };
+
+    class StepDampingBaseMock : public tardigradeHydra::StepDampingBase {
+       public:
+        using tardigradeHydra::StepDampingBase::StepDampingBase;
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -515,17 +520,20 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix, 
 
     tardigradeHydra::SolverBase solver;
     SolverStepBaseMock          step;
+    StepDampingBaseMock         damping;
     SequentialQuadraticProgrammingStepMock       trial_step;
 
     step.trial_step = &trial_step;
+    step.damping    = &damping;
     trial_step.step = &step;
+    damping.step    = &step;
 
     hydra.set_solver(&solver);
 
     solver.hydra = &hydra;
     solver.step  = &step;
 
-    step.setSolver(&solver);
+    step.solver=&solver;
 
     hydra.public_setMuk(0.1);
 
@@ -637,7 +645,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
     solver.hydra = &hydra;
     solver.step  = &step;
 
-    step.setSolver(&solver);
+    step.solver = &solver;
 
     step.trial_step = &trial_step;
     trial_step.step = &step;

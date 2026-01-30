@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
     hydra.set_solver(&solver);
     solver.hydra = &hydra;
     solver.step  = &step;
-    step.setSolver(&solver);
+    step.solver=&solver;
     step.damping = &damping;
     damping.step = &step;
 
@@ -379,14 +379,14 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
             hydrap.set_solver(&solverp);
             solverp.hydra = &hydrap;
             solverp.step  = &stepp;
-            stepp.setSolver(&solverp);
+            stepp.solver=&solverp;
             stepp.damping = &dampingp;
             dampingp.step = &stepp;
 
             hydram.set_solver(&solverm);
             solverm.hydra = &hydram;
             solverm.step  = &stepm;
-            stepm.setSolver(&solverm);
+            stepm.solver  = &solverm;
             stepm.damping = &dampingm;
             dampingm.step = &stepm;
 
@@ -475,7 +475,7 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_checkDescentDirection, *boost::unit_tes
     hydra.set_solver(&solver);
     solver.hydra = &hydra;
     solver.step  = &step;
-    step.setSolver(&solver);
+    step.solver  = &solver;
     step.damping = &damping;
     damping.step = &step;
 
@@ -592,7 +592,7 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
     step.damping = &damping;
 
     hydra.getSolver()->step = &step;
-    step.setSolver(hydra.getSolver());
+    step.solver = hydra.getSolver();
 
     tardigradeHydra::floatVector unknownVector = {0.39293837, -0.42772133, -0.54629709, 0.10262954, 0.43893794};
 
@@ -610,7 +610,7 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
     StepDampingBaseMock damping2;
 
     hydra2.getSolver()->step = &step2;
-    step2.setSolver(hydra2.getSolver());
+    step2.solver = hydra2.getSolver();
     damping2.step = &step2;
     step2.damping = &damping2;
 
@@ -735,7 +735,7 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_performGradientStep, *boost::unit_test
     damping.step = &step;
 
     hydra.getSolver()->step = &step;
-    step.setSolver(hydra.getSolver());
+    step.solver=hydra.getSolver();
 
     tardigradeHydra::floatVector unknownVector = {0.39293837, -0.42772133, -0.54629709, 0.10262954, 0.43893794};
 

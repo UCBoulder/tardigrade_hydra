@@ -417,7 +417,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     solver.step               = &step;
     trial_step.preconditioner = &preconditioner;
 
-    step.setSolver(&solver);
+    step.solver = &solver;
     preconditioner.trial_step = &trial_step;
 
     hydra.getSolver()->step->damping->setUseGradientDescent(true);
@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     solver_pre.step               = &step_pre;
     trial_step_pre.preconditioner = &preconditioner_pre;
 
-    step_pre.setSolver(&solver_pre);
+    step_pre.solver = &solver_pre;
     preconditioner_pre.trial_step = &trial_step_pre;
 
     hydra_pre.getSolver()->step->damping->setUseGradientDescent(true);

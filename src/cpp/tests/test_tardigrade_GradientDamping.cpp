@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
     hydra.set_solver(&solver);
     solver.hydra = &hydra;
     solver.step  = &step;
-    step.setSolver(&solver);
+    step.solver=&solver;
     step.damping = &damping;
     damping.step = &step;
 
