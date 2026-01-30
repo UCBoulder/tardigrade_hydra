@@ -50,11 +50,6 @@ namespace tardigradeHydra {
 
         floatVector deltaX;  //!< The change in the unknown vector
 
-        /*! Set the containing solver object
-         * \param *_solver: The containing solver object
-         */
-        void setSolver(SolverBase *_solver) { solver = _solver; }
-
         // CACHED DATA STORAGE OPERATIONS
         virtual void addIterationData(dataBase *data) override;
 
@@ -112,12 +107,12 @@ namespace tardigradeHydra {
         //! Get the number of undamped steps performed
         unsigned int getNumUndamped() { return _NUM_UNDAMPED; }
 
+        SolverBase *solver;  //!< Pointer to the containing SolverBase object
+
         TrialStepBase   *trial_step;  //!< The trial step class which proposes a step to reduce the residual
         StepDampingBase *damping;     //!< The damping class which reduces the proposed step to improve stability
 
        protected:
-        SolverBase *solver;  //!< Pointer to the containing SolverBase object
-
         //! Reset the number of undamped steps
         void resetNumUndamped() { _NUM_UNDAMPED = 0; }
 

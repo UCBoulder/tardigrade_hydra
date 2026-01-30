@@ -15,14 +15,14 @@ namespace tardigradeHydra {
     /*!
      * Default constructor of SolverBase
      */
-    SolverBase::SolverBase() : hydra(NULL), step(&_step) { step->setSolver(this); }
+    SolverBase::SolverBase() : hydra(NULL), step(&_step) { step->solver=this; }
 
     /*!
      * Constructor for SolverBase
      *
      * \param *_hydra: The containing hydraBase object
      */
-    SolverBase::SolverBase(hydraBase *_hydra) : hydra(_hydra), step(&_step) { step->setSolver(this); }
+    SolverBase::SolverBase(hydraBase *_hydra) : hydra(_hydra), step(&_step) { step->solver=this; }
 
     /*!
      * Constructor for SolverBase
@@ -32,7 +32,7 @@ namespace tardigradeHydra {
      *     the problem
      */
     SolverBase::SolverBase(hydraBase *_hydra, SolverStepBase *_step_ptr) : hydra(_hydra), step(_step_ptr) {
-        step->setSolver(this);
+        step->solver=this;
     }
 
     /*!
