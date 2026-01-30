@@ -181,14 +181,14 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    PreconditionerBaseMock preconditioner;
-    tardigradeHydra::NonlinearStepBase trial_step;
+    tardigradeHydra::IterativeSolverBase solver(&hydra);
+    tardigradeHydra::SolverStepBase step(&solver);
+    solver.step = &step;
+    tardigradeHydra::NonlinearStepBase trial_step(&step);
+    PreconditionerBaseMock preconditioner(&trial_step);
+    tardigradeHydra::StepDampingBase damping(&step);
 
-    trial_step.step = hydra.solver->step;
-    hydra.solver->step->trial_step = &trial_step;
-
-    trial_step.preconditioner = &preconditioner;
-    preconditioner.trial_step = &trial_step;
+    hydra.solver = &solver;
 
     BOOST_TEST(preconditioner.expected_preconditioner == *preconditioner.getFlatPreconditioner(), CHECK_PER_ELEMENT);
 
