@@ -520,8 +520,6 @@ namespace tardigradeHydra {
 
         virtual void performSubcyclerSolve();
 
-        void initializeSubcycler();
-
         void updatePseudoTimestep();
 
         void performSubcyclerStep();

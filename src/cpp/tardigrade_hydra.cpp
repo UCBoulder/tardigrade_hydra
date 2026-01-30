@@ -1388,27 +1388,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Initialize the subcycler
-     */
-    void hydraBase::initializeSubcycler() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
-
-        local_solver->addSubcyclerHeader();
-
-        local_solver->sp = 0.0;
-
-        local_solver->ds = local_solver->getCutbackFactor();
-
-        local_solver->num_good = 0;
-
-        local_solver->callResidualPreSubcycler();
-
-        resetProblem();
-    }
-
-    /*!
      * Called when there is a failure in a subcycler step
      */
     void hydraBase::subcyclerStepFailure() {
@@ -1490,7 +1469,7 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
         auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
-        initializeSubcycler();
+        local_solver->initializeSubcycler();
 
         while (local_solver->sp < 1.0) {
             try {

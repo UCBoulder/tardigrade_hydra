@@ -81,25 +81,25 @@ namespace tardigradeHydra {
 //        internal_solver->reset();
 //        tardigradeHydra::IterativeSolverBase::reset();
 //    }
-//
-//    /*!
-//     * Initialize the subcycler
-//     */
-//    void SubcyclerSolver::initializeSubcycler() {
-//
-//        addSubcyclerHeader();
-//
-//        sp = 0.0;
-//
-//        ds = getCutbackFactor();
-//
-//        num_good = 0;
-//
-//        callResidualPreSubcycler();
-//
-//        resetProblem();
-//    }
-//
+
+    /*!
+     * Initialize the subcycler
+     */
+    void SubcyclerSolver::initializeSubcycler() {
+
+        addSubcyclerHeader();
+
+        sp = 0.0;
+
+        ds = getCutbackFactor();
+
+        num_good = 0;
+
+        callResidualPreSubcycler();
+
+        resetProblem();
+    }
+
 //    /*!
 //     * Update the pseudo-timestep
 //     */
