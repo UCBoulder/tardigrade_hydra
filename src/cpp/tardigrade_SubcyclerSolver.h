@@ -61,7 +61,7 @@ namespace tardigradeHydra {
 
         const bool allowStepGrowth();
 
-//       protected:
+       protected:
 //        RelaxedSolver _internal_solver;  //!< The default internal solver
 //
 //        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
@@ -95,7 +95,7 @@ namespace tardigradeHydra {
         unsigned int num_good = 0;  //!< The number of good subcycler steps
 
        private:
-//        friend class tardigradeHydra::hydraBase;                       //!< The base class for hydra TEMP
+        friend class tardigradeHydra::hydraBase;                       //!< The base class for hydra TEMP THIS SHOULD BE REMOVED
         friend class tardigradeHydra::unit_test::SubcyclerSolverTester;  //!< The unit tester for the class
 
         floatType _cutback_factor = 0.5;  //!< The factor by which the pseudo-time will be scaled if a solve fails
