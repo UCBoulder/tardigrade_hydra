@@ -3777,6 +3777,8 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
         unsigned int n_failure = 3;
 
+        unsigned int num_callResidualPreSubcyclerCalls = 0;
+
         unsigned int num_callResidualPostSubcyclerSuccessCalls = 0;
 
         unsigned int num_callResidualPostSubcyclerFailureCalls = 0;
@@ -3788,6 +3790,8 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
             }
             num_solverCalls++;
         }
+
+        virtual void callResidualPreSubcycler() override { num_callResidualPreSubcyclerCalls++; }
 
         virtual void callResidualPostSubcyclerSuccess() override { num_callResidualPostSubcyclerSuccessCalls++; }
 
@@ -3802,8 +3806,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
         using tardigradeHydra::hydraBase::setResidualClasses;
 
         unsigned int num_updateUnknownVectorCalls = 0;
-
-        unsigned int num_callResidualPreSubcyclerCalls = 0;
 
         unsigned int num_resetProblemCalls = 0;
 
@@ -3825,8 +3827,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override { num_updateUnknownVectorCalls++; }
-
-        virtual void callResidualPreSubcycler() override { num_callResidualPreSubcyclerCalls++; }
 
         virtual void resetProblem() override { num_resetProblemCalls++; }
 
@@ -3882,7 +3882,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
     BOOST_TEST(solver.num_solverCalls == 9);
 
-    BOOST_TEST(hydra.num_callResidualPreSubcyclerCalls == 1);
+    BOOST_TEST(solver.num_callResidualPreSubcyclerCalls == 1);
 
     BOOST_TEST(hydra.num_resetProblemCalls == 1);
 
@@ -4028,7 +4028,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_setConstraints, *boost::unit_test::tolerance
     BOOST_TEST(constraintJacobian_answer == *hydra.getConstraintJacobians(), CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_callResidualPreSubcycler, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
@@ -4038,6 +4038,14 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_callResidualPreSubcycler, *boost::unit_test:
         virtual void preSubcycler() override { numPreSubcyclerCalls++; }
 
        protected:
+    };
+
+    class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
+
+        public:
+            using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
+
+            virtual void public_callResidualPreSubcycler() { callResidualPreSubcycler(); }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -4076,7 +4084,8 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_callResidualPreSubcycler, *boost::unit_test:
             setResidualClasses(residuals);
         }
 
-        virtual void public_callResidualPreSubcycler() { callResidualPreSubcycler(); }
+        void setSolver(tardigradeHydra::SolverBase *_solver){solver=_solver;}
+
     };
 
     floatType time = 1.1;
@@ -4112,7 +4121,11 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_callResidualPreSubcycler, *boost::unit_test:
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    hydra.public_callResidualPreSubcycler();
+    SubcyclerSolverMock solver;
+    solver.hydra = &hydra;
+    hydra.setSolver(&solver);
+
+    solver.public_callResidualPreSubcycler();
 
     BOOST_TEST(hydra.r1.numPreSubcyclerCalls == 1);
 
