@@ -116,7 +116,6 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_callResidualRelaxedStepFailure,
             setResidualClasses(residuals);
         }
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
     class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
@@ -162,7 +161,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_callResidualRelaxedStepFailure,
 
     RelaxedSolverMock solver;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     BOOST_TEST(hydra.r1.numRelaxedStepFailureCalls == 0);
@@ -209,8 +208,6 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFA
         using tardigradeHydra::hydraBase::hydraBase;
 
         void setInitialX() { solver->initial_unknown = _mockInitialX; }
-
-        auto setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
 
        protected:
         tardigradeHydra::floatVector _mockInitialX = {1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2};
@@ -286,7 +283,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFA
     solver.setInternalSolver(&internal_solver);
     internal_solver.hydra = &hydra;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     solver.solve();
@@ -382,8 +379,6 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve, *boost::unit_test::
             return result;
         }
 
-        auto setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
        protected:
         virtual void updateUnknownVector(const tardigradeHydra::floatVector &X) override {
             numCallUpdateUnknownVector++;
@@ -451,7 +446,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve, *boost::unit_test::
     solver.setInternalSolver(&internal_solver);
     internal_solver.hydra = &hydra;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     solver.performRelaxedSolve();
@@ -577,8 +572,6 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve2, *boost::unit_test:
             return result;
         }
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
        protected:
         virtual void updateUnknownVector(const tardigradeHydra::floatVector &X) override {
             numCallUpdateUnknownVector++;
@@ -649,7 +642,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve2, *boost::unit_test:
     solver.setInternalSolver(&internal_solver);
     internal_solver.hydra = &hydra;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     solver.performRelaxedSolve();
