@@ -175,7 +175,6 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
        public:
         using tardigradeHydra::hydraBase::hydraBase;
 
-        tardigradeHydra::SolverBase *getSolver() { return solver; }
     };
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
@@ -185,8 +184,8 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
     PreconditionerBaseMock preconditioner;
     tardigradeHydra::NonlinearStepBase trial_step;
 
-    trial_step.step = hydra.getSolver()->step;
-    hydra.getSolver()->step->trial_step = &trial_step;
+    trial_step.step = hydra.solver->step;
+    hydra.solver->step->trial_step = &trial_step;
 
     trial_step.preconditioner = &preconditioner;
     preconditioner.trial_step = &trial_step;
