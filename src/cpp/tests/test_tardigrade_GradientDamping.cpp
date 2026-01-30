@@ -147,8 +147,6 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
 
         using tardigradeHydra::hydraBase::hydraBase;
 
-        void set_solver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
         virtual void formNonLinearResidual() override {
             tardigradeHydra::unit_test::hydraBaseTester::set_residual(*this, residual);
         }
@@ -178,7 +176,7 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
     GradientDampingMock             damping;
     tardigradeHydra::SolverStepBase step;
     tardigradeHydra::SolverBase     solver;
-    hydra.set_solver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
     solver.step  = &step;
     step.solver=&solver;
