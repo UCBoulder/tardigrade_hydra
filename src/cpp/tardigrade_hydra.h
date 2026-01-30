@@ -596,8 +596,6 @@ namespace tardigradeHydra {
 
         virtual void callResidualPreSubcycler();
 
-        virtual void callResidualPostSubcyclerSuccess();
-
         void unexpectedError() {
             /*!
              * Function to throw for an unexpected error. A user should never get here!

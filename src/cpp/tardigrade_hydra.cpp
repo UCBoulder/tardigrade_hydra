@@ -1307,35 +1307,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Signal to the residuals that we have a successful subcycle increment
-     */
-    void hydraBase::callResidualPostSubcyclerSuccess() {
-        setCurrentResidualIndexMeaningful(true);
-
-        for (auto residual_ptr = getResidualClasses()->begin(); residual_ptr != getResidualClasses()->end();
-             ++residual_ptr) {
-            setCurrentResidualIndex(residual_ptr - getResidualClasses()->begin());
-
-            try {
-                (*residual_ptr)->postSubcyclerSuccess();
-
-            } catch (std::exception &e) {
-                if (getFailureVerbosityLevel() > 0) {
-                    addToFailureOutput("Failure in residual " +
-                                       std::to_string(residual_ptr - getResidualClasses()->begin()) + "\n");
-                    std::string message;
-                    tardigradeErrorTools::captureNestedExceptions(e, message);
-                    addToFailureOutput(message);
-                }
-
-                throw;
-            }
-        }
-
-        setCurrentResidualIndexMeaningful(false);
-    }
-
-    /*!
      * Set if the current residual index is meaningful
      *
      * \param &value: Set if the current residual index is meaningful or not
@@ -1542,7 +1513,10 @@ namespace tardigradeHydra {
     void hydraBase::subcyclerStepSuccess() {
         setPreviouslyConvergedStress(*getStress());  // Set the previously converged stress
 
-        callResidualPostSubcyclerSuccess();  // Let the residuals know the subcycle step was successful
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
+        local_solver->callResidualPostSubcyclerSuccess();  // Let the residuals know the subcycle step was successful
 
         num_good++;  // Update the number of good iterations
 
