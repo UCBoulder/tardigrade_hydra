@@ -358,28 +358,9 @@ namespace tardigradeHydra {
 
         const floatType getCutbackFactor() { /*! Get the value of the cutback factor */ return _cutback_factor; }
 
-        const floatType getGrowthFactor() { /*! Get the growth factor for the timestep increase */
-            return _growth_factor;
-        }
-
-        const floatType
-        getMinDS() { /*! Get the minimum allowable ratio of the total timestep to the cutback timestep */
-            return _minDS;
-        }
-
         void setCutbackFactor(const floatType &value) { /*! Get the current value of the cutback factor. \param &value:
                                                            The value of the cutback */
             _cutback_factor = value;
-        }
-
-        void setGrowthFactor(const floatType &value) { /*! Set the relative growth factor for the local timestep
-                                                          increase \param &value: The new value */
-            _growth_factor = value;
-        }
-
-        void setMinDS(const floatType &value) { /*! Set the minimum value of the relative cutback timestep \param
-                                                   &value: The new value */
-            _minDS = value;
         }
 
         const bool allowStepGrowth(const unsigned int &num_good);
@@ -793,10 +774,6 @@ namespace tardigradeHydra {
         // SUBCYCLER PARAMETERS
         floatType _cutback_factor = 0.5;  //!< The factor by which the pseudo-time will be scaled if a solve fails
 
-        floatType _growth_factor =
-            1.2;  //!< The factor by which the pseudo-time will be scaled if we can grow the pseudo-timestep
-
-        floatType _minDS = 1e-2;  //!< The minimum allowable pseudo-timestep
         // END SUBCYCLER PARAMETERS
 
         bool _allow_modify_global_residual = false;  //!< Flag for if the global residual can be modified

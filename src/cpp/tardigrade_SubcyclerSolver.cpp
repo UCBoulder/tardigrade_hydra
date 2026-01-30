@@ -231,6 +231,20 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get the growth factor for the timestep increase
+     */
+    const floatType SubcyclerSolver::getGrowthFactor() {
+        return _growth_factor;
+    }
+
+    /*!
+     * Get the minimum allowable ratio of the total timestep to the cutback timestep
+     */
+    const floatType SubcyclerSolver::getMinDS() {
+        return _minDS;
+    }
+
+    /*!
      * Signal to the residuals that we are entering the subcycler
      */
     void SubcyclerSolver::callResidualPreSubcycler() {

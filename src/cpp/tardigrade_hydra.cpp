@@ -1466,7 +1466,7 @@ namespace tardigradeHydra {
 
         setX(solver->initial_unknown);  // Reset X to the last good point
 
-        if (local_solver->ds < getMinDS()) {
+        if (local_solver->ds < local_solver->getMinDS()) {
             throw;
         }
     }
@@ -1482,7 +1482,7 @@ namespace tardigradeHydra {
 
         // Grow the step if possible
         if (allowStepGrowth(local_solver->num_good)) {
-            local_solver->ds *= getGrowthFactor();
+            local_solver->ds *= local_solver->getGrowthFactor();
         }
 
         // Make sure s will be less than or equal to 1

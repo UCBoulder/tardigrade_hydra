@@ -47,15 +47,10 @@ namespace tardigradeHydra {
 
         const unsigned int getNumGoodControl();
 
-//        const floatType getGrowthFactor() { /*! Get the growth factor for the timestep increase */
-//            return _growth_factor;
-//        }
-//
-//        const floatType
-//        getMinDS() { /*! Get the minimum allowable ratio of the total timestep to the cutback timestep */
-//            return _minDS;
-//        }
-//
+        const floatType getGrowthFactor();
+
+        const floatType getMinDS();
+
 //        void setCutbackFactor(const floatType &value) { /*! Get the current value of the cutback factor. \param &value:
 //                                                           The value of the cutback */
 //            _cutback_factor = value;
@@ -63,16 +58,16 @@ namespace tardigradeHydra {
 
         void setNumGoodControl(const unsigned int &value);
 
-//        void setGrowthFactor(const floatType &value) { /*! Set the relative growth factor for the local timestep
-//                                                          increase \param &value: The new value */
-//            _growth_factor = value;
-//        }
-//
-//        void setMinDS(const floatType &value) { /*! Set the minimum value of the relative cutback timestep \param
-//                                                   &value: The new value */
-//            _minDS = value;
-//        }
-//
+        void setGrowthFactor(const floatType &value) { /*! Set the relative growth factor for the local timestep
+                                                          increase \param &value: The new value */
+            _growth_factor = value;
+        }
+
+        void setMinDS(const floatType &value) { /*! Set the minimum value of the relative cutback timestep \param
+                                                   &value: The new value */
+            _minDS = value;
+        }
+
 //        const bool allowStepGrowth(const unsigned int &num_good);
 //
 //       protected:
@@ -113,14 +108,14 @@ namespace tardigradeHydra {
 //        friend class tardigradeHydra::unit_test::SubcyclerSolverTester;  //!< The unit tester for the class
 //
 //        floatType _cutback_factor = 0.5;  //!< The factor by which the pseudo-time will be scaled if a solve fails
-//
-//        floatType _growth_factor =
-//            1.2;  //!< The factor by which the pseudo-time will be scaled if we can grow the pseudo-timestep
+
+        floatType _growth_factor =
+            1.2;  //!< The factor by which the pseudo-time will be scaled if we can grow the pseudo-timestep
 
         unsigned int _num_good_control =
             2;  //!< The number of good iterations we need to have before we try and increase the timestep
 
-//        floatType _minDS = 1e-2;  //!< The minimum allowable pseudo-timestep
+        floatType _minDS = 1e-2;  //!< The minimum allowable pseudo-timestep
 
     };
 
