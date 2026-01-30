@@ -1278,35 +1278,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Signal to the residuals that we are entering the subcycler
-     */
-    void hydraBase::callResidualPreSubcycler() {
-        setCurrentResidualIndexMeaningful(true);
-
-        for (auto residual_ptr = getResidualClasses()->begin(); residual_ptr != getResidualClasses()->end();
-             ++residual_ptr) {
-            setCurrentResidualIndex(residual_ptr - getResidualClasses()->begin());
-
-            try {
-                (*residual_ptr)->preSubcycler();
-
-            } catch (std::exception &e) {
-                if (getFailureVerbosityLevel() > 0) {
-                    addToFailureOutput("Failure in residual " +
-                                       std::to_string(residual_ptr - getResidualClasses()->begin()) + "\n");
-                    std::string message;
-                    tardigradeErrorTools::captureNestedExceptions(e, message);
-                    addToFailureOutput(message);
-                }
-
-                throw;
-            }
-        }
-
-        setCurrentResidualIndexMeaningful(false);
-    }
-
-    /*!
      * Set if the current residual index is meaningful
      *
      * \param &value: Set if the current residual index is meaningful or not
@@ -1458,13 +1429,17 @@ namespace tardigradeHydra {
      * Initialize the subcycler
      */
     void hydraBase::initializeSubcycler() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
+
         sp = 0.0;
 
         ds = getCutbackFactor();
 
         num_good = 0;
 
-        callResidualPreSubcycler();
+        local_solver->callResidualPreSubcycler();
 
         resetProblem();
     }
@@ -1511,11 +1486,12 @@ namespace tardigradeHydra {
      * Post-successful subcycler increment updates
      */
     void hydraBase::subcyclerStepSuccess() {
-        setPreviouslyConvergedStress(*getStress());  // Set the previously converged stress
-
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
         auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
+
+        setPreviouslyConvergedStress(*getStress());  // Set the previously converged stress
+
         local_solver->callResidualPostSubcyclerSuccess();  // Let the residuals know the subcycle step was successful
 
         num_good++;  // Update the number of good iterations
@@ -1528,12 +1504,13 @@ namespace tardigradeHydra {
      */
     void hydraBase::performSubcyclerStep() {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
+
         addSubcyclerStepHeader();
 
         setScaleFactor(sp + ds);  // Update the scaling factor
 
-        auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
         local_solver->resetIterations();  // Reset the non-linear iteration count
 
         solver->solve();  // Try to solve the non-linear problem

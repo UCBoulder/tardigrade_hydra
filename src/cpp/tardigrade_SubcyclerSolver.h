@@ -103,8 +103,8 @@ namespace tardigradeHydra {
 //        void subcyclerStepSuccess(); //TEMP
 //
 //        void subcyclerStepFailure(); //TEMP
-//
-//        virtual void callResidualPreSubcycler();
+
+        virtual void callResidualPreSubcycler();
 
         virtual void callResidualPostSubcyclerSuccess();
 

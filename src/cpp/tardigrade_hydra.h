@@ -594,8 +594,6 @@ namespace tardigradeHydra {
         //! Update the scaled quantities
         virtual void setScaledQuantities();
 
-        virtual void callResidualPreSubcycler();
-
         void unexpectedError() {
             /*!
              * Function to throw for an unexpected error. A user should never get here!
