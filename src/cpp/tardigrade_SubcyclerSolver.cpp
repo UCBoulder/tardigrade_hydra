@@ -130,38 +130,38 @@ namespace tardigradeHydra {
 //
 //        internal_solver->solve();  // Try to solve the non-linear problem
 //    }
-//
-//    /*!
-//     * Post-successful subcycler increment updates
-//     */
-//    void SubcyclerSolver::subcyclerStepSuccess() {
-//        setPreviouslyConvergedStress(*getStress());  // Set the previously converged stress
-//
-//        callResidualPostSubcyclerSuccess();  // Let the residuals know the subcycle step was successful
-//
-//        num_good++;  // Update the number of good iterations
-//
-//        updatePseudoTimestep();
-//    }
-//
-//    /*!
-//     * Called when there is a failure in a subcycler step
-//     */
-//    void SubcyclerSolver::subcyclerStepFailure() {
-//        callResidualPostSubcyclerFailure();
-//
-//        // Reduce the time-step and try again
-//        num_good = 0;
-//
-//        ds *= getCutbackFactor();
-//
-//        setX(initial_unknown);  // Reset X to the last good point
-//
-//        if (ds < getMinDS()) {
-//            throw;
-//        }
-//    }
-//
+
+    /*!
+     * Post-successful subcycler increment updates
+     */
+    void SubcyclerSolver::subcyclerStepSuccess() {
+        setPreviouslyConvergedStress(*getStress());  // Set the previously converged stress
+
+        callResidualPostSubcyclerSuccess();  // Let the residuals know the subcycle step was successful
+
+        num_good++;  // Update the number of good iterations
+
+        updatePseudoTimestep();
+    }
+
+    /*!
+     * Called when there is a failure in a subcycler step
+     */
+    void SubcyclerSolver::subcyclerStepFailure() {
+        callResidualPostSubcyclerFailure();
+
+        // Reduce the time-step and try again
+        num_good = 0;
+
+        ds *= getCutbackFactor();
+
+        setX(initial_unknown);  // Reset X to the last good point
+
+        if (ds < getMinDS()) {
+            throw;
+        }
+    }
+
 //    /*!
 //     * Solve the problem using the subcycler
 //     */

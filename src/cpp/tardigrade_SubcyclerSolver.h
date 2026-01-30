@@ -77,10 +77,10 @@ namespace tardigradeHydra {
         void updatePseudoTimestep();
 
 //        void performSubcyclerStep();
-//
-//        void subcyclerStepSuccess();
-//
-//        void subcyclerStepFailure();
+
+        void subcyclerStepSuccess();
+
+        void subcyclerStepFailure();
 
         virtual void callResidualPreSubcycler();
 

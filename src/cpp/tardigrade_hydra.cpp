@@ -1388,44 +1388,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Called when there is a failure in a subcycler step
-     */
-    void hydraBase::subcyclerStepFailure() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
-        local_solver->callResidualPostSubcyclerFailure();
-
-        // Reduce the time-step and try again
-        local_solver->num_good = 0;
-
-        local_solver->ds *= local_solver->getCutbackFactor();
-
-        setX(solver->initial_unknown);  // Reset X to the last good point
-
-        if (local_solver->ds < local_solver->getMinDS()) {
-            throw;
-        }
-    }
-
-    /*!
-     * Post-successful subcycler increment updates
-     */
-    void hydraBase::subcyclerStepSuccess() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
-
-        setPreviouslyConvergedStress(*getStress());  // Set the previously converged stress
-
-        local_solver->callResidualPostSubcyclerSuccess();  // Let the residuals know the subcycle step was successful
-
-        local_solver->num_good++;  // Update the number of good iterations
-
-        local_solver->updatePseudoTimestep();
-    }
-
-    /*!
      * Perform a subcycler step
      */
     void hydraBase::performSubcyclerStep() {
@@ -1455,10 +1417,10 @@ namespace tardigradeHydra {
             try {
                 performSubcyclerStep();
 
-                subcyclerStepSuccess();
+                local_solver->subcyclerStepSuccess();
 
             } catch (std::exception &e) {
-                subcyclerStepFailure();
+                local_solver->subcyclerStepFailure();
             }
         }
     }
