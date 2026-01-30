@@ -211,7 +211,6 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFA
         void setInitialX() { solver->initial_unknown = _mockInitialX; }
 
         auto setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-        auto access_solver() { return solver; }
 
        protected:
         tardigradeHydra::floatVector _mockInitialX = {1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2};
@@ -292,7 +291,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFA
 
     solver.solve();
 
-    BOOST_TEST(!hydra.access_solver()->step->getRankDeficientError());
+    BOOST_TEST(!hydra.solver->step->getRankDeficientError());
 
     BOOST_TEST(solver.num_calls == 1);
 
