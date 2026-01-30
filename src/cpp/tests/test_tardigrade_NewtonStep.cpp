@@ -97,8 +97,6 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
 
         virtual const unsigned int getNumUnknowns() override { return residual.size(); }
 
-        auto set_solver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
        protected:
         virtual void initializeUnknownVector() override {
             tardigradeHydra::unit_test::hydraBaseTester::set_residual(*this, residual);
@@ -146,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
     tardigradeHydra::NewtonStep         trial_step;
     tardigradeHydra::PreconditionerBase preconditioner;
 
-    hydra.set_solver(&solver);
+    hydra.solver = &solver;
 
     solver.hydra              = &hydra;
     solver.step               = &step;
@@ -179,7 +177,7 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
     tardigradeHydra::NewtonStep         trial_step_pre;
     tardigradeHydra::MaxRowPreconditioner preconditioner_pre;
 
-    hydra_pre.set_solver(&solver_pre);
+    hydra_pre.solver = &solver_pre;
 
     solver_pre.hydra              = &hydra_pre;
     solver_pre.step               = &step_pre;
