@@ -90,12 +90,16 @@ namespace tardigradeHydra {
 
         class SolverBaseTester {
            public:
-            static hydraBase *get_hydra(SolverBase &solver) { return solver.hydra; }
+            static hydraBase *get_hydra(SolverBase &solver) {
+                return solver.hydra;
+            }
         };
 
         class SolverStepBaseTester {
            public:
-            static SolverBase *get_solver(SolverStepBase &step) { return step.solver; }
+            static SolverBase *get_solver(SolverStepBase &step) {
+                return step.solver;
+            }
         };
 
     }  // namespace unit_test
@@ -152,8 +156,12 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
 
         void test_initialize(){
 
+            TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step is not set");
+            TARDIGRADE_ERROR_TOOLS_CHECK(trial_step->step != nullptr, "The trial step's step is not set");
             auto solver = tardigradeHydra::unit_test::SolverStepBaseTester::get_solver(*(trial_step->step));
+            TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver is not set");
             auto hydra  = tardigradeHydra::unit_test::SolverBaseTester::get_hydra(*solver);
+            TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra is not set");
 
             tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector(*hydra, tardigradeHydra::floatVector(5, 0));
 
@@ -175,14 +183,14 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    tardigradeHydra::NonlinearStepBase trial_step;
-    MaxRowPreconditionerMock preconditioner;
+    tardigradeHydra::IterativeSolverBase solver(&hydra);
+    tardigradeHydra::SolverStepBase step(&solver);
 
-    trial_step.preconditioner = &preconditioner;
-    preconditioner.trial_step = &trial_step;
+    tardigradeHydra::NonlinearStepBase trial_step(&step);
+    tardigradeHydra::StepDampingBase damping(&step);
+    MaxRowPreconditionerMock preconditioner(&trial_step);
 
-    hydra.solver->step->trial_step = &trial_step;
-    trial_step.step = hydra.solver->step;
+    hydra.solver = &solver;
 
     preconditioner.test_initialize();
 
