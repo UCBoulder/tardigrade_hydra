@@ -144,8 +144,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
         unsigned int num_residual_calls = 0;
 
-        void                         setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
        private:
         using tardigradeHydra::hydraBase::getResidual;
 
@@ -408,7 +406,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     damping.setLSAlpha(1e-4);
     tardigradeHydra::PreconditionerBase preconditioner;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
 
     solver.hydra              = &hydra;
     solver.step               = &step;
@@ -457,7 +455,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     damping_pre.setLSAlpha(1e-4);
     tardigradeHydra::MaxRowPreconditioner preconditioner_pre;
 
-    hydra_pre.setSolver(&solver_pre);
+    hydra_pre.solver = &solver_pre;
 
     solver_pre.hydra              = &hydra_pre;
     solver_pre.step               = &step_pre;
@@ -540,7 +538,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulIterativeSte
             setResidualClasses(residuals);
         }
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = solver; }
     };
 
     class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
@@ -586,7 +583,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulIterativeSte
 
     IterativeSolverBaseMock solver;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     solver.public_callResidualSuccessfulIterativeStep();
@@ -647,7 +644,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,
             setResidualClasses(residuals);
         }
 
-        void                         setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
     class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
@@ -693,7 +689,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,
 
     IterativeSolverBaseMock solver;
     solver.hydra = &hydra;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
 
     solver.public_callResidualPreIterativeSolve();
 
@@ -753,7 +749,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostIterativeSolve,
             setResidualClasses(residuals);
         }
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
     class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
@@ -798,7 +793,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostIterativeSolve,
                         numNonLinearSolveStateVariables, dimension);
 
     IterativeSolverBaseMock solver;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     solver.public_callResidualPostIterativeSolve();
@@ -815,7 +810,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_checkConvergence, *boost::unit_tes
        public:
         using tardigradeHydra::hydraBase::hydraBase;
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = solver; }
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -854,7 +848,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_checkConvergence, *boost::unit_tes
 
     tardigradeHydra::IterativeSolverBase solver;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     tardigradeHydra::floatVector residual = {1, 2, -3, 0};
@@ -885,7 +879,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_setTolerance, *boost::unit_test::t
        public:
         using tardigradeHydra::hydraBase::hydraBase;
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -924,7 +917,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_setTolerance, *boost::unit_test::t
 
     tardigradeHydra::IterativeSolverBase solver;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     tardigradeHydra::floatVector residual = {1, 2, -3, 0};

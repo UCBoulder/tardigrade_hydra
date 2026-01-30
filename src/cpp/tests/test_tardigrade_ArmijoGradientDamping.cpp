@@ -137,7 +137,6 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_getLSResidualNorm,
        public:
         using tardigradeHydra::hydraBase::hydraBase;
 
-        void                         setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
     hydraBaseMock                          hydra;
@@ -146,7 +145,7 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_getLSResidualNorm,
 //    tardigradeHydra::PreconditionerBase    preconditioner;
     tardigradeHydra::ArmijoGradientDamping damping;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
 
     solver.hydra                    = &hydra;
     solver.step                     = &step;
