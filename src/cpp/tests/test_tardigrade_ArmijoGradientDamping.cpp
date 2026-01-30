@@ -138,7 +138,6 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_getLSResidualNorm,
         using tardigradeHydra::hydraBase::hydraBase;
 
         void                         setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-        tardigradeHydra::SolverBase *getSolver() { return solver; }
     };
 
     hydraBaseMock                          hydra;
@@ -173,7 +172,6 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_checkLSConvergence,
        public:
         using tardigradeHydra::hydraBase::hydraBase;
 
-        tardigradeHydra::SolverBase *getSolver() { return solver; }
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -219,8 +217,8 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_checkLSConvergence,
     damping.setLSAlpha(1e-4);
     damping.setMaxLSIterations(5);
 
-    hydra.getSolver()->step = &step;
-    step.solver=hydra.getSolver();
+    hydra.solver->step = &step;
+    step.solver=hydra.solver;
 
     tardigradeHydra::floatVector residual = {1, 2, -3, 0};
 
