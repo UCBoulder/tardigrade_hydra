@@ -59,7 +59,7 @@ namespace tardigradeHydra {
 
         void setMinDS(const floatType &value);
 
-//        const bool allowStepGrowth(const unsigned int &num_good);
+//        const bool allowStepGrowth();
 //
 //       protected:
 //        RelaxedSolver _internal_solver;  //!< The default internal solver

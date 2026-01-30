@@ -104,7 +104,7 @@ namespace tardigradeHydra {
 //        sp += ds;  // Update the pseudo-time
 //
 //        // Grow the step if possible
-//        if (allowStepGrowth(num_good)) {
+//        if (allowStepGrowth()) {
 //            ds *= getGrowthFactor();
 //        }
 //
@@ -204,10 +204,8 @@ namespace tardigradeHydra {
 //
 //    /*!
 //     * Function to determine if we can increase the step-size for the sub-cycler
-//     *
-//     * \param &num_good: The number of good increments since the last failure
 //     */
-//    const bool SubcyclerSolver::allowStepGrowth(const unsigned int &num_good) {
+//    const bool SubcyclerSolver::allowStepGrowth() {
 //        if (num_good >= getNumGoodControl()) {
 //            return true;
 //        }

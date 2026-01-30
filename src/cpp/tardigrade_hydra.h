@@ -356,7 +356,7 @@ namespace tardigradeHydra {
 
         // SUBCYCLER FUNCTIONS
 
-        const bool allowStepGrowth(const unsigned int &num_good);
+        const bool allowStepGrowth();
 
         // END SUBCYCLER FUNCTIONS
 
