@@ -290,8 +290,6 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
 
         using tardigradeHydra::hydraBase::hydraBase;
 
-        void set_solver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
         virtual void formNonLinearResidual() override {
             tardigradeHydra::floatVector residual(5, 0);
 
@@ -327,7 +325,7 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
     tardigradeHydra::SolverStepBase  step;
     tardigradeHydra::StepDampingBase damping;
 
-    hydra.set_solver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
     solver.step  = &step;
     step.solver=&solver;
@@ -376,14 +374,14 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
             tardigradeHydra::StepDampingBase dampingp;
             tardigradeHydra::StepDampingBase dampingm;
 
-            hydrap.set_solver(&solverp);
+            hydrap.solver = &solverp;
             solverp.hydra = &hydrap;
             solverp.step  = &stepp;
             stepp.solver=&solverp;
             stepp.damping = &dampingp;
             dampingp.step = &stepp;
 
-            hydram.set_solver(&solverm);
+            hydram.solver = &solverm;
             solverm.hydra = &hydram;
             solverm.step  = &stepm;
             stepm.solver  = &solverm;
@@ -460,8 +458,6 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_checkDescentDirection, *boost::unit_tes
        public:
         using tardigradeHydra::hydraBase::hydraBase;
 
-        void set_solver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
         virtual const unsigned int getNumUnknowns() override { return 5; }
     };
 
@@ -472,7 +468,7 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_checkDescentDirection, *boost::unit_tes
     tardigradeHydra::SolverBase solver;
     SolverStepBaseMock          step;
     StepDampingMock             damping;
-    hydra.set_solver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
     solver.step  = &step;
     step.solver  = &solver;
