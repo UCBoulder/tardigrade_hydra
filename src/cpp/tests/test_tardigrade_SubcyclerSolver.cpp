@@ -100,8 +100,6 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler, *boost::unit
             setResidualClasses(residuals);
         }
 
-        void setSolver(tardigradeHydra::SolverBase *_solver){solver=_solver;}
-
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -139,7 +137,7 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler, *boost::unit
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
 
     solver.public_callResidualPreSubcycler();
 
@@ -207,8 +205,6 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerSuccess,
             setResidualClasses(residuals);
         }
 
-        void setSolver(tardigradeHydra::SolverBase *_solver){solver=_solver;}
-
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -246,7 +242,7 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerSuccess,
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
 
     solver.public_callResidualPostSubcyclerSuccess();
 
@@ -314,7 +310,6 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
             setResidualClasses(residuals);
         }
 
-        void setSolver(tardigradeHydra::SubcyclerSolver *_solver){solver=_solver;}
         auto getSolver(){return solver;}
 
     };
@@ -354,7 +349,7 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
 
     solver.public_callResidualPostSubcyclerFailure();
 
