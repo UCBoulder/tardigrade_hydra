@@ -88,21 +88,21 @@ namespace tardigradeHydra {
 //
 //        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
 //
-//        virtual void performSubcyclerSolve(); //TEMP
+//        virtual void performSubcyclerSolve();
 //
-//        void addSubcyclerHeader(); //TEMP
+//        void addSubcyclerHeader();
 //
-//        void addSubcyclerStepHeader(); //TEMP
+//        void addSubcyclerStepHeader();
 //
-//        void initializeSubcycler(); //TEMP
+//        void initializeSubcycler();
 //
-//        void updatePseudoTimestep(); //TEMP
+//        void updatePseudoTimestep();
 //
-//        void performSubcyclerStep(); //TEMP
+//        void performSubcyclerStep();
 //
-//        void subcyclerStepSuccess(); //TEMP
+//        void subcyclerStepSuccess();
 //
-//        void subcyclerStepFailure(); //TEMP
+//        void subcyclerStepFailure();
 
         virtual void callResidualPreSubcycler();
 
@@ -110,10 +110,10 @@ namespace tardigradeHydra {
 
         virtual void callResidualPostSubcyclerFailure();
 
-//        floatType sp;  //!< The previous subcycler pseudo-time
-//
-//        floatType ds;  //!< The subcycler pseudo-timestep
-//
+        floatType sp;  //!< The previous subcycler pseudo-time
+
+        floatType ds;  //!< The subcycler pseudo-timestep
+
 //        unsigned int num_good = 0;  //!< The number of good subcycler steps
 //
 //       private:

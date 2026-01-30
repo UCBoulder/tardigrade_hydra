@@ -580,10 +580,6 @@ namespace tardigradeHydra {
 
         bool _use_subcycler = false;  //!< Flag for whether to use the subcycler or not TODO: Remove this
 
-        floatType sp;  //!< The previous subcycler pseudo-time
-
-        floatType ds;  //!< The subcycler pseudo-timestep
-
         unsigned int num_good = 0;  //!< The number of good subcycler steps
         // END SUBCYCLER FUNCTIONS
 

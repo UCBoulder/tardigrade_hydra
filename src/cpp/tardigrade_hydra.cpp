@@ -1417,10 +1417,13 @@ namespace tardigradeHydra {
      * Add the subcycler step header to the output failure string
      */
     void hydraBase::addSubcyclerStepHeader() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
         if (getFailureVerbosityLevel() > 0) {
             addToFailureOutput("\n\n");
             addToFailureOutput("######### PSEUDO-TIME INCREMENT #########\n");
-            addToFailureOutput("\n\n    sp, ds: " + std::to_string(sp) + ", " + std::to_string(ds));
+            addToFailureOutput("\n\n    sp, ds: " + std::to_string(local_solver->sp) + ", " + std::to_string(local_solver->ds));
             addToFailureOutput("\n");
         }
     }
@@ -1433,9 +1436,9 @@ namespace tardigradeHydra {
         auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
 
-        sp = 0.0;
+        local_solver->sp = 0.0;
 
-        ds = getCutbackFactor();
+        local_solver->ds = getCutbackFactor();
 
         num_good = 0;
 
@@ -1456,11 +1459,11 @@ namespace tardigradeHydra {
         // Reduce the time-step and try again
         num_good = 0;
 
-        ds *= getCutbackFactor();
+        local_solver->ds *= getCutbackFactor();
 
         setX(solver->initial_unknown);  // Reset X to the last good point
 
-        if (ds < getMinDS()) {
+        if (local_solver->ds < getMinDS()) {
             throw;
         }
     }
@@ -1469,16 +1472,19 @@ namespace tardigradeHydra {
      * Update the pseudo-timestep
      */
     void hydraBase::updatePseudoTimestep() {
-        sp += ds;  // Update the pseudo-time
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
+        local_solver->sp += local_solver->ds;  // Update the pseudo-time
 
         // Grow the step if possible
         if (allowStepGrowth(num_good)) {
-            ds *= getGrowthFactor();
+            local_solver->ds *= getGrowthFactor();
         }
 
         // Make sure s will be less than or equal to 1
-        if (sp + ds > 1.0) {
-            ds = 1.0 - sp;
+        if (local_solver->sp + local_solver->ds > 1.0) {
+            local_solver->ds = 1.0 - local_solver->sp;
         }
     }
 
@@ -1504,12 +1510,12 @@ namespace tardigradeHydra {
      */
     void hydraBase::performSubcyclerStep() {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(solver);
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
 
         addSubcyclerStepHeader();
 
-        setScaleFactor(sp + ds);  // Update the scaling factor
+        setScaleFactor(local_solver->sp + local_solver->ds);  // Update the scaling factor
 
         local_solver->resetIterations();  // Reset the non-linear iteration count
 
@@ -1520,9 +1526,12 @@ namespace tardigradeHydra {
      * Solve the problem using the subcycler
      */
     void hydraBase::performSubcyclerSolve() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
         initializeSubcycler();
 
-        while (sp < 1.0) {
+        while (local_solver->sp < 1.0) {
             try {
                 performSubcyclerStep();
 
