@@ -114,8 +114,8 @@ namespace tardigradeHydra {
 
         floatType ds;  //!< The subcycler pseudo-timestep
 
-//        unsigned int num_good = 0;  //!< The number of good subcycler steps
-//
+        unsigned int num_good = 0;  //!< The number of good subcycler steps
+
 //       private:
 //        friend class tardigradeHydra::hydraBase;                       //!< The base class for hydra TEMP
 //        friend class tardigradeHydra::unit_test::SubcyclerSolverTester;  //!< The unit tester for the class

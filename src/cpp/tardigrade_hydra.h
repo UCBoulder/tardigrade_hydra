@@ -579,8 +579,6 @@ namespace tardigradeHydra {
         void subcyclerStepFailure();
 
         bool _use_subcycler = false;  //!< Flag for whether to use the subcycler or not TODO: Remove this
-
-        unsigned int num_good = 0;  //!< The number of good subcycler steps
         // END SUBCYCLER FUNCTIONS
 
         virtual void updateUnknownVector(const floatVector &newUnknownVector);

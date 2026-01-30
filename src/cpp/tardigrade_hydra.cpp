@@ -1440,7 +1440,7 @@ namespace tardigradeHydra {
 
         local_solver->ds = getCutbackFactor();
 
-        num_good = 0;
+        local_solver->num_good = 0;
 
         local_solver->callResidualPreSubcycler();
 
@@ -1457,7 +1457,7 @@ namespace tardigradeHydra {
         local_solver->callResidualPostSubcyclerFailure();
 
         // Reduce the time-step and try again
-        num_good = 0;
+        local_solver->num_good = 0;
 
         local_solver->ds *= getCutbackFactor();
 
@@ -1478,7 +1478,7 @@ namespace tardigradeHydra {
         local_solver->sp += local_solver->ds;  // Update the pseudo-time
 
         // Grow the step if possible
-        if (allowStepGrowth(num_good)) {
+        if (allowStepGrowth(local_solver->num_good)) {
             local_solver->ds *= getGrowthFactor();
         }
 
@@ -1500,7 +1500,7 @@ namespace tardigradeHydra {
 
         local_solver->callResidualPostSubcyclerSuccess();  // Let the residuals know the subcycle step was successful
 
-        num_good++;  // Update the number of good iterations
+        local_solver->num_good++;  // Update the number of good iterations
 
         updatePseudoTimestep();
     }
