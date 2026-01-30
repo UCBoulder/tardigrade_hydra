@@ -1388,27 +1388,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Solve the problem using the subcycler
-     */
-    void hydraBase::performSubcyclerSolve() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
-        local_solver->initializeSubcycler();
-
-        while (local_solver->sp < 1.0) {
-            try {
-                local_solver->performSubcyclerStep();
-
-                local_solver->subcyclerStepSuccess();
-
-            } catch (std::exception &e) {
-                local_solver->subcyclerStepFailure();
-            }
-        }
-    }
-
-    /*!
      * Solve the non-linear problem and update the variables
      *
      * \param &use_subcycler: Flag for if the subcycler should be used for difficult analyses (defaults to false) TODO:

@@ -516,8 +516,6 @@ namespace tardigradeHydra {
 
         virtual void unexpectedErrorFunction();
 
-        virtual void performSubcyclerSolve();
-
         bool _use_subcycler = false;  //!< Flag for whether to use the subcycler or not TODO: Remove this
         // END SUBCYCLER FUNCTIONS
 
