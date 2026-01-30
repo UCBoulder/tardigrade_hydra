@@ -67,11 +67,11 @@ namespace tardigradeHydra {
 //        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
 //
 //        virtual void performSubcyclerSolve();
-//
-//        void addSubcyclerHeader();
-//
-//        void addSubcyclerStepHeader();
-//
+
+        void addSubcyclerHeader();
+
+        void addSubcyclerStepHeader();
+
 //        void initializeSubcycler();
 //
 //        void updatePseudoTimestep();

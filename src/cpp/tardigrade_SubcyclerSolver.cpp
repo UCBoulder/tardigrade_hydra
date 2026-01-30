@@ -86,6 +86,9 @@ namespace tardigradeHydra {
 //     * Initialize the subcycler
 //     */
 //    void SubcyclerSolver::initializeSubcycler() {
+//
+//        addSubcyclerHeader();
+//
 //        sp = 0.0;
 //
 //        ds = getCutbackFactor();
@@ -176,31 +179,31 @@ namespace tardigradeHydra {
 //            }
 //        }
 //    }
-//
-//    /*!
-//     * Add the header for the subcycler to the output failure string
-//     */
-//    void SubcyclerSolver::addSubcyclerHeader() {
-//        if (getFailureVerbosityLevel() > 0) {
-//            addToFailureOutput("\n\n");
-//            addToFailureOutput("#########################################\n");
-//            addToFailureOutput("###        ENTERING SUB-CYCLER        ###\n");
-//            addToFailureOutput("#########################################\n");
-//            addToFailureOutput("\n\n");
-//        }
-//    }
-//
-//    /*!
-//     * Add the subcycler step header to the output failure string
-//     */
-//    void SubcyclerSolver::addSubcyclerStepHeader() {
-//        if (getFailureVerbosityLevel() > 0) {
-//            addToFailureOutput("\n\n");
-//            addToFailureOutput("######### PSEUDO-TIME INCREMENT #########\n");
-//            addToFailureOutput("\n\n    sp, ds: " + std::to_string(sp) + ", " + std::to_string(ds));
-//            addToFailureOutput("\n");
-//        }
-//    }
+
+    /*!
+     * Add the header for the subcycler to the output failure string
+     */
+    void SubcyclerSolver::addSubcyclerHeader() {
+        if (getFailureVerbosityLevel() > 0) {
+            addToFailureOutput("\n\n");
+            addToFailureOutput("#########################################\n");
+            addToFailureOutput("###        ENTERING SUB-CYCLER        ###\n");
+            addToFailureOutput("#########################################\n");
+            addToFailureOutput("\n\n");
+        }
+    }
+
+    /*!
+     * Add the subcycler step header to the output failure string
+     */
+    void SubcyclerSolver::addSubcyclerStepHeader() {
+        if (getFailureVerbosityLevel() > 0) {
+            addToFailureOutput("\n\n");
+            addToFailureOutput("######### PSEUDO-TIME INCREMENT #########\n");
+            addToFailureOutput("\n\n    sp, ds: " + std::to_string(sp) + ", " + std::to_string(ds));
+            addToFailureOutput("\n");
+        }
+    }
 
     /*!
      * Function to determine if we can increase the step-size for the sub-cycler

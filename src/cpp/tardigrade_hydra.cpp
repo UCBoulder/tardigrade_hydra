@@ -1388,40 +1388,14 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Add the header for the subcycler to the output failure string
-     */
-    void hydraBase::addSubcyclerHeader() {
-        if (getFailureVerbosityLevel() > 0) {
-            addToFailureOutput("\n\n");
-            addToFailureOutput("#########################################\n");
-            addToFailureOutput("###        ENTERING SUB-CYCLER        ###\n");
-            addToFailureOutput("#########################################\n");
-            addToFailureOutput("\n\n");
-        }
-    }
-
-    /*!
-     * Add the subcycler step header to the output failure string
-     */
-    void hydraBase::addSubcyclerStepHeader() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
-        if (getFailureVerbosityLevel() > 0) {
-            addToFailureOutput("\n\n");
-            addToFailureOutput("######### PSEUDO-TIME INCREMENT #########\n");
-            addToFailureOutput("\n\n    sp, ds: " + std::to_string(local_solver->sp) + ", " + std::to_string(local_solver->ds));
-            addToFailureOutput("\n");
-        }
-    }
-
-    /*!
      * Initialize the subcycler
      */
     void hydraBase::initializeSubcycler() {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "the solver has not been defined");
         auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type SubcyclerSolver");
+
+        local_solver->addSubcyclerHeader();
 
         local_solver->sp = 0.0;
 
@@ -1500,7 +1474,7 @@ namespace tardigradeHydra {
         auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
 
-        addSubcyclerStepHeader();
+        local_solver->addSubcyclerStepHeader();
 
         setScaleFactor(local_solver->sp + local_solver->ds);  // Update the scaling factor
 
