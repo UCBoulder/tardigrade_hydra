@@ -15,6 +15,20 @@
 namespace tardigradeHydra {
 
     /*!
+     * The constructor for StepDampingBase
+     */
+    StepDampingBase::StepDampingBase() : step(NULL) {}
+
+    /*!
+     * The constructor for StepDampingBase
+     *
+     * \param *_step: The containing step object
+     */
+    StepDampingBase::StepDampingBase(SolverStepBase *_step) : step(_step) {
+        step->damping = this;
+    }
+
+    /*!
      * Apply the damping to the proposed step
      *
      * This function must call the updateUnknownVector function

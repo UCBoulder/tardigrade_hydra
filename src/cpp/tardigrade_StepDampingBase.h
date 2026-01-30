@@ -25,17 +25,9 @@ namespace tardigradeHydra {
      */
     class StepDampingBase : public CachingDataBase {
        public:
-        /*!
-         * The constructor for StepDampingBase
-         */
-        StepDampingBase() : step(NULL) {}
+        StepDampingBase();
 
-        /*!
-         * The constructor for StepDampingBase
-         *
-         * \param *_step: The containing step object
-         */
-        StepDampingBase(SolverStepBase *_step) : step(_step) {}
+        StepDampingBase(SolverStepBase *_step);
 
         SolverStepBase *step;  //!< The containing step class
 
