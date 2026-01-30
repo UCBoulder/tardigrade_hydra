@@ -184,8 +184,6 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial, *boos
 
         tardigradeHydra::floatVector initialUnknownVector = {2, 0};
 
-        void set_solver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
        protected:
         virtual void setConstraints() override {
             auto constraints = get_SetDataStorage_constraints();
@@ -255,7 +253,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial, *boos
     solver.step  = &step;
     step.solver = &solver;
 
-    hydra.set_solver(&solver);
+    hydra.solver = &solver;
 
     tardigradeHydra::floatVector result = {0, 0};
 
@@ -301,8 +299,6 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
         auto public_setMuk(const tardigradeHydra::floatType &value) {
             tardigradeHydra::unit_test::StepDampingBaseTester::setMuk(*(solver->step->damping), value);
         }
-
-        auto set_solver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
 
        protected:
         virtual void setConstraints() override {
@@ -384,7 +380,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
     trial_step.step = &step;
     damping.step    = &step;
 
-    hydra.set_solver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
     solver.step  = &step;
     step.solver  = &solver;
@@ -451,8 +447,6 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix, 
         auto public_setMuk(const tardigradeHydra::floatType &value) {
             tardigradeHydra::unit_test::StepDampingBaseTester::setMuk(*(solver->step->damping), value);
         }
-
-        auto set_solver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
 
        protected:
         virtual void setConstraints() override {
@@ -528,7 +522,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix, 
     trial_step.step = &step;
     damping.step    = &step;
 
-    hydra.set_solver(&solver);
+    hydra.solver = &solver;
 
     solver.hydra = &hydra;
     solver.step  = &step;
@@ -590,8 +584,6 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
 
         using tardigradeHydra::hydraBase::setResidualClasses;
 
-        auto set_solver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
        protected:
         virtual void setConstraints() override {
             auto constraints = get_SetDataStorage_constraints();
@@ -640,7 +632,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
     SolverStepBaseMock          step;
     SequentialQuadraticProgrammingStepMock       trial_step;
 
-    hydra.set_solver(&solver);
+    hydra.solver = &solver;
 
     solver.hydra = &hydra;
     solver.step  = &step;
