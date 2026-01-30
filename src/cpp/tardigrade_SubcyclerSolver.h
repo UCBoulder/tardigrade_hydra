@@ -58,15 +58,9 @@ namespace tardigradeHydra {
 
         void setNumGoodControl(const unsigned int &value);
 
-        void setGrowthFactor(const floatType &value) { /*! Set the relative growth factor for the local timestep
-                                                          increase \param &value: The new value */
-            _growth_factor = value;
-        }
+        void setGrowthFactor(const floatType &value);
 
-        void setMinDS(const floatType &value) { /*! Set the minimum value of the relative cutback timestep \param
-                                                   &value: The new value */
-            _minDS = value;
-        }
+        void setMinDS(const floatType &value);
 
 //        const bool allowStepGrowth(const unsigned int &num_good);
 //

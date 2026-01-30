@@ -238,10 +238,25 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Set the relative growth factor for the local timestep increase
+     * \param &value: The new value
+     */
+    void SubcyclerSolver::setGrowthFactor(const floatType &value) {
+        _growth_factor = value;
+    }
+
+    /*!
      * Get the minimum allowable ratio of the total timestep to the cutback timestep
      */
     const floatType SubcyclerSolver::getMinDS() {
         return _minDS;
+    }
+
+    /*! Set the minimum value of the relative cutback timestep
+     * \param &value: The new value
+     */
+    void SubcyclerSolver::setMinDS(const floatType &value) {
+        _minDS = value;
     }
 
     /*!
