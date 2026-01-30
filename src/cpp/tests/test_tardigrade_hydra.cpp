@@ -3522,8 +3522,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAU
 
         floatVector X = {1, 2, 3};
 
-        void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
-
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override { num_updateUnknownVectorCalls++; }
 
@@ -3558,7 +3556,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAU
 
     SolverBaseMock solver;
     solver.hydra = &hydra;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
 
     hydra.evaluate();
 
@@ -3667,8 +3665,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
 
         unsigned int s3 = 3;
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override {
             tardigradeHydra::hydraBase::updateUnknownVector(newX);
@@ -3731,7 +3727,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
     solver.setInternalSolver(&internal_solver);
     internal_solver.hydra = &hydra;
 
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     hydra.evaluate(true);
@@ -3820,8 +3816,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
         unsigned int s2 = 9;
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override { num_updateUnknownVectorCalls++; }
 
@@ -3873,7 +3867,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
 
     hydra.evaluate(true);
 
@@ -4073,7 +4067,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getCurrentResidualOffset, *boost::unit_test:
             setResidualClasses(residuals);
         }
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
     class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
@@ -4117,7 +4110,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getCurrentResidualOffset, *boost::unit_test:
                         numNonLinearSolveStateVariables, dimension);
 
     IterativeSolverBaseMock solver;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     solver.public_callResidualSuccessfulIterativeStep();
@@ -4182,7 +4175,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getResidualParameterizationInfo,
             setResidualClasses(residuals);
         }
 
-        void setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
     };
 
     class SolverBaseMock : public tardigradeHydra::SolverBase {
@@ -4224,7 +4216,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getResidualParameterizationInfo,
                         numNonLinearSolveStateVariables, dimension);
 
     SolverBaseMock solver;
-    hydra.setSolver(&solver);
+    hydra.solver = &solver;
     solver.hydra = &hydra;
 
     std::string result = hydra.getResidualParameterizationInfo();
