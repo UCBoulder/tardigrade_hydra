@@ -184,8 +184,6 @@ BOOST_AUTO_TEST_CASE( test_LevenbergMarquardtStep_getNonlinearLMTerms, * boost::
             virtual void decomposeUnknownVector( ) override{ return; }
             virtual const unsigned int getNumUnknowns( ) override{ return 5; }
 
-            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
-
     };
 
     class LevenbergMarquardtStepMock : public tardigradeHydra::LevenbergMarquardtStep{
@@ -211,11 +209,11 @@ BOOST_AUTO_TEST_CASE( test_LevenbergMarquardtStep_getNonlinearLMTerms, * boost::
     tardigradeHydra::GradientDamping damping;
     LevenbergMarquardtStepMock trial_step;
 
-    hydra.getSolver( )->step->trial_step = &trial_step;
-    hydra.getSolver( )->step->damping    = &damping;
+    hydra.solver->step->trial_step = &trial_step;
+    hydra.solver->step->damping    = &damping;
 
-    trial_step.step = hydra.getSolver()->step;
-    damping.step    = hydra.getSolver()->step;
+    trial_step.step = hydra.solver->step;
+    damping.step    = hydra.solver->step;
 
     tardigradeHydra::floatVector unknownVector = { 0.39293837, -0.42772133, -0.54629709,  0.10262954,  0.43893794 };
 
