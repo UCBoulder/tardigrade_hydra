@@ -1347,7 +1347,10 @@ namespace tardigradeHydra {
      * \param &num_good: The number of good increments since the last failure
      */
     const bool hydraBase::allowStepGrowth(const unsigned int &num_good) {
-        if (num_good >= getNumGoodControl()) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
+        if (num_good >= local_solver->getNumGoodControl()) {
             return true;
         }
 

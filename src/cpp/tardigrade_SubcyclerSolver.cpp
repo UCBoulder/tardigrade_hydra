@@ -216,6 +216,21 @@ namespace tardigradeHydra {
 //    }
 
     /*!
+     * Get the number of good iterations we need to have before increasing the timestep
+     */
+    const unsigned int SubcyclerSolver::getNumGoodControl() {
+        return _num_good_control;
+    }
+    /*! Set the number of good iterations that need to happen before the timestep
+     * increases.
+     *     \param &value: The value of the number of good iterations prior
+     *         to increasing the relative timestep
+     */
+    void SubcyclerSolver::setNumGoodControl(const unsigned int &value) {
+        _num_good_control = value;
+    }
+
+    /*!
      * Signal to the residuals that we are entering the subcycler
      */
     void SubcyclerSolver::callResidualPreSubcycler() {

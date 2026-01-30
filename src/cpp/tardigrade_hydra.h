@@ -358,11 +358,6 @@ namespace tardigradeHydra {
 
         const floatType getCutbackFactor() { /*! Get the value of the cutback factor */ return _cutback_factor; }
 
-        const unsigned int
-        getNumGoodControl() { /*! Get the number of good iterations we need to have before increasing the timestep */
-            return _num_good_control;
-        }
-
         const floatType getGrowthFactor() { /*! Get the growth factor for the timestep increase */
             return _growth_factor;
         }
@@ -375,13 +370,6 @@ namespace tardigradeHydra {
         void setCutbackFactor(const floatType &value) { /*! Get the current value of the cutback factor. \param &value:
                                                            The value of the cutback */
             _cutback_factor = value;
-        }
-
-        void setNumGoodControl(
-            const unsigned int &value) { /*! Set the number of good iterations that need to happen before the timestep
-                                            increases. \param &value: The value of the number of good iterations prior
-                                            to increasing the relative timestep */
-            _num_good_control = value;
         }
 
         void setGrowthFactor(const floatType &value) { /*! Set the relative growth factor for the local timestep
@@ -807,9 +795,6 @@ namespace tardigradeHydra {
 
         floatType _growth_factor =
             1.2;  //!< The factor by which the pseudo-time will be scaled if we can grow the pseudo-timestep
-
-        unsigned int _num_good_control =
-            2;  //!< The number of good iterations we need to have before we try and increase the timestep
 
         floatType _minDS = 1e-2;  //!< The minimum allowable pseudo-timestep
         // END SUBCYCLER PARAMETERS
