@@ -174,6 +174,9 @@ BOOST_AUTO_TEST_CASE( test_LevenbergMarquardtStep_getNonlinearLMTerms, * boost::
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
+                TARDIGRADE_ERROR_TOOLS_CHECK(solver, "The solver is not defined");
+                TARDIGRADE_ERROR_TOOLS_CHECK(solver->step, "The step is not defined");
+                TARDIGRADE_ERROR_TOOLS_CHECK(solver->step->damping, "The damping is not defined");
                 auto local_damping = dynamic_cast<tardigradeHydra::GradientDamping*>(solver->step->damping);
                 TARDIGRADE_ERROR_TOOLS_CHECK(local_damping != nullptr, "The damping is not of type GradientDamping")
 
@@ -206,14 +209,13 @@ BOOST_AUTO_TEST_CASE( test_LevenbergMarquardtStep_getNonlinearLMTerms, * boost::
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::GradientDamping damping;
-    LevenbergMarquardtStepMock trial_step;
+    tardigradeHydra::IterativeSolverBase solver(&hydra);
+    tardigradeHydra::SolverStepBase step(&solver);
+    solver.step = &step;
+    tardigradeHydra::GradientDamping damping(&step);
+    LevenbergMarquardtStepMock trial_step(&step);
 
-    hydra.solver->step->trial_step = &trial_step;
-    hydra.solver->step->damping    = &damping;
-
-    trial_step.step = hydra.solver->step;
-    damping.step    = hydra.solver->step;
+    hydra.solver = &solver;
 
     tardigradeHydra::floatVector unknownVector = { 0.39293837, -0.42772133, -0.54629709,  0.10262954,  0.43893794 };
 

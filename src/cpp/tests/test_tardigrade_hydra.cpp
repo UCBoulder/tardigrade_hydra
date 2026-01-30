@@ -3525,6 +3525,10 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAU
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override { num_updateUnknownVectorCalls++; }
 
+        virtual void initialSolveAttempt() override{
+            solver->solve();
+        }
+
     };
 
     floatType time = 1.1;
