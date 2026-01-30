@@ -28,17 +28,9 @@ namespace tardigradeHydra {
      */
     class SolverStepBase : public CachingDataBase {
        public:
-        /*!
-         * Constructor for NonlinearStepBase
-         */
-        SolverStepBase() : solver(NULL) { }
+        SolverStepBase();
 
-        /*!
-         * Constructor for NonlinearStepBase
-         *
-         * \param *_solver: The containing solver object
-         */
-        SolverStepBase(SolverBase *_solver) : solver(_solver) { }
+        SolverStepBase(SolverBase *_solver);
 
         virtual void resetCounts();
 
