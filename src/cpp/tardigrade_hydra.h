@@ -356,13 +356,6 @@ namespace tardigradeHydra {
 
         // SUBCYCLER FUNCTIONS
 
-        const floatType getCutbackFactor() { /*! Get the value of the cutback factor */ return _cutback_factor; }
-
-        void setCutbackFactor(const floatType &value) { /*! Get the current value of the cutback factor. \param &value:
-                                                           The value of the cutback */
-            _cutback_factor = value;
-        }
-
         const bool allowStepGrowth(const unsigned int &num_good);
 
         // END SUBCYCLER FUNCTIONS
@@ -770,11 +763,6 @@ namespace tardigradeHydra {
 
         floatType _scale_factor =
             1.0;  //!< A scale factor applied to the incoming loading (deformation, temperature, etc.)
-
-        // SUBCYCLER PARAMETERS
-        floatType _cutback_factor = 0.5;  //!< The factor by which the pseudo-time will be scaled if a solve fails
-
-        // END SUBCYCLER PARAMETERS
 
         bool _allow_modify_global_residual = false;  //!< Flag for if the global residual can be modified
 

@@ -42,8 +42,8 @@ namespace tardigradeHydra {
 //        virtual void unexpectedErrorFunction() override;
 //
 //        virtual void reset() override;
-//
-//        const floatType getCutbackFactor() { /*! Get the value of the cutback factor */ return _cutback_factor; }
+
+        const floatType getCutbackFactor();
 
         const unsigned int getNumGoodControl();
 
@@ -51,10 +51,7 @@ namespace tardigradeHydra {
 
         const floatType getMinDS();
 
-//        void setCutbackFactor(const floatType &value) { /*! Get the current value of the cutback factor. \param &value:
-//                                                           The value of the cutback */
-//            _cutback_factor = value;
-//        }
+        void setCutbackFactor(const floatType &value);
 
         void setNumGoodControl(const unsigned int &value);
 
@@ -97,11 +94,11 @@ namespace tardigradeHydra {
 
         unsigned int num_good = 0;  //!< The number of good subcycler steps
 
-//       private:
+       private:
 //        friend class tardigradeHydra::hydraBase;                       //!< The base class for hydra TEMP
-//        friend class tardigradeHydra::unit_test::SubcyclerSolverTester;  //!< The unit tester for the class
-//
-//        floatType _cutback_factor = 0.5;  //!< The factor by which the pseudo-time will be scaled if a solve fails
+        friend class tardigradeHydra::unit_test::SubcyclerSolverTester;  //!< The unit tester for the class
+
+        floatType _cutback_factor = 0.5;  //!< The factor by which the pseudo-time will be scaled if a solve fails
 
         floatType _growth_factor =
             1.2;  //!< The factor by which the pseudo-time will be scaled if we can grow the pseudo-timestep

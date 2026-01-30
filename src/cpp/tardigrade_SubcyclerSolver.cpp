@@ -260,6 +260,21 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get the value of the cutback factor
+     */
+    const floatType SubcyclerSolver::getCutbackFactor() {
+        return _cutback_factor;
+    }
+
+    /*!
+     * Get the current value of the cutback factor.
+     * \param &value: The value of the cutback
+     */
+    void SubcyclerSolver::setCutbackFactor(const floatType &value) {
+        _cutback_factor = value;
+    }
+
+    /*!
      * Signal to the residuals that we are entering the subcycler
      */
     void SubcyclerSolver::callResidualPreSubcycler() {

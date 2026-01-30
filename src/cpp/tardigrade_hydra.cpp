@@ -1441,7 +1441,7 @@ namespace tardigradeHydra {
 
         local_solver->sp = 0.0;
 
-        local_solver->ds = getCutbackFactor();
+        local_solver->ds = local_solver->getCutbackFactor();
 
         local_solver->num_good = 0;
 
@@ -1462,7 +1462,7 @@ namespace tardigradeHydra {
         // Reduce the time-step and try again
         local_solver->num_good = 0;
 
-        local_solver->ds *= getCutbackFactor();
+        local_solver->ds *= local_solver->getCutbackFactor();
 
         setX(solver->initial_unknown);  // Reset X to the last good point
 
