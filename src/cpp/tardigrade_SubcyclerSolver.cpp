@@ -164,23 +164,23 @@ namespace tardigradeHydra {
         }
     }
 
-//    /*!
-//     * Solve the problem using the subcycler
-//     */
-//    void SubcyclerSolver::performSubcyclerSolve() {
-//        initializeSubcycler();
-//
-//        while (sp < 1.0) {
-//            try {
-//                performSubcyclerStep();
-//
-//                subcyclerStepSuccess();
-//
-//            } catch (std::exception &e) {
-//                subcyclerStepFailure();
-//            }
-//        }
-//    }
+    /*!
+     * Solve the problem using the subcycler
+     */
+    void SubcyclerSolver::performSubcyclerSolve() {
+        initializeSubcycler();
+
+        while (sp < 1.0) {
+            try {
+                performSubcyclerStep();
+
+                subcyclerStepSuccess();
+
+            } catch (std::exception &e) {
+                subcyclerStepFailure();
+            }
+        }
+    }
 
     /*!
      * Add the header for the subcycler to the output failure string

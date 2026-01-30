@@ -62,11 +62,12 @@ namespace tardigradeHydra {
         const bool allowStepGrowth();
 
        protected:
+        RelaxedSolver __internal_solver; //!< TEMP the following line should be used
 //        RelaxedSolver _internal_solver;  //!< The default internal solver
 //
 //        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
-//
-//        virtual void performSubcyclerSolve();
+
+        virtual void performSubcyclerSolve();
 
         void addSubcyclerHeader();
 
@@ -76,7 +77,7 @@ namespace tardigradeHydra {
 
         void updatePseudoTimestep();
 
-//        void performSubcyclerStep();
+        void performSubcyclerStep();
 
         void subcyclerStepSuccess();
 

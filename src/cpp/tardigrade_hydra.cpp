@@ -1362,8 +1362,11 @@ namespace tardigradeHydra {
      * error thrown in the initial solve attempt
      */
     void hydraBase::convergenceErrorFunction() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
         if (_use_subcycler) {
-            performSubcyclerSolve();
+            local_solver->performSubcyclerSolve();
         } else {
             throw;
         }
@@ -1374,8 +1377,11 @@ namespace tardigradeHydra {
      * error thrown in the initial solve attempt
      */
     void hydraBase::unexpectedErrorFunction() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
+        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
         if (_use_subcycler) {
-            performSubcyclerSolve();
+            local_solver->performSubcyclerSolve();
         } else {
             throw;
         }
