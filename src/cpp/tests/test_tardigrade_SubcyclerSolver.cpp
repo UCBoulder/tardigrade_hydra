@@ -310,8 +310,6 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
             setResidualClasses(residuals);
         }
 
-        auto getSolver(){return solver;}
-
     };
 
     tardigradeHydra::floatType time = 1.1;
