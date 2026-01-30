@@ -558,7 +558,6 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
 
         virtual const unsigned int getNumUnknowns() override { return 5; }
 
-        tardigradeHydra::SolverBase *getSolver() { return solver; }
     };
 
     class StepDampingBaseMock : public tardigradeHydra::StepDampingBase {
@@ -591,8 +590,8 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
     damping.step = &step;
     step.damping = &damping;
 
-    hydra.getSolver()->step = &step;
-    step.solver = hydra.getSolver();
+    hydra.solver->step = &step;
+    step.solver = hydra.solver;
 
     tardigradeHydra::floatVector unknownVector = {0.39293837, -0.42772133, -0.54629709, 0.10262954, 0.43893794};
 
@@ -609,8 +608,8 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
     SolverStepBaseMock  step2;
     StepDampingBaseMock damping2;
 
-    hydra2.getSolver()->step = &step2;
-    step2.solver = hydra2.getSolver();
+    hydra2.solver->step = &step2;
+    step2.solver = hydra2.solver;
     damping2.step = &step2;
     step2.damping = &damping2;
 
@@ -696,7 +695,6 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_performGradientStep, *boost::unit_test
 
         virtual void                 decomposeUnknownVector() override { return; }
         virtual const unsigned int   getNumUnknowns() override { return 5; }
-        tardigradeHydra::SolverBase *getSolver() { return solver; }
     };
 
     class StepDampingBaseMock : public tardigradeHydra::StepDampingBase {
@@ -734,8 +732,8 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_performGradientStep, *boost::unit_test
     step.damping = &damping;
     damping.step = &step;
 
-    hydra.getSolver()->step = &step;
-    step.solver=hydra.getSolver();
+    hydra.solver->step = &step;
+    step.solver=hydra.solver;
 
     tardigradeHydra::floatVector unknownVector = {0.39293837, -0.42772133, -0.54629709, 0.10262954, 0.43893794};
 

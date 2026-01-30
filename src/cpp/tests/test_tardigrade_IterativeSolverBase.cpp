@@ -145,7 +145,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
         unsigned int num_residual_calls = 0;
 
         void                         setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-        tardigradeHydra::SolverBase *getSolver() { return solver; }
 
        private:
         using tardigradeHydra::hydraBase::getResidual;
@@ -278,8 +277,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
             {{10, 9, 8}},
             {{7, 6, 5}, {4, 3, 2}, {1, 1, 1}},
         };
-
-        tardigradeHydra::SolverBase* getSolver(){ return solver; }
 
         unsigned int getIteration(){
             auto local_solver = dynamic_cast<IterativeSolverBaseMock*>(solver);
@@ -420,7 +417,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     step.solver = &solver;
     preconditioner.trial_step = &trial_step;
 
-    hydra.getSolver()->step->damping->setUseGradientDescent(true);
+    hydra.solver->step->damping->setUseGradientDescent(true);
 
     solver.solve();
 
@@ -469,7 +466,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     step_pre.solver = &solver_pre;
     preconditioner_pre.trial_step = &trial_step_pre;
 
-    hydra_pre.getSolver()->step->damping->setUseGradientDescent(true);
+    hydra_pre.solver->step->damping->setUseGradientDescent(true);
 
     solver_pre.solve();
 
@@ -651,7 +648,6 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,
         }
 
         void                         setSolver(tardigradeHydra::SolverBase *_solver) { solver = _solver; }
-        tardigradeHydra::SolverBase *getSolver() { return solver; }
     };
 
     class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
