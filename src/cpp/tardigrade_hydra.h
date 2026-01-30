@@ -354,12 +354,6 @@ namespace tardigradeHydra {
             return &_scaled_additionalDOF;
         }
 
-        // SUBCYCLER FUNCTIONS
-
-        const bool allowStepGrowth();
-
-        // END SUBCYCLER FUNCTIONS
-
         floatVector *getMutableResidual() {
             /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
              *

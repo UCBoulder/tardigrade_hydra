@@ -1342,20 +1342,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Function to determine if we can increase the step-size for the sub-cycler
-     */
-    const bool hydraBase::allowStepGrowth() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
-        if (local_solver->num_good >= local_solver->getNumGoodControl()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /*!
      * Initialize the hydra object
      */
     void hydraBase::initialize() {
@@ -1479,7 +1465,7 @@ namespace tardigradeHydra {
         local_solver->sp += local_solver->ds;  // Update the pseudo-time
 
         // Grow the step if possible
-        if (allowStepGrowth()) {
+        if (local_solver->allowStepGrowth()) {
             local_solver->ds *= local_solver->getGrowthFactor();
         }
 

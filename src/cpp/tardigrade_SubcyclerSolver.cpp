@@ -201,17 +201,17 @@ namespace tardigradeHydra {
 //            addToFailureOutput("\n");
 //        }
 //    }
-//
-//    /*!
-//     * Function to determine if we can increase the step-size for the sub-cycler
-//     */
-//    const bool SubcyclerSolver::allowStepGrowth() {
-//        if (num_good >= getNumGoodControl()) {
-//            return true;
-//        }
-//
-//        return false;
-//    }
+
+    /*!
+     * Function to determine if we can increase the step-size for the sub-cycler
+     */
+    const bool SubcyclerSolver::allowStepGrowth() {
+        if (num_good >= getNumGoodControl()) {
+            return true;
+        }
+
+        return false;
+    }
 
     /*!
      * Get the number of good iterations we need to have before increasing the timestep
