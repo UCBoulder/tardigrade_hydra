@@ -100,23 +100,23 @@ namespace tardigradeHydra {
         resetProblem();
     }
 
-//    /*!
-//     * Update the pseudo-timestep
-//     */
-//    void SubcyclerSolver::updatePseudoTimestep() {
-//        sp += ds;  // Update the pseudo-time
-//
-//        // Grow the step if possible
-//        if (allowStepGrowth()) {
-//            ds *= getGrowthFactor();
-//        }
-//
-//        // Make sure s will be less than or equal to 1
-//        if (sp + ds > 1.0) {
-//            ds = 1.0 - sp;
-//        }
-//    }
-//
+    /*!
+     * Update the pseudo-timestep
+     */
+    void SubcyclerSolver::updatePseudoTimestep() {
+        sp += ds;  // Update the pseudo-time
+
+        // Grow the step if possible
+        if (allowStepGrowth()) {
+            ds *= getGrowthFactor();
+        }
+
+        // Make sure s will be less than or equal to 1
+        if (sp + ds > 1.0) {
+            ds = 1.0 - sp;
+        }
+    }
+
 //    /*!
 //     * Perform a subcycler step
 //     */

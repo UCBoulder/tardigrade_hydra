@@ -74,8 +74,8 @@ namespace tardigradeHydra {
 
         void initializeSubcycler();
 
-//        void updatePseudoTimestep();
-//
+        void updatePseudoTimestep();
+
 //        void performSubcyclerStep();
 //
 //        void subcyclerStepSuccess();
