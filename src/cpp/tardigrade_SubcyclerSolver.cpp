@@ -17,6 +17,7 @@ namespace tardigradeHydra {
      * Default constructor for SubcyclerSolver
      */
     SubcyclerSolver::SubcyclerSolver() : RelaxedSolver() {//IterativeSolverBase() {
+        internal_solver = &__internal_solver; //TEMP
         internal_solver->hydra = NULL;
         step                   = internal_solver->step;
     }
@@ -27,6 +28,7 @@ namespace tardigradeHydra {
      * \param *_hydra: The containing hydra object
      */
     SubcyclerSolver::SubcyclerSolver(hydraBase *_hydra) : RelaxedSolver(_hydra) {//IterativeSolverBase(_hydra) {
+        internal_solver = &__internal_solver; //TEMP
         internal_solver->hydra = _hydra;
         step                   = internal_solver->step;
     }
@@ -117,19 +119,19 @@ namespace tardigradeHydra {
         }
     }
 
-//    /*!
-//     * Perform a subcycler step
-//     */
-//    void SubcyclerSolver::performSubcyclerStep() {
-//        TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The internal solver has not been defined");
-//        addSubcyclerStepHeader();
-//
-//        setScaleFactor(sp + ds);  // Update the scaling factor
-//
-//        resetIterations();  // Reset the non-linear iteration count
-//
-//        internal_solver->solve();  // Try to solve the non-linear problem
-//    }
+    /*!
+     * Perform a subcycler step
+     */
+    void SubcyclerSolver::performSubcyclerStep() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The internal solver has not been defined");
+        addSubcyclerStepHeader();
+
+        setScaleFactor(sp + ds);  // Update the scaling factor
+
+        resetIterations();  // Reset the non-linear iteration count
+
+        internal_solver->solve();  // Try to solve the non-linear problem
+    }
 
     /*!
      * Post-successful subcycler increment updates

@@ -512,15 +512,11 @@ namespace tardigradeHydra {
         virtual void initializeUnknownVector();
 
         // SUBCYCLER FUNCTIONS (MOVE TO OWN SOLVER CLASS)
-        virtual void initialSolveAttempt();
-
         virtual void convergenceErrorFunction();
 
         virtual void unexpectedErrorFunction();
 
         virtual void performSubcyclerSolve();
-
-        void performSubcyclerStep();
 
         bool _use_subcycler = false;  //!< Flag for whether to use the subcycler or not TODO: Remove this
         // END SUBCYCLER FUNCTIONS

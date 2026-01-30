@@ -59,6 +59,8 @@ namespace tardigradeHydra {
         // TEMP
         _solver.hydra                  = this;
         _solver.internal_solver->hydra = this;
+        auto local_internal_solver = dynamic_cast<tardigradeHydra::RelaxedSolver*>(_solver.internal_solver);
+        local_internal_solver->internal_solver->hydra = this;
         // END TEMP
     }
 
@@ -1356,14 +1358,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * The initial attempt at solving the problem
-     */
-    void hydraBase::initialSolveAttempt() {
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver hasn't been defined" );
-        solver->solve();
-    }
-
-    /*!
      * The function that is called if there is a convergence
      * error thrown in the initial solve attempt
      */
@@ -1388,23 +1382,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Perform a subcycler step
-     */
-    void hydraBase::performSubcyclerStep() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
-
-        local_solver->addSubcyclerStepHeader();
-
-        setScaleFactor(local_solver->sp + local_solver->ds);  // Update the scaling factor
-
-        local_solver->resetIterations();  // Reset the non-linear iteration count
-
-        solver->solve();  // Try to solve the non-linear problem
-    }
-
-    /*!
      * Solve the problem using the subcycler
      */
     void hydraBase::performSubcyclerSolve() {
@@ -1415,7 +1392,7 @@ namespace tardigradeHydra {
 
         while (local_solver->sp < 1.0) {
             try {
-                performSubcyclerStep();
+                local_solver->performSubcyclerStep();
 
                 local_solver->subcyclerStepSuccess();
 
@@ -1437,7 +1414,7 @@ namespace tardigradeHydra {
         initialize();
 
         try {
-            initialSolveAttempt();
+            solver->initialSolveAttempt();
 
         } catch (convergence_error &e) {
             convergenceErrorFunction();
