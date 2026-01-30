@@ -35,8 +35,8 @@ namespace tardigradeHydra {
 
         SubcyclerSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr);
 
-//        virtual void initialSolveAttempt() override;
-//
+        virtual void initialSolveAttempt() override;
+
 //        virtual void convergenceErrorFunction() override;
 //
 //        virtual void unexpectedErrorFunction() override;

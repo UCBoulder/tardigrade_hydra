@@ -43,16 +43,16 @@ namespace tardigradeHydra {
         step                   = internal_solver->step;
     }
 
-//    /*!
-//     * The initial attempt at solving the problem
-//     *
-//     * Attempts to use the internal solver directly without subcycling
-//     */
-//    void SubcyclerSolver::initialSolveAttempt() {
-//        TARDIGRADE_ERROR_TOOLS_CHECK( internal_solver != nullptr, "The solver hasn't been defined" );
-//        internal_solver->solve();
-//    }
-//
+    /*!
+     * The initial attempt at solving the problem
+     *
+     * Attempts to use the internal solver directly without subcycling
+     */
+    void SubcyclerSolver::initialSolveAttempt() {
+        TARDIGRADE_ERROR_TOOLS_CHECK( internal_solver != nullptr, "The solver hasn't been defined" );
+        internal_solver->solve();
+    }
+
 //    /*!
 //     * The function that is called if there is a convergence
 //     * error thrown in the initial solve attempt
