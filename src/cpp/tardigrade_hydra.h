@@ -518,10 +518,11 @@ namespace tardigradeHydra {
             return _residual_scale_factor;
         }
 
-       protected:
-        SubcyclerSolver _solver;  //!< Default solver
         SolverBase   *solver =
             &_solver;  //!< The class which performs the material point solve TODO: Make this an incoming pointer
+
+       protected:
+        SubcyclerSolver _solver;  //!< Default solver
 
         // Setters that the user may need to access but not override
 
