@@ -169,7 +169,6 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
 
         virtual const unsigned int getNumUnknowns() override { return 5; }
 
-        tardigradeHydra::SolverBase *getSolver() { return solver; }
     };
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
@@ -182,8 +181,8 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
     trial_step.preconditioner = &preconditioner;
     preconditioner.trial_step = &trial_step;
 
-    hydra.getSolver()->step->trial_step = &trial_step;
-    trial_step.step = hydra.getSolver()->step;
+    hydra.solver->step->trial_step = &trial_step;
+    trial_step.step = hydra.solver->step;
 
     preconditioner.test_initialize();
 
