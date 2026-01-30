@@ -348,7 +348,7 @@ namespace tardigradeHydra {
      */
     void SolverBase::setScaleFactor(const floatType &value){
         TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
-        setScaleFactor(value);
+        hydra->setScaleFactor(value);
     }
 
     // NONLINEAR FUNCTIONS
