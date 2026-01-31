@@ -16,8 +16,7 @@ namespace tardigradeHydra {
     /*!
      * Default constructor for SubcyclerSolver
      */
-    SubcyclerSolver::SubcyclerSolver() : RelaxedSolver() {//IterativeSolverBase() {
-        internal_solver = &__internal_solver; //TEMP
+    SubcyclerSolver::SubcyclerSolver() : IterativeSolverBase() {
         internal_solver->hydra = NULL;
         step                   = internal_solver->step;
     }
@@ -27,8 +26,7 @@ namespace tardigradeHydra {
      *
      * \param *_hydra: The containing hydra object
      */
-    SubcyclerSolver::SubcyclerSolver(hydraBase *_hydra) : RelaxedSolver(_hydra) {//IterativeSolverBase(_hydra) {
-        internal_solver = &__internal_solver; //TEMP
+    SubcyclerSolver::SubcyclerSolver(hydraBase *_hydra) : IterativeSolverBase(_hydra) {
         internal_solver->hydra = _hydra;
         step                   = internal_solver->step;
     }
@@ -39,7 +37,7 @@ namespace tardigradeHydra {
      * \param *_hydra: The containing hydra object
      * \param *_internal_solver_ptr: The pointer for the internal solver
      */
-    SubcyclerSolver::SubcyclerSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr) : RelaxedSolver(_hydra) {//IterativeSolverBase(_hydra) {
+    SubcyclerSolver::SubcyclerSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr) : IterativeSolverBase(_hydra) {
         internal_solver        = _internal_solver_ptr;
         internal_solver->hydra = hydra;
         step                   = internal_solver->step;
@@ -55,34 +53,34 @@ namespace tardigradeHydra {
         internal_solver->solve();
     }
 
-//    /*!
-//     * The function that is called if there is a convergence
-//     * error thrown in the initial solve attempt
-//     *
-//     * Attempts a subcycler step
-//     */
-//    void SubcyclerSolver::convergenceErrorFunction() {
-//        performSubcyclerSolve();
-//    }
-//
-//    /*!
-//     * The function that is called if there is a unexpected
-//     * error thrown in the initial solve attempt
-//     *
-//     * Attempts a subcycler step
-//     */
-//    void SubcyclerSolver::unexpectedErrorFunction() {
-//        performSubcyclerSolve();
-//    }
-//
-//    /*!
-//     * Reset the solver
-//     */
-//
-//    void RelaxedSolver::reset(){
-//        internal_solver->reset();
-//        tardigradeHydra::IterativeSolverBase::reset();
-//    }
+    /*!
+     * The function that is called if there is a convergence
+     * error thrown in the initial solve attempt
+     *
+     * Attempts a subcycler step
+     */
+    void SubcyclerSolver::convergenceErrorFunction() {
+        performSubcyclerSolve();
+    }
+
+    /*!
+     * The function that is called if there is a unexpected
+     * error thrown in the initial solve attempt
+     *
+     * Attempts a subcycler step
+     */
+    void SubcyclerSolver::unexpectedErrorFunction() {
+        performSubcyclerSolve();
+    }
+
+    /*!
+     * Reset the solver
+     */
+
+    void SubcyclerSolver::reset(){
+        internal_solver->reset();
+        tardigradeHydra::IterativeSolverBase::reset();
+    }
 
     /*!
      * Initialize the subcycler

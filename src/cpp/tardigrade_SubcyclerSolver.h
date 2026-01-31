@@ -27,7 +27,7 @@ namespace tardigradeHydra {
      * Class which controls a solve of a problem which may need to be
      * systematically relaxed in order to achieve the solution
      */
-    class SubcyclerSolver : public RelaxedSolver {//IterativeSolverBase {
+    class SubcyclerSolver : public IterativeSolverBase {
        public:
         SubcyclerSolver();
 
@@ -37,11 +37,11 @@ namespace tardigradeHydra {
 
         virtual void initialSolveAttempt() override;
 
-//        virtual void convergenceErrorFunction() override;
-//
-//        virtual void unexpectedErrorFunction() override;
-//
-//        virtual void reset() override;
+        virtual void convergenceErrorFunction() override;
+
+        virtual void unexpectedErrorFunction() override;
+
+        virtual void reset() override;
 
         const floatType getCutbackFactor();
 
@@ -61,11 +61,10 @@ namespace tardigradeHydra {
 
         const bool allowStepGrowth();
 
+        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
+
        protected:
-        RelaxedSolver __internal_solver; //!< TEMP the following line should be used
-//        RelaxedSolver _internal_solver;  //!< The default internal solver
-//
-//        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
+        RelaxedSolver _internal_solver;
 
         virtual void performSubcyclerSolve();
 

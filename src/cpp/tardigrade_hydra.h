@@ -250,7 +250,7 @@ namespace tardigradeHydra {
 
         const bool getViscoplasticDampingSet();
 
-        virtual void evaluate(const bool &use_subcycler = false);
+        virtual void evaluate();
 
         virtual void computeTangents();
 
@@ -510,14 +510,6 @@ namespace tardigradeHydra {
         virtual void formNonLinearDerivatives();
 
         virtual void initializeUnknownVector();
-
-        // SUBCYCLER FUNCTIONS (MOVE TO OWN SOLVER CLASS)
-        virtual void convergenceErrorFunction();
-
-        virtual void unexpectedErrorFunction();
-
-        bool _use_subcycler = false;  //!< Flag for whether to use the subcycler or not TODO: Remove this
-        // END SUBCYCLER FUNCTIONS
 
         virtual void updateUnknownVector(const floatVector &newUnknownVector);
 

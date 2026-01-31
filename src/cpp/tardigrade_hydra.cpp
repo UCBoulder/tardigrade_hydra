@@ -1358,55 +1358,13 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * The function that is called if there is a convergence
-     * error thrown in the initial solve attempt
-     */
-    void hydraBase::convergenceErrorFunction() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
-        if (_use_subcycler) {
-            local_solver->performSubcyclerSolve();
-        } else {
-            throw;
-        }
-    }
-
-    /*!
-     * The function that is called if there is a unexpected
-     * error thrown in the initial solve attempt
-     */
-    void hydraBase::unexpectedErrorFunction() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
-        auto local_solver = dynamic_cast<tardigradeHydra::SubcyclerSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "The solver is not of type IterativeSolverBase");
-        if (_use_subcycler) {
-            local_solver->performSubcyclerSolve();
-        } else {
-            throw;
-        }
-    }
-
-    /*!
      * Solve the non-linear problem and update the variables
-     *
-     * \param &use_subcycler: Flag for if the subcycler should be used for difficult analyses (defaults to false) TODO:
-     * Remove this parameter
      */
-    void hydraBase::evaluate(const bool &use_subcycler) {
-        _use_subcycler = use_subcycler;
+    void hydraBase::evaluate() {
 
         initialize();
 
-        try {
-            solver->initialSolveAttempt();
-
-        } catch (convergence_error &e) {
-            convergenceErrorFunction();
-
-        } catch (std::exception &e) {
-            unexpectedErrorFunction();
-        }
+        solver->solve();
     }
 
     /*!
