@@ -8,6 +8,7 @@
  */
 
 #include "tardigrade_PreconditionerBase.h"
+
 #include "tardigrade_NonlinearStepBase.h"
 
 namespace tardigradeHydra {
@@ -40,7 +41,7 @@ namespace tardigradeHydra {
     /*!
      * Get the number of unknowns
      */
-    const unsigned int PreconditionerBase::getNumUnknowns(){
+    const unsigned int PreconditionerBase::getNumUnknowns() {
         TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step has not been defined");
         return trial_step->getNumUnknowns();
     }
@@ -48,7 +49,7 @@ namespace tardigradeHydra {
     /*!
      * Get the row-major nonlinear left hand side
      */
-    const floatVector* PreconditionerBase::getFlatNonlinearLHS(){
+    const floatVector *PreconditionerBase::getFlatNonlinearLHS() {
         TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step has not been defined");
         return trial_step->getFlatNonlinearLHS();
     }
@@ -56,7 +57,7 @@ namespace tardigradeHydra {
     /*!
      * Get the nonlinear right hand side
      */
-    const floatVector* PreconditionerBase::getNonlinearRHS(){
+    const floatVector *PreconditionerBase::getNonlinearRHS() {
         TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step has not been defined");
         return trial_step->getNonlinearRHS();
     }
@@ -76,7 +77,7 @@ namespace tardigradeHydra {
      * Form the preconditioner matrix
      */
     void PreconditionerBase::formPreconditioner() {
-        _preconditioner.second = floatVector(trial_step->getNumUnknowns(),1.);
+        _preconditioner.second = floatVector(trial_step->getNumUnknowns(), 1.);
 
         _preconditioner.first = true;
 
@@ -89,11 +90,9 @@ namespace tardigradeHydra {
      * \param &X: The incoming vector to be preconditioned
      * \param &Y: The preconditioned vector
      */
-    void PreconditionerBase::preconditionVector( const floatVector &X, floatVector &Y ){
-
-        Y = floatVector(X.size(),0);
-        std::copy( std::begin( X ), std::end( X ), std::begin( Y ) );
-
+    void PreconditionerBase::preconditionVector(const floatVector &X, floatVector &Y) {
+        Y = floatVector(X.size(), 0);
+        std::copy(std::begin(X), std::end(X), std::begin(Y));
     }
 
     /*!
@@ -102,10 +101,8 @@ namespace tardigradeHydra {
      * \param &A: The incoming matrix to be preconditioned
      * \param &B: The preconditined matrix
      */
-    void PreconditionerBase::preconditionMatrix( const floatVector &A, floatVector &B ){
-
-        B = floatVector(A.size(),0);
-        std::copy( std::begin( A ), std::end( A ), std::begin( B ) );
-
+    void PreconditionerBase::preconditionMatrix(const floatVector &A, floatVector &B) {
+        B = floatVector(A.size(), 0);
+        std::copy(std::begin(A), std::end(A), std::begin(B));
     }
 }  // namespace tardigradeHydra

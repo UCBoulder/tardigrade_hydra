@@ -136,23 +136,22 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_getLSResidualNorm,
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
-
     };
 
-    hydraBaseMock                          hydra;
-    tardigradeHydra::SolverBase            solver;
-    tardigradeHydra::SolverStepBase        step;
-//    tardigradeHydra::PreconditionerBase    preconditioner;
+    hydraBaseMock                   hydra;
+    tardigradeHydra::SolverBase     solver;
+    tardigradeHydra::SolverStepBase step;
+    //    tardigradeHydra::PreconditionerBase    preconditioner;
     tardigradeHydra::ArmijoGradientDamping damping;
 
     hydra.solver = &solver;
 
-    solver.hydra                    = &hydra;
-    solver.step                     = &step;
-//    step.trial_step->preconditioner = &preconditioner;
+    solver.hydra = &hydra;
+    solver.step  = &step;
+    //    step.trial_step->preconditioner = &preconditioner;
 
-    step.solver=&solver;
-//    preconditioner.trial_step = step.trial_step;
+    step.solver = &solver;
+    //    preconditioner.trial_step = step.trial_step;
 
     step.damping = &damping;
     damping.step = &step;
@@ -170,7 +169,6 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_checkLSConvergence,
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
-
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -217,7 +215,7 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_checkLSConvergence,
     damping.setMaxLSIterations(5);
 
     hydra.solver->step = &step;
-    step.solver=hydra.solver;
+    step.solver        = hydra.solver;
 
     tardigradeHydra::floatVector residual = {1, 2, -3, 0};
 

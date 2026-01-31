@@ -10,17 +10,17 @@
 #define TARDIGRADE_SOLVERSTEPBASE
 
 #include "tardigrade_CoreDefinitions.h"
-#include "tardigrade_SetDataStorage.h"
 #include "tardigrade_NonlinearStepBase.h"
+#include "tardigrade_SetDataStorage.h"
 #include "tardigrade_StepDampingBase.h"
 // Default classes
-#include "tardigrade_NewtonStep.h"
 #include "tardigrade_ArmijoGradientDamping.h"
+#include "tardigrade_NewtonStep.h"
 
 namespace tardigradeHydra {
 
     namespace unit_test {
-        class SolverStepBaseTester;      //!< Friend class for SolverStepBase for unit testing
+        class SolverStepBaseTester;  //!< Friend class for SolverStepBase for unit testing
     }  // namespace unit_test
 
     /*!
@@ -118,7 +118,6 @@ namespace tardigradeHydra {
         bool _rank_deficient_error = false;  //!< Flag for whether a rank-deficient Jacobian should cause an error
 
         unsigned int _NUM_UNDAMPED = 0;  //!< The number of undamped steps performed
-
     };
 
 }  // namespace tardigradeHydra

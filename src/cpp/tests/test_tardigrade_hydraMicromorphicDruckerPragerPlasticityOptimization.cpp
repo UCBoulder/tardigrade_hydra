@@ -368,7 +368,8 @@ BOOST_AUTO_TEST_CASE(test_computeStateVariableResidual, *boost::unit_test::toler
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -698,7 +699,8 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians, *boost::unit_test::toleranc
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1019,7 +1021,8 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1349,7 +1352,8 @@ BOOST_AUTO_TEST_CASE(test_computeConstraints, *boost::unit_test::tolerance(DEFAU
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1639,7 +1643,8 @@ BOOST_AUTO_TEST_CASE(test_setConstraintJacobians, *boost::unit_test::tolerance(D
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1958,7 +1963,8 @@ BOOST_AUTO_TEST_CASE(test_suggestInitialIterates, *boost::unit_test::tolerance(D
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 

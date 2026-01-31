@@ -19,14 +19,14 @@ namespace tardigradeHydra {
     /*!
      * Constructor for NonlinearStepBase
      */
-    SolverStepBase::SolverStepBase() : solver(NULL) { }
+    SolverStepBase::SolverStepBase() : solver(NULL) {}
 
     /*!
      * Constructor for NonlinearStepBase
      *
      * \param *_solver: The containing solver object
      */
-    SolverStepBase::SolverStepBase(SolverBase *_solver) : solver(_solver) { }
+    SolverStepBase::SolverStepBase(SolverBase *_solver) : solver(_solver) {}
 
     /*!
      * Reset the counts

@@ -15,7 +15,7 @@ namespace tardigradeHydra {
 
     namespace unit_test {
 
-        class SequentialQuadraticProgrammingStepTester; //!< The test class for SequentialQuadraticProgrammingStep
+        class SequentialQuadraticProgrammingStepTester;  //!< The test class for SequentialQuadraticProgrammingStep
 
     }
 
@@ -24,30 +24,26 @@ namespace tardigradeHydra {
      * problem
      */
     class SequentialQuadraticProgrammingStep : public NonlinearStepBase {
+       public:
+        using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
 
-        public:
+        void computeTrial() override;
 
-            using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
+        unsigned int kmax = 100;  //!< The maximum number of iterations
 
-            void computeTrial() override;
+       protected:
+        virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
 
-            unsigned int kmax = 100; //!< The maximum number of iterations
+        virtual void assembleKKTRHSVector(const floatVector &dx, floatVector &KKTRHSVector,
+                                          const std::vector<bool> &active_constraints);
 
-        protected:
+        virtual void assembleKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
 
-            virtual void initializeActiveConstraints(std::vector<bool> &active_constraints);
+        virtual void updateKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
 
-            virtual void assembleKKTRHSVector(const floatVector &dx, floatVector &KKTRHSVector,
-                                              const std::vector<bool> &active_constraints);
-
-            virtual void assembleKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
-
-            virtual void updateKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints);
-
-        private:
-
+       private:
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

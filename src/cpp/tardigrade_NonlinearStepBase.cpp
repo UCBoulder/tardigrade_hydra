@@ -1,18 +1,18 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_NonlinearStepBase.cpp
-  ******************************************************************************
-  * The source file for the base class to determine the nonlinear step
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_NonlinearStepBase.cpp
+ ******************************************************************************
+ * The source file for the base class to determine the nonlinear step
+ ******************************************************************************
+ */
 
-#include"tardigrade_NonlinearStepBase.h"
+#include "tardigrade_NonlinearStepBase.h"
 #define USE_EIGEN
 #include "tardigrade_CustomErrors.h"
 #include "tardigrade_SolverStepBase.h"
 #include "tardigrade_vector_tools.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
     /*!
      * The constructor for NonlinearStepBase
@@ -44,7 +44,6 @@ namespace tardigradeHydra{
      * Add output to the failure message
      */
     void NonlinearStepBase::addTrialStepOutput() {
-
         if (getFailureVerbosityLevel() > 0) {
             TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
             addToFailureOutput("  trial deltaX:\n");
@@ -72,4 +71,4 @@ namespace tardigradeHydra{
      */
     const floatVector *NonlinearStepBase::getFlatNonlinearLHS() { return getFlatJacobian(); }
 
-}
+}  // namespace tardigradeHydra

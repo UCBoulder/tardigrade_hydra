@@ -1,51 +1,47 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_NonlinearStepBase.h
-  ******************************************************************************
-  * The header file for the base class to determine the nonlinear step
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_NonlinearStepBase.h
+ ******************************************************************************
+ * The header file for the base class to determine the nonlinear step
+ ******************************************************************************
+ */
 
 #ifndef TARDIGRADE_NONLINEARSTEPBASE_H
 #define TARDIGRADE_NONLINEARSTEPBASE_H
 
-#include "tardigrade_TrialStepBase.h"
 #include "tardigrade_MaxRowPreconditioner.h"
 #include "tardigrade_PreconditionerBase.h"
+#include "tardigrade_TrialStepBase.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
     /*!
      * The base nonlinear step class
      */
-    class NonlinearStepBase : public TrialStepBase{
+    class NonlinearStepBase : public TrialStepBase {
+       public:
+        NonlinearStepBase();
 
-        public:
+        NonlinearStepBase(SolverStepBase *_step);
 
-            NonlinearStepBase();
+        NonlinearStepBase(SolverStepBase *_step, PreconditionerBase *_preconditioner);
 
-            NonlinearStepBase(SolverStepBase *_step);
+        virtual void reset() override;
 
-            NonlinearStepBase(SolverStepBase *_step, PreconditionerBase *_preconditioner);
+        virtual const floatVector *getNonlinearRHS();
 
-            virtual void reset() override;
+        virtual const floatVector *getFlatNonlinearLHS();
 
-            virtual const floatVector *getNonlinearRHS();
+        MaxRowPreconditioner _preconditioner;  //!< Default preconditioner
+        PreconditionerBase  *preconditioner =
+            &_preconditioner;  //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
-            virtual const floatVector *getFlatNonlinearLHS();
+       protected:
+        void addTrialStepOutput();
 
-            MaxRowPreconditioner  _preconditioner;  //!< Default preconditioner
-            PreconditionerBase *preconditioner =
-                &_preconditioner;  //!< The object that defines the preconditioner TODO: Make this an incoming pointer
-
-        protected:
-
-            void addTrialStepOutput();
-
-        private:
-
+       private:
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

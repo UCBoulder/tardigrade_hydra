@@ -8,8 +8,8 @@
 
 #include "tardigrade_IterativeSolverBase.h"
 
-#include "tardigrade_hydra.h"
 #include "tardigrade_LevenbergMarquardtStep.h"
+#include "tardigrade_hydra.h"
 
 namespace tardigradeHydra {
 
@@ -24,7 +24,7 @@ namespace tardigradeHydra {
     /*!
      * Initialize the solver
      */
-    void IterativeSolverBase::initializeSolve(){
+    void IterativeSolverBase::initializeSolve() {
         tardigradeHydra::SolverBase::initializeSolve();
         reset();
     }
@@ -38,7 +38,7 @@ namespace tardigradeHydra {
 
         step->reset();
 
-        step->setRankDeficientError(false); //TODO: Maybe this shouldn't be here?
+        step->setRankDeficientError(false);  // TODO: Maybe this shouldn't be here?
 
         // Form the initial unknown vector
         if (getInitializeUnknownVector()) {
@@ -59,7 +59,6 @@ namespace tardigradeHydra {
         }
 
         while (!checkConvergence() && checkIteration()) {
-
             addIterationHeader();
 
             step->incrementSolution();
@@ -86,20 +85,17 @@ namespace tardigradeHydra {
     /*!
      * Add the iteration header to the failure output message
      */
-    void IterativeSolverBase::addIterationHeader(){
-
+    void IterativeSolverBase::addIterationHeader() {
         if (getFailureVerbosityLevel() > 0) {
             addToFailureOutput("\n\n  iteration: ");
             addToFailureOutput(getIteration());
         }
-
     }
 
     /*!
      * Add the iteration footer to the failure output message
      */
-    void IterativeSolverBase::addIterationFooter(){
-
+    void IterativeSolverBase::addIterationFooter() {
         if (getFailureVerbosityLevel() > 0) {
             addToFailureOutput("  final residual: ");
             addToFailureOutput(tardigradeVectorTools::l2norm(*getResidual()));

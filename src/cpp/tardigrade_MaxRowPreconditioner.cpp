@@ -22,10 +22,11 @@ namespace tardigradeHydra {
         // Find the absolute maximum value in each row
         for (unsigned int i = 0; i < problem_size; i++) {
             _preconditioner.second[i] =
-                1 / std::max(std::fabs(*std::max_element(
-                                 getFlatNonlinearLHS()->begin() + problem_size * i,
-                                 getFlatNonlinearLHS()->begin() + problem_size * (i + 1),
-                                 [](const floatType &a, const floatType &b) { return std::fabs(a) < std::fabs(b); })),
+                1 / std::max(std::fabs(*std::max_element(getFlatNonlinearLHS()->begin() + problem_size * i,
+                                                         getFlatNonlinearLHS()->begin() + problem_size * (i + 1),
+                                                         [](const floatType &a, const floatType &b) {
+                                                             return std::fabs(a) < std::fabs(b);
+                                                         })),
                              1e-15);
         }
     }
@@ -47,21 +48,18 @@ namespace tardigradeHydra {
      * \param &X: The incoming vector to be preconditioned
      * \param &Y: The preconditioned vector
      */
-    void MaxRowPreconditioner::preconditionVector( const floatVector &X, floatVector &Y ){
+    void MaxRowPreconditioner::preconditionVector(const floatVector &X, floatVector &Y) {
+        Y = floatVector(X.size(), 0);
 
-        Y = floatVector(X.size(),0);
+        auto X_map = tardigradeHydra::getDynamicSizeVectorMap(X.data(), X.size());
 
-        auto X_map =
-            tardigradeHydra::getDynamicSizeVectorMap(X.data(), X.size());
+        auto Y_map = tardigradeHydra::getDynamicSizeVectorMap(Y.data(), Y.size());
 
-        auto Y_map =
-            tardigradeHydra::getDynamicSizeVectorMap(Y.data(), Y.size());
+        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(
+            getFlatPreconditioner()->data(),
+            getFlatPreconditioner()->size());  // Current preconditioner is flat
 
-        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
-                                                              getFlatPreconditioner()->size()); //Current preconditioner is flat
-
-        Y_map = p_map.asDiagonal( ) * X_map;
-
+        Y_map = p_map.asDiagonal() * X_map;
     }
 
     /*!
@@ -70,22 +68,19 @@ namespace tardigradeHydra {
      * \param &A: The incoming matrix to be preconditioned
      * \param &B: The preconditined matrix
      */
-    void MaxRowPreconditioner::preconditionMatrix( const floatVector &A, floatVector &B ){
+    void MaxRowPreconditioner::preconditionMatrix(const floatVector &A, floatVector &B) {
+        auto cols = A.size() / getNumUnknowns();
 
-        auto cols = A.size( ) / getNumUnknowns( );
+        B = floatVector(A.size(), 0);
 
-        B = floatVector(A.size(),0);
+        auto A_map = tardigradeHydra::getDynamicSizeMatrixMap(A.data(), getNumUnknowns(), cols);
 
-        auto A_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(A.data(), getNumUnknowns(), cols);
+        auto B_map = tardigradeHydra::getDynamicSizeMatrixMap(B.data(), getNumUnknowns(), cols);
 
-        auto B_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(B.data(), getNumUnknowns(), cols);
+        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(
+            getFlatPreconditioner()->data(),
+            getFlatPreconditioner()->size());  // Current preconditioner is flat
 
-        auto p_map = tardigradeHydra::getDynamicSizeVectorMap(getFlatPreconditioner()->data(),
-                                                              getFlatPreconditioner()->size()); //Current preconditioner is flat
-
-        B_map = p_map.asDiagonal( ) * A_map;
-
+        B_map = p_map.asDiagonal() * A_map;
     }
-}
+}  // namespace tardigradeHydra

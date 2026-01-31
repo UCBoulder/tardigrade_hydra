@@ -24,9 +24,7 @@ namespace tardigradeHydra {
      *
      * \param *_step: The containing step object
      */
-    StepDampingBase::StepDampingBase(SolverStepBase *_step) : step(_step) {
-        step->damping = this;
-    }
+    StepDampingBase::StepDampingBase(SolverStepBase *_step) : step(_step) { step->damping = this; }
 
     /*!
      * Apply the damping to the proposed step

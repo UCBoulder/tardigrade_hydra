@@ -25,10 +25,10 @@
 #include "tardigrade_CustomErrors.h"
 #include "tardigrade_MatrixMap.h"
 #include "tardigrade_RelaxedSolver.h"
-#include "tardigrade_SubcyclerSolver.h"
 #include "tardigrade_ResidualBase.h"
 #include "tardigrade_SetDataStorage.h"
 #include "tardigrade_SolverBase.h"
+#include "tardigrade_SubcyclerSolver.h"
 // #include"tardigrade_PreconditionerBase.h"
 // #include"tardigrade_SolverStepBase.h"
 
@@ -53,7 +53,7 @@ namespace tardigradeHydra {
     }
 
     namespace unit_test {
-        class hydraBaseTester;           //!< Friend class for hydraBase for unit testing
+        class hydraBaseTester;  //!< Friend class for hydraBase for unit testing
     }  // namespace unit_test
 
     /*!
@@ -474,7 +474,7 @@ namespace tardigradeHydra {
             return _residual_scale_factor;
         }
 
-        SolverBase   *solver =
+        SolverBase *solver =
             &_solver;  //!< The class which performs the material point solve TODO: Make this an incoming pointer
 
        protected:

@@ -13,7 +13,7 @@
 
 namespace tardigradeHydra {
 
-    namespace unit_test{
+    namespace unit_test {
 
         class MaxRowPreconditionerTester;
 
@@ -26,16 +26,15 @@ namespace tardigradeHydra {
        public:
         using tardigradeHydra::PreconditionerBase::PreconditionerBase;
 
-        virtual void preconditionVector( const floatVector &X, floatVector &Y ) override;
+        virtual void preconditionVector(const floatVector &X, floatVector &Y) override;
 
-        virtual void preconditionMatrix( const floatVector &A, floatVector &B ) override;
+        virtual void preconditionMatrix(const floatVector &A, floatVector &B) override;
 
        protected:
         void formMaxRowPreconditioner();
 
-        virtual void formPreconditioner( ) override;
-
+        virtual void formPreconditioner() override;
     };
-}
+}  // namespace tardigradeHydra
 
 #endif

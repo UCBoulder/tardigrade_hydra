@@ -44,7 +44,8 @@ bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2,
     return true;
 }
 
-BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
@@ -57,11 +58,10 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler, *boost::unit
     };
 
     class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
+       public:
+        using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
 
-        public:
-            using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
-
-            virtual void public_callResidualPreSubcycler() { callResidualPreSubcycler(); }
+        virtual void public_callResidualPreSubcycler() { callResidualPreSubcycler(); }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -99,7 +99,6 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler, *boost::unit
 
             setResidualClasses(residuals);
         }
-
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -111,10 +110,11 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler, *boost::unit
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
@@ -162,11 +162,10 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerSuccess,
     };
 
     class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
+       public:
+        using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
 
-        public:
-            using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
-
-            virtual void public_callResidualPostSubcyclerSuccess() { callResidualPostSubcyclerSuccess(); }
+        virtual void public_callResidualPostSubcyclerSuccess() { callResidualPostSubcyclerSuccess(); }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -204,7 +203,6 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerSuccess,
 
             setResidualClasses(residuals);
         }
-
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -216,10 +214,11 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerSuccess,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
@@ -267,11 +266,10 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
     };
 
     class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
+       public:
+        using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
 
-        public:
-            using tardigradeHydra::SubcyclerSolver::SubcyclerSolver;
-
-            virtual void public_callResidualPostSubcyclerFailure() { callResidualPostSubcyclerFailure(); }
+        virtual void public_callResidualPostSubcyclerFailure() { callResidualPostSubcyclerFailure(); }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -309,7 +307,6 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
 
             setResidualClasses(residuals);
         }
-
     };
 
     tardigradeHydra::floatType time = 1.1;
@@ -321,10 +318,11 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
@@ -357,4 +355,3 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
 
     BOOST_TEST(hydra.r3.numPostSubcyclerFailureCalls == 1);
 }
-

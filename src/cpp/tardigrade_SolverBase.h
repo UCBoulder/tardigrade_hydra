@@ -16,7 +16,7 @@
 namespace tardigradeHydra {
 
     namespace unit_test {
-        class SolverBaseTester;          //!< Friend class for SolverBase for unit testing
+        class SolverBaseTester;  //!< Friend class for SolverBase for unit testing
     }  // namespace unit_test
 
     /*!
@@ -32,7 +32,7 @@ namespace tardigradeHydra {
 
         hydraBase *hydra;  //!< Pointer to the containing hydra object
 
-        SolverStep  _step;  //!< The default solver step (move to default solver class)
+        SolverStep      _step;  //!< The default solver step (move to default solver class)
         SolverStepBase *step =
             &_step;  //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
 
@@ -107,7 +107,7 @@ namespace tardigradeHydra {
 
         const std::vector<tardigradeHydra::ResidualBase<> *> *getResidualClasses();
 
-        const floatVector *getStress( );
+        const floatVector *getStress();
 
         // End pass-through functions
 
@@ -134,7 +134,6 @@ namespace tardigradeHydra {
         }
 
        protected:
-
         // Pass-through functions
 
         void setAllowModifyGlobalResidual(const bool &value);
@@ -151,7 +150,6 @@ namespace tardigradeHydra {
        private:
         friend class tardigradeHydra::hydraBase;                    //!< TEMP REMOVE THIS
         friend class tardigradeHydra::unit_test::SolverBaseTester;  //!< The unit tester for the class
-
     };
 
 }  // namespace tardigradeHydra

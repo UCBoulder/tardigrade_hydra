@@ -5,9 +5,9 @@
  * Tests for tardigrade_SolverStepBase
  */
 
+#include "tardigrade_NonlinearStepBase.h"
 #include "tardigrade_SolverBase.h"
 #include "tardigrade_SolverStepBase.h"
-#include "tardigrade_NonlinearStepBase.h"
 #include "tardigrade_hydra.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_SolverStepBase

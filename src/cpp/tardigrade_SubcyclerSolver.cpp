@@ -37,7 +37,8 @@ namespace tardigradeHydra {
      * \param *_hydra: The containing hydra object
      * \param *_internal_solver_ptr: The pointer for the internal solver
      */
-    SubcyclerSolver::SubcyclerSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr) : IterativeSolverBase(_hydra) {
+    SubcyclerSolver::SubcyclerSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr)
+        : IterativeSolverBase(_hydra) {
         internal_solver        = _internal_solver_ptr;
         internal_solver->hydra = hydra;
         step                   = internal_solver->step;
@@ -49,7 +50,7 @@ namespace tardigradeHydra {
      * Attempts to use the internal solver directly without subcycling
      */
     void SubcyclerSolver::initialSolveAttempt() {
-        TARDIGRADE_ERROR_TOOLS_CHECK( internal_solver != nullptr, "The solver hasn't been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The solver hasn't been defined");
         internal_solver->solve();
     }
 
@@ -59,9 +60,7 @@ namespace tardigradeHydra {
      *
      * Attempts a subcycler step
      */
-    void SubcyclerSolver::convergenceErrorFunction() {
-        performSubcyclerSolve();
-    }
+    void SubcyclerSolver::convergenceErrorFunction() { performSubcyclerSolve(); }
 
     /*!
      * The function that is called if there is a unexpected
@@ -69,15 +68,13 @@ namespace tardigradeHydra {
      *
      * Attempts a subcycler step
      */
-    void SubcyclerSolver::unexpectedErrorFunction() {
-        performSubcyclerSolve();
-    }
+    void SubcyclerSolver::unexpectedErrorFunction() { performSubcyclerSolve(); }
 
     /*!
      * Reset the solver
      */
 
-    void SubcyclerSolver::reset(){
+    void SubcyclerSolver::reset() {
         internal_solver->reset();
         tardigradeHydra::IterativeSolverBase::reset();
     }
@@ -86,11 +83,11 @@ namespace tardigradeHydra {
      * Initialize the subcycler
      */
     void SubcyclerSolver::initializeSubcycler() {
-
         addSubcyclerHeader();
 
-        auto local_internal_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(internal_solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_internal_solver != nullptr, "The local internal solver is not of type IterativeSolverBase");
+        auto local_internal_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase *>(internal_solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_internal_solver != nullptr,
+                                     "The local internal solver is not of type IterativeSolverBase");
 
         initial_unknown = internal_solver->initial_unknown;
 
@@ -140,7 +137,6 @@ namespace tardigradeHydra {
      * Post-successful subcycler increment updates
      */
     void SubcyclerSolver::subcyclerStepSuccess() {
-
         initial_unknown = *getUnknownVector();
 
         setPreviouslyConvergedStress(*getStress());  // Set the previously converged stress
@@ -227,61 +223,45 @@ namespace tardigradeHydra {
     /*!
      * Get the number of good iterations we need to have before increasing the timestep
      */
-    const unsigned int SubcyclerSolver::getNumGoodControl() {
-        return _num_good_control;
-    }
+    const unsigned int SubcyclerSolver::getNumGoodControl() { return _num_good_control; }
     /*! Set the number of good iterations that need to happen before the timestep
      * increases.
      *     \param &value: The value of the number of good iterations prior
      *         to increasing the relative timestep
      */
-    void SubcyclerSolver::setNumGoodControl(const unsigned int &value) {
-        _num_good_control = value;
-    }
+    void SubcyclerSolver::setNumGoodControl(const unsigned int &value) { _num_good_control = value; }
 
     /*!
      * Get the growth factor for the timestep increase
      */
-    const floatType SubcyclerSolver::getGrowthFactor() {
-        return _growth_factor;
-    }
+    const floatType SubcyclerSolver::getGrowthFactor() { return _growth_factor; }
 
     /*!
      * Set the relative growth factor for the local timestep increase
      * \param &value: The new value
      */
-    void SubcyclerSolver::setGrowthFactor(const floatType &value) {
-        _growth_factor = value;
-    }
+    void SubcyclerSolver::setGrowthFactor(const floatType &value) { _growth_factor = value; }
 
     /*!
      * Get the minimum allowable ratio of the total timestep to the cutback timestep
      */
-    const floatType SubcyclerSolver::getMinDS() {
-        return _minDS;
-    }
+    const floatType SubcyclerSolver::getMinDS() { return _minDS; }
 
     /*! Set the minimum value of the relative cutback timestep
      * \param &value: The new value
      */
-    void SubcyclerSolver::setMinDS(const floatType &value) {
-        _minDS = value;
-    }
+    void SubcyclerSolver::setMinDS(const floatType &value) { _minDS = value; }
 
     /*!
      * Get the value of the cutback factor
      */
-    const floatType SubcyclerSolver::getCutbackFactor() {
-        return _cutback_factor;
-    }
+    const floatType SubcyclerSolver::getCutbackFactor() { return _cutback_factor; }
 
     /*!
      * Get the current value of the cutback factor.
      * \param &value: The value of the cutback
      */
-    void SubcyclerSolver::setCutbackFactor(const floatType &value) {
-        _cutback_factor = value;
-    }
+    void SubcyclerSolver::setCutbackFactor(const floatType &value) { _cutback_factor = value; }
 
     /*!
      * Signal to the residuals that we are entering the subcycler
@@ -370,4 +350,4 @@ namespace tardigradeHydra {
         setCurrentResidualIndexMeaningful(false);
     }
 
-}
+}  // namespace tardigradeHydra

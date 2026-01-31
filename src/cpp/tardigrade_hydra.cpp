@@ -59,7 +59,7 @@ namespace tardigradeHydra {
         // TEMP
         _solver.hydra                  = this;
         _solver.internal_solver->hydra = this;
-        auto local_internal_solver = dynamic_cast<tardigradeHydra::RelaxedSolver*>(_solver.internal_solver);
+        auto local_internal_solver     = dynamic_cast<tardigradeHydra::RelaxedSolver *>(_solver.internal_solver);
         local_internal_solver->internal_solver->hydra = this;
         // END TEMP
     }
@@ -1341,7 +1341,6 @@ namespace tardigradeHydra {
 
         // Extract the stress
         extractStress();
-
     }
 
     /*!
@@ -1362,7 +1361,6 @@ namespace tardigradeHydra {
      * Solve the non-linear problem and update the variables
      */
     void hydraBase::evaluate() {
-
         initialize();
 
         solver->solve();
@@ -1375,7 +1373,7 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(solver->step != nullptr, "The step has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(solver->step->trial_step != nullptr, "The trial step has not been defined");
-        auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(solver->step->trial_step);
+        auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase *>(solver->step->trial_step);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The trial_step is not a NonlinearStepBase object");
         TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step->preconditioner != nullptr,
                                      "The preconditioner has not been defined");
@@ -1385,15 +1383,15 @@ namespace tardigradeHydra {
         floatVector P_dRdT;
         floatVector P_A;
 
-        local_trial_step->preconditioner->preconditionVector( *getdRdT(), P_dRdT );
-        local_trial_step->preconditioner->preconditionMatrix( *getFlatdRdF(), P_dRdF );
-        local_trial_step->preconditioner->preconditionMatrix( *getFlatJacobian( ), P_A );
+        local_trial_step->preconditioner->preconditionVector(*getdRdT(), P_dRdT);
+        local_trial_step->preconditioner->preconditionMatrix(*getFlatdRdF(), P_dRdF);
+        local_trial_step->preconditioner->preconditionMatrix(*getFlatJacobian(), P_A);
 
         auto P_dRdFmat = tardigradeHydra::getDynamicSizeMatrixMap(P_dRdF.data(), getResidual()->size(),
                                                                   getConfigurationUnknownCount());
         auto P_dRdTmat = tardigradeHydra::getDynamicSizeVectorMap(P_dRdT.data(), getResidual()->size());
-        auto P_Amat = tardigradeHydra::getDynamicSizeMatrixMap( P_A.data(), getResidual()->size(),
-                                                                getResidual()->size());
+        auto P_Amat =
+            tardigradeHydra::getDynamicSizeMatrixMap(P_A.data(), getResidual()->size(), getResidual()->size());
 
         _flatdXdF.second = floatVector(getNumUnknowns() * getConfigurationUnknownCount());
         auto dXdFmat     = tardigradeHydra::getDynamicSizeMatrixMap(_flatdXdF.second.data(), getNumUnknowns(),
@@ -1430,7 +1428,7 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(solver->step != nullptr, "The step has not been defined");
         TARDIGRADE_ERROR_TOOLS_CHECK(solver->step->trial_step != nullptr, "The trial step has not been defined");
-        auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(solver->step->trial_step);
+        auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase *>(solver->step->trial_step);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step->preconditioner != nullptr,
                                      "The preconditioner has not been defined");
 
@@ -1439,10 +1437,10 @@ namespace tardigradeHydra {
         floatVector P_dRdAdditionalDOF;
 
         local_trial_step->preconditioner->preconditionMatrix(*getFlatJacobian(), P_A);
-        local_trial_step->preconditioner->preconditionMatrix(*getFlatdRdAdditionalDOF(),P_dRdAdditionalDOF);
+        local_trial_step->preconditioner->preconditionMatrix(*getFlatdRdAdditionalDOF(), P_dRdAdditionalDOF);
 
-        auto P_Amat = tardigradeHydra::getDynamicSizeMatrixMap(P_A.data(), getResidual()->size(),
-                                                             getResidual()->size());
+        auto P_Amat =
+            tardigradeHydra::getDynamicSizeMatrixMap(P_A.data(), getResidual()->size(), getResidual()->size());
 
         auto P_dRdAdditionalDOFmat =
             tardigradeHydra::getDynamicSizeMatrixMap(P_dRdAdditionalDOF.data(), getResidual()->size(),

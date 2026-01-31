@@ -15,14 +15,14 @@ namespace tardigradeHydra {
     /*!
      * Default constructor of SolverBase
      */
-    SolverBase::SolverBase() : hydra(NULL), step(&_step) { step->solver=this; }
+    SolverBase::SolverBase() : hydra(NULL), step(&_step) { step->solver = this; }
 
     /*!
      * Constructor for SolverBase
      *
      * \param *_hydra: The containing hydraBase object
      */
-    SolverBase::SolverBase(hydraBase *_hydra) : hydra(_hydra), step(&_step) { step->solver=this; }
+    SolverBase::SolverBase(hydraBase *_hydra) : hydra(_hydra), step(&_step) { step->solver = this; }
 
     /*!
      * Constructor for SolverBase
@@ -32,7 +32,7 @@ namespace tardigradeHydra {
      *     the problem
      */
     SolverBase::SolverBase(hydraBase *_hydra, SolverStepBase *_step_ptr) : hydra(_hydra), step(_step_ptr) {
-        step->solver=this;
+        step->solver = this;
     }
 
     /*!
@@ -310,16 +310,16 @@ namespace tardigradeHydra {
     /*!
      * Set the previously converged stress value
      */
-    void SolverBase::setPreviouslyConvergedStress(const floatVector &value){
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
-        hydra->setPreviouslyConvergedStress( value );
+    void SolverBase::setPreviouslyConvergedStress(const floatVector &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
+        hydra->setPreviouslyConvergedStress(value);
     }
 
     /*!
      * Get the current value of the stress
      */
-    const floatVector *SolverBase::getStress( ){
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
+    const floatVector *SolverBase::getStress() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
         return hydra->getStress();
     }
 
@@ -328,16 +328,16 @@ namespace tardigradeHydra {
      *
      * \param &value: The incoming value
      */
-    void SolverBase::setX(const floatVector &value){
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
-        return hydra->setX( value );
+    void SolverBase::setX(const floatVector &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
+        return hydra->setX(value);
     }
 
     /*!
      * Reset the problem
      */
-    void SolverBase::resetProblem(){
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
+    void SolverBase::resetProblem() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
         hydra->resetProblem();
     }
 
@@ -346,8 +346,8 @@ namespace tardigradeHydra {
      *
      * \param &value: The incoming value
      */
-    void SolverBase::setScaleFactor(const floatType &value){
-        TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "The hydra class has not been defined" );
+    void SolverBase::setScaleFactor(const floatType &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
         hydra->setScaleFactor(value);
     }
 

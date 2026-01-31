@@ -74,7 +74,7 @@ namespace tardigradeHydra {
 
         void addToFailureOutput(const floatType &value, bool add_endline = true);
 
-        StepDampingBase *getDamping( );
+        StepDampingBase *getDamping();
 
         void setCurrentResidualIndexMeaningful(const bool &value);
 
@@ -85,7 +85,6 @@ namespace tardigradeHydra {
         // END PASS-THROUGH FUNCTIONS
 
        protected:
-
        private:
         friend class tardigradeHydra::SolverStepBase;                  //!< TEMP REMOVE THIS
         friend class tardigradeHydra::unit_test::TrialStepBaseTester;  //!< The unit tester for the class

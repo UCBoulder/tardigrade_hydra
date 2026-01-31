@@ -15,7 +15,7 @@ namespace tardigradeHydra {
 
     namespace unit_test {
 
-        class NewtonStepTester; //!< The test class for NewtonStep
+        class NewtonStepTester;  //!< The test class for NewtonStep
 
     }
 
@@ -24,15 +24,12 @@ namespace tardigradeHydra {
      * problem
      */
     class NewtonStep : public NonlinearStepBase {
+       public:
+        using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
 
-        public:
-
-            using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
-
-            void computeTrial() override;
-
+        void computeTrial() override;
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

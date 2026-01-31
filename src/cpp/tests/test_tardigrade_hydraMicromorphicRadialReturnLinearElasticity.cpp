@@ -588,17 +588,21 @@ BOOST_AUTO_TEST_CASE(test_residual_jacobians, *boost::unit_test::tolerance(DEFAU
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::hydraBaseMicromorphic hydrap(
-                time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
-                {}, {}, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables,
-                dimension, configuration_unknown_count, tolr, tola);
+            tardigradeHydra::hydraBaseMicromorphic hydrap(time, deltaTime, temperature, previousTemperature,
+                                                          deformationGradient, previousDeformationGradient,
+                                                          microDeformation, previousMicroDeformation,
+                                                          gradientMicroDeformation, previousGradientMicroDeformation,
+                                                          {}, {}, previousStateVariables, parameters, numConfigurations,
+                                                          numNonLinearSolveStateVariables, dimension,
+                                                          configuration_unknown_count, tolr, tola);
 
-            tardigradeHydra::hydraBaseMicromorphic hydram(
-                time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
-                {}, {}, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables,
-                dimension, configuration_unknown_count, tolr, tola);
+            tardigradeHydra::hydraBaseMicromorphic hydram(time, deltaTime, temperature, previousTemperature,
+                                                          deformationGradient, previousDeformationGradient,
+                                                          microDeformation, previousMicroDeformation,
+                                                          gradientMicroDeformation, previousGradientMicroDeformation,
+                                                          {}, {}, previousStateVariables, parameters, numConfigurations,
+                                                          numNonLinearSolveStateVariables, dimension,
+                                                          configuration_unknown_count, tolr, tola);
 
             hydrap.initialize();
 

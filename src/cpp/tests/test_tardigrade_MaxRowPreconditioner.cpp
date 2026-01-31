@@ -90,22 +90,17 @@ namespace tardigradeHydra {
 
         class SolverBaseTester {
            public:
-            static hydraBase *get_hydra(SolverBase &solver) {
-                return solver.hydra;
-            }
+            static hydraBase *get_hydra(SolverBase &solver) { return solver.hydra; }
         };
 
         class SolverStepBaseTester {
            public:
-            static SolverBase *get_solver(SolverStepBase &step) {
-                return step.solver;
-            }
+            static SolverBase *get_solver(SolverStepBase &step) { return step.solver; }
         };
 
     }  // namespace unit_test
 
 }  // namespace tardigradeHydra
-
 
 BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
@@ -145,7 +140,7 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
 
     class MaxRowPreconditionerMock
         : public tardigradeHydra::MaxRowPreconditioner {  // Change the parent class to MaxRowPreconditioner when that
-                                                        // exists
+                                                          // exists
 
        public:
         using tardigradeHydra::MaxRowPreconditioner::MaxRowPreconditioner;
@@ -154,21 +149,18 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
                                                  0., 0., 48.07641984, 1., 0., -7.68935399, 0., 0., 18.48297386,
                                                  1., 0., 0.,          0., 0., 0.,          1.};
 
-        void test_initialize(){
-
+        void test_initialize() {
             TARDIGRADE_ERROR_TOOLS_CHECK(trial_step != nullptr, "The trial step is not set");
             TARDIGRADE_ERROR_TOOLS_CHECK(trial_step->step != nullptr, "The trial step's step is not set");
             auto solver = tardigradeHydra::unit_test::SolverStepBaseTester::get_solver(*(trial_step->step));
             TARDIGRADE_ERROR_TOOLS_CHECK(solver != nullptr, "The solver is not set");
-            auto hydra  = tardigradeHydra::unit_test::SolverBaseTester::get_hydra(*solver);
+            auto hydra = tardigradeHydra::unit_test::SolverBaseTester::get_hydra(*solver);
             TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra is not set");
 
             tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector(*hydra, tardigradeHydra::floatVector(5, 0));
 
             tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian(*hydra, jacobian);
-
         }
-
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -176,7 +168,6 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
         using tardigradeHydra::hydraBase::hydraBase;
 
         virtual const unsigned int getNumUnknowns() override { return 5; }
-
     };
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
@@ -184,11 +175,11 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
                         numNonLinearSolveStateVariables, dimension);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
-    tardigradeHydra::SolverStepBase step(&solver);
+    tardigradeHydra::SolverStepBase      step(&solver);
 
     tardigradeHydra::NonlinearStepBase trial_step(&step);
-    tardigradeHydra::StepDampingBase damping(&step);
-    MaxRowPreconditionerMock preconditioner(&trial_step);
+    tardigradeHydra::StepDampingBase   damping(&step);
+    MaxRowPreconditionerMock           preconditioner(&trial_step);
 
     hydra.solver = &solver;
 

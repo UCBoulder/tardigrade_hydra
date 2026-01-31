@@ -172,7 +172,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor,
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -368,7 +369,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor2,
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -583,7 +585,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigurat
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -679,7 +682,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreceedingMicroCon
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -832,7 +836,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getUnknownVector,
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -936,7 +941,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConf
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1027,7 +1033,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getMicroConfiguration
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1123,7 +1130,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroCo
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1219,7 +1227,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousPreceeding
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1310,7 +1319,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingM
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1401,7 +1411,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_previousMicroConf
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1497,7 +1508,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigurat
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1641,7 +1653,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroConf
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1785,7 +1798,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConf
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1929,7 +1943,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroCo
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2075,7 +2090,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousPrecedingM
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2221,7 +2237,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingM
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2367,7 +2384,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_dChi1dChi,
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2495,7 +2513,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousdChi1dChi,
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2623,7 +2642,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_dChi1dChin,
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2752,7 +2772,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_previousdChi1dChi
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2869,7 +2890,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_gradientMicroConf
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2971,7 +2993,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_gradientMicroConf
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -3287,7 +3310,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_previousGradientM
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -3388,7 +3412,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_previousGradientM
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -3712,7 +3737,8 @@ BOOST_AUTO_TEST_CASE(test_ResidualBaseMicromorphic, *boost::unit_test::tolerance
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -3908,7 +3934,8 @@ BOOST_AUTO_TEST_CASE(test_updateUnknownVector, *boost::unit_test::tolerance(DEFA
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 

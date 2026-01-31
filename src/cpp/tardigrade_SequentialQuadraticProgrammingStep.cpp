@@ -1,18 +1,18 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_SequentialQuadraticProgrammingStep.cpp
-  ******************************************************************************
-  * A class which defines a Sequential Quadratic Programming step
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_SequentialQuadraticProgrammingStep.cpp
+ ******************************************************************************
+ * A class which defines a Sequential Quadratic Programming step
+ ******************************************************************************
+ */
 
-#include"tardigrade_SequentialQuadraticProgrammingStep.h"
+#include "tardigrade_SequentialQuadraticProgrammingStep.h"
 #define USE_EIGEN
 #include "tardigrade_CustomErrors.h"
 #include "tardigrade_SolverStepBase.h"
 #include "tardigrade_vector_tools.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
     /*!
      * Assemble the right hand side vector for the KKT matrix
@@ -22,7 +22,7 @@ namespace tardigradeHydra{
      * \param &active_constraints: The active constraint vector
      */
     void SequentialQuadraticProgrammingStep::assembleKKTRHSVector(const floatVector &dx, floatVector &KKTRHSVector,
-                                             const std::vector<bool> &active_constraints) {
+                                                                  const std::vector<bool> &active_constraints) {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
         const unsigned int numUnknowns = getNumUnknowns();
 
@@ -57,9 +57,7 @@ namespace tardigradeHydra{
      * Solve the constrained QP problem to estimate the desired step size
      */
     void SequentialQuadraticProgrammingStep::computeTrial() {
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr,
-                                     "The step has not been defined");
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
 
         const unsigned int numUnknowns = getNumUnknowns();
 
@@ -143,7 +141,7 @@ namespace tardigradeHydra{
                     active_constraints[imin] = false;
 
                 } else {
-                    addTrialStepOutput( );
+                    addTrialStepOutput();
                     return;
                 }
 
@@ -202,8 +200,7 @@ namespace tardigradeHydra{
             k++;
         }
 
-        addTrialStepOutput( );
-
+        addTrialStepOutput();
     }
 
     /*!
@@ -212,7 +209,8 @@ namespace tardigradeHydra{
      * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
      * \param &active_constraints: The vector of currently active constraints.
      */
-    void SequentialQuadraticProgrammingStep::assembleKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints) {
+    void SequentialQuadraticProgrammingStep::assembleKKTMatrix(floatVector             &KKTMatrix,
+                                                               const std::vector<bool> &active_constraints) {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
         const unsigned int numUnknowns = getNumUnknowns();
 
@@ -254,7 +252,8 @@ namespace tardigradeHydra{
      * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
      * \param &active_constraints: The vector of currently active constraints.
      */
-    void SequentialQuadraticProgrammingStep::updateKKTMatrix(floatVector &KKTMatrix, const std::vector<bool> &active_constraints) {
+    void SequentialQuadraticProgrammingStep::updateKKTMatrix(floatVector             &KKTMatrix,
+                                                             const std::vector<bool> &active_constraints) {
         const unsigned int numUnknowns = getNumUnknowns();
 
         const unsigned int numConstraints = getNumConstraints();
@@ -299,4 +298,4 @@ namespace tardigradeHydra{
         }
     }
 
-}
+}  // namespace tardigradeHydra

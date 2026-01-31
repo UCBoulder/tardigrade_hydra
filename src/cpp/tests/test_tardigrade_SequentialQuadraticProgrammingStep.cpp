@@ -5,6 +5,7 @@
  */
 
 #include <tardigrade_SequentialQuadraticProgrammingStep.h>
+
 #include "tardigrade_hydra.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_SequentialQuadraticProgrammingStep
@@ -85,7 +86,8 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class SequentialQuadraticProgrammingStepMock : public tardigradeHydra::SequentialQuadraticProgrammingStep {
        public:
         using tardigradeHydra::SequentialQuadraticProgrammingStep::SequentialQuadraticProgrammingStep;
@@ -242,16 +244,16 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial, *boos
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    tardigradeHydra::SolverBase solver;
-    SolverStepBaseMock          step;
-    SequentialQuadraticProgrammingStepMock       trial_step;
+    tardigradeHydra::SolverBase            solver;
+    SolverStepBaseMock                     step;
+    SequentialQuadraticProgrammingStepMock trial_step;
 
     trial_step.step = &step;
     step.setTrialStep(&trial_step);
 
     solver.hydra = &hydra;
     solver.step  = &step;
-    step.solver = &solver;
+    step.solver  = &solver;
 
     hydra.solver = &solver;
 
@@ -266,7 +268,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial, *boos
     BOOST_TEST((step.deltaX + hydra.initialUnknownVector) == answer, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVector, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVector,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class SequentialQuadraticProgrammingStepMock : public tardigradeHydra::SequentialQuadraticProgrammingStep {
        public:
         using tardigradeHydra::SequentialQuadraticProgrammingStep::SequentialQuadraticProgrammingStep;
@@ -370,10 +373,10 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    tardigradeHydra::SolverBase solver;
-    SolverStepBaseMock          step;
-    StepDampingBaseMock         damping;
-    SequentialQuadraticProgrammingStepMock           trial_step;
+    tardigradeHydra::SolverBase            solver;
+    SolverStepBaseMock                     step;
+    StepDampingBaseMock                    damping;
+    SequentialQuadraticProgrammingStepMock trial_step;
 
     step.trial_step = &trial_step;
     step.damping    = &damping;
@@ -410,7 +413,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
     BOOST_TEST(answer2_KKTRHSVector == result_KKTRHSVector, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class SequentialQuadraticProgrammingStepMock : public tardigradeHydra::SequentialQuadraticProgrammingStep {
        public:
         using tardigradeHydra::SequentialQuadraticProgrammingStep::SequentialQuadraticProgrammingStep;
@@ -512,10 +516,10 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix, 
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    tardigradeHydra::SolverBase solver;
-    SolverStepBaseMock          step;
-    StepDampingBaseMock         damping;
-    SequentialQuadraticProgrammingStepMock       trial_step;
+    tardigradeHydra::SolverBase            solver;
+    SolverStepBaseMock                     step;
+    StepDampingBaseMock                    damping;
+    SequentialQuadraticProgrammingStepMock trial_step;
 
     step.trial_step = &trial_step;
     step.damping    = &damping;
@@ -527,7 +531,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix, 
     solver.hydra = &hydra;
     solver.step  = &step;
 
-    step.solver=&solver;
+    step.solver = &solver;
 
     hydra.public_setMuk(0.1);
 
@@ -628,9 +632,9 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    tardigradeHydra::SolverBase solver;
-    SolverStepBaseMock          step;
-    SequentialQuadraticProgrammingStepMock       trial_step;
+    tardigradeHydra::SolverBase            solver;
+    SolverStepBaseMock                     step;
+    SequentialQuadraticProgrammingStepMock trial_step;
 
     hydra.solver = &solver;
 
@@ -650,4 +654,3 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
 
     BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
 }
-

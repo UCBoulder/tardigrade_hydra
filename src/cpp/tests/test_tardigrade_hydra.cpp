@@ -8,13 +8,12 @@
 #include <sstream>
 
 #include "tardigrade_IterativeSolverBase.h"
+#include "tardigrade_LevenbergMarquardtStep.h"
 #include "tardigrade_RelaxedSolver.h"
 #include "tardigrade_SolverBase.h"
-#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_constitutive_tools.h"
 #include "tardigrade_hydra.h"
 #include "tardigrade_hydraLinearElasticity.h"
-#include "tardigrade_LevenbergMarquardtStep.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_hydra
 #include <boost/test/included/unit_test.hpp>
@@ -3234,22 +3233,21 @@ BOOST_AUTO_TEST_CASE(test_computeTangents, *boost::unit_test::tolerance(2e-6)) {
         }
 
         virtual const unsigned int getNumUnknowns() override { return residual.size(); }
-
     };
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    hydraBaseMock                       hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
+                                              numNonLinearSolveStateVariables, dimension);
     tardigradeHydra::SolverStepBase     step(hydra.solver);
     tardigradeHydra::NonlinearStepBase  trial_step(&step);
     tardigradeHydra::StepDampingBase    damping(&step);
     tardigradeHydra::PreconditionerBase preconditioner(&trial_step);
     hydra.solver->step = &step;
 
-    auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydra.solver->step->trial_step);
+    auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase *>(hydra.solver->step->trial_step);
     TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The trial_step is not a NonlinearStepBase object");
 
     local_trial_step->preconditioner = &preconditioner;
-    preconditioner.trial_step = local_trial_step;
+    preconditioner.trial_step        = local_trial_step;
     hydra.initialize();
 
     floatVector dXdF = {-0.82465846, -0.07170032, -0.6980051,  -0.20331326,   -0.23335885, -0.61372185, -0.10491576,
@@ -3269,10 +3267,10 @@ BOOST_AUTO_TEST_CASE(test_computeTangents, *boost::unit_test::tolerance(2e-6)) {
 
     BOOST_TEST(dXdT == *flatdXdT, CHECK_PER_ELEMENT);
 
-    hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                            previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
-    tardigradeHydra::SolverStepBase step_pre(hydra_pre.solver);
+    hydraBaseMock                    hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                               previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
+                                               numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
+    tardigradeHydra::SolverStepBase  step_pre(hydra_pre.solver);
     tardigradeHydra::TrialStepBase   trial_step_pre(&step_pre);
     tardigradeHydra::StepDampingBase damping_pre(&step_pre);
 
@@ -3355,21 +3353,20 @@ BOOST_AUTO_TEST_CASE(test_computeFlatdXdAdditionalDOF, *boost::unit_test::tolera
         }
 
         virtual const unsigned int getNumUnknowns() override { return residual.size(); }
-
     };
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, previousStateVariables,
                         parameters, numConfigurations, numNonLinearSolveStateVariables, dimension);
 
-    tardigradeHydra::SolverStepBase step(hydra.solver);
+    tardigradeHydra::SolverStepBase     step(hydra.solver);
     tardigradeHydra::PreconditionerBase preconditioner;
 
-    auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydra.solver->step->trial_step);
+    auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase *>(hydra.solver->step->trial_step);
     TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The trial_step is not a NonlinearStepBase object");
 
     local_trial_step->preconditioner = &preconditioner;
-    preconditioner.trial_step = local_trial_step;
+    preconditioner.trial_step        = local_trial_step;
 
     hydra.initialize();
 
@@ -3502,18 +3499,13 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_updateUnknownVector, *boost::unit_test::tole
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-
     class SolverBaseMock : public tardigradeHydra::SolverBase {
+       public:
+        using tardigradeHydra::SolverBase::SolverBase;
 
-        public:
-         using tardigradeHydra::SolverBase::SolverBase;
+        unsigned int num_solveCalls = 0;
 
-         unsigned int num_solveCalls = 0;
-
-        virtual void initialSolveAttempt() override{
-            num_solveCalls++;
-        }
-
+        virtual void initialSolveAttempt() override { num_solveCalls++; }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -3526,7 +3518,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate, *boost::unit_test::tolerance(DEFAU
 
        protected:
         virtual void updateUnknownVector(const floatVector &newX) override { num_updateUnknownVectorCalls++; }
-
     };
 
     floatType time = 1.1;
@@ -3577,9 +3568,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
 
         floatVector cauchyStress = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-        virtual void setStress() override {
-            setStress(cauchyStress + (*hydra->getDeformationGradient()));
-        }
+        virtual void setStress() override { setStress(cauchyStress + (*hydra->getDeformationGradient())); }
     };
 
     class SolverBaseMock : public tardigradeHydra::IterativeSolverBase {
@@ -3621,7 +3610,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
         };
 
         virtual void solve() override {
-
             initial_unknown = *getUnknownVector();
 
             BOOST_TEST(hydra->getScaleFactor() == expected_scale_factors[ncalls_to_regular_solve]);
@@ -3635,11 +3623,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
             }
 
             ncalls_to_regular_solve++;
-
         }
 
         virtual void reset() override { ncalls_to_reset++; }
-
     };
 
     class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
@@ -3651,15 +3637,12 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
         unsigned int num_resetCalls = 0;
 
         virtual void solve() override {
-
             num_solveCalls++;
 
             tardigradeHydra::SubcyclerSolver::solve();
-
         }
 
         void reset() override { num_resetCalls++; }
-
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -3743,9 +3726,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate2, *boost::unit_test::tolerance(DEFA
 
     SubcyclerSolverMock solver(&hydra);
     hydra.solver = &solver;
-    SolverBaseMock    internal_solver;
+    SolverBaseMock internal_solver;
     solver.internal_solver = &internal_solver;
-    internal_solver.hydra = &hydra;
+    internal_solver.hydra  = &hydra;
 
     hydra.evaluate();
 
@@ -3782,21 +3765,20 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
     };
 
     class SolverBaseMock : public tardigradeHydra::IterativeSolverBase {
-        public:
-            using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
+       public:
+        using tardigradeHydra::IterativeSolverBase::IterativeSolverBase;
 
-            unsigned int n_failure = 3;
+        unsigned int n_failure = 3;
 
-            unsigned int num_solverCalls = 0;
+        unsigned int num_solverCalls = 0;
 
-            virtual void solve() override {
-                if (num_solverCalls < n_failure) {
-                    num_solverCalls++;
-                    throw std::runtime_error("less than n_failure");
-                }
+        virtual void solve() override {
+            if (num_solverCalls < n_failure) {
                 num_solverCalls++;
+                throw std::runtime_error("less than n_failure");
             }
-
+            num_solverCalls++;
+        }
     };
 
     class SubcyclerSolverMock : public tardigradeHydra::SubcyclerSolver {
@@ -3817,10 +3799,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
         virtual void callResidualPostSubcyclerFailure() override { num_callResidualPostSubcyclerFailureCalls++; }
 
-        void setInternalSolver(tardigradeHydra::SolverBase *_solver){internal_solver = _solver;}
+        void setInternalSolver(tardigradeHydra::SolverBase *_solver) { internal_solver = _solver; }
 
         void reset() override { num_callReset++; }
-
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -3897,11 +3878,11 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
                         numNonLinearSolveStateVariables, dimension);
 
     SubcyclerSolverMock solver;
-    SolverBaseMock internal_solver;
+    SolverBaseMock      internal_solver;
     solver.setInternalSolver(&internal_solver);
     internal_solver.hydra = &hydra;
-    solver.hydra = &hydra;
-    hydra.solver = &solver;
+    solver.hydra          = &hydra;
+    hydra.solver          = &solver;
 
     hydra.evaluate();
 
@@ -4100,7 +4081,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getCurrentResidualOffset, *boost::unit_test:
 
             setResidualClasses(residuals);
         }
-
     };
 
     class IterativeSolverBaseMock : public tardigradeHydra::IterativeSolverBase {
@@ -4208,7 +4188,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getResidualParameterizationInfo,
 
             setResidualClasses(residuals);
         }
-
     };
 
     class SolverBaseMock : public tardigradeHydra::SolverBase {

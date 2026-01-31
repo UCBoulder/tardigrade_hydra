@@ -17,16 +17,14 @@ namespace tardigradeHydra {
     /*!
      * The constructor for TrialStepBase
      */
-    TrialStepBase::TrialStepBase() : step(NULL) { }
+    TrialStepBase::TrialStepBase() : step(NULL) {}
 
     /*!
      * The constructor for TrialStepBase
      *
      * \param *_step: The containing step object
      */
-    TrialStepBase::TrialStepBase(SolverStepBase *_step) : step(_step) {
-        step->trial_step           = this;
-    }
+    TrialStepBase::TrialStepBase(SolverStepBase *_step) : step(_step) { step->trial_step = this; }
 
     /*!
      * Reset the counters
@@ -36,9 +34,7 @@ namespace tardigradeHydra {
     /*!
      * Reset the trial step class
      */
-    void TrialStepBase::reset() {
-        resetCounts();
-    }
+    void TrialStepBase::reset() { resetCounts(); }
 
     /*!
      * Compute the trial step
@@ -46,7 +42,8 @@ namespace tardigradeHydra {
      * Must set the containing step's deltaX variable
      */
     void TrialStepBase::computeTrial() {
-        TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error("computeTrial must be defined for any class inheriting from TrialStepBase"));
+        TARDIGRADE_ERROR_TOOLS_CATCH(
+            throw std::runtime_error("computeTrial must be defined for any class inheriting from TrialStepBase"));
     }
 
     /*!
@@ -192,7 +189,7 @@ namespace tardigradeHydra {
     /*!
      * Get a pointer to the damping object
      */
-    StepDampingBase *TrialStepBase::getDamping( ){
+    StepDampingBase *TrialStepBase::getDamping() {
         TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
         return step->damping;
     }

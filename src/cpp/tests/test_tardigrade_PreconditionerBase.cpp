@@ -174,7 +174,6 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         using tardigradeHydra::hydraBase::hydraBase;
-
     };
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
@@ -182,14 +181,13 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
                         numNonLinearSolveStateVariables, dimension);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
-    tardigradeHydra::SolverStepBase step(&solver);
+    tardigradeHydra::SolverStepBase      step(&solver);
     solver.step = &step;
     tardigradeHydra::NonlinearStepBase trial_step(&step);
-    PreconditionerBaseMock preconditioner(&trial_step);
-    tardigradeHydra::StepDampingBase damping(&step);
+    PreconditionerBaseMock             preconditioner(&trial_step);
+    tardigradeHydra::StepDampingBase   damping(&step);
 
     hydra.solver = &solver;
 
     BOOST_TEST(preconditioner.expected_preconditioner == *preconditioner.getFlatPreconditioner(), CHECK_PER_ELEMENT);
-
 }

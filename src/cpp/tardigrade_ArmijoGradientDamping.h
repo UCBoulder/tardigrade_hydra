@@ -174,8 +174,8 @@ namespace tardigradeHydra {
         friend class tardigradeHydra::SolverStepBase;                          //!< TODO: REMOVE THIS
         // LS Functions (MOVE TO OWN CLASS)
 
-        floatType _lsAlpha = 1e-4;  //!< The line-search alpha value i.e., the term by which it is judged that the line-search
-                                    //!< is converging
+        floatType _lsAlpha = 1e-4;  //!< The line-search alpha value i.e., the term by which it is judged that the
+                                    //!< line-search is converging
 
         unsigned int _maxLSIterations = 5;  //!< The maximum number of line-search iterations
 

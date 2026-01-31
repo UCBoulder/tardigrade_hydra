@@ -751,7 +751,8 @@ BOOST_AUTO_TEST_CASE(testLinearElasticityReferenceDerivedMeasures2,
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -1747,7 +1748,8 @@ BOOST_AUTO_TEST_CASE(testMapStressesToCurrent, *boost::unit_test::tolerance(DEFA
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -2089,7 +2091,8 @@ BOOST_AUTO_TEST_CASE(testSetStresses, *boost::unit_test::tolerance(1e-5)) {
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -3091,7 +3094,8 @@ BOOST_AUTO_TEST_CASE(testComputeDeformationMeasures, *boost::unit_test::toleranc
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -3497,7 +3501,8 @@ BOOST_AUTO_TEST_CASE(testComputeDeformationMeasures2, *boost::unit_test::toleran
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -5069,7 +5074,8 @@ BOOST_AUTO_TEST_CASE(test_setResidual, *boost::unit_test::tolerance(DEFAULT_TEST
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -5180,7 +5186,8 @@ BOOST_AUTO_TEST_CASE(test_setResidual2, *boost::unit_test::tolerance(DEFAULT_TES
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 
@@ -5459,7 +5466,8 @@ BOOST_AUTO_TEST_CASE(test_setStress, *boost::unit_test::tolerance(DEFAULT_TEST_T
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola);
+                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
+                                    tola);
 
     hydra.initialize();
 

@@ -16,7 +16,7 @@ namespace tardigradeHydra {
 
     namespace unit_test {
 
-        class PreconditionerBaseTester; //!< Friend class for PreconditionerBase testing
+        class PreconditionerBaseTester;  //!< Friend class for PreconditionerBase testing
 
     }
 
@@ -28,7 +28,7 @@ namespace tardigradeHydra {
         /*!
          * Initialize the preconditioner object
          */
-        PreconditionerBase() { }
+        PreconditionerBase() {}
 
         /*!
          * Constructor for the preconditioner object
@@ -52,9 +52,9 @@ namespace tardigradeHydra {
         const floatVector *getNonlinearRHS();
         // END PASS THROUGH FUNCTIONS
 
-        virtual void preconditionVector( const floatVector &X, floatVector &Y );
+        virtual void preconditionVector(const floatVector &X, floatVector &Y);
 
-        virtual void preconditionMatrix( const floatVector &A, floatVector &B );
+        virtual void preconditionMatrix(const floatVector &A, floatVector &B);
 
        protected:
         virtual void formPreconditioner();
@@ -66,7 +66,7 @@ namespace tardigradeHydra {
 
         DataStorage<floatVector>
             _preconditioner;  //!< The pre-conditioner matrix in row-major form for the global solve
-        // END CACHED DATA STORAGE OPERATIONS
+                              // END CACHED DATA STORAGE OPERATIONS
 
        private:
         friend class tardigradeHydra::unit_test::PreconditionerBaseTester;  //!< The unit tester for the class

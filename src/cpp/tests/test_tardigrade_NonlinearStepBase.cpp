@@ -4,9 +4,9 @@
  * Tests for tardigrade_NonlinearStepBase
  */
 
+#include "tardigrade_MaxRowPreconditioner.h"
 #include "tardigrade_NonlinearStepBase.h"
 #include "tardigrade_hydra.h"
-#include "tardigrade_MaxRowPreconditioner.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_NonlinearStepBase
 #include <boost/test/included/unit_test.hpp>
@@ -147,7 +147,6 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
 
         virtual void               decomposeUnknownVector() override { return; }
         virtual const unsigned int getNumUnknowns() override { return 5; }
-
     };
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
@@ -169,9 +168,9 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    SolverStepBaseMock     step;
-    StepDampingBaseMock    damping;
-    NonlinearStepBaseMock  trial_step;
+    SolverStepBaseMock    step;
+    StepDampingBaseMock   damping;
+    NonlinearStepBaseMock trial_step;
 
     step.trial_step = &trial_step;
     step.damping    = &damping;
@@ -179,7 +178,7 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
     damping.step    = &step;
 
     hydra.solver->step = &step;
-    step.solver=hydra.solver;
+    step.solver        = hydra.solver;
 
     tardigradeHydra::floatVector unknownVector = {0.39293837, -0.42772133, -0.54629709, 0.10262954, 0.43893794};
 

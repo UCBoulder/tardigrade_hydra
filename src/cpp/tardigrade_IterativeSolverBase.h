@@ -75,7 +75,7 @@ namespace tardigradeHydra {
         void incrementIteration();
 
        private:
-        friend class tardigradeHydra::unit_test::IterativeSolverBaseTester; //!< The unit test access class
+        friend class tardigradeHydra::unit_test::IterativeSolverBaseTester;  //!< The unit test access class
 
         DataStorage<floatVector> _tolerance;  //!< The tolerance vector for the non-linear solve
 
@@ -85,7 +85,6 @@ namespace tardigradeHydra {
         unsigned int _maxIterations = 20;  //!< The maximum number of allowable iterations
 
         unsigned int _iteration = 0;  //!< The current iteration of the non-linear problem
-
     };
 
 }  // namespace tardigradeHydra

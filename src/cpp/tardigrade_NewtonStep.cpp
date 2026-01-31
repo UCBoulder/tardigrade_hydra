@@ -7,37 +7,33 @@
  */
 
 #include "tardigrade_NewtonStep.h"
+
 #include "tardigrade_CustomErrors.h"
 #include "tardigrade_SolverStepBase.h"
 #define USE_EIGEN
 #include "tardigrade_vector_tools.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
     /*!
      * Compute the trial step
      */
     void NewtonStep::computeTrial() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr,
-                                     "The step has not been defined");
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(preconditioner != nullptr,
-                                     "The preconditioner has not been defined");
+        TARDIGRADE_ERROR_TOOLS_CHECK(preconditioner != nullptr, "The preconditioner has not been defined");
 
         auto dx_map = tardigradeHydra::getDynamicSizeVectorMap(step->deltaX.data(), getNumUnknowns());
 
         floatVector P_R;
         floatVector P_J;
 
-        preconditioner->preconditionVector( *getNonlinearRHS(), P_R );
-        preconditioner->preconditionMatrix( *getFlatNonlinearLHS(), P_J );
+        preconditioner->preconditionVector(*getNonlinearRHS(), P_R);
+        preconditioner->preconditionMatrix(*getFlatNonlinearLHS(), P_J);
 
-        auto P_R_map =
-            tardigradeHydra::getDynamicSizeVectorMap(P_R.data(), getNumUnknowns());
+        auto P_R_map = tardigradeHydra::getDynamicSizeVectorMap(P_R.data(), getNumUnknowns());
 
-        auto P_J_map =
-            tardigradeHydra::getDynamicSizeMatrixMap(P_J.data(), getNumUnknowns(), getNumUnknowns());
+        auto P_J_map = tardigradeHydra::getDynamicSizeMatrixMap(P_J.data(), getNumUnknowns(), getNumUnknowns());
 
         tardigradeVectorTools::solverType<floatType> linearSolver(P_J_map);
 
@@ -49,8 +45,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH(throw convergence_error("The Jacobian is not full rank"));
         }
 
-        addTrialStepOutput( );
-
+        addTrialStepOutput();
     }
 
-}
+}  // namespace tardigradeHydra

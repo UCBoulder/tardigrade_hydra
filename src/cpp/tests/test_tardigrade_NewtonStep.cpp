@@ -4,9 +4,9 @@
  * Tests for tardigrade_NewtonStep
  */
 
+#include "tardigrade_MaxRowPreconditioner.h"
 #include "tardigrade_NewtonStep.h"
 #include "tardigrade_hydra.h"
-#include "tardigrade_MaxRowPreconditioner.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_NewtonStep
 #include <boost/test/included/unit_test.hpp>
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
     trial_step.step           = &step;
     trial_step.preconditioner = &preconditioner;
 
-    step.solver = &solver;
+    step.solver               = &solver;
     preconditioner.trial_step = &trial_step;
 
     tardigradeHydra::floatVector answer = {1. / 3, -2. / 3, 0};
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
     tardigradeHydra::floatVector result(3, 0);
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector(hydra);
-    step.deltaX = tardigradeHydra::floatVector(3,0);
+    step.deltaX = tardigradeHydra::floatVector(3, 0);
     trial_step.computeTrial();
     result = step.deltaX;
 
@@ -172,9 +172,9 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                             numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
 
-    tardigradeHydra::SolverBase         solver_pre;
-    tardigradeHydra::SolverStepBase     step_pre;
-    tardigradeHydra::NewtonStep         trial_step_pre;
+    tardigradeHydra::SolverBase           solver_pre;
+    tardigradeHydra::SolverStepBase       step_pre;
+    tardigradeHydra::NewtonStep           trial_step_pre;
     tardigradeHydra::MaxRowPreconditioner preconditioner_pre;
 
     hydra_pre.solver = &solver_pre;
@@ -185,11 +185,11 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
     trial_step_pre.step           = &step_pre;
     trial_step_pre.preconditioner = &preconditioner_pre;
 
-    step_pre.solver=&solver_pre;
+    step_pre.solver               = &solver_pre;
     preconditioner_pre.trial_step = &trial_step_pre;
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector(hydra_pre);
-    step_pre.deltaX = tardigradeHydra::floatVector(3,0);
+    step_pre.deltaX = tardigradeHydra::floatVector(3, 0);
     trial_step_pre.computeTrial();
     result = step_pre.deltaX;
 
