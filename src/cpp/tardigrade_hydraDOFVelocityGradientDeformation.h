@@ -93,7 +93,7 @@ namespace tardigradeHydra {
                  */
 
                 if (numEquations != 11) {
-                    throw std::runtime_error("derp");
+                    throw std::runtime_error("The number of equations doesn't equal 11");
                 }
 
                 _dofConfigurationIndex = dofConfigurationIndex;
