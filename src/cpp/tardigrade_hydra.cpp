@@ -1341,6 +1341,7 @@ namespace tardigradeHydra {
 
         // Extract the stress
         extractStress();
+
     }
 
     /*!

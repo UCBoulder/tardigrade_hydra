@@ -64,7 +64,7 @@ namespace tardigradeHydra {
         SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
 
        protected:
-        RelaxedSolver _internal_solver;
+        RelaxedSolver _internal_solver; //!< The default internal solver
 
         virtual void performSubcyclerSolve();
 

@@ -89,6 +89,11 @@ namespace tardigradeHydra {
 
         addSubcyclerHeader();
 
+        auto local_internal_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase*>(internal_solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_internal_solver != nullptr, "The local internal solver is not of type IterativeSolverBase");
+
+        initial_unknown = internal_solver->initial_unknown;
+
         sp = 0.0;
 
         ds = getCutbackFactor();
@@ -135,6 +140,9 @@ namespace tardigradeHydra {
      * Post-successful subcycler increment updates
      */
     void SubcyclerSolver::subcyclerStepSuccess() {
+
+        initial_unknown = *getUnknownVector();
+
         setPreviouslyConvergedStress(*getStress());  // Set the previously converged stress
 
         callResidualPostSubcyclerSuccess();  // Let the residuals know the subcycle step was successful
