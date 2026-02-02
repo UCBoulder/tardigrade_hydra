@@ -29,18 +29,16 @@ set(DOCUMENTATION_SOURCE
 )
 
 # Add sphinx command
-add_custom_command(OUTPUT ${SPHINX_HTML_FILE}
-                   COMMAND
-                       ${CMAKE_COMMAND} -E copy_directory
-                           ${CMAKE_CURRENT_SOURCE_DIR}
-                           ${CMAKE_CURRENT_BINARY_DIR}
-                   COMMAND
-                       ${SPHINX_EXECUTABLE} -M html
-                       ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                   DEPENDS
-                       ${DOXYGEN_INDEX_FILE}
-                       # Other docs files you want to track should go here (or in some variable)
-                       ${DOCUMENTATION_SOURCE}
-                   MAIN_DEPENDENCY ${SPHINX_IN} ${SPHINX_OUT}
-                   COMMENT "Generating ${PROJECT_NAME} Sphinx documentation")
+add_custom_command(
+    OUTPUT ${SPHINX_HTML_FILE}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${SPHINX_EXECUTABLE} -M html ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DEPENDS
+        ${DOXYGEN_INDEX_FILE}
+        # Other docs files you want to track should go here (or in some variable)
+        ${DOCUMENTATION_SOURCE}
+    MAIN_DEPENDENCY ${SPHINX_IN}
+    ${SPHINX_OUT}
+    COMMENT "Generating ${PROJECT_NAME} Sphinx documentation"
+)

@@ -1,0 +1,354 @@
+/**
+ ******************************************************************************
+ * \file tardigrade_StepDampingBase.cpp
+ ******************************************************************************
+ * The base class for step damping operations
+ ******************************************************************************
+ */
+
+#include "tardigrade_StepDampingBase.h"
+
+#include "tardigrade_CustomErrors.h"
+#include "tardigrade_SolverStepBase.h"
+#include "tardigrade_vector_tools.h"
+
+namespace tardigradeHydra {
+
+    /*!
+     * The constructor for StepDampingBase
+     */
+    StepDampingBase::StepDampingBase() : step(NULL) {}
+
+    /*!
+     * The constructor for StepDampingBase
+     *
+     * \param *_step: The containing step object
+     */
+    StepDampingBase::StepDampingBase(SolverStepBase *_step) : step(_step) { step->damping = this; }
+
+    /*!
+     * Apply the damping to the proposed step
+     *
+     * This function must call the updateUnknownVector function
+     *
+     * Returns true if any damping was applied
+     */
+    const bool StepDampingBase::applyDamping() {
+        updateUnknownVector(step->X0 + step->deltaX);
+
+        return false;
+    }
+
+    /*!
+     * Reset the damping
+     */
+    void StepDampingBase::reset() {}
+
+    /*!
+     * Reset the internal count
+     */
+    void StepDampingBase::resetCounts() {}
+
+    /*!
+     * Set the base quantities prior to updating the unknown vector
+     */
+    void StepDampingBase::setBaseQuantities() {}
+
+    /*!
+     * Add data to the vector of values which will be cleared after each iteration
+     *
+     * \param *data: The dataBase object to be cleared
+     */
+    void StepDampingBase::addIterationData(dataBase *data) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        step->addIterationData(data);
+    }
+
+    /*!
+     * Add data to the vector of values which will be cleared after each nonlinear step
+     *
+     * \param *data: The dataBase object to be cleared
+     */
+    void StepDampingBase::addNLStepData(dataBase *data) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        step->addNLStepData(data);
+    }
+
+    /*!
+     * Get the scale factor for the tolerance
+     */
+    const floatType StepDampingBase::getToleranceScaleFactor() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        return step->getToleranceScaleFactor();
+    }
+
+    /*!
+     * Reset the tolerance scale factor
+     */
+    void StepDampingBase::resetToleranceScaleFactor() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        step->resetToleranceScaleFactor();
+    }
+
+    /*!
+     * Get the residual vector
+     */
+    const floatVector *StepDampingBase::getResidual() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        return step->getResidual();
+    }
+
+    /*!
+     * Update the unknown vector
+     *
+     * \param &value: The new value of the unknown vector
+     */
+    void StepDampingBase::updateUnknownVector(const floatVector &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The solver has not been defined");
+        step->updateUnknownVector(value);
+    }
+
+    /*!
+     * Get the number of unknowns
+     */
+    const unsigned int StepDampingBase::getNumUnknowns() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The solver has not been defined");
+        return step->getNumUnknowns();
+    }
+
+    /*!
+     * Get the unknown vector
+     */
+    const floatVector *StepDampingBase::getUnknownVector() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The solver has not been defined");
+        return step->getUnknownVector();
+    }
+
+    /*!
+     * Get the Jacobian in row-major format
+     */
+    const floatVector *StepDampingBase::getFlatJacobian() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The solver has not been defined");
+        return step->getFlatJacobian();
+    }
+
+    // BEGIN GRADIENT FUNCTIONS
+
+    void StepDampingBase::setUseGradientDescent(const bool &value) {
+        /*!
+         * Set whether to attempt a gradient descent step
+         *
+         * \param &value: The value of the parameter
+         */
+
+        _use_gradient_descent = value;
+    }
+
+    /*!
+     * Set the value of the rho parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setGradientRho(const floatType &value) { _gradientRho = value; }
+
+    /*!
+     * Set the value of the p parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setGradientP(const floatType &value) { _gradientP = value; }
+
+    /*!
+     * Set the value of the beta parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setGradientBeta(const floatType &value) { _gradientBeta = value; }
+
+    /*!
+     * Set the value of the sigma parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setGradientSigma(const floatType &value) { _gradientSigma = value; }
+
+    /*!
+     * Set the value of the maximum number of iterations for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setMaxGradientIterations(const unsigned int &value) { _maxGradientIterations = value; }
+
+    /*!
+     * Check if the gradient hasn't exceeded the number of allowed iterations
+     */
+    bool StepDampingBase::checkGradientIteration() { return getGradientIteration() < getMaxGradientIterations(); }
+
+    /*!
+     * Set the norm of the residual vector
+     */
+    void StepDampingBase::setResidualNorm() {
+        auto residualNorm = get_SetDataStorage_residualNorm();
+
+        auto residual = getResidual();
+
+        using residual_type = std::remove_reference_t<decltype((*residual)[0])>;
+
+        *residualNorm.value =
+            std::inner_product(std::begin(*residual), std::end(*residual), std::begin(*residual), residual_type());
+    }
+
+    /*!
+     * Set the derivative of the residual norm w.r.t. the unknown vector
+     */
+    void StepDampingBase::setdResidualNormdX() {
+        const unsigned int xsize = getNumUnknowns();
+
+        auto dResidualNormdX = get_SetDataStorage_dResidualNormdX();
+
+        dResidualNormdX.zero(xsize);
+
+        const floatVector *residual = getResidual();
+
+        const floatVector *jacobian = getFlatJacobian();
+
+        for (unsigned int i = 0; i < xsize; i++) {
+            for (unsigned int j = 0; j < xsize; j++) {
+                (*dResidualNormdX.value)[j] += 2 * (*jacobian)[xsize * i + j] * (*residual)[i];
+            }
+        }
+    }
+
+    /*!
+     * Set the value of the mu_k parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setMuk(const floatType &value) { _mu_k = value; }
+
+    /*!
+     * Set the initializing scaling value of the mu parameter
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setLMMu(const floatType &value) { _lm_mu = value; }
+
+    /*!
+     * Get the base value for the residual norm.
+     */
+    const floatType *StepDampingBase::get_baseResidualNorm() {
+        if (!_baseResidualNorm.first) {
+            throw std::runtime_error(
+                "The base residual norm must be set with set_baseResidualNorm before it can be called");
+        }
+
+        return &_baseResidualNorm.second;
+    }
+
+    /*!
+     * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
+     */
+    const floatVector *StepDampingBase::get_basedResidualNormdX() {
+        if (!_basedResidualNormdX.first) {
+            throw std::runtime_error(
+                "The base residual norm must be set with set_dbaseResidualNormdX before it can be called");
+        }
+
+        return &_basedResidualNormdX.second;
+    }
+
+    /*! Set the base value of the residual norm
+     *
+     * \param &value: The new value
+     */
+    void StepDampingBase::set_baseResidualNorm(const floatType &value) { setNLStepData(value, _baseResidualNorm); }
+
+    /*!
+     * Set the base derivative of the residual norm w.r.t. the unknown vector
+     *
+     * \param &value: The new value
+     */
+    void StepDampingBase::set_basedResidualNormdX(const floatVector &value) {
+        setNLStepData(value, _basedResidualNormdX);
+    }
+
+    /*!
+     * Check if the search direction is a descent direction of the Jacobian
+     *
+     * \param &dx: The proposed change in x
+     */
+    bool StepDampingBase::checkDescentDirection(const floatVector &dx) {
+        const unsigned int xsize = getNumUnknowns();
+
+        const floatType RHS = -getGradientRho() * std::pow(tardigradeVectorTools::l2norm(dx), getGradientP());
+
+        floatType LHS = 0;
+
+        const floatVector *dResidualNormdX = get_basedResidualNormdX();
+
+        for (unsigned int i = 0; i < xsize; i++) {
+            LHS += (*dResidualNormdX)[i] * dx[i];
+        }
+
+        return LHS <= RHS;
+    }
+
+    /*!
+     * Check the convergence of a gradient step
+     *
+     * \param &X0: The initial value of the unknown vector
+     */
+    bool StepDampingBase::checkGradientConvergence(const floatVector &X0) {
+        const unsigned int xsize = getNumUnknowns();
+
+        floatVector dx = *getUnknownVector() - X0;
+
+        floatType RHS = *get_baseResidualNorm();
+
+        for (unsigned int i = 0; i < xsize; ++i) {
+            RHS += getGradientSigma() * (*get_basedResidualNormdX())[i] * dx[i];
+        }
+
+        return (*get_residualNorm()) < getToleranceScaleFactor() * RHS;
+    }
+
+    /*!
+     * Perform a gradient descent step
+     *
+     * \param &X0: The base value of the unknown vector
+     */
+    void StepDampingBase::performGradientStep(const floatVector &X0) {
+        const floatVector *dResidualNormdX = get_basedResidualNormdX();
+
+        unsigned int l = 0;
+
+        const unsigned int maxiter = getMaxGradientIterations();
+
+        while (checkGradientIteration()) {
+            floatType t = std::pow(getGradientBeta(), l);
+
+            updateUnknownVector(X0 - t * (*dResidualNormdX));
+
+            if (checkGradientConvergence(X0)) {
+                break;
+            }
+
+            l++;
+
+            incrementGradientIteration();
+        }
+
+        resetToleranceScaleFactor();
+
+        if (l >= maxiter) {
+            throw convergence_error("Failure in gradient step");
+        }
+
+        incrementNumGrad();
+
+        resetGradientIteration();
+    }
+
+    // END GRADIENT FUNCTIONS
+
+}  // namespace tardigradeHydra

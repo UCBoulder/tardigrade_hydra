@@ -1,129 +1,157 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_SolverBase.h
-  ******************************************************************************
-  * A C++ library for the base classes for solvers
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_SolverBase.h
+ ******************************************************************************
+ * A C++ library for the base classes for solvers
+ ******************************************************************************
+ */
 
 #ifndef TARDIGRADE_SOLVERBASE_H
 #define TARDIGRADE_SOLVERBASE_H
 
-#include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SetDataStorage.h"
-#include"tardigrade_SolverStepBase.h"
-#include"tardigrade_PreconditionerBase.h"
+#include "tardigrade_CoreDefinitions.h"
+#include "tardigrade_SetDataStorage.h"
+#include "tardigrade_SolverStep.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
+
+    namespace unit_test {
+        class SolverBaseTester;  //!< Friend class for SolverBase for unit testing
+    }  // namespace unit_test
 
     /*!
      * Base Solver class
      */
     class SolverBase : public CachingDataBase {
+       public:
+        SolverBase();
 
-        public:
+        SolverBase(hydraBase *_hydra);
 
-            SolverBase( ) : hydra(NULL){//, step(NULL){ ///!< TODO: Re-enable this
+        SolverBase(hydraBase *_hydra, SolverStepBase *_step_ptr);
 
+        hydraBase *hydra;  //!< Pointer to the containing hydra object
+
+        SolverStep      _step;  //!< The default solver step (move to default solver class)
+        SolverStepBase *step =
+            &_step;  //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
+
+        floatVector initial_unknown;  //!< The initial unknown vector for the solver
+
+        virtual void solve();
+
+        virtual void initializeSolve();
+
+        virtual void initialSolveAttempt();
+
+        virtual void convergenceErrorFunction();
+
+        virtual void unexpectedErrorFunction();
+
+        virtual void resetCounts();
+
+        virtual void reset();
+
+        // CACHED DATA STORAGE OPERATIONS
+        virtual void addIterationData(dataBase *data) override;
+
+        virtual void addNLStepData(dataBase *data) override;
+        // END CACHED DATA STORAGE OPERATIONS
+
+        // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+
+        void resetNLStepData();
+
+        // END NONLINEAR FUNCTIONS
+
+        // Pass-through functions
+        const floatType getRelativeTolerance();  // TODO: Want to allow this to be constexpr
+
+        const floatType getAbsoluteTolerance();  // TODO: Want to allow this to be constexpr
+
+        const unsigned int getNumUnknowns();  // TODO: Want to allow this to be constexpr
+
+        const floatVector *getUnknownVector();  // TODO: Want to generalize this
+
+        void initializeUnknownVector();
+
+        void updateUnknownVector(const floatVector &value);  // TODO: Want to generalize this
+
+        const floatVector *getResidual();  // TODO: Want to generalize this
+
+        const floatVector *getFlatJacobian();  // TODO: Want to generalize this
+
+        const unsigned int getNumConstraints();  // TODO: Want to allow this to be constexpr
+
+        const floatVector *getConstraints();  // TODO: Want to generalize this
+
+        const floatVector *getConstraintJacobians();  // TODO: Want to generalize this
+
+        const unsigned int getFailureVerbosityLevel();
+
+        void addToFailureOutput(const std::string &string);
+
+        void addToFailureOutput(const floatVector &value, bool add_endline = true);
+
+        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
+
+        void addToFailureOutput(const floatType &value, bool add_endline = true);
+
+        const floatType getToleranceScaleFactor();
+
+        void resetToleranceScaleFactor();
+
+        void setCurrentResidualIndexMeaningful(const bool &value);
+
+        void setCurrentResidualIndex(const unsigned int &value);
+
+        const std::vector<tardigradeHydra::ResidualBase<> *> *getResidualClasses();
+
+        const floatVector *getStress();
+
+        // End pass-through functions
+
+        /*!
+         * Add a general iterable object to the output string
+         *
+         * \param &v_begin: The starting iterator
+         * \param &v_end: The stopping iterator
+         * \param add_endline: Whether to add an endline to the string or not
+         */
+        template <class v_iterator>
+        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true) {
+            std::stringstream failure_output;
+
+            for (auto v = v_begin; v != v_end; ++v) {
+                failure_output << *v << ", ";
             }
 
-            /*!
-             * Constructor for NonlinearStepBase
-             *
-             * \param *_hydra: The containing hydraBase object
-             */
-            SolverBase( hydraBase * _hydra ) : hydra( _hydra ){ }
-
-            hydraBase *hydra; //!< Pointer to the containing hydra object
-
-            SolverStepBase _step; //!< Temporary object
-            SolverStepBase *step = &_step; //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
-
-            PreconditionerBase _preconditioner; //!< Temporary object
-            PreconditionerBase *preconditioner = &_preconditioner; //!< The object that defines the preconditioner TODO: Make this an incoming pointer
-
-            virtual void solve( );
-
-            const unsigned int getIteration( );
-
-            const bool getRankDeficientError( );
-
-            void setRankDeficientError( const bool &value );
-
-            // CACHED DATA STORAGE OPERATIONS
-            virtual void addIterationData( dataBase *data ) override;
-
-            virtual void addNLStepData( dataBase *data ) override;
-            // END CACHED DATA STORAGE OPERATIONS
-
-            // Pass-through functions
-            const floatType getRelativeTolerance( ); //TODO: Want to allow this to be constexpr
-
-            const floatType getAbsoluteTolerance( ); //TODO: Want to allow this to be constexpr
-
-            const unsigned int getNumUnknowns( ); //TODO: Want to allow this to be constexpr
-
-            const floatVector *getUnknownVector( ); //TODO: Want to generalize this
-
-            void updateUnknownVector( const floatVector &value ); //TODO: Want to generalize this
-
-            const floatVector *getResidual( ); //TODO: Want to generalize this
-
-            const floatVector *getFlatJacobian( ); //TODO: Want to generalize this
-
-            const unsigned int getNumConstraints( ); //TODO: Want to allow this to be constexpr
-
-            const floatVector *getConstraints( ); //TODO: Want to generalize this
-
-            const floatVector *getConstraintJacobians( ); //TODO: Want to generalize this
-
-            const unsigned int getFailureVerbosityLevel( );
-
-            void addToFailureOutput( const std::string &string );
-
-            void addToFailureOutput( const floatVector &value, bool add_endline = true );
-
-            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true );
-
-            void addToFailureOutput( const floatType &value, bool add_endline = true );
-
-            const floatType getToleranceScaleFactor( );
-
-            void resetToleranceScaleFactor( );
-
-            const floatVector *getFlatNonlinearLHS( ); //TODO: Want to generalize this
-
-            /*!
-             * Add a general iterable object to the output string
-             * 
-             * \param &v_begin: The starting iterator
-             * \param &v_end: The stopping iterator
-             * \param add_endline: Whether to add an endline to the string or not
-             */
-            template< class v_iterator >
-            void addToFailureOutput( const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true ){
-
-                std::stringstream failure_output;
-
-                for ( auto v = v_begin; v != v_end; ++v ){ failure_output << *v << ", "; }
-
-                if ( add_endline ){ failure_output << "\n"; }
-
-                addToFailureOutput( failure_output.str( ) );
-
+            if (add_endline) {
+                failure_output << "\n";
             }
 
-        protected:
+            addToFailureOutput(failure_output.str());
+        }
 
-        private:
+       protected:
+        // Pass-through functions
 
-            bool _rank_deficient_error = false; //!< Flag for whether a rank-deficient Jacobian should cause an error
+        void setAllowModifyGlobalResidual(const bool &value);
 
-            friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
-            friend class tardigradeHydra::unit_test::SolverBaseTester; //!< The unit tester for the class
+        void setPreviouslyConvergedStress(const floatVector &value);
 
+        void setX(const floatVector &value);
+
+        void resetProblem();
+
+        virtual void setScaleFactor(const floatType &value);
+        // End pass-through functions
+
+       private:
+        friend class tardigradeHydra::hydraBase;                    //!< TEMP REMOVE THIS
+        friend class tardigradeHydra::unit_test::SolverBaseTester;  //!< The unit tester for the class
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

@@ -1,91 +1,98 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_SolverBase.cpp
-  ******************************************************************************
-  * A C++ library for the base classes for solvers
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_SolverBase.cpp
+ ******************************************************************************
+ * A C++ library for the base classes for solvers
+ ******************************************************************************
+ */
 
-#include"tardigrade_SolverBase.h"
-#include"tardigrade_hydra.h"
+#include "tardigrade_SolverBase.h"
 
-namespace tardigradeHydra{
+#include "tardigrade_hydra.h"
+
+namespace tardigradeHydra {
 
     /*!
-     * Get whether the Jacobian being rank-deficient will throw an error
+     * Default constructor of SolverBase
      */
-    const bool SolverBase::getRankDeficientError( ){
-
-        return _rank_deficient_error;
-
-    }
+    SolverBase::SolverBase() : hydra(NULL), step(&_step) { step->solver = this; }
 
     /*!
-     * Set whether the Jacobian being rank-deficient will throw an error
+     * Constructor for SolverBase
      *
-     * \param &value: The incoming value
+     * \param *_hydra: The containing hydraBase object
      */
-    void SolverBase::setRankDeficientError( const bool &value ){
+    SolverBase::SolverBase(hydraBase *_hydra) : hydra(_hydra), step(&_step) { step->solver = this; }
 
-        _rank_deficient_error = value;
+    /*!
+     * Constructor for SolverBase
+     *
+     * \param *_hydra: The containing hydraBase object
+     * \param *_step_ptr: The SolverStepBase object that the solver will use to try and solve
+     *     the problem
+     */
+    SolverBase::SolverBase(hydraBase *_hydra, SolverStepBase *_step_ptr) : hydra(_hydra), step(_step_ptr) {
+        step->solver = this;
     }
 
     /*!
      * Add data to the vector of values which will be cleared after each iteration
-     * 
+     *
      * \param *data: The dataBase object to be cleared
      */
-    void SolverBase::addIterationData( dataBase *data ){
-
-        hydra->addIterationData( data );
-
+    void SolverBase::addIterationData(dataBase *data) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->addIterationData(data);
     }
 
     /*!
      * Add data to the vector of values which will be cleared after each nonlinear step
-     * 
+     *
      * \param *data: The dataBase object to be cleared
      */
-    void SolverBase::addNLStepData( dataBase *data ){
-
-        hydra->addNLStepData( data );
-
+    void SolverBase::addNLStepData(dataBase *data) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->addNLStepData(data);
     }
 
     /*!
      * Get the relative tolerance from hydra
      */
-    const floatType SolverBase::getRelativeTolerance( ){
-
-        return hydra->getRelativeTolerance( );
-
+    const floatType SolverBase::getRelativeTolerance() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getRelativeTolerance();
     }
 
     /*!
      * Get the absolute tolerance from hydra
      */
-    const floatType SolverBase::getAbsoluteTolerance( ){
-
-        return hydra->getAbsoluteTolerance( );
-
+    const floatType SolverBase::getAbsoluteTolerance() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getAbsoluteTolerance();
     }
 
     /*!
      * Get the number of unknowns from hydra
      */
-    const unsigned int SolverBase::getNumUnknowns( ){
-
-        return hydra->getNumUnknowns( );
-
+    const unsigned int SolverBase::getNumUnknowns() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getNumUnknowns();
     }
 
     /*!
      * Get the unknown vector from hydra
      */
-    const floatVector *SolverBase::getUnknownVector( ){
+    const floatVector *SolverBase::getUnknownVector() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getUnknownVector();
+    }
 
-        return hydra->getUnknownVector( );
-
+    /*!
+     * Initialize the unknown vector
+     */
+    void SolverBase::initializeUnknownVector() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->initializeUnknownVector();
     }
 
     /*!
@@ -93,64 +100,57 @@ namespace tardigradeHydra{
      *
      * \param &value: The new value of the unknown vector
      */
-    void SolverBase::updateUnknownVector( const floatVector &value ){
-
-        hydra->updateUnknownVector( value );
-
+    void SolverBase::updateUnknownVector(const floatVector &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->updateUnknownVector(value);
     }
 
     /*!
      * Get the residual from hydra
      */
-    const floatVector *SolverBase::getResidual( ){
-
-        return hydra->getResidual( );
-
+    const floatVector *SolverBase::getResidual() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getResidual();
     }
 
     /*!
      * Get the flat Jacobian from hydra
      */
-    const floatVector *SolverBase::getFlatJacobian( ){
-
-        return hydra->getFlatJacobian( );
-
+    const floatVector *SolverBase::getFlatJacobian() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getFlatJacobian();
     }
 
     /*!
      * Get the number of constraints
      */
-    const unsigned int SolverBase::getNumConstraints( ){
-
-        return hydra->getNumConstraints( );
-
+    const unsigned int SolverBase::getNumConstraints() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getNumConstraints();
     }
 
     /*!
      * Get the constraints
      */
-    const floatVector *SolverBase::getConstraints( ){
-
-        return hydra->getConstraints( );
-
+    const floatVector *SolverBase::getConstraints() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getConstraints();
     }
 
     /*!
      * Get the constraint Jacobians
      */
-    const floatVector *SolverBase::getConstraintJacobians( ){
-
-        return hydra->getConstraintJacobians( );
-
+    const floatVector *SolverBase::getConstraintJacobians() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getConstraintJacobians();
     }
 
     /*!
      * Get the verbosity level for failure messages
      */
-    const unsigned int SolverBase::getFailureVerbosityLevel( ){
-
-        return hydra->getFailureVerbosityLevel( );
-
+    const unsigned int SolverBase::getFailureVerbosityLevel() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getFailureVerbosityLevel();
     }
 
     /*!
@@ -158,10 +158,9 @@ namespace tardigradeHydra{
      *
      * \param &string: The string to add to the failure output message
      */
-    void SolverBase::addToFailureOutput( const std::string &string ){
-
-        hydra->addToFailureOutput( string );
-
+    void SolverBase::addToFailureOutput(const std::string &string) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->addToFailureOutput(string);
     }
 
     /*!
@@ -170,10 +169,9 @@ namespace tardigradeHydra{
      * \param &value: The floatVector to add to the failure output message
      * \param add_endline: Whether to add an endline after the value or not
      */
-    void SolverBase::addToFailureOutput( const floatVector &value, bool add_endline ){
-
-        hydra->addToFailureOutput( value, add_endline );
-
+    void SolverBase::addToFailureOutput(const floatVector &value, bool add_endline) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->addToFailureOutput(value, add_endline);
     }
 
     /*!
@@ -182,10 +180,9 @@ namespace tardigradeHydra{
      * \param &value: The vector of booleans to add to the failure output message
      * \param add_endline: Whether to add an endline after the value or not
      */
-    void SolverBase::addToFailureOutput( const std::vector<bool> &value, bool add_endline ){
-
-        hydra->addToFailureOutput( value, add_endline );
-
+    void SolverBase::addToFailureOutput(const std::vector<bool> &value, bool add_endline) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->addToFailureOutput(value, add_endline);
     }
 
     /*!
@@ -194,37 +191,176 @@ namespace tardigradeHydra{
      * \param &value: The floatType to add to the failure output message
      * \param add_endline: Whether to add an endline after the value or not
      */
-    void SolverBase::addToFailureOutput( const floatType &value, bool add_endline ){
-
-        hydra->addToFailureOutput( value, add_endline );
-
+    void SolverBase::addToFailureOutput(const floatType &value, bool add_endline) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->addToFailureOutput(value, add_endline);
     }
 
     /*!
      * Get the scale factor for the tolerance
      */
-    const floatType SolverBase::getToleranceScaleFactor( ){
-
-        return hydra->getToleranceScaleFactor( );
-
+    const floatType SolverBase::getToleranceScaleFactor() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getToleranceScaleFactor();
     }
 
     /*!
      * Reset the tolerance scale factor
      */
-    void SolverBase::resetToleranceScaleFactor( ){
-
-        hydra->resetToleranceScaleFactor( );
-
+    void SolverBase::resetToleranceScaleFactor() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->resetToleranceScaleFactor();
     }
 
     /*!
-     * Get a pointer to the nonlinear LHS vector
+     * Set if the current residual index is meaningful or not
+     *
+     * \param &value: The boolean indicating if the residual index is or isn't meaningful
      */
-    const floatVector *SolverBase::getFlatNonlinearLHS( ){
-
-        return step->getFlatNonlinearLHS( );
-
+    void SolverBase::setCurrentResidualIndexMeaningful(const bool &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->setCurrentResidualIndexMeaningful(value);
     }
 
-}
+    /*!
+     * Set the current residual index
+     *
+     * \param &value: The value of the current residual's index
+     */
+    void SolverBase::setCurrentResidualIndex(const unsigned int &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->setCurrentResidualIndex(value);
+    }
+
+    /*!
+     * Get the residual classes
+     */
+    const std::vector<tardigradeHydra::ResidualBase<> *> *SolverBase::getResidualClasses() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->getResidualClasses();
+    }
+
+    /*!
+     * Set that the global residual can be modified
+     */
+    void SolverBase::setAllowModifyGlobalResidual(const bool &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        return hydra->setAllowModifyGlobalResidual(value);
+    }
+
+    /*!
+     * Reset the solver counts
+     */
+    void SolverBase::resetCounts() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        TARDIGRADE_ERROR_TOOLS_CATCH(step->resetCounts();)
+    }
+
+    /*!
+     * Reset the solver
+     */
+    void SolverBase::reset() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(step != nullptr, "The step has not been defined");
+        TARDIGRADE_ERROR_TOOLS_CATCH(step->reset();)
+    }
+
+    /*!
+     * The function that is called prior to the first attempt
+     * of solving the problem
+     */
+    void SolverBase::initializeSolve() {}
+
+    /*!
+     * The function that is called when first attempting to
+     * solve the problem
+     */
+    void SolverBase::initialSolveAttempt() {
+        TARDIGRADE_ERROR_TOOLS_CATCH(
+            throw std::runtime_error("initialSolveAttempt must be defined for all classes inheriting from SolverBase"));
+    }
+
+    /*!
+     * The function that is called if there is a convergence
+     * error thrown in the initial solve attempt
+     */
+    void SolverBase::convergenceErrorFunction() { throw; }
+
+    /*!
+     * The function that is called if there is an unexpected
+     * error thrown in the initial solve attempt
+     */
+    void SolverBase::unexpectedErrorFunction() { TARDIGRADE_ERROR_TOOLS_CATCH(throw;) }
+
+    /*!
+     * Solve the problem
+     */
+    void SolverBase::solve() {
+        initializeSolve();
+        try {
+            initialSolveAttempt();
+
+        } catch (convergence_error &e) {
+            convergenceErrorFunction();
+
+        } catch (std::exception &e) {
+            unexpectedErrorFunction();
+        }
+    }
+
+    /*!
+     * Set the previously converged stress value
+     */
+    void SolverBase::setPreviouslyConvergedStress(const floatVector &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
+        hydra->setPreviouslyConvergedStress(value);
+    }
+
+    /*!
+     * Get the current value of the stress
+     */
+    const floatVector *SolverBase::getStress() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
+        return hydra->getStress();
+    }
+
+    /*!
+     * Set the unknown vector
+     *
+     * \param &value: The incoming value
+     */
+    void SolverBase::setX(const floatVector &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
+        return hydra->setX(value);
+    }
+
+    /*!
+     * Reset the problem
+     */
+    void SolverBase::resetProblem() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
+        hydra->resetProblem();
+    }
+
+    /*!
+     * Set the scale factor for the incoming degrees of freedom
+     *
+     * \param &value: The incoming value
+     */
+    void SolverBase::setScaleFactor(const floatType &value) {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The hydra class has not been defined");
+        hydra->setScaleFactor(value);
+    }
+
+    // NONLINEAR FUNCTIONS
+
+    /*!
+     * Reset all nonlinear step data
+     */
+    void SolverBase::resetNLStepData() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
+        hydra->resetNLStepData();
+    }
+
+    // END NONLINEAR FUNCTIONS
+
+}  // namespace tardigradeHydra

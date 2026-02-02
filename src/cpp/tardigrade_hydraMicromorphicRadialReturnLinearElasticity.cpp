@@ -1,182 +1,155 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_hydraMicromorphicRadialReturnLinearElasticity.cpp
-  ******************************************************************************
-  * An implementation of micromorphic linear elasticity using the hydra
-  * framework which is compatible with radial return algorithms.
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_hydraMicromorphicRadialReturnLinearElasticity.cpp
+ ******************************************************************************
+ * An implementation of micromorphic linear elasticity using the hydra
+ * framework which is compatible with radial return algorithms.
+ ******************************************************************************
+ */
 
-#include<tardigrade_hydraMicromorphicRadialReturnLinearElasticity.h>
+#include <tardigrade_hydraMicromorphicRadialReturnLinearElasticity.h>
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
-    namespace micromorphicRadialReturnLinearElasticity{
+    namespace micromorphicRadialReturnLinearElasticity {
 
-        void residual::setTrialStress( ){
+        void residual::setTrialStress() {
             /*!
              * Set the value of the trial stress
              */
 
-            auto trialStress = get_SetDataStorage_trialStress( );
+            auto trialStress = get_SetDataStorage_trialStress();
 
-            getStress( );
+            getStress();
 
-            trialStress.zero( ( unsigned int )( std::end( *getStress( ) ) - std::begin( *getStress( ) ) ) ); 
+            trialStress.zero((unsigned int)(std::end(*getStress()) - std::begin(*getStress())));
 
-            std::copy(
-                    std::cbegin( *getStress( ) ),
-                    std::cend( *getStress( ) ),
-                    trialStress.begin( )
-            );
+            std::copy(std::cbegin(*getStress()), std::cend(*getStress()), trialStress.begin());
 
-            setdTrialStressdD( ); // Do this so the trial stress and its Jacobian are consistent
-
+            setdTrialStressdD();  // Do this so the trial stress and its Jacobian are consistent
         }
 
-        void residual::setdTrialStressdD( ){
+        void residual::setdTrialStressdD() {
             /*!
              * Set the value of the derivative of the trial stress w.r.t. the deformation
              */
 
-            auto dTrialStressdD = get_SetDataStorage_dTrialStressdD( );
+            auto dTrialStressdD = get_SetDataStorage_dTrialStressdD();
 
-            auto sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension();
 
-            auto tot_dim = hydra->getTOTDimension( );
+            auto tot_dim = hydra->getTOTDimension();
 
-            auto num_equations = getNumEquations( );
+            auto num_equations = getNumEquations();
 
-            auto num_configurationUnknowns = hydra->getConfigurationUnknownCount( );
+            auto num_configurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            dTrialStressdD.zero( num_equations * num_configurationUnknowns );
+            dTrialStressdD.zero(num_equations * num_configurationUnknowns);
 
-            //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
-            auto dS1dF       = get_dPK2dF( );
+            // Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current
+            // configuration in the future.
+            auto dS1dF = get_dPK2dF();
 
-            auto dS1dChi     = get_dPK2dChi( );
+            auto dS1dChi = get_dPK2dChi();
 
-            auto dS1dGradChi = get_dPK2dGradChi( );
+            auto dS1dGradChi = get_dPK2dGradChi();
 
-            auto dS2dF       = get_dSIGMAdF( );
+            auto dS2dF = get_dSIGMAdF();
 
-            auto dS2dChi     = get_dSIGMAdChi( );
+            auto dS2dChi = get_dSIGMAdChi();
 
-            auto dS2dGradChi = get_dSIGMAdGradChi( );
+            auto dS2dGradChi = get_dSIGMAdGradChi();
 
-            auto dS3dF       = get_dMdF( );
+            auto dS3dF = get_dMdF();
 
-            auto dS3dChi     = get_dMdChi( );
+            auto dS3dChi = get_dMdChi();
 
-            auto dS3dGradChi = get_dMdGradChi( );
+            auto dS3dGradChi = get_dMdGradChi();
 
-            constexpr unsigned int numStresses = 3;
+            constexpr unsigned int numStresses            = 3;
             constexpr unsigned int numDeformationMeasures = 3;
 
-            std::array< const floatVector *, numStresses * numDeformationMeasures > stressReferences = { dS1dF, dS1dChi, dS1dGradChi,
-                                                                                                         dS2dF, dS2dChi, dS2dGradChi,
-                                                                                                         dS3dF, dS3dChi, dS3dGradChi };
+            std::array<const floatVector *, numStresses * numDeformationMeasures> stressReferences = {
+                dS1dF, dS1dChi, dS1dGradChi, dS2dF, dS2dChi, dS2dGradChi, dS3dF, dS3dChi, dS3dGradChi};
 
-            const std::array< unsigned int, numDeformationMeasures > dims = { sot_dim, sot_dim, tot_dim };
+            const std::array<unsigned int, numDeformationMeasures> dims = {sot_dim, sot_dim, tot_dim};
 
             unsigned int row = 0;
-            for ( unsigned int S = 0; S < numStresses; ++S ){
-
+            for (unsigned int S = 0; S < numStresses; ++S) {
                 // Loop through the stress Jacobians
 
-                for ( unsigned int i = 0; i < dims[ S ]; ++i ){
-
+                for (unsigned int i = 0; i < dims[S]; ++i) {
                     unsigned int col = 0;
 
                     // Jacobians w.r.t. the deformation
 
-                    for ( auto Sn = std::begin( stressReferences ) + numDeformationMeasures * S; Sn != std::begin( stressReferences ) + numDeformationMeasures * ( S + 1 ); ++Sn ){
+                    for (auto Sn = std::begin(stressReferences) + numDeformationMeasures * S;
+                         Sn != std::begin(stressReferences) + numDeformationMeasures * (S + 1); ++Sn) {
+                        unsigned int dof_index =
+                            (unsigned int)(Sn - (std::begin(stressReferences) + numDeformationMeasures * S));
 
-                        unsigned int dof_index = ( unsigned int )( Sn - ( std::begin( stressReferences ) + numDeformationMeasures * S ) );
-
-                        for ( unsigned int j = 0; j < dims[ dof_index ]; ++j ){
-
-                            ( *dTrialStressdD.value )[ num_configurationUnknowns * row + col ] += ( **Sn )[ dims[ dof_index ] * i + j ];
+                        for (unsigned int j = 0; j < dims[dof_index]; ++j) {
+                            (*dTrialStressdD.value)[num_configurationUnknowns * row + col] +=
+                                (**Sn)[dims[dof_index] * i + j];
 
                             col++;
-
                         }
-
                     }
 
                     row++;
-
                 }
-
             }
-
         }
 
-        void residual::setResidual( ){
+        void residual::setResidual() {
             /*!
              * Set the value of the residual
              */
 
-            auto residual = get_SetDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual();
 
-            residual.zero( getNumEquations( ) );
+            residual.zero(getNumEquations());
 
-            std::transform(
-                std::begin( *hydra->getStress( ) ),
-                std::end(   *hydra->getStress( ) ),
-                std::begin( *get_trialStress( ) ),
-                residual.begin( ),
-                std::minus<>( )
-            );
-
+            std::transform(std::begin(*hydra->getStress()), std::end(*hydra->getStress()),
+                           std::begin(*get_trialStress()), residual.begin(), std::minus<>());
         }
 
-        void residual::setJacobian( ){
+        void residual::setJacobian() {
             /*!
              * Set the value of the Jacobian
              */
 
-            tardigradeHydra::micromorphicLinearElasticity::residual::setJacobian( );
+            tardigradeHydra::micromorphicLinearElasticity::residual::setJacobian();
 
-            auto jacobian = get_SetDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian();
 
-            auto num_equations = getNumEquations( );
+            auto num_equations = getNumEquations();
 
-            auto num_unknowns = hydra->getNumUnknowns( );
+            auto num_unknowns = hydra->getNumUnknowns();
 
-            jacobian.zero( num_equations * num_unknowns );
+            jacobian.zero(num_equations * num_unknowns);
 
-            for ( unsigned int i = 0; i < num_equations; ++i ){
-
-                ( *jacobian.value )[ num_unknowns * i + i ] += 1;
-
+            for (unsigned int i = 0; i < num_equations; ++i) {
+                (*jacobian.value)[num_unknowns * i + i] += 1;
             }
-
         }
 
-        void residual::setdRdD( ){
+        void residual::setdRdD() {
             /*!
              * Set the derivative of the residual w.r.t. the deformation
              */
 
-            auto dRdD = get_SetDataStorage_dRdD( );
+            auto dRdD = get_SetDataStorage_dRdD();
 
-            auto num_equations = getNumEquations( );
+            auto num_equations = getNumEquations();
 
-            auto num_configurationUnknowns = hydra->getConfigurationUnknownCount( );
+            auto num_configurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            dRdD.zero( num_equations * num_configurationUnknowns );
+            dRdD.zero(num_equations * num_configurationUnknowns);
 
-            std::transform(
-                dRdD.begin( ),
-                dRdD.end( ),
-                std::begin( *get_dTrialStressdD( ) ),
-                dRdD.begin( ),
-                std::minus<>( )
-            );
-
+            std::transform(dRdD.begin(), dRdD.end(), std::begin(*get_dTrialStressdD()), dRdD.begin(), std::minus<>());
         }
 
-    }
+    }  // namespace micromorphicRadialReturnLinearElasticity
 
-}
+}  // namespace tardigradeHydra

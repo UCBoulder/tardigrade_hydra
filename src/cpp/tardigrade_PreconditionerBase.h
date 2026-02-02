@@ -1,86 +1,77 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_PreconditionerBase.h
-  ******************************************************************************
-  * A C++ library for the base classes for solvers
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_PreconditionerBase.h
+ ******************************************************************************
+ * A C++ library for the base classes for solvers
+ ******************************************************************************
+ */
 
 #ifndef TARDIGRADE_PRECONDITIONERBASE_H
 #define TARDIGRADE_PRECONDITIONERBASE_H
 
-#include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SetDataStorage.h"
+#include "tardigrade_CoreDefinitions.h"
+#include "tardigrade_SetDataStorage.h"
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
+
+    namespace unit_test {
+
+        class PreconditionerBaseTester;  //!< Friend class for PreconditionerBase testing
+
+    }
 
     /*!
      * The base class for preconditioners to be used in tardigrade hydra solves
      */
     class PreconditionerBase : public CachingDataBase {
+       public:
+        /*!
+         * Initialize the preconditioner object
+         */
+        PreconditionerBase() { trial_step = nullptr; }
 
-        public:
+        /*!
+         * Constructor for the preconditioner object
+         *
+         * \param *_trial_step: The containing TrialStepBase object
+         */
+        PreconditionerBase(NonlinearStepBase *_trial_step) { trial_step = _trial_step; }
 
-            PreconditionerBase( ){
-                /*!
-                 * Initialize the preconditioner object
-                 */
-            }
+        virtual void reset();
 
-            void setSolver( SolverBase *_solver ){
-                /*!
-                 * Set the containing solver object
-                 *
-                 * \param *_solver: The containing solver object
-                 */
+        //! Get a pointer to the row-major form of the preconditioner
+        const floatVector *getFlatPreconditioner();
 
-                solver = _solver;
+        NonlinearStepBase *trial_step;  //!< Pointer to the containing NonlinearStepBase class
 
-            };
+        // PASS THROUGH FUNCTIONS
+        const unsigned int getNumUnknowns();
 
+        const floatVector *getFlatNonlinearLHS();
 
-            //! Get whether to use a preconditioner
-            constexpr bool getUsePreconditioner( ){ return _use_preconditioner; }
+        const floatVector *getNonlinearRHS();
+        // END PASS THROUGH FUNCTIONS
 
-            //! Get the preconditioner type
-            constexpr unsigned int getPreconditionerType( ){ return _preconditioner_type; }
+        virtual void preconditionVector(const floatVector &X, floatVector &Y);
 
-            //! Get whether the preconditioner is diagonal or not
-            constexpr bool getPreconditionerIsDiagonal( ){ return _preconditioner_is_diagonal; }
+        virtual void preconditionMatrix(const floatVector &A, floatVector &B);
 
-            //! Get a pointer to the row-major form of the preconditioner
-            const floatVector * getFlatPreconditioner( );
+       protected:
+        virtual void formPreconditioner();
 
-            SolverBase *solver; //!< Pointer to the containing solver class
+        // CACHED DATA STORAGE OPERATIONS
+        virtual void addIterationData(dataBase *data) override;
 
-            // TEMP
-            bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not
+        virtual void addNLStepData(dataBase *data) override;
 
-            unsigned int _preconditioner_type = 0; //!< The type of preconditioner to use
+        DataStorage<floatVector>
+            _preconditioner;  //!< The pre-conditioner matrix in row-major form for the global solve
+                              // END CACHED DATA STORAGE OPERATIONS
 
-            bool _preconditioner_is_diagonal = true; //!< Flag for if the pre-conditioner only stores the diagonal elements
-
-            virtual void formMaxRowPreconditioner( ); //!< Temporary function. We won't use it in the future.
-            // END TEMP
-
-        protected:
-
-            virtual void formPreconditioner( );
-
-            // CACHED DATA STORAGE OPERATIONS
-            virtual void addIterationData( dataBase *data ) override;
-
-            virtual void addNLStepData( dataBase *data ) override;
-            // END CACHED DATA STORAGE OPERATIONS
-
-        private:
-
-            DataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
-
-            friend class tardigradeHydra::unit_test::PreconditionerBaseTester; //!< The unit tester for the class
-
+       private:
+        friend class tardigradeHydra::unit_test::PreconditionerBaseTester;  //!< The unit tester for the class
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif
