@@ -1,29 +1,29 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_hydraPerzynaJ2Viscoplasticity.h
-  ******************************************************************************
-  * An implementation of perzynaJ2Viscoplasticity using the hydra framework.
-  * Used as an example and as the basis for more complex models.
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_hydraPerzynaJ2Viscoplasticity.h
+ ******************************************************************************
+ * An implementation of perzynaJ2Viscoplasticity using the hydra framework.
+ * Used as an example and as the basis for more complex models.
+ ******************************************************************************
+ */
 
 #ifndef TARDIGRADE_HYDRA_PERZYNA_J2_VISCOPLASTICITY_H
 #define TARDIGRADE_HYDRA_PERZYNA_J2_VISCOPLASTICITY_H
 
 #define USE_EIGEN
-#include<tardigrade_vector_tools.h>
-#include<tardigrade_hydraPerzynaViscoplasticity.h>
+#include <tardigrade_hydraPerzynaViscoplasticity.h>
+#include <tardigrade_vector_tools.h>
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
-    namespace perzynaJ2Viscoplasticity{
+    namespace perzynaJ2Viscoplasticity {
 
         // forward class definitions
-        namespace unit_test{
+        namespace unit_test {
             class residualTester;
         }
 
-        constexpr const char* str_end(const char *str) {
+        constexpr const char *str_end(const char *str) {
             /*! Recursively search string for last character
              * \param *str: pointer to string START of UNIX path like string
              * \return *str: pointer to last character in string
@@ -37,35 +37,37 @@ namespace tardigradeHydra{
              */
             return *str == '/' ? true : (*str ? str_slant(str + 1) : false);
         }
-        constexpr const char* r_slant(const char* str) {
+        constexpr const char *r_slant(const char *str) {
             /*! Recursively search string for rightmost UNIX path separator from the right
              * \param *str: pointer to string END of UNIX path like string
              * \return *str: pointer to start of base name
              */
             return *str == '/' ? (str + 1) : r_slant(str - 1);
         }
-        constexpr const char* file_name(const char* str) {
+        constexpr const char *file_name(const char *str) {
             /*! Return the current file name with extension at compile time
              * \param *str: pointer to string START of UNIX path like string
              * \return str: file base name
              */
             return str_slant(str) ? r_slant(str_end(str)) : str;
         }
-        //Return filename for constructing debugging messages
-        //https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
-        const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
-        const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
+        // Return filename for constructing debugging messages
+        // https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
+        const std::string __BASENAME__ = file_name(__FILE__);  //!< The base filename which will be parsed
+        const std::string __FILENAME__ =
+            __BASENAME__.substr(0, __BASENAME__.find_last_of("."));  //!< The parsed filename for error handling
 
-        typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
-        typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
-        typedef double floatType; //!< Define the float values type.
-        typedef std::vector< floatType > floatVector; //!< Define a vector of floats
-        typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
+        typedef tardigradeErrorTools::Node           errorNode;    //!< Redefinition for the error node
+        typedef errorNode                           *errorOut;     //!< Redefinition for a pointer to the error node
+        typedef double                               floatType;    //!< Define the float values type.
+        typedef std::vector<floatType>               floatVector;  //!< Define a vector of floats
+        typedef std::vector<std::vector<floatType> > floatMatrix;  //!< Define a matrix of floats
 
-        template <typename T> int sgn(T val){
+        template <typename T>
+        int sgn(T val) {
             /*!
              * Get the sign of the value
-             * 
+             *
              * \param val: The value to compute the sign of
              */
             return (T(0) < val) - (val < T(0));
@@ -74,95 +76,96 @@ namespace tardigradeHydra{
         /*!
          * A class which defines a J2 viscoplastic residual
          */
-        class residual : public tardigradeHydra::perzynaViscoplasticity::residual{
+        class residual : public tardigradeHydra::perzynaViscoplasticity::residual {
+           public:
+            //! Default constructor
+            residual() : tardigradeHydra::perzynaViscoplasticity::residual(), _elasticConfigurationIndex(0) {}
 
-            public:
+            residual(tardigradeHydra::hydraBase *hydra, const unsigned int &numEquations,
+                     const unsigned int              &plasticConfigurationIndex,
+                     const std::vector<unsigned int> &stateVariableIndices, const floatVector &parameters,
+                     const unsigned int &elasticConfigurationIndex = 0, const floatType integrationParameter = 0.5)
+                : tardigradeHydra::perzynaViscoplasticity::residual(hydra, numEquations, plasticConfigurationIndex,
+                                                                    stateVariableIndices, parameters,
+                                                                    integrationParameter),
+                  _elasticConfigurationIndex(elasticConfigurationIndex) {
+                /*!
+                 * The main constructor function
+                 *
+                 * \param *hydra: A reference to the containing hydra object
+                 * \param &numEquations: The number of equations to be defined by
+                 *     the residual
+                 * \param &plasticConfigurationIndex: The index of the plastic
+                 *     configuration.
+                 * \param &stateVariableIndices: The indices of the plastic state variables
+                 * \param &parameters: The parameters for the model
+                 * \param &elasticConfigurationIndex: The index of the elastic configuration
+                 * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is
+                 * implicit.
+                 */
+            }
 
-                //! Default constructor
-                residual( ) : tardigradeHydra::perzynaViscoplasticity::residual( ), _elasticConfigurationIndex( 0 ){ }
+           public:
+            // Friend classes
+            friend class tardigradeHydra::perzynaViscoplasticity::unit_test::
+                residualTester;  //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR
+                                 //!< TESTING!
 
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int &plasticConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const unsigned int &elasticConfigurationIndex = 0, const floatType integrationParameter = 0.5 ) : tardigradeHydra::perzynaViscoplasticity::residual( hydra, numEquations, plasticConfigurationIndex, stateVariableIndices, parameters, integrationParameter ),
-                    _elasticConfigurationIndex( elasticConfigurationIndex ){
-                    /*!
-                     * The main constructor function
-                     *
-                     * \param *hydra: A reference to the containing hydra object
-                     * \param &numEquations: The number of equations to be defined by
-                     *     the residual
-                     * \param &plasticConfigurationIndex: The index of the plastic
-                     *     configuration.
-                     * \param &stateVariableIndices: The indices of the plastic state variables
-                     * \param &parameters: The parameters for the model
-                     * \param &elasticConfigurationIndex: The index of the elastic configuration
-                     * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
-                     */
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
-                }
+            using tardigradeHydra::perzynaViscoplasticity::residual::setResidual;
 
-            public:
+            using tardigradeHydra::perzynaViscoplasticity::residual::setJacobian;
 
-                 // Friend classes
-                friend class tardigradeHydra::perzynaViscoplasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdRdF;
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdRdT;
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::setResidual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setAdditionalDerivatives;
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::setJacobian;
+            //! Get the index of the elastic configuration
+            const unsigned int getElasticConfigurationIndex() { return _elasticConfigurationIndex; }
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::setdRdF;
+            //! The index of the scalar damage
+            unsigned int damageISVIndex = 1;
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::setdRdT;
+            void addParameterizationInfo(std::string &parameterization_info) override;
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::setAdditionalDerivatives;
+           protected:
+            using tardigradeHydra::perzynaViscoplasticity::residual::setHardeningFunction;
 
-                //! Get the index of the elastic configuration
-                const unsigned int *getElasticConfigurationIndex( ){ return &_elasticConfigurationIndex; }
+            using tardigradeHydra::perzynaViscoplasticity::residual::setDragStress;
 
-                //! The index of the scalar damage
-                unsigned int damageISVIndex = 1;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setYieldFunction;
 
-                void addParameterizationInfo( std::string &parameterization_info ) override;
+            virtual void setYieldFunction(const bool isPrevious) override;
 
-            protected:
+            virtual void setYieldFunctionDerivatives(const bool isPrevious) override;
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::setHardeningFunction;
+            virtual void setSignTerm();
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::setDragStress;
+            virtual void setPreviousSignTerm();
 
-                using tardigradeHydra::perzynaViscoplasticity::residual::setYieldFunction;
+            virtual void setDragStress(const bool isPrevious) override;
 
-                virtual void setYieldFunction( const bool isPrevious ) override;
+            virtual void setDragStressDerivatives(const bool isPrevious) override;
 
-                virtual void setYieldFunctionDerivatives( const bool isPrevious ) override;
+            virtual void setHardeningFunction(const bool isPrevious) override;
 
-                virtual void setSignTerm( );
+            virtual void setHardeningFunctionDerivatives(const bool isPrevious) override;
 
-                virtual void setPreviousSignTerm( );
+            virtual void decomposeParameters(const floatVector &parameters) override;
 
-                virtual void setDragStress( const bool isPrevious ) override;
+           private:
+            unsigned int _elasticConfigurationIndex;
 
-                virtual void setDragStressDerivatives( const bool isPrevious ) override;
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, signTerm, floatType, setSignTerm)
 
-                virtual void setHardeningFunction( const bool isPrevious ) override;
-
-                virtual void setHardeningFunctionDerivatives( const bool isPrevious ) override;
-
-                virtual void decomposeParameters( const floatVector &parameters ) override;
-
-            private:
-
-                unsigned int _elasticConfigurationIndex;
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, signTerm,         floatType,   setSignTerm         )
-
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousSignTerm, floatType,   setPreviousSignTerm )
-
-
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousSignTerm, floatType, setPreviousSignTerm)
         };
 
-    }
+    }  // namespace perzynaJ2Viscoplasticity
 
-}
+}  // namespace tardigradeHydra
 
 #endif

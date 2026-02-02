@@ -16,14 +16,5 @@ build*/
 *_results.txt
 *results.txt
 
-# Abaqus output files
-*.com
-*.dat
-*.msg
-*.odb
-*.prt
-*.sim
-*.sta
-
 # PyCharm IDE
 .idea/

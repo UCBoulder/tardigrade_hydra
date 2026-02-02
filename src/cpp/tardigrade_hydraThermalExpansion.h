@@ -1,29 +1,29 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_hydraThermalExpansion.h
-  ******************************************************************************
-  * An implementation of thermal expansion using the hydra framework. Used as an
-  * example and as the basis for more complex models.
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_hydraThermalExpansion.h
+ ******************************************************************************
+ * An implementation of thermal expansion using the hydra framework. Used as an
+ * example and as the basis for more complex models.
+ ******************************************************************************
+ */
 
 #ifndef TARDIGRADE_HYDRA_THERMAL_EXPANSION_H
 #define TARDIGRADE_HYDRA_THERMAL_EXPANSION_H
 
 #define USE_EIGEN
-#include<tardigrade_vector_tools.h>
-#include<tardigrade_hydra.h>
+#include <tardigrade_hydra.h>
+#include <tardigrade_vector_tools.h>
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
-    namespace thermalExpansion{
+    namespace thermalExpansion {
 
         // forward class definitions
-        namespace unit_test{
+        namespace unit_test {
             class residualTester;
         }
 
-        constexpr const char* str_end(const char *str) {
+        constexpr const char *str_end(const char *str) {
             /*! Recursively search string for last character
              * \param *str: pointer to string START of UNIX path like string
              * \return *str: pointer to last character in string
@@ -37,134 +37,138 @@ namespace tardigradeHydra{
              */
             return *str == '/' ? true : (*str ? str_slant(str + 1) : false);
         }
-        constexpr const char* r_slant(const char* str) {
+        constexpr const char *r_slant(const char *str) {
             /*! Recursively search string for rightmost UNIX path separator from the right
              * \param *str: pointer to string END of UNIX path like string
              * \return *str: pointer to start of base name
              */
             return *str == '/' ? (str + 1) : r_slant(str - 1);
         }
-        constexpr const char* file_name(const char* str) {
+        constexpr const char *file_name(const char *str) {
             /*! Return the current file name with extension at compile time
              * \param *str: pointer to string START of UNIX path like string
              * \return str: file base name
              */
             return str_slant(str) ? r_slant(str_end(str)) : str;
         }
-        //Return filename for constructing debugging messages
-        //https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
-        const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
-    const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
+        // Return filename for constructing debugging messages
+        // https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
+        const std::string __BASENAME__ = file_name(__FILE__);  //!< The base filename which will be parsed
+        const std::string __FILENAME__ =
+            __BASENAME__.substr(0, __BASENAME__.find_last_of("."));  //!< The parsed filename for error handling
 
-        typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
-        typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
-        typedef double floatType; //!< Define the float values type.
-        typedef std::vector< floatType > floatVector; //!< Define a vector of floats
-        typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
+        typedef tardigradeErrorTools::Node           errorNode;    //!< Redefinition for the error node
+        typedef errorNode                           *errorOut;     //!< Redefinition for a pointer to the error node
+        typedef double                               floatType;    //!< Define the float values type.
+        typedef std::vector<floatType>               floatVector;  //!< Define a vector of floats
+        typedef std::vector<std::vector<floatType> > floatMatrix;  //!< Define a matrix of floats
 
         /*!
          * A class which defines a thermal expansion residual
          */
-        class residual : public tardigradeHydra::residualBase{
+        class residual : public tardigradeHydra::ResidualBase<> {
+           public:
+            residual(tardigradeHydra::hydraBase *hydra, const unsigned int &numEquations,
+                     const unsigned int thermalConfigurationIndex, const floatVector &parameters)
+                : tardigradeHydra::ResidualBase<>(hydra, numEquations) {
+                /*!
+                 * The main constructor function
+                 *
+                 * \param *hydra: A reference to the containing hydra object
+                 * \param &numEquations: The number of equations to be defined by
+                 *     the residual
+                 * \param &thermalConfigurationIndex: The index of the thermal
+                 *     configuration.
+                 * \param &parameters: The parameters for the model as required by
+                 *     constitutiveTools::quadraticThermalExpansion
+                 */
 
-            public:
+                _thermalConfigurationIndex = thermalConfigurationIndex;
 
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int thermalConfigurationIndex, const floatVector &parameters ) : tardigradeHydra::residualBase( hydra, numEquations ){
-                    /*!
-                     * The main constructor function
-                     *
-                     * \param *hydra: A reference to the containing hydra object
-                     * \param &numEquations: The number of equations to be defined by
-                     *     the residual
-                     * \param &thermalConfigurationIndex: The index of the thermal
-                     *     configuration.
-                     * \param &parameters: The parameters for the model as required by
-                     *     constitutiveTools::quadraticThermalExpansion
-                     */
+                TARDIGRADE_ERROR_TOOLS_CATCH(
+                    tardigradeHydra::thermalExpansion::residual::decomposeParameters(parameters));
+            }
 
-                    _thermalConfigurationIndex = thermalConfigurationIndex;
+            void setReferenceTemperature(const floatType &referenceTemperature);
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameters( parameters ) );
+            void setLinearParameters(const floatVector &linearParameters);
 
-                }
+            void setQuadraticParameters(const floatVector &quadraticParameters);
 
-                void setReferenceTemperature( const floatType &referenceTemperature );
+            //! Get the index of the thermal deformation configuration
+            const unsigned int getThermalConfigurationIndex() { return _thermalConfigurationIndex; };
 
-                void setLinearParameters( const floatVector &linearParameters );
+            //! Get the reference temperature for the thermal expansion
+            const floatType getReferenceTemperature() { return _referenceTemperature; }
 
-                void setQuadraticParameters( const floatVector &quadraticParameters );
+            //! Get the linear parameters for the thermal expansion
+            const floatVector *getLinearParameters() { return &_linearParameters; }
 
-                //! Get the index of the thermal deformation configuration
-                const unsigned int* getThermalConfigurationIndex( ){ return &_thermalConfigurationIndex; };
+            //! Get the quadratic parameters for the thermal expansion
+            const floatVector *getQuadraticParameters() { return &_quadraticParameters; }
 
-                //! Get the reference temperature for the thermal expansion
-                const floatType* getReferenceTemperature( ){ return &_referenceTemperature; }
+            virtual void addParameterizationInfo(std::string &parameterization_info) override;
 
-                //! Get the linear parameters for the thermal expansion
-                const floatVector* getLinearParameters( ){ return &_linearParameters; }
+           protected:
+            virtual void setThermalGreenLagrangeStrain();
 
-                //! Get the quadratic parameters for the thermal expansion
-                const floatVector* getQuadraticParameters( ){ return &_quadraticParameters; }
+            virtual void setThermalDeformationGradient();
 
-                virtual void addParameterizationInfo( std::string &parameterization_info ) override;
+            virtual void setdThermalGreenLagrangeStraindT();
 
-            protected:
+            virtual void setdThermalDeformationGradientdT();
 
-                virtual void setThermalGreenLagrangeStrain( );
+            virtual void setResidual() override;
 
-                virtual void setThermalDeformationGradient( );
+            virtual void setJacobian() override;
 
-                virtual void setdThermalGreenLagrangeStraindT( );
+            virtual void setdRdT() override;
 
-                virtual void setdThermalDeformationGradientdT( );
+            virtual void setdRdF() override;
 
-                virtual void setResidual( ) override;
+           private:
+            // Friend classes
+            friend class tardigradeHydra::thermalExpansion::unit_test::
+                residualTester;  //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR
+                                 //!< TESTING!
 
-                virtual void setJacobian( ) override;
+            using tardigradeHydra::ResidualBase<>::ResidualBase;
 
-                virtual void setdRdT( ) override;
+            using tardigradeHydra::ResidualBase<>::setResidual;
 
-                virtual void setdRdF( ) override;
+            using tardigradeHydra::ResidualBase<>::setJacobian;
 
-            private:
+            using tardigradeHydra::ResidualBase<>::setdRdF;
 
-                // Friend classes
-                friend class tardigradeHydra::thermalExpansion::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+            using tardigradeHydra::ResidualBase<>::setdRdT;
 
-                using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase<>::setAdditionalDerivatives;
 
-                using tardigradeHydra::residualBase::setResidual;
+            unsigned int _thermalConfigurationIndex;
 
-                using tardigradeHydra::residualBase::setJacobian;
+            floatType _referenceTemperature;
 
-                using tardigradeHydra::residualBase::setdRdF;
+            floatVector _linearParameters;
 
-                using tardigradeHydra::residualBase::setdRdT;
+            floatVector _quadraticParameters;
 
-                using tardigradeHydra::residualBase::setAdditionalDerivatives;
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalGreenLagrangeStrain, floatVector,
+                                                       setThermalGreenLagrangeStrain)
 
-                unsigned int _thermalConfigurationIndex;
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalGreenLagrangeStraindT, floatVector,
+                                                       setdThermalGreenLagrangeStraindT)
 
-                floatType _referenceTemperature;
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalDeformationGradient, floatVector,
+                                                       setThermalDeformationGradient)
 
-                floatVector _linearParameters;
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalDeformationGradientdT, floatVector,
+                                                       setdThermalDeformationGradientdT)
 
-                floatVector _quadraticParameters;
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalGreenLagrangeStrain,    floatVector, setThermalGreenLagrangeStrain    )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalGreenLagrangeStraindT, floatVector, setdThermalGreenLagrangeStraindT )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalDeformationGradient,    floatVector, setThermalDeformationGradient    )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalDeformationGradientdT, floatVector, setdThermalDeformationGradientdT )
-
-                virtual void decomposeParameters( const floatVector &parameters );
-
+            virtual void decomposeParameters(const floatVector &parameters);
         };
 
-    }
+    }  // namespace thermalExpansion
 
-}
+}  // namespace tardigradeHydra
 
 #endif

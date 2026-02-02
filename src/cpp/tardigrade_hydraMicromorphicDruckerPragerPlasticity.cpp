@@ -1,49 +1,47 @@
 /**
-  ******************************************************************************
-  * \file tardigrade_hydraMicromorphicDruckerPragerPlasticity.cpp
-  ******************************************************************************
-  * An implementation of micromorphic linear elasticity using the hydra
-  * framework. Used as an example and as the basis for more complex models.
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * \file tardigrade_hydraMicromorphicDruckerPragerPlasticity.cpp
+ ******************************************************************************
+ * An implementation of micromorphic linear elasticity using the hydra
+ * framework. Used as an example and as the basis for more complex models.
+ ******************************************************************************
+ */
 
-#include<tardigrade_hydraMicromorphicDruckerPragerPlasticity.h>
-#include<tardigrade_constitutive_tools.h>
-#include<tardigrade_micromorphic_tools.h>
+#include <tardigrade_constitutive_tools.h>
+#include <tardigrade_hydraMicromorphicDruckerPragerPlasticity.h>
+#include <tardigrade_micromorphic_tools.h>
 
-namespace tardigradeHydra{
+namespace tardigradeHydra {
 
-    namespace micromorphicDruckerPragerPlasticity{
+    namespace micromorphicDruckerPragerPlasticity {
 
-        variableType weakMac( const variableType &x, const variableType &a ){
+        variableType weakMac(const variableType &x, const variableType &a) {
             /*!
              * Compute a weakened Macaulay bracket based on the sigmoid function
-             * 
+             *
              * \param &x: The value to compute the weakened sigmoid function of
              * \param &a: The a parameter that determines how weak the bracket is
              */
 
-            return std::log( std::exp( a * x ) + 1 ) / a;
-
+            return std::log(std::exp(a * x) + 1) / a;
         }
 
-        variableType weakMac( const variableType &x, const variableType &a, variableType &dmacdx ){
+        variableType weakMac(const variableType &x, const variableType &a, variableType &dmacdx) {
             /*!
              * Compute a weakened Macaulay bracket based on the sigmoid function
-             * 
+             *
              * \param &x: The value to compute the weakened sigmoid function of
              * \param &a: The a parameter that determines how weak the bracket is
              * \param &dmacdx: The derivative of the bracket w.r.t. x
              */
 
-            dmacdx = 1. / ( 1. + std::exp( -a * x ) );
+            dmacdx = 1. / (1. + std::exp(-a * x));
 
-            return std::log( std::exp( a * x ) + 1 ) / a;
-
+            return std::log(std::exp(a * x) + 1) / a;
         }
 
-        void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
-                                                     parameterType &A, parameterType &B ){
+        void computeDruckerPragerInternalParameters(const parameterType &frictionAngle, const parameterType &beta,
+                                                    parameterType &A, parameterType &B) {
             /*!
              * Compute the Drucker-Prager internal parameters
              *
@@ -52,87 +50,95 @@ namespace tardigradeHydra{
              * \param &A: The A parameter.
              * \param &B: The B parameter.
              */
-    
-            //Make sure the parameters are within bounds
-            TARDIGRADE_ERROR_TOOLS_CHECK( ( 0 <= frictionAngle ) && ( frictionAngle <= 1.570796 ), "The friction angle must be betwen 0 and pi / 2 not " + std::to_string( frictionAngle ) );
-    
-            TARDIGRADE_ERROR_TOOLS_CHECK( abs( beta ) <= 1, "Beta must be between -1 and 1 not " + std::to_string( beta ) );
-    
-            //Compute the parameters
-            parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
-    
-            A = betaAngle * std::cos( frictionAngle );
-    
-            B = betaAngle * std::sin( frictionAngle );
-    
+
+            // Make sure the parameters are within bounds
+            TARDIGRADE_ERROR_TOOLS_CHECK((0 <= frictionAngle) && (frictionAngle <= 1.570796),
+                                         "The friction angle must be betwen 0 and pi / 2 not " +
+                                             std::to_string(frictionAngle));
+
+            TARDIGRADE_ERROR_TOOLS_CHECK(abs(beta) <= 1, "Beta must be between -1 and 1 not " + std::to_string(beta));
+
+            // Compute the parameters
+            parameterType betaAngle = 2. * std::sqrt(6.) / (3. + beta * std::sin(frictionAngle));
+
+            A = betaAngle * std::cos(frictionAngle);
+
+            B = betaAngle * std::sin(frictionAngle);
         }
 
-        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &stressMeasure, const variableType &cohesion,
-                                                               const secondOrderTensor &precedingDeformationGradient,
-                                                               const parameterType &frictionAngle, const parameterType &beta,
-                                                               variableType &yieldValue ){
+        void computeSecondOrderDruckerPragerYieldEquation(const secondOrderTensor &stressMeasure,
+                                                          const variableType      &cohesion,
+                                                          const secondOrderTensor &precedingDeformationGradient,
+                                                          const parameterType &frictionAngle, const parameterType &beta,
+                                                          variableType &yieldValue) {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
              * \f$ F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
-             * 
+             *
              * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
-             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ}
-             *  dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p} elasticRightCauchyGreen_{IJ}^{-1}
-             *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
-             *  A^{angle} = \beta^{angle} \cos( frictionAngle )
-             *  B^{angle} = \beta^{angle} \sin( frictionAngle )
-             *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }
-             * \f$
+             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
+             * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
+             * elasticRightCauchyGreen_{IJ}^{-1} \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ}
+             * referenceStressMeasure_{IJ} A^{angle} = \beta^{angle} \cos( frictionAngle ) B^{angle} = \beta^{angle}
+             * \sin( frictionAngle ) \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) } \f$
              *
              * \param &stressMeasure: The stress measure
              * \param &cohesion: The cohesion measure.
-             * \param &precedingDeformationGradient: The deformation gradients preceding the configuration of the stress measure
-             * \param &frictionAngle: The friction angle
-             * \param &beta: The beta parameter
-             * \param &yieldValue: The yield value.
+             * \param &precedingDeformationGradient: The deformation gradients preceding the configuration of the stress
+             * measure \param &frictionAngle: The friction angle \param &beta: The beta parameter \param &yieldValue:
+             * The yield value.
              */
 
             parameterType AAngle, BAngle;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::micromorphicDruckerPragerPlasticity::computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::computeDruckerPragerInternalParameters(
+                    frictionAngle, beta, AAngle, BAngle));
 
-            //Compute the right Cauchy-Green deformation tensor
+            // Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::computeRightCauchyGreen(precedingDeformationGradient, rightCauchyGreen));
 
-            //Compute the decomposition of the stress
-            variableType pressure;
+            // Compute the decomposition of the stress
+            variableType      pressure;
             secondOrderTensor deviatoricReferenceStress;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
-                                                                                                                       rightCauchyGreen, deviatoricReferenceStress, pressure ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition(
+                stressMeasure, rightCauchyGreen, deviatoricReferenceStress, pressure));
 
-            //Compute the l2norm of the deviatoric stress
-            variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
+            // Compute the l2norm of the deviatoric stress
+            variableType normDevStress = tardigradeVectorTools::l2norm(deviatoricReferenceStress);
 
-            //Evaluate the yield equation
-            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
-
+            // Evaluate the yield equation
+            yieldValue = normDevStress - (AAngle * cohesion - BAngle * pressure);
         }
 
-        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &referenceStressMeasure, const variableType &cohesion,
-                                                           const secondOrderTensor &precedingDeformationGradient,
-                                                           const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableType &yieldValue, secondOrderTensor &dFdStress, variableType &dFdc,
-                                                           secondOrderTensor &dFdPrecedingF, double tol ){
+        void computeSecondOrderDruckerPragerYieldEquation(const secondOrderTensor &referenceStressMeasure,
+                                                          const variableType      &cohesion,
+                                                          const secondOrderTensor &precedingDeformationGradient,
+                                                          const parameterType &frictionAngle, const parameterType &beta,
+                                                          variableType &yieldValue, secondOrderTensor &dFdStress,
+                                                          variableType &dFdc, secondOrderTensor &dFdPrecedingF,
+                                                          double tol) {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
              * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
-             * 
+             *
              * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
-             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ}
-             *  dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p} elasticRightCauchyGreen_{IJ}^{-1}\f$
+             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
+             * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
+             * elasticRightCauchyGreen_{IJ}^{-1}\f$
              *
              *  Also compute the Jacobians
-             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} }
-             * \frac{ \partial F }{ \partial \bar{c} } = -A^{\phi}
-             * \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial C_{IJ} }
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev (
+             * stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} } \frac{
+             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev (
+             * stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{
+             * \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial
+             * C_{IJ} }
              *
              *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
              *  A^{angle} = \beta^{angle} \cos( frictionAngle )
@@ -147,100 +153,114 @@ namespace tardigradeHydra{
              * \param &yieldValue: The yield value.
              * \param &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
              * \param &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
-             * \param &dFdPrecedingF: The Jacobian of the yield surface w.r.t. the preceding deformation gradient from the stress-measure's configuration
-             * \param tol: The tolerance used to prevent nans in the Jacobians
+             * \param &dFdPrecedingF: The Jacobian of the yield surface w.r.t. the preceding deformation gradient from
+             * the stress-measure's configuration \param tol: The tolerance used to prevent nans in the Jacobians
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
 
             parameterType AAngle, BAngle;
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
-   
-            //Compute the right Cauchy-Green deformation tensor
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeDruckerPragerInternalParameters(frictionAngle, beta, AAngle, BAngle));
+
+            // Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
             fourthOrderTensor dRCGdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
- 
-            //Compute the decomposition of the stress
-            variableType pressure;
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeRightCauchyGreen(
+                precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF));
+
+            // Compute the decomposition of the stress
+            variableType      pressure;
             secondOrderTensor deviatoricReferenceStress;
-    
+
             fourthOrderTensor dDevStressdStress, dDevStressdRCG;
             secondOrderTensor dPressuredStress, dPressuredRCG;
-    
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
-                                          rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                          dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
-  
-            auto map_dDevStressdRCG  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdRCG.data( ) );
-            auto map_dPressuredRCG   = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dPressuredRCG.data( ) );
-            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dRCGdPrecedingF.data( ) );
 
-            fourthOrderTensor dDevStressdPrecedingF( sot_dim * sot_dim );
-            secondOrderTensor dPressuredPrecedingF( sot_dim );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition(
+                referenceStressMeasure, rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                dDevStressdRCG, dPressuredStress, dPressuredRCG));
 
-            auto map_dDevStressdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdPrecedingF.data( ) );
-            auto map_dPressuredPrecedingF  = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dPressuredPrecedingF.data( ) );
+            auto map_dDevStressdRCG  = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDevStressdRCG.data());
+            auto map_dPressuredRCG   = getFixedSizeMatrixMap<floatType, 1, sot_dim>(dPressuredRCG.data());
+            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dRCGdPrecedingF.data());
 
-            map_dDevStressdPrecedingF = ( map_dDevStressdRCG * map_dRCGdPrecedingF ).eval( );
-            map_dPressuredPrecedingF  = ( map_dPressuredRCG * map_dRCGdPrecedingF ).eval( );
- 
-            //Compute the l2norm of the deviatoric stress
-            variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
-    
-            //Evaluate the yield equation
-            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
-    
-            //Evaluate the jacobians
-            secondOrderTensor devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
-    
-            auto map_devStressDirection = getFixedSizeMatrixMap< floatType,       1, sot_dim >( devStressDirection.data( ) );
-            auto map_dDevStressdStress  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdStress.data( ) );
+            fourthOrderTensor dDevStressdPrecedingF(sot_dim * sot_dim);
+            secondOrderTensor dPressuredPrecedingF(sot_dim);
 
-            dFdStress  = BAngle * dPressuredStress;
+            auto map_dDevStressdPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDevStressdPrecedingF.data());
+            auto map_dPressuredPrecedingF = getFixedSizeMatrixMap<floatType, 1, sot_dim>(dPressuredPrecedingF.data());
 
-            auto map_dFdStress = getFixedSizeMatrixMap< floatType, 1, sot_dim >( dFdStress.data( ) );
-            map_dFdStress += ( map_devStressDirection * map_dDevStressdStress ).eval( );
-    
-            dFdc = - AAngle;
-    
-            dFdPrecedingF  = BAngle * dPressuredPrecedingF;
-            
-            auto map_dFdPrecedingF = getFixedSizeMatrixMap< floatType, 1, sot_dim >( dFdPrecedingF.data( ) );
-            map_dFdPrecedingF += ( map_devStressDirection * map_dDevStressdPrecedingF ).eval( );
+            map_dDevStressdPrecedingF = (map_dDevStressdRCG * map_dRCGdPrecedingF).eval();
+            map_dPressuredPrecedingF  = (map_dPressuredRCG * map_dRCGdPrecedingF).eval();
 
+            // Compute the l2norm of the deviatoric stress
+            variableType normDevStress = tardigradeVectorTools::l2norm(deviatoricReferenceStress);
+
+            // Evaluate the yield equation
+            yieldValue = normDevStress - (AAngle * cohesion - BAngle * pressure);
+
+            // Evaluate the jacobians
+            secondOrderTensor devStressDirection = deviatoricReferenceStress / (normDevStress + tol);
+
+            auto map_devStressDirection = getFixedSizeMatrixMap<floatType, 1, sot_dim>(devStressDirection.data());
+            auto map_dDevStressdStress  = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDevStressdStress.data());
+
+            dFdStress = BAngle * dPressuredStress;
+
+            auto map_dFdStress = getFixedSizeMatrixMap<floatType, 1, sot_dim>(dFdStress.data());
+            map_dFdStress += (map_devStressDirection * map_dDevStressdStress).eval();
+
+            dFdc = -AAngle;
+
+            dFdPrecedingF = BAngle * dPressuredPrecedingF;
+
+            auto map_dFdPrecedingF = getFixedSizeMatrixMap<floatType, 1, sot_dim>(dFdPrecedingF.data());
+            map_dFdPrecedingF += (map_devStressDirection * map_dDevStressdPrecedingF).eval();
         }
 
-        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &stressMeasure, const variableType &cohesion,
-                                                           const secondOrderTensor &precedingDeformationGradient,
-                                                           const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableType &yieldValue, secondOrderTensor &dFdStress, variableType &dFdc,
-                                                           secondOrderTensor &dFdPrecedingF, fourthOrderTensor &d2FdStress2,
-                                                           fourthOrderTensor &d2FdStressdPrecedingF, double tol ){
+        void computeSecondOrderDruckerPragerYieldEquation(const secondOrderTensor &stressMeasure,
+                                                          const variableType      &cohesion,
+                                                          const secondOrderTensor &precedingDeformationGradient,
+                                                          const parameterType &frictionAngle, const parameterType &beta,
+                                                          variableType &yieldValue, secondOrderTensor &dFdStress,
+                                                          variableType &dFdc, secondOrderTensor &dFdPrecedingF,
+                                                          fourthOrderTensor &d2FdStress2,
+                                                          fourthOrderTensor &d2FdStressdPrecedingF, double tol) {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
              * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
-             * 
+             *
              * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
-             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ}
-             *  dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p} elasticRightCauchyGreen_{IJ}^{-1}
-             *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
-             *  A^{angle} = \beta^{angle} \cos( frictionAngle )
-             *  B^{angle} = \beta^{angle} \sin( frictionAngle )
-             *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
+             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
+             * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
+             * elasticRightCauchyGreen_{IJ}^{-1} \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ}
+             * referenceStressMeasure_{IJ} A^{angle} = \beta^{angle} \cos( frictionAngle ) B^{angle} = \beta^{angle}
+             * \sin( frictionAngle ) \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
              *
              *  Also compute the Jacobians
-             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} }
-             * \frac{ \partial F }{ \partial \bar{c} } = -A^{\phi}
-             * \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial C_{IJ} }\f$
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev (
+             * stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} } \frac{
+             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev (
+             * stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial C_{IJ} }\f$
              *
              *  The second deriatives of \f$\frac{ \partial F }{ \partial \stressMeasure_{IJ}  }\f$ are
-             *  \f$\frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} } = \frac{ \partial^2 || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} } \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev( stressMeasure )_{CD} } { \partial stressMeasure_{KL} } + \frac{ dev ( stressMeasure )_{AB} }{ || dev( stressMeasure ) || } \frac{ \partial^2 dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} }
-             *  \frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial RCG_{KL} } = \frac{ \partial^2 || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} } \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev( stressMeasure )_{CD} } { \partial C_{KL} } + \frac{ dev ( stressMeasure )_{AB} }{ || dev( stressMeasure ) || } \frac{ \partial^2 dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} \partial C_{KL} } + B^{\phi} \frac{ \partial^2 \bar{p} }{ \partial stressMeasure_{IJ} \partial C_{KL} } \f$
-             *  
+             *  \f$\frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} } = \frac{ \partial^2
+             * || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} }
+             * \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev(
+             * stressMeasure )_{CD} } { \partial stressMeasure_{KL} } + \frac{ dev ( stressMeasure )_{AB} }{ || dev(
+             * stressMeasure ) || } \frac{ \partial^2 dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} \partial
+             * stressMeasure_{KL} } \frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial RCG_{KL} } = \frac{
+             * \partial^2 || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure
+             * )_{CD} } \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev(
+             * stressMeasure )_{CD} } { \partial C_{KL} } + \frac{ dev ( stressMeasure )_{AB} }{ || dev( stressMeasure )
+             * || } \frac{ \partial^2 dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} \partial C_{KL} } +
+             * B^{\phi} \frac{ \partial^2 \bar{p} }{ \partial stressMeasure_{IJ} \partial C_{KL} } \f$
+             *
              * \param &stressMeasure: The stress measure
              * \param &cohesion: The cohesion measure.
              * \param &precedingDeformationGradient: The preceding deformation gradient
@@ -251,140 +271,141 @@ namespace tardigradeHydra{
              * \param &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
              * \param &dFdPrecedingF: The Jacobian of the yield surface w.r.t. the preceding
              *     deformation gradient.
-             * \param &d2FdStress2: The second derivative of the flow direction w.r.t. the stress. This 
-             *     is useful if one is using this expression as the flow potential and wants the jacobian of the flow direction \f$\frac{ \partial G }{\partial Stress_{IJ} }\f$
-             * \param &d2FdStressdPrecedingF: The second derivative of the flow direction w.r.t. the stress and the preceding deformation gradient
-             * \param tol: The tolerance used to prevent nans in the Jacobians
+             * \param &d2FdStress2: The second derivative of the flow direction w.r.t. the stress. This
+             *     is useful if one is using this expression as the flow potential and wants the jacobian of the flow
+             * direction \f$\frac{ \partial G }{\partial Stress_{IJ} }\f$ \param &d2FdStressdPrecedingF: The second
+             * derivative of the flow direction w.r.t. the stress and the preceding deformation gradient \param tol: The
+             * tolerance used to prevent nans in the Jacobians
              */
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int fot_dim = sot_dim * sot_dim;
 
             parameterType AAngle, BAngle;
-            TARDIGRADE_ERROR_TOOLS_CATCH(  computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeDruckerPragerInternalParameters(frictionAngle, beta, AAngle, BAngle));
 
-            //Compute the right Cauchy-Green deformation tensor
+            // Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
             fourthOrderTensor dRCGdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeRightCauchyGreen(
+                precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF));
 
-            //Compute the decomposition of the stress
-            variableType pressure;
+            // Compute the decomposition of the stress
+            variableType      pressure;
             secondOrderTensor deviatoricReferenceStress;
 
             fourthOrderTensor dDevStressdStress, dDevStressdRCG;
             secondOrderTensor dPressuredStress, dPressuredRCG;
 
-            sixthOrderTensor d2DevStressdStressdRCG;
+            sixthOrderTensor  d2DevStressdStressdRCG;
             fourthOrderTensor d2PressuredStressdRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
-                                          rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                          dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition(
+                stressMeasure, rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress, dDevStressdRCG,
+                dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG))
 
-            auto map_dDevStressdRCG  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdRCG.data( ) );
-            auto map_dPressuredRCG   = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dPressuredRCG.data( ) );
-            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dRCGdPrecedingF.data( ) );
+            auto map_dDevStressdRCG  = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDevStressdRCG.data());
+            auto map_dPressuredRCG   = getFixedSizeMatrixMap<floatType, 1, sot_dim>(dPressuredRCG.data());
+            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dRCGdPrecedingF.data());
 
-            fourthOrderTensor dDevStressdPrecedingF( sot_dim * sot_dim );
-            secondOrderTensor dPressuredPrecedingF( sot_dim );
+            fourthOrderTensor dDevStressdPrecedingF(sot_dim * sot_dim);
+            secondOrderTensor dPressuredPrecedingF(sot_dim);
 
-            auto map_dDevStressdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdPrecedingF.data( ) );
-            auto map_dPressuredPrecedingF  = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dPressuredPrecedingF.data( ) );
+            auto map_dDevStressdPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDevStressdPrecedingF.data());
+            auto map_dPressuredPrecedingF = getFixedSizeMatrixMap<floatType, 1, sot_dim>(dPressuredPrecedingF.data());
 
-            map_dDevStressdPrecedingF = ( map_dDevStressdRCG * map_dRCGdPrecedingF ).eval( );
-            map_dPressuredPrecedingF  = ( map_dPressuredRCG * map_dRCGdPrecedingF ).eval( );
+            map_dDevStressdPrecedingF = (map_dDevStressdRCG * map_dRCGdPrecedingF).eval();
+            map_dPressuredPrecedingF  = (map_dPressuredRCG * map_dRCGdPrecedingF).eval();
 
-            sixthOrderTensor d2DevStressdStressdPrecedingF( sot_dim * sot_dim * sot_dim, 0 );
+            sixthOrderTensor d2DevStressdStressdPrecedingF(sot_dim * sot_dim * sot_dim, 0);
 
-            fourthOrderTensor d2PressuredStressdPrecedingF( sot_dim * sot_dim, 0 );
+            fourthOrderTensor d2PressuredStressdPrecedingF(sot_dim * sot_dim, 0);
 
-            for ( unsigned int I = 0; I < deviatoricReferenceStress.size( ); I++ ){
-
-                for ( unsigned int J = 0; J < deviatoricReferenceStress.size( ); J++ ){
-
-                    for ( unsigned int K = 0; K < precedingDeformationGradient.size( ); K++ ){
-
-                        for ( unsigned int L = 0; L < rightCauchyGreen.size( ); L++ ){
-
-                            d2DevStressdStressdPrecedingF[ sot_dim * sot_dim * I + sot_dim * J + L ]
-                                += d2DevStressdStressdRCG[ sot_dim * sot_dim * I + sot_dim * J + K ] * dRCGdPrecedingF[ sot_dim * K + L ];
-
+            for (unsigned int I = 0; I < deviatoricReferenceStress.size(); I++) {
+                for (unsigned int J = 0; J < deviatoricReferenceStress.size(); J++) {
+                    for (unsigned int K = 0; K < precedingDeformationGradient.size(); K++) {
+                        for (unsigned int L = 0; L < rightCauchyGreen.size(); L++) {
+                            d2DevStressdStressdPrecedingF[sot_dim * sot_dim * I + sot_dim * J + L] +=
+                                d2DevStressdStressdRCG[sot_dim * sot_dim * I + sot_dim * J + K] *
+                                dRCGdPrecedingF[sot_dim * K + L];
                         }
 
-                        d2PressuredStressdPrecedingF[ sot_dim * I + K ]
-                            += d2PressuredStressdRCG[ sot_dim * I + J ] * dRCGdPrecedingF[ sot_dim * J + K ];
-
+                        d2PressuredStressdPrecedingF[sot_dim * I + K] +=
+                            d2PressuredStressdRCG[sot_dim * I + J] * dRCGdPrecedingF[sot_dim * J + K];
                     }
-
                 }
-
             }
 
-            //Compute the l2norm of the deviatoric stress
-            variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
+            // Compute the l2norm of the deviatoric stress
+            variableType normDevStress = tardigradeVectorTools::l2norm(deviatoricReferenceStress);
 
-            //Evaluate the yield equation
-            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
+            // Evaluate the yield equation
+            yieldValue = normDevStress - (AAngle * cohesion - BAngle * pressure);
 
-            //Evaluate the jacobians
-            secondOrderTensor devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
+            // Evaluate the jacobians
+            secondOrderTensor devStressDirection = deviatoricReferenceStress / (normDevStress + tol);
 
-            auto map_devStressDirection = getFixedSizeMatrixMap< floatType,       1, sot_dim >( devStressDirection.data( ) );
-            auto map_dDevStressdStress  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdStress.data( ) );
+            auto map_devStressDirection = getFixedSizeMatrixMap<floatType, 1, sot_dim>(devStressDirection.data());
+            auto map_dDevStressdStress  = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDevStressdStress.data());
 
-            dFdStress  = BAngle * dPressuredStress;
+            dFdStress = BAngle * dPressuredStress;
 
-            auto map_dFdStress = getFixedSizeMatrixMap< floatType, 1, sot_dim >( dFdStress.data( ) );
-            map_dFdStress += ( map_devStressDirection * map_dDevStressdStress ).eval( );
+            auto map_dFdStress = getFixedSizeMatrixMap<floatType, 1, sot_dim>(dFdStress.data());
+            map_dFdStress += (map_devStressDirection * map_dDevStressdStress).eval();
 
-            dFdc = - AAngle;
+            dFdc = -AAngle;
 
             dFdPrecedingF = BAngle * dPressuredPrecedingF;
 
-            auto map_dFdPrecedingF = getFixedSizeMatrixMap< floatType, 1, sot_dim >( dFdPrecedingF.data( ) );
-            map_dFdPrecedingF += ( map_devStressDirection * map_dDevStressdPrecedingF ).eval( );
+            auto map_dFdPrecedingF = getFixedSizeMatrixMap<floatType, 1, sot_dim>(dFdPrecedingF.data());
+            map_dFdPrecedingF += (map_devStressDirection * map_dDevStressdPrecedingF).eval();
 
-            //Evaluate the second-order jacobians
-            fourthOrderTensor dDevStressDirectiondDevStress( sot_dim * sot_dim, 0 );
-            for ( unsigned int i = 0; i < sot_dim; i++ ){ dDevStressDirectiondDevStress[ sot_dim * i + i ] = 1. / ( normDevStress + tol ); }
-
-            auto map_dDevStressDirectiondDevStress = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressDirectiondDevStress.data( ) );
-            map_dDevStressDirectiondDevStress -= ( map_devStressDirection.transpose( ) * map_devStressDirection / ( normDevStress + tol ) ).eval( );
-
-            d2FdStress2   = fourthOrderTensor( fot_dim );
-            fourthOrderTensor temp( fot_dim );
-            auto map_temp = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( temp.data( ) );
-            map_temp = ( map_dDevStressDirectiondDevStress * map_dDevStressdStress ).eval( );
-
-            auto map_d2FdStress2 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( d2FdStress2.data( ) );
-            map_d2FdStress2 = ( map_dDevStressdStress.transpose( ) * map_temp ).eval( );
-
-            d2FdStressdPrecedingF  = BAngle * d2PressuredStressdPrecedingF;
-
-            auto map_d2FdStressdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( d2FdStressdPrecedingF.data( ) );
-            map_d2FdStressdPrecedingF += ( map_temp.transpose( ) * map_dDevStressdPrecedingF ).eval( );
-
-            for ( unsigned int AB = 0; AB < sot_dim; AB++ ){
-                for ( unsigned int IJKL = 0; IJKL < fot_dim; IJKL++ ){
-                    d2FdStressdPrecedingF[ IJKL ] += devStressDirection[ AB ] * d2DevStressdStressdPrecedingF[ fot_dim * AB + IJKL ];
-                }
+            // Evaluate the second-order jacobians
+            fourthOrderTensor dDevStressDirectiondDevStress(sot_dim * sot_dim, 0);
+            for (unsigned int i = 0; i < sot_dim; i++) {
+                dDevStressDirectiondDevStress[sot_dim * i + i] = 1. / (normDevStress + tol);
             }
 
+            auto map_dDevStressDirectiondDevStress =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDevStressDirectiondDevStress.data());
+            map_dDevStressDirectiondDevStress -=
+                (map_devStressDirection.transpose() * map_devStressDirection / (normDevStress + tol)).eval();
+
+            d2FdStress2 = fourthOrderTensor(fot_dim);
+            fourthOrderTensor temp(fot_dim);
+            auto              map_temp = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(temp.data());
+            map_temp                   = (map_dDevStressDirectiondDevStress * map_dDevStressdStress).eval();
+
+            auto map_d2FdStress2 = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2FdStress2.data());
+            map_d2FdStress2      = (map_dDevStressdStress.transpose() * map_temp).eval();
+
+            d2FdStressdPrecedingF = BAngle * d2PressuredStressdPrecedingF;
+
+            auto map_d2FdStressdPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2FdStressdPrecedingF.data());
+            map_d2FdStressdPrecedingF += (map_temp.transpose() * map_dDevStressdPrecedingF).eval();
+
+            for (unsigned int AB = 0; AB < sot_dim; AB++) {
+                for (unsigned int IJKL = 0; IJKL < fot_dim; IJKL++) {
+                    d2FdStressdPrecedingF[IJKL] +=
+                        devStressDirection[AB] * d2DevStressdStressdPrecedingF[fot_dim * AB + IJKL];
+                }
+            }
         }
 
-        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor &stressMeasure,
-                                                               const dimVector &cohesion,
-                                                               const secondOrderTensor &precedingDeformationGradient,
-                                                               const parameterType &frictionAngle, const parameterType &beta,
-                                                               dimVector &yieldValue ){
+        void computeHigherOrderDruckerPragerYieldEquation(const thirdOrderTensor  &stressMeasure,
+                                                          const dimVector         &cohesion,
+                                                          const secondOrderTensor &precedingDeformationGradient,
+                                                          const parameterType &frictionAngle, const parameterType &beta,
+                                                          dimVector &yieldValue) {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
              * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
-             * 
+             *
              * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              *  \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
@@ -402,39 +423,40 @@ namespace tardigradeHydra{
              */
 
             parameterType AAngle, BAngle;
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) )
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeDruckerPragerInternalParameters(frictionAngle, beta, AAngle, BAngle))
 
-            //Compute the right Cauchy-Green deformation tensor
+            // Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::computeRightCauchyGreen(precedingDeformationGradient, rightCauchyGreen));
 
-            //Compute the decomposition of the stress
-            dimVector pressure;
+            // Compute the decomposition of the stress
+            dimVector        pressure;
             thirdOrderTensor deviatoricReferenceStress;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                          rightCauchyGreen, deviatoricReferenceStress, pressure ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition(
+                stressMeasure, rightCauchyGreen, deviatoricReferenceStress, pressure));
 
-            //Compute the l2norm of the deviatoric stress
+            // Compute the l2norm of the deviatoric stress
             dimVector normDevStress;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeMicromorphicTools::computeHigherOrderStressNorm(deviatoricReferenceStress, normDevStress));
 
-            //Evaluate the yield equation
-            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
-
+            // Evaluate the yield equation
+            yieldValue = normDevStress - (AAngle * cohesion - BAngle * pressure);
         }
 
-        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor &stressMeasure,
-                                                               const dimVector &cohesion,
-                                                               const secondOrderTensor &precedingDeformationGradient,
-                                                               const parameterType &frictionAngle, const parameterType &beta,
-                                                               dimVector &yieldValue, fourthOrderTensor &dFdStress, secondOrderTensor &dFdc,
-                                                               thirdOrderTensor &dFdPrecedingF ){
+        void computeHigherOrderDruckerPragerYieldEquation(const thirdOrderTensor  &stressMeasure,
+                                                          const dimVector         &cohesion,
+                                                          const secondOrderTensor &precedingDeformationGradient,
+                                                          const parameterType &frictionAngle, const parameterType &beta,
+                                                          dimVector &yieldValue, fourthOrderTensor &dFdStress,
+                                                          secondOrderTensor &dFdc, thirdOrderTensor &dFdPrecedingF) {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
              * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
-             * 
+             *
              * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              *  \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
@@ -457,20 +479,21 @@ namespace tardigradeHydra{
              *     tensor.
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
 
             parameterType AAngle, BAngle;
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeDruckerPragerInternalParameters(frictionAngle, beta, AAngle, BAngle));
 
-            //Compute the right Cauchy-Green deformation tensor
+            // Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
             fourthOrderTensor dRCGdPrecedingF;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeRightCauchyGreen(
+                precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF));
 
-            //Compute the decomposition of the stress
-            dimVector pressure;
+            // Compute the decomposition of the stress
+            dimVector        pressure;
             thirdOrderTensor deviatoricReferenceStress;
 
             sixthOrderTensor  dDevStressdStress;
@@ -478,65 +501,74 @@ namespace tardigradeHydra{
             fourthOrderTensor dPressuredStress;
             thirdOrderTensor  dPressuredRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                          rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                          dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition(
+                stressMeasure, rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress, dDevStressdRCG,
+                dPressuredStress, dPressuredRCG));
 
-            fifthOrderTensor dDevStressdPrecedingF( tot_dim * sot_dim, 0. );
-            thirdOrderTensor dPressuredPrecedingF( dim * sot_dim, 0 );
+            fifthOrderTensor dDevStressdPrecedingF(tot_dim * sot_dim, 0.);
+            thirdOrderTensor dPressuredPrecedingF(dim * sot_dim, 0);
 
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > dRCGdPrecedingF_mat( dRCGdPrecedingF.data( ), sot_dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > dRCGdPrecedingF_mat(
+                dRCGdPrecedingF.data(), sot_dim, sot_dim);
 
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > dDevStressdRCG_mat( dDevStressdRCG.data( ), tot_dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > dDevStressdPrecedingF_mat( dDevStressdPrecedingF.data( ), tot_dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > dDevStressdRCG_mat(
+                dDevStressdRCG.data(), tot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > dDevStressdPrecedingF_mat(
+                dDevStressdPrecedingF.data(), tot_dim, sot_dim);
 
-            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dPressuredRCG_mat( dPressuredRCG.data( ), dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dPressuredPrecedingF_mat( dPressuredPrecedingF.data( ), dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, dim, sot_dim, Eigen::RowMajor> > dPressuredRCG_mat(dPressuredRCG.data(),
+                                                                                                   dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, dim, sot_dim, Eigen::RowMajor> > dPressuredPrecedingF_mat(
+                dPressuredPrecedingF.data(), dim, sot_dim);
 
-            dDevStressdPrecedingF_mat = ( dDevStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
-            dPressuredPrecedingF_mat = ( dPressuredRCG_mat * dRCGdPrecedingF_mat ).eval( );
+            dDevStressdPrecedingF_mat = (dDevStressdRCG_mat * dRCGdPrecedingF_mat).eval();
+            dPressuredPrecedingF_mat  = (dPressuredRCG_mat * dRCGdPrecedingF_mat).eval();
 
-            //Compute the l2norm of the deviatoric stress
-            dimVector normDevStress;
+            // Compute the l2norm of the deviatoric stress
+            dimVector         normDevStress;
             fourthOrderTensor dNormDevStressdDevStress;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeHigherOrderStressNorm(
+                deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress));
 
-            //Evaluate the yield equation
-            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
+            // Evaluate the yield equation
+            yieldValue = normDevStress - (AAngle * cohesion - BAngle * pressure);
 
-            //Construct the Jacobians
+            // Construct the Jacobians
             dFdStress = BAngle * dPressuredStress;
 
-            Eigen::Map< Eigen::Matrix< floatType, dim, tot_dim, Eigen::RowMajor > > dNormDevStressdDevStress_mat( dNormDevStressdDevStress.data( ), dim, tot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, dim, tot_dim, Eigen::RowMajor> > dNormDevStressdDevStress_mat(
+                dNormDevStressdDevStress.data(), dim, tot_dim);
 
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > dDevStressdStress_mat( dDevStressdStress.data( ), tot_dim, tot_dim );
-            Eigen::Map< Eigen::Matrix< floatType,     dim, tot_dim, Eigen::RowMajor > > dFdStress_mat( dFdStress.data( ), dim, tot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > dDevStressdStress_mat(
+                dDevStressdStress.data(), tot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, dim, tot_dim, Eigen::RowMajor> > dFdStress_mat(dFdStress.data(), dim,
+                                                                                               tot_dim);
 
-            dFdStress_mat  = ( dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat ).eval( );
+            dFdStress_mat = (dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat).eval();
 
-            dFdc = secondOrderTensor( cohesion.size( ) * cohesion.size( ), 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = -AAngle; }
+            dFdc = secondOrderTensor(cohesion.size() * cohesion.size(), 0);
+            for (unsigned int i = 0; i < dim; i++) {
+                dFdc[dim * i + i] = -AAngle;
+            }
 
-            dFdPrecedingF  = BAngle * dPressuredPrecedingF;
+            dFdPrecedingF = BAngle * dPressuredPrecedingF;
 
-            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dFdPrecedingF_mat( dFdPrecedingF.data( ), dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, dim, sot_dim, Eigen::RowMajor> > dFdPrecedingF_mat(dFdPrecedingF.data(),
+                                                                                                   dim, sot_dim);
 
-            dFdPrecedingF_mat = ( dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat ).eval( );
-
+            dFdPrecedingF_mat = (dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat).eval();
         }
 
-        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor &stressMeasure,
-                                                           const dimVector &cohesion,
-                                                           const secondOrderTensor &precedingDeformationGradient,
-                                                           const parameterType &frictionAngle, const parameterType &beta,
-                                                           dimVector &yieldValue, fourthOrderTensor &dFdStress, secondOrderTensor &dFdc,
-                                                           thirdOrderTensor &dFdPrecedingF, seventhOrderTensor &d2FdStress2,
-                                                           sixthOrderTensor &d2FdStressdPrecedingF ){
+        void computeHigherOrderDruckerPragerYieldEquation(
+            const thirdOrderTensor &stressMeasure, const dimVector &cohesion,
+            const secondOrderTensor &precedingDeformationGradient, const parameterType &frictionAngle,
+            const parameterType &beta, dimVector &yieldValue, fourthOrderTensor &dFdStress, secondOrderTensor &dFdc,
+            thirdOrderTensor &dFdPrecedingF, seventhOrderTensor &d2FdStress2, sixthOrderTensor &d2FdStressdPrecedingF) {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
              * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
-             * 
+             *
              * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              * \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
@@ -556,147 +588,161 @@ namespace tardigradeHydra{
              * \param &dFdStress: The Jacobian of the yield function w.r.t. the reference higher order stress.
              * \param &dFdc: The Jacobian of the yield function w.r.t. the cohesion.
              * \param &dFdPrecedingF: The Jacobian of the yield function w.r.t. the preceding deformation gradient
-             * \param &d2FdStress2: The second order Jacobian of the yield function w.r.t. the reference 
+             * \param &d2FdStress2: The second order Jacobian of the yield function w.r.t. the reference
              *     higher order stress.
-             * \param &d2FdStressdPrecedingF: The second order Jacobian of the yield function w.r.t. the 
+             * \param &d2FdStressdPrecedingF: The second order Jacobian of the yield function w.r.t. the
              *     reference higher order stress and the preceding deformation gradient
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
-            constexpr unsigned int fot_dim = tot_dim * dim;
+            // Assume 3D
+            constexpr unsigned int dim      = 3;
+            constexpr unsigned int sot_dim  = dim * dim;
+            constexpr unsigned int tot_dim  = sot_dim * dim;
+            constexpr unsigned int fot_dim  = tot_dim * dim;
             constexpr unsigned int siot_dim = tot_dim * tot_dim;
 
             parameterType AAngle, BAngle;
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeDruckerPragerInternalParameters(frictionAngle, beta, AAngle, BAngle));
 
-            //Compute the right Cauchy-Green deformation tensor
+            // Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
             fourthOrderTensor dRCGdPrecedingF;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeRightCauchyGreen(
+                precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF));
 
-            //Compute the decomposition of the stress
-            dimVector pressure;
+            // Compute the decomposition of the stress
+            dimVector        pressure;
             thirdOrderTensor deviatoricReferenceStress;
 
-            sixthOrderTensor dDevStressdStress;
-            fifthOrderTensor dDevStressdRCG;
+            sixthOrderTensor  dDevStressdStress;
+            fifthOrderTensor  dDevStressdRCG;
             fourthOrderTensor dPressuredStress;
-            thirdOrderTensor dPressuredRCG;
+            thirdOrderTensor  dPressuredRCG;
 
             seventhOrderTensor d2DevStressdStressdRCG;
-            fifthOrderTensor d2PressuredStressdRCG;
+            fifthOrderTensor   d2PressuredStressdRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                          rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                          dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition(
+                stressMeasure, rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress, dDevStressdRCG,
+                dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG))
 
-            fifthOrderTensor dDevStressdPrecedingF( tot_dim * sot_dim, 0. );
-            thirdOrderTensor dPressuredPrecedingF( dim * sot_dim, 0 );
+            fifthOrderTensor dDevStressdPrecedingF(tot_dim * sot_dim, 0.);
+            thirdOrderTensor dPressuredPrecedingF(dim * sot_dim, 0);
 
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > dRCGdPrecedingF_mat( dRCGdPrecedingF.data( ), sot_dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > dRCGdPrecedingF_mat(
+                dRCGdPrecedingF.data(), sot_dim, sot_dim);
 
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > dDevStressdRCG_mat( dDevStressdRCG.data( ), tot_dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > dDevStressdPrecedingF_mat( dDevStressdPrecedingF.data( ), tot_dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > dDevStressdRCG_mat(
+                dDevStressdRCG.data(), tot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > dDevStressdPrecedingF_mat(
+                dDevStressdPrecedingF.data(), tot_dim, sot_dim);
 
-            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dPressuredRCG_mat( dPressuredRCG.data( ), dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dPressuredPrecedingF_mat( dPressuredPrecedingF.data( ), dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, dim, sot_dim, Eigen::RowMajor> > dPressuredRCG_mat(dPressuredRCG.data(),
+                                                                                                   dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, dim, sot_dim, Eigen::RowMajor> > dPressuredPrecedingF_mat(
+                dPressuredPrecedingF.data(), dim, sot_dim);
 
-            dDevStressdPrecedingF_mat = ( dDevStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
-            dPressuredPrecedingF_mat = ( dPressuredRCG_mat * dRCGdPrecedingF_mat ).eval( );
+            dDevStressdPrecedingF_mat = (dDevStressdRCG_mat * dRCGdPrecedingF_mat).eval();
+            dPressuredPrecedingF_mat  = (dPressuredRCG_mat * dRCGdPrecedingF_mat).eval();
 
-            eighthOrderTensor d2DevStressdStressdPrecedingF( siot_dim * sot_dim, 0 );
+            eighthOrderTensor d2DevStressdStressdPrecedingF(siot_dim * sot_dim, 0);
 
-            sixthOrderTensor d2PressuredStressdPrecedingF( dim * tot_dim * sot_dim, 0 );
+            sixthOrderTensor d2PressuredStressdPrecedingF(dim * tot_dim * sot_dim, 0);
 
-            Eigen::Map< Eigen::Matrix< floatType, siot_dim, sot_dim, Eigen::RowMajor > > d2DevStressdStressdRCG_mat( d2DevStressdStressdRCG.data( ), siot_dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, siot_dim, sot_dim, Eigen::RowMajor > > d2DevStressdStressdPrecedingF_mat( d2DevStressdStressdPrecedingF.data( ), siot_dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, siot_dim, sot_dim, Eigen::RowMajor> > d2DevStressdStressdRCG_mat(
+                d2DevStressdStressdRCG.data(), siot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, siot_dim, sot_dim, Eigen::RowMajor> > d2DevStressdStressdPrecedingF_mat(
+                d2DevStressdStressdPrecedingF.data(), siot_dim, sot_dim);
 
-            Eigen::Map< Eigen::Matrix< floatType,  fot_dim, sot_dim, Eigen::RowMajor > > d2PressuredStressdRCG_mat( d2PressuredStressdRCG.data( ), fot_dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType,  fot_dim, sot_dim, Eigen::RowMajor > > d2PressuredStressdPrecedingF_mat( d2PressuredStressdPrecedingF.data( ), fot_dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, fot_dim, sot_dim, Eigen::RowMajor> > d2PressuredStressdRCG_mat(
+                d2PressuredStressdRCG.data(), fot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, fot_dim, sot_dim, Eigen::RowMajor> > d2PressuredStressdPrecedingF_mat(
+                d2PressuredStressdPrecedingF.data(), fot_dim, sot_dim);
 
-            d2DevStressdStressdPrecedingF_mat = ( d2DevStressdStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
-            d2PressuredStressdPrecedingF_mat = ( d2PressuredStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
+            d2DevStressdStressdPrecedingF_mat = (d2DevStressdStressdRCG_mat * dRCGdPrecedingF_mat).eval();
+            d2PressuredStressdPrecedingF_mat  = (d2PressuredStressdRCG_mat * dRCGdPrecedingF_mat).eval();
 
-            //Compute the l2norm of the deviatoric stress
-            thirdOrderTensor normDevStress;
-            fourthOrderTensor dNormDevStressdDevStress;
+            // Compute the l2norm of the deviatoric stress
+            thirdOrderTensor   normDevStress;
+            fourthOrderTensor  dNormDevStressdDevStress;
             seventhOrderTensor d2NormDevStressdDevStress2;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
-                                                                                                     dNormDevStressdDevStress,
-                                                                                                     d2NormDevStressdDevStress2 ) )
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeHigherOrderStressNorm(
+                deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress, d2NormDevStressdDevStress2))
 
-            //Evaluate the yield equation
-            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
-    
-            //Construct the Jacobians
+            // Evaluate the yield equation
+            yieldValue = normDevStress - (AAngle * cohesion - BAngle * pressure);
+
+            // Construct the Jacobians
             dFdStress = BAngle * dPressuredStress;
 
-            Eigen::Map< Eigen::Matrix< floatType, dim, tot_dim, Eigen::RowMajor > > dNormDevStressdDevStress_mat( dNormDevStressdDevStress.data( ), dim, tot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, dim, tot_dim, Eigen::RowMajor> > dNormDevStressdDevStress_mat(
+                dNormDevStressdDevStress.data(), dim, tot_dim);
 
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > dDevStressdStress_mat( dDevStressdStress.data( ), tot_dim, tot_dim );
-            Eigen::Map< Eigen::Matrix< floatType,     dim, tot_dim, Eigen::RowMajor > > dFdStress_mat( dFdStress.data( ), dim, tot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > dDevStressdStress_mat(
+                dDevStressdStress.data(), tot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, dim, tot_dim, Eigen::RowMajor> > dFdStress_mat(dFdStress.data(), dim,
+                                                                                               tot_dim);
 
-            dFdStress_mat  = ( dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat ).eval( );
-    
-            dFdc = secondOrderTensor( cohesion.size( ) * cohesion.size( ), 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = -AAngle; }
-    
-            dFdPrecedingF  = BAngle * dPressuredPrecedingF;
+            dFdStress_mat = (dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat).eval();
 
-            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dFdPrecedingF_mat( dFdPrecedingF.data( ), dim, sot_dim );
+            dFdc = secondOrderTensor(cohesion.size() * cohesion.size(), 0);
+            for (unsigned int i = 0; i < dim; i++) {
+                dFdc[dim * i + i] = -AAngle;
+            }
 
-            dFdPrecedingF_mat = ( dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat ).eval( );
-    
-            //Construct the second-order jacobians
-            d2FdStress2 = seventhOrderTensor( dim * tot_dim * tot_dim, 0 );
-            d2FdStressdPrecedingF = sixthOrderTensor( dim * tot_dim * sot_dim, 0 );
+            dFdPrecedingF = BAngle * dPressuredPrecedingF;
 
-            sixthOrderTensor   temp_siot1( dim * tot_dim * sot_dim, 0 );
-            seventhOrderTensor temp_seot1( dim * tot_dim * tot_dim, 0 );
+            Eigen::Map<Eigen::Matrix<floatType, dim, sot_dim, Eigen::RowMajor> > dFdPrecedingF_mat(dFdPrecedingF.data(),
+                                                                                                   dim, sot_dim);
 
-            for ( unsigned int KLMN = 0; KLMN < fot_dim; KLMN++ ){
-                for ( unsigned int ABC = 0; ABC < tot_dim; ABC++ ){
-                    for ( unsigned int OP = 0; OP < sot_dim; OP++ ){
-                        temp_siot1[ sot_dim * KLMN + OP ]
-                            += d2NormDevStressdDevStress2[ tot_dim * KLMN + ABC ]
-                             * dDevStressdPrecedingF[ dim * dim * ABC + OP ];
+            dFdPrecedingF_mat = (dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat).eval();
+
+            // Construct the second-order jacobians
+            d2FdStress2           = seventhOrderTensor(dim * tot_dim * tot_dim, 0);
+            d2FdStressdPrecedingF = sixthOrderTensor(dim * tot_dim * sot_dim, 0);
+
+            sixthOrderTensor   temp_siot1(dim * tot_dim * sot_dim, 0);
+            seventhOrderTensor temp_seot1(dim * tot_dim * tot_dim, 0);
+
+            for (unsigned int KLMN = 0; KLMN < fot_dim; KLMN++) {
+                for (unsigned int ABC = 0; ABC < tot_dim; ABC++) {
+                    for (unsigned int OP = 0; OP < sot_dim; OP++) {
+                        temp_siot1[sot_dim * KLMN + OP] += d2NormDevStressdDevStress2[tot_dim * KLMN + ABC] *
+                                                           dDevStressdPrecedingF[dim * dim * ABC + OP];
                     }
                 }
             }
-            for ( unsigned int K = 0; K < 3; K++ ){
-                for ( unsigned int ABC = 0; ABC < tot_dim; ABC++ ){
-                    for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
-                        for ( unsigned int OP = 0; OP < sot_dim; OP++ ){
-                            d2FdStressdPrecedingF[ tot_dim * sot_dim * K + sot_dim * LMN + OP ]
-                                += temp_siot1[ tot_dim * sot_dim * K + sot_dim * ABC + OP ]
-                                 * dDevStressdStress[ tot_dim * ABC + LMN ];
+            for (unsigned int K = 0; K < 3; K++) {
+                for (unsigned int ABC = 0; ABC < tot_dim; ABC++) {
+                    for (unsigned int LMN = 0; LMN < tot_dim; LMN++) {
+                        for (unsigned int OP = 0; OP < sot_dim; OP++) {
+                            d2FdStressdPrecedingF[tot_dim * sot_dim * K + sot_dim * LMN + OP] +=
+                                temp_siot1[tot_dim * sot_dim * K + sot_dim * ABC + OP] *
+                                dDevStressdStress[tot_dim * ABC + LMN];
                         }
                     }
                 }
             }
 
-            for ( unsigned int K = 0; K < 3; K++ ){
-                for ( unsigned int ABC = 0; ABC < tot_dim; ABC++ ){
-                    for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
-                        for ( unsigned int OPQ = 0; OPQ < tot_dim; OPQ++ ){
-                            temp_seot1[ tot_dim * tot_dim * K + tot_dim * LMN + OPQ ]
-                                += d2NormDevStressdDevStress2[ tot_dim * tot_dim * K + tot_dim * ABC + OPQ ]
-                                 * dDevStressdStress[ tot_dim * ABC + LMN ];
+            for (unsigned int K = 0; K < 3; K++) {
+                for (unsigned int ABC = 0; ABC < tot_dim; ABC++) {
+                    for (unsigned int LMN = 0; LMN < tot_dim; LMN++) {
+                        for (unsigned int OPQ = 0; OPQ < tot_dim; OPQ++) {
+                            temp_seot1[tot_dim * tot_dim * K + tot_dim * LMN + OPQ] +=
+                                d2NormDevStressdDevStress2[tot_dim * tot_dim * K + tot_dim * ABC + OPQ] *
+                                dDevStressdStress[tot_dim * ABC + LMN];
                         }
                     }
                 }
             }
 
-            for ( unsigned int K = 0; K < 3; K++ ){
-                for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
-                    for ( unsigned int ABC = 0; ABC < tot_dim; ABC++ ){
-                        for ( unsigned int OPQ = 0; OPQ < tot_dim; OPQ++ ){
-                            d2FdStress2[ tot_dim * tot_dim * K + tot_dim * LMN + OPQ ]
-                                += temp_seot1[ tot_dim * tot_dim * K + tot_dim * LMN + ABC ]
-                                 * dDevStressdStress[ tot_dim * ABC + OPQ ];
+            for (unsigned int K = 0; K < 3; K++) {
+                for (unsigned int LMN = 0; LMN < tot_dim; LMN++) {
+                    for (unsigned int ABC = 0; ABC < tot_dim; ABC++) {
+                        for (unsigned int OPQ = 0; OPQ < tot_dim; OPQ++) {
+                            d2FdStress2[tot_dim * tot_dim * K + tot_dim * LMN + OPQ] +=
+                                temp_seot1[tot_dim * tot_dim * K + tot_dim * LMN + ABC] *
+                                dDevStressdStress[tot_dim * ABC + OPQ];
                         }
                     }
                 }
@@ -704,22 +750,26 @@ namespace tardigradeHydra{
 
             d2FdStressdPrecedingF += BAngle * d2PressuredStressdPrecedingF;
 
-            Eigen::Map< Eigen::Matrix< floatType,     dim, tot_dim * sot_dim, Eigen::RowMajor > > d2FdStressdPrecedingF_mat( d2FdStressdPrecedingF.data( ), dim, tot_dim * sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim * sot_dim, Eigen::RowMajor > > d2DevStressdStressdPrecedingF_mat2( d2DevStressdStressdPrecedingF.data( ), tot_dim, tot_dim * sot_dim );
+            Eigen::Map<Eigen::Matrix<floatType, dim, tot_dim * sot_dim, Eigen::RowMajor> > d2FdStressdPrecedingF_mat(
+                d2FdStressdPrecedingF.data(), dim, tot_dim * sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dim, tot_dim * sot_dim, Eigen::RowMajor> >
+                d2DevStressdStressdPrecedingF_mat2(d2DevStressdStressdPrecedingF.data(), tot_dim, tot_dim * sot_dim);
 
-            d2FdStressdPrecedingF_mat = ( d2FdStressdPrecedingF_mat + dNormDevStressdDevStress_mat * d2DevStressdStressdPrecedingF_mat2 ).eval( );
-
+            d2FdStressdPrecedingF_mat =
+                (d2FdStressdPrecedingF_mat + dNormDevStressdDevStress_mat * d2DevStressdStressdPrecedingF_mat2).eval();
         }
 
-        void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
-                                                  const secondOrderTensor &macroFlowDirection,
-                                                  const secondOrderTensor &microFlowDirection,
-                                                  secondOrderTensor &plasticMacroVelocityGradient ){
+        void computePlasticMacroVelocityGradient(const variableType &macroGamma, const variableType &microGamma,
+                                                 const secondOrderTensor &inverseElasticRightCauchyGreen,
+                                                 const secondOrderTensor &macroFlowDirection,
+                                                 const secondOrderTensor &microFlowDirection,
+                                                 secondOrderTensor       &plasticMacroVelocityGradient) {
             /*!
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
-             * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -729,48 +779,45 @@ namespace tardigradeHydra{
              * \param &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
              */
 
-            //Assume 3D
+            // Assume 3D
             constexpr unsigned int dim = 3;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( inverseElasticRightCauchyGreen.size() == dim * dim, "The inverse elastic right Cauchy-Green deformation tensor must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(inverseElasticRightCauchyGreen.size() == dim * dim,
+                                         "The inverse elastic right Cauchy-Green deformation tensor must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( macroFlowDirection.size() == dim * dim, "The macro flow direction tensor must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(macroFlowDirection.size() == dim * dim,
+                                         "The macro flow direction tensor must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction tensor must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(microFlowDirection.size() == dim * dim,
+                                         "The micro flow direction tensor must be 3D");
 
-            //Compute the macro-scale velocity gradient
-            plasticMacroVelocityGradient = secondOrderTensor( dim * dim, 0 );
+            // Compute the macro-scale velocity gradient
+            plasticMacroVelocityGradient = secondOrderTensor(dim * dim, 0);
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                        plasticMacroVelocityGradient[ dim * Bb + Kb ]
-                            += inverseElasticRightCauchyGreen[ dim * Bb + Lb ]
-                             * ( macroGamma * macroFlowDirection[ dim * Kb + Lb ]
-                             +   microGamma * microFlowDirection[ dim * Kb + Lb ] );
-
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                    for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                        plasticMacroVelocityGradient[dim * Bb + Kb] += inverseElasticRightCauchyGreen[dim * Bb + Lb] *
+                                                                       (macroGamma * macroFlowDirection[dim * Kb + Lb] +
+                                                                        microGamma * microFlowDirection[dim * Kb + Lb]);
                     }
-
                 }
-
             }
-
         }
 
-        void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
-                                                  const secondOrderTensor &macroFlowDirection,
-                                                  const secondOrderTensor &microFlowDirection,
-                                                  secondOrderTensor &plasticMacroVelocityGradient,
-                                                  secondOrderTensor &dPlasticMacroLdMacroGamma,
-                                                  secondOrderTensor &dPlasticMacroLdMicroGamma ){
+        void computePlasticMacroVelocityGradient(const variableType &macroGamma, const variableType &microGamma,
+                                                 const secondOrderTensor &inverseElasticRightCauchyGreen,
+                                                 const secondOrderTensor &macroFlowDirection,
+                                                 const secondOrderTensor &microFlowDirection,
+                                                 secondOrderTensor       &plasticMacroVelocityGradient,
+                                                 secondOrderTensor       &dPlasticMacroLdMacroGamma,
+                                                 secondOrderTensor       &dPlasticMacroLdMicroGamma) {
             /*!
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
-             * \f$ \bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right] \f$
+             * \f$ \bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right] \f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -778,57 +825,49 @@ namespace tardigradeHydra{
              * \param &macroFlowDirection: The flow direction of the macro plasticity.
              * \param &microFlowDirection: The flow direction of the micro plasticity.
              * \param &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
-             * \param &dPlasticMacroLdMacroGamma: The Jacobian of the plastic velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMacroGamma: The Jacobian of the plastic velocity gradient w.r.t. the
              *     macro plastic multiplier.
-             * \param &dPlasticMacroLdMicroGamma: The Jacobian of the plastic velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMicroGamma: The Jacobian of the plastic velocity gradient w.r.t. the
              *     micro plastic multiplier.
              */
 
-            //Assume 3D
+            // Assume 3D
             unsigned int dim = 3;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
-                                                     macroFlowDirection, microFlowDirection, plasticMacroVelocityGradient )
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(computePlasticMacroVelocityGradient(macroGamma, microGamma,
+                                                                             inverseElasticRightCauchyGreen,
+                                                                             macroFlowDirection, microFlowDirection,
+                                                                             plasticMacroVelocityGradient))
 
-            dPlasticMacroLdMacroGamma = secondOrderTensor( dim * dim, 0 );
-            dPlasticMacroLdMicroGamma = secondOrderTensor( dim * dim, 0 );
+            dPlasticMacroLdMacroGamma = secondOrderTensor(dim * dim, 0);
+            dPlasticMacroLdMicroGamma = secondOrderTensor(dim * dim, 0);
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                    for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                        dPlasticMacroLdMacroGamma[dim * Bb + Kb] +=
+                            inverseElasticRightCauchyGreen[dim * Bb + Lb] * macroFlowDirection[dim * Kb + Lb];
 
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                        dPlasticMacroLdMacroGamma[ dim * Bb + Kb ] += inverseElasticRightCauchyGreen[ dim * Bb + Lb ]
-                                                                    * macroFlowDirection[ dim * Kb + Lb ];
-
-                        dPlasticMacroLdMicroGamma[ dim * Bb + Kb ] += inverseElasticRightCauchyGreen[ dim * Bb + Lb ]
-                                                                    * microFlowDirection[ dim * Kb + Lb ];
-
+                        dPlasticMacroLdMicroGamma[dim * Bb + Kb] +=
+                            inverseElasticRightCauchyGreen[dim * Bb + Lb] * microFlowDirection[dim * Kb + Lb];
                     }
-
                 }
-
             }
-
         }
 
-        void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
-                                                  const secondOrderTensor &macroFlowDirection,
-                                                  const secondOrderTensor &microFlowDirection,
-                                                  secondOrderTensor &plasticMacroVelocityGradient,
-                                                  secondOrderTensor &dPlasticMacroLdMacroGamma,
-                                                  secondOrderTensor &dPlasticMacroLdMicroGamma,
-                                                  fourthOrderTensor &dPlasticMacroLdElasticRCG,
-                                                  fourthOrderTensor &dPlasticMacroLdMacroFlowDirection,
-                                                  fourthOrderTensor &dPlasticMacroLdMicroFlowDirection ){
+        void computePlasticMacroVelocityGradient(
+            const variableType &macroGamma, const variableType &microGamma,
+            const secondOrderTensor &inverseElasticRightCauchyGreen, const secondOrderTensor &macroFlowDirection,
+            const secondOrderTensor &microFlowDirection, secondOrderTensor &plasticMacroVelocityGradient,
+            secondOrderTensor &dPlasticMacroLdMacroGamma, secondOrderTensor &dPlasticMacroLdMicroGamma,
+            fourthOrderTensor &dPlasticMacroLdElasticRCG, fourthOrderTensor &dPlasticMacroLdMacroFlowDirection,
+            fourthOrderTensor &dPlasticMacroLdMicroFlowDirection) {
             /*!
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
-             * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -836,71 +875,66 @@ namespace tardigradeHydra{
              * \param &macroFlowDirection: The flow direction of the macro plasticity.
              * \param &microFlowDirection: The flow direction of the micro plasticity.
              * \param &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
-             * \param &dPlasticMacroLdMacroGamma: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMacroGamma: The Jacobian of the plastic macro velocity gradient w.r.t. the
              *     macro plastic multiplier.
-             * \param &dPlasticMacroLdMicroGamma: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMicroGamma: The Jacobian of the plastic macro velocity gradient w.r.t. the
              *     micro plastic multiplier.
-             * \param &dPlasticMacroLdElasticRCG: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdElasticRCG: The Jacobian of the plastic macro velocity gradient w.r.t. the
              *     elastic right Cauchy-Green deformation tensor.
-             * \param &dPlasticMacroLdMacroFlowDirection: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMacroFlowDirection: The Jacobian of the plastic macro velocity gradient w.r.t. the
              *     macro flow direction tensor.
-             * \param &dPlasticMacroLdMicroFlowDirection: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMicroFlowDirection: The Jacobian of the plastic macro velocity gradient w.r.t. the
              *     micro flow direction tensor.
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
-                                                     macroFlowDirection, microFlowDirection, plasticMacroVelocityGradient,
-                                                     dPlasticMacroLdMacroGamma, dPlasticMacroLdMicroGamma );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(computePlasticMacroVelocityGradient(
+                                             macroGamma, microGamma, inverseElasticRightCauchyGreen, macroFlowDirection,
+                                             microFlowDirection, plasticMacroVelocityGradient,
+                                             dPlasticMacroLdMacroGamma, dPlasticMacroLdMicroGamma);)
 
-            dPlasticMacroLdElasticRCG = fourthOrderTensor( sot_dim * sot_dim, 0 );
-            dPlasticMacroLdMacroFlowDirection = fourthOrderTensor( sot_dim * sot_dim, 0 );
-            dPlasticMacroLdMicroFlowDirection = fourthOrderTensor( sot_dim * sot_dim, 0 );
+            dPlasticMacroLdElasticRCG         = fourthOrderTensor(sot_dim * sot_dim, 0);
+            dPlasticMacroLdMacroFlowDirection = fourthOrderTensor(sot_dim * sot_dim, 0);
+            dPlasticMacroLdMicroFlowDirection = fourthOrderTensor(sot_dim * sot_dim, 0);
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                    for (unsigned int Ob = 0; Ob < dim; Ob++) {
+                        dPlasticMacroLdMacroFlowDirection[dim * sot_dim * Bb + sot_dim * Kb + dim * Kb + Ob] +=
+                            macroGamma * inverseElasticRightCauchyGreen[dim * Bb + Ob];
 
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                        dPlasticMacroLdMicroFlowDirection[dim * sot_dim * Bb + sot_dim * Kb + dim * Kb + Ob] +=
+                            microGamma * inverseElasticRightCauchyGreen[dim * Bb + Ob];
 
-                    for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
-
-                        dPlasticMacroLdMacroFlowDirection[ dim * sot_dim * Bb + sot_dim * Kb + dim * Kb + Ob ]
-                            += macroGamma * inverseElasticRightCauchyGreen[ dim * Bb + Ob ];
-
-                        dPlasticMacroLdMicroFlowDirection[ dim * sot_dim * Bb + sot_dim * Kb + dim * Kb + Ob ]
-                            += microGamma * inverseElasticRightCauchyGreen[ dim * Bb + Ob ];
-
-                        for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
-
-                            dPlasticMacroLdElasticRCG[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                -= inverseElasticRightCauchyGreen[ dim * Bb + Ob ]
-                                 * plasticMacroVelocityGradient[ dim * Pb + Kb ];
-
+                        for (unsigned int Pb = 0; Pb < dim; Pb++) {
+                            dPlasticMacroLdElasticRCG[dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb] -=
+                                inverseElasticRightCauchyGreen[dim * Bb + Ob] *
+                                plasticMacroVelocityGradient[dim * Pb + Kb];
                         }
-
                     }
-
                 }
-
             }
-
         }
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
-                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
-                                                  const secondOrderTensor &microFlowDirection,
-                                                  secondOrderTensor &plasticMicroVelocityGradient ){
+        void computePlasticMicroVelocityGradient(const variableType      &microGamma,
+                                                 const secondOrderTensor &elasticMicroRightCauchyGreen,
+                                                 const secondOrderTensor &elasticPsi,
+                                                 const secondOrderTensor &inverseElasticPsi,
+                                                 const secondOrderTensor &microFlowDirection,
+                                                 secondOrderTensor       &plasticMicroVelocityGradient) {
             /*!
              * Compute the plastic micro velocity gradient
              *
-             *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
              *
-             *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must guarantee 
-             *        that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked in code.
+             *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
+             * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
+             * in code.
              *
              * \param &microGamma: The micro plastic multiplier.
              * \param &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
@@ -910,86 +944,76 @@ namespace tardigradeHydra{
              * \param &plasticMicroVelocityGradient: The plastic micro velocity gradient.
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( elasticMicroRightCauchyGreen.size() == sot_dim, "The elastic micro right Cauchy-Green deformation tensor is not 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(elasticMicroRightCauchyGreen.size() == sot_dim,
+                                         "The elastic micro right Cauchy-Green deformation tensor is not 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( elasticPsi.size() == sot_dim, "The elastic micro deformation tensor Psi is not 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(elasticPsi.size() == sot_dim,
+                                         "The elastic micro deformation tensor Psi is not 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( inverseElasticPsi.size() == sot_dim, "The inverse of the elastic micro deformation tensor Psi is not 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(inverseElasticPsi.size() == sot_dim,
+                                         "The inverse of the elastic micro deformation tensor Psi is not 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction of the elastic micro plastic flow direction is not 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(
+                microFlowDirection.size() == dim * dim,
+                "The micro flow direction of the elastic micro plastic flow direction is not 3D");
 
-            plasticMicroVelocityGradient = secondOrderTensor( sot_dim, 0 );
+            plasticMicroVelocityGradient = secondOrderTensor(sot_dim, 0);
 
-            //NOTE: I'm making the second inverse elastic Psi be the transpose of what was done previously.
-            //      I think the way it was is a bug since it isn't consistent with the form in my dissertation.
-            secondOrderTensor temp_sot( sot_dim, 0 );
+            // NOTE: I'm making the second inverse elastic Psi be the transpose of what was done previously.
+            //       I think the way it was is a bug since it isn't consistent with the form in my dissertation.
+            secondOrderTensor temp_sot(sot_dim, 0);
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                        plasticMicroVelocityGradient[ dim * Bb + Kb ] += microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Kb + Lb ];
-
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                    for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                        plasticMicroVelocityGradient[dim * Bb + Kb] +=
+                            microGamma * inverseElasticPsi[dim * Bb + Lb] * microFlowDirection[dim * Kb + Lb];
                     }
-
                 }
-
             }
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                        temp_sot[ dim * Bb + Kb ]
-                            += plasticMicroVelocityGradient[ dim * Bb + Lb ] * inverseElasticPsi[ dim * Kb + Lb ];
-
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                    for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                        temp_sot[dim * Bb + Kb] +=
+                            plasticMicroVelocityGradient[dim * Bb + Lb] * inverseElasticPsi[dim * Kb + Lb];
                     }
-
                 }
-
             }
 
-            std::fill( plasticMicroVelocityGradient.begin( ),
-                       plasticMicroVelocityGradient.end( ),
-                       0 );
+            std::fill(plasticMicroVelocityGradient.begin(), plasticMicroVelocityGradient.end(), 0);
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        plasticMicroVelocityGradient[ dim * Bb + Kb ]
-                            += temp_sot[ dim * Bb + Lb ] * elasticMicroRightCauchyGreen[ dim * Lb + Kb ];
-
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        plasticMicroVelocityGradient[dim * Bb + Kb] +=
+                            temp_sot[dim * Bb + Lb] * elasticMicroRightCauchyGreen[dim * Lb + Kb];
                     }
-
                 }
-
             }
-
         }
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
-                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
-                                                  const secondOrderTensor &microFlowDirection,
-                                                  secondOrderTensor &plasticMicroVelocityGradient,
-                                                  secondOrderTensor &dPlasticMicroLdMicroGamma ){
+        void computePlasticMicroVelocityGradient(const variableType      &microGamma,
+                                                 const secondOrderTensor &elasticMicroRightCauchyGreen,
+                                                 const secondOrderTensor &elasticPsi,
+                                                 const secondOrderTensor &inverseElasticPsi,
+                                                 const secondOrderTensor &microFlowDirection,
+                                                 secondOrderTensor       &plasticMicroVelocityGradient,
+                                                 secondOrderTensor       &dPlasticMicroLdMicroGamma) {
             /*!
              * Compute the plastic micro velocity gradient
              *
-             *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
              *
-             *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must guarantee 
-             *        that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked in code.
+             *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
+             * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
+             * in code.
              *
              * \param &microGamma: The micro plastic multiplier.
              * \param &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
@@ -1001,90 +1025,76 @@ namespace tardigradeHydra{
              *     w.r.t. the micro plastic multiplier.
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( elasticMicroRightCauchyGreen.size() == dim * dim, "The elastic micro right Cauchy-Green deformation tensor is not 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(elasticMicroRightCauchyGreen.size() == dim * dim,
+                                         "The elastic micro right Cauchy-Green deformation tensor is not 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( elasticPsi.size() == dim * dim, "The elastic micro deformation tensor Psi is not 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(elasticPsi.size() == dim * dim,
+                                         "The elastic micro deformation tensor Psi is not 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( inverseElasticPsi.size() == dim * dim, "The inverse of the elastic micro deformation tensor Psi is not 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(inverseElasticPsi.size() == dim * dim,
+                                         "The inverse of the elastic micro deformation tensor Psi is not 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction of the elastic micro plastic flow direction is not 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(
+                microFlowDirection.size() == dim * dim,
+                "The micro flow direction of the elastic micro plastic flow direction is not 3D");
 
-            plasticMicroVelocityGradient = secondOrderTensor( dim * dim, 0 );
-            dPlasticMicroLdMicroGamma = secondOrderTensor( dim * dim, 0 );
+            plasticMicroVelocityGradient = secondOrderTensor(dim * dim, 0);
+            dPlasticMicroLdMicroGamma    = secondOrderTensor(dim * dim, 0);
 
-            secondOrderTensor temp_sot( sot_dim, 0 );
+            secondOrderTensor temp_sot(sot_dim, 0);
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                        dPlasticMicroLdMicroGamma[ dim * Bb + Kb ] += inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Kb + Lb ];
-
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                    for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                        dPlasticMicroLdMicroGamma[dim * Bb + Kb] +=
+                            inverseElasticPsi[dim * Bb + Lb] * microFlowDirection[dim * Kb + Lb];
                     }
-
                 }
-
             }
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                        temp_sot[ dim * Bb + Kb ]
-                            += dPlasticMicroLdMicroGamma[ dim * Bb + Lb ] * inverseElasticPsi[ dim * Kb + Lb ];
-
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                    for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                        temp_sot[dim * Bb + Kb] +=
+                            dPlasticMicroLdMicroGamma[dim * Bb + Lb] * inverseElasticPsi[dim * Kb + Lb];
                     }
-
                 }
-
             }
 
-            std::fill( dPlasticMicroLdMicroGamma.begin( ),
-                       dPlasticMicroLdMicroGamma.end( ),
-                       0 );
+            std::fill(dPlasticMicroLdMicroGamma.begin(), dPlasticMicroLdMicroGamma.end(), 0);
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        dPlasticMicroLdMicroGamma[ dim * Bb + Kb ]
-                            += temp_sot[ dim * Bb + Lb ] * elasticMicroRightCauchyGreen[ dim * Lb + Kb ];
-
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        dPlasticMicroLdMicroGamma[dim * Bb + Kb] +=
+                            temp_sot[dim * Bb + Lb] * elasticMicroRightCauchyGreen[dim * Lb + Kb];
                     }
-
                 }
-
             }
 
             plasticMicroVelocityGradient = microGamma * dPlasticMicroLdMicroGamma;
-
         }
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
-                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
-                                                  const secondOrderTensor &microFlowDirection,
-                                                  secondOrderTensor &plasticMicroVelocityGradient,
-                                                  secondOrderTensor &dPlasticMicroLdMicroGamma,
-                                                  fourthOrderTensor &dPlasticMicroLdElasticMicroRCG,
-                                                  fourthOrderTensor &dPlasticMicroLdElasticPsi,
-                                                  fourthOrderTensor &dPlasticMicroLdMicroFlowDirection ){
+        void computePlasticMicroVelocityGradient(
+            const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
+            const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
+            const secondOrderTensor &microFlowDirection, secondOrderTensor &plasticMicroVelocityGradient,
+            secondOrderTensor &dPlasticMicroLdMicroGamma, fourthOrderTensor &dPlasticMicroLdElasticMicroRCG,
+            fourthOrderTensor &dPlasticMicroLdElasticPsi, fourthOrderTensor &dPlasticMicroLdMicroFlowDirection) {
             /*!
              * Compute the plastic micro velocity gradient
              *
-             *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
              *
-             *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must guarantee 
-             *        that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked in code.
+             *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
+             * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
+             * in code.
              *
              * \param &microGamma: The micro plastic multiplier.
              * \param &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
@@ -1102,104 +1112,92 @@ namespace tardigradeHydra{
              *     w.r.t. the micro flow direction.
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int fot_dim = sot_dim * sot_dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
-                computePlasticMicroVelocityGradient( microGamma, elasticMicroRightCauchyGreen,
-                                                     elasticPsi, inverseElasticPsi, microFlowDirection,
-                                                     plasticMicroVelocityGradient, dPlasticMicroLdMicroGamma );
+                computePlasticMicroVelocityGradient(microGamma, elasticMicroRightCauchyGreen, elasticPsi,
+                                                    inverseElasticPsi, microFlowDirection, plasticMicroVelocityGradient,
+                                                    dPlasticMicroLdMicroGamma);
 
             )
 
-            //Assemble the Jacobians
-            dPlasticMicroLdElasticMicroRCG = fourthOrderTensor( sot_dim * sot_dim, 0 );
+            // Assemble the Jacobians
+            dPlasticMicroLdElasticMicroRCG = fourthOrderTensor(sot_dim * sot_dim, 0);
 
-            dPlasticMicroLdElasticPsi = fourthOrderTensor( sot_dim * sot_dim, 0 );
+            dPlasticMicroLdElasticPsi = fourthOrderTensor(sot_dim * sot_dim, 0);
 
-            dPlasticMicroLdMicroFlowDirection = fourthOrderTensor( sot_dim * sot_dim, 0 );
+            dPlasticMicroLdMicroFlowDirection = fourthOrderTensor(sot_dim * sot_dim, 0);
 
-            secondOrderTensor temp_sot1( sot_dim, 0 );
+            secondOrderTensor temp_sot1(sot_dim, 0);
 
-            secondOrderTensor temp_sot1a( sot_dim, 0 );
+            secondOrderTensor temp_sot1a(sot_dim, 0);
 
-            secondOrderTensor temp_sot1b( sot_dim, 0 );
+            secondOrderTensor temp_sot1b(sot_dim, 0);
 
-            for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+            for (unsigned int Ob = 0; Ob < dim; Ob++) {
+                for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        temp_sot1[dim * Bb + Kb] -=
+                            microGamma * inverseElasticPsi[dim * Ob + Kb] * elasticMicroRightCauchyGreen[dim * Ob + Bb];
 
-                for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        temp_sot1[ dim * Bb + Kb ]  -= microGamma * inverseElasticPsi[ dim * Ob + Kb ] * elasticMicroRightCauchyGreen[ dim * Ob + Bb ];
-
-                        temp_sot1a[ dim * Bb + Kb ] += microFlowDirection[ dim * Ob + Bb ] * inverseElasticPsi[ dim * Kb + Ob ];
-
+                        temp_sot1a[dim * Bb + Kb] +=
+                            microFlowDirection[dim * Ob + Bb] * inverseElasticPsi[dim * Kb + Ob];
                     }
-
                 }
-
             }
 
-            for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
-
-                for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        temp_sot1b[ dim * Bb + Kb ] += inverseElasticPsi[ dim * Bb + Ob ] * temp_sot1a[ dim * Ob + Kb ];
-
+            for (unsigned int Ob = 0; Ob < dim; Ob++) {
+                for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        temp_sot1b[dim * Bb + Kb] += inverseElasticPsi[dim * Bb + Ob] * temp_sot1a[dim * Ob + Kb];
                     }
-
                 }
-
             }
 
-            fourthOrderTensor temp_fot1( fot_dim, 0 );
+            fourthOrderTensor temp_fot1(fot_dim, 0);
 
-            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                    for (unsigned int Ob = 0; Ob < dim; Ob++) {
+                        dPlasticMicroLdElasticMicroRCG[dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Kb] +=
+                            microGamma * temp_sot1b[dim * Bb + Ob];
 
-                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                        for (unsigned int Pb = 0; Pb < dim; Pb++) {
+                            dPlasticMicroLdElasticPsi[dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb] +=
+                                temp_sot1[dim * Kb + Ob] * temp_sot1b[dim * Bb + Pb] -
+                                inverseElasticPsi[dim * Bb + Ob] * plasticMicroVelocityGradient[dim * Pb + Kb];
 
-                    for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
-
-                        dPlasticMicroLdElasticMicroRCG[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Kb ]
-                            += microGamma * temp_sot1b[ dim * Bb + Ob ];
-
-                        for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
-
-                            dPlasticMicroLdElasticPsi[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                += temp_sot1[ dim * Kb + Ob ] * temp_sot1b[ dim * Bb + Pb ]
-                                 - inverseElasticPsi[ dim * Bb + Ob ] * plasticMicroVelocityGradient[ dim * Pb + Kb ];
-
-                            dPlasticMicroLdMicroFlowDirection[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                -= inverseElasticPsi[ dim * Bb + Pb ] * temp_sot1[ dim * Kb + Ob ];
-
+                            dPlasticMicroLdMicroFlowDirection[dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb] -=
+                                inverseElasticPsi[dim * Bb + Pb] * temp_sot1[dim * Kb + Ob];
                         }
-
                     }
-
                 }
-
             }
-
         }
 
-        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
-                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
-                                                          const thirdOrderTensor &microGradientFlowDirection,
-                                                          const secondOrderTensor &plasticMicroVelocityGradient,
-                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient ){
+        void computePlasticMicroGradientVelocityGradient(const dimVector         &microGradientGamma,
+                                                         const secondOrderTensor &elasticPsi,
+                                                         const secondOrderTensor &inverseElasticPsi,
+                                                         const thirdOrderTensor  &elasticGamma,
+                                                         const thirdOrderTensor  &microGradientFlowDirection,
+                                                         const secondOrderTensor &plasticMicroVelocityGradient,
+                                                         thirdOrderTensor &plasticMicroGradientVelocityGradient) {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]\f$
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
+             * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
+             * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
+             * }^{e} \right]\f$
              *
-             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
-             * 
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not
+             * checked in the code.
+             *
              * \param &microGradientGamma: The micro gradient plastic multiplier.
              * \param &elasticPsi: The elastic micro deformation measure Psi.
              * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
@@ -1210,26 +1208,29 @@ namespace tardigradeHydra{
              */
 
             thirdOrderTensor skewTerm;
-            return computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
-                                                                elasticGamma, microGradientFlowDirection,
-                                                                plasticMicroVelocityGradient, plasticMicroGradientVelocityGradient,
-                                                                skewTerm );
-
+            return computePlasticMicroGradientVelocityGradient(microGradientGamma, elasticPsi, inverseElasticPsi,
+                                                               elasticGamma, microGradientFlowDirection,
+                                                               plasticMicroVelocityGradient,
+                                                               plasticMicroGradientVelocityGradient, skewTerm);
         }
 
-        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
-                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
-                                                          const thirdOrderTensor &microGradientFlowDirection,
-                                                          const secondOrderTensor &plasticMicroVelocityGradient,
-                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
-                                                          thirdOrderTensor &skewTerm ){
+        void computePlasticMicroGradientVelocityGradient(
+            const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+            const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+            const thirdOrderTensor &microGradientFlowDirection, const secondOrderTensor &plasticMicroVelocityGradient,
+            thirdOrderTensor &plasticMicroGradientVelocityGradient, thirdOrderTensor &skewTerm) {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]\f$
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
+             * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
+             * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
+             * }^{e} \right]\f$
              *
-             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
-             * 
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not
+             * checked in the code.
+             *
              * \param &microGradientGamma: The micro gradient plastic multiplier.
              * \param &elasticPsi: The elastic micro deformation measure Psi.
              * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
@@ -1240,128 +1241,110 @@ namespace tardigradeHydra{
              * \param &skewTerm: The skew term ( times 2 ) from the higher order computation.
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( microGradientGamma.size() == dim, "The micro gradient plastic multiplier must have a length of 3" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(microGradientGamma.size() == dim,
+                                         "The micro gradient plastic multiplier must have a length of 3");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( elasticPsi.size() == sot_dim, "The elastic micro deformation measure Psi must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(elasticPsi.size() == sot_dim,
+                                         "The elastic micro deformation measure Psi must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( inverseElasticPsi.size() == sot_dim, "The inverse elastic micro deformation measure Psi must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(inverseElasticPsi.size() == sot_dim,
+                                         "The inverse elastic micro deformation measure Psi must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( elasticGamma.size() == tot_dim, "The elastic higher order deformation measure Gamma must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(elasticGamma.size() == tot_dim,
+                                         "The elastic higher order deformation measure Gamma must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( microGradientFlowDirection.size() == dim * tot_dim, "The micro gradient flow direction must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(microGradientFlowDirection.size() == dim * tot_dim,
+                                         "The micro gradient flow direction must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( plasticMicroVelocityGradient.size() == sot_dim, "The plastic micro velocity gradient must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(plasticMicroVelocityGradient.size() == sot_dim,
+                                         "The plastic micro velocity gradient must be 3D");
 
-            //Assemble the 'skew' term
-            skewTerm = thirdOrderTensor( tot_dim, 0 );
-            secondOrderTensor temp_sot( sot_dim, 0 );
-            thirdOrderTensor temp_tot( tot_dim, 0 );
+            // Assemble the 'skew' term
+            skewTerm = thirdOrderTensor(tot_dim, 0);
+            secondOrderTensor temp_sot(sot_dim, 0);
+            thirdOrderTensor  temp_tot(tot_dim, 0);
 
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int Mb = 0; Mb < dim; Mb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        temp_sot[dim * Db + Kb] +=
+                            plasticMicroVelocityGradient[dim * Db + Mb] * inverseElasticPsi[dim * Mb + Kb];
 
-                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        temp_sot[ dim * Db + Kb ] += plasticMicroVelocityGradient[ dim * Db + Mb ]
-                                                   * inverseElasticPsi[ dim * Mb + Kb ];
-
-                        for ( unsigned int Cb = 0; Cb < dim; Cb++ ){
-
-                            temp_tot[ dim * dim * Db + dim * Kb + Cb ] -= inverseElasticPsi[ dim * Db + Mb ] * elasticGamma[ dim * dim * Mb + dim * Kb + Cb ];
-
+                        for (unsigned int Cb = 0; Cb < dim; Cb++) {
+                            temp_tot[dim * dim * Db + dim * Kb + Cb] -=
+                                inverseElasticPsi[dim * Db + Mb] * elasticGamma[dim * dim * Mb + dim * Kb + Cb];
                         }
-
                     }
-
                 }
-
             }
 
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
-
-                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        for ( unsigned int Cb = 0; Cb < dim; Cb++ ){
-
-                            skewTerm[ dim * dim * Db + dim * Mb + Kb ]
-                                += temp_sot[ dim * Db + Cb ] * elasticGamma[ dim * dim * Cb + dim * Mb + Kb ]
-                                 + plasticMicroVelocityGradient[ dim * Cb + Mb ] * temp_tot[ dim * dim * Db + dim * Cb + Kb ];
-
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int Mb = 0; Mb < dim; Mb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        for (unsigned int Cb = 0; Cb < dim; Cb++) {
+                            skewTerm[dim * dim * Db + dim * Mb + Kb] +=
+                                temp_sot[dim * Db + Cb] * elasticGamma[dim * dim * Cb + dim * Mb + Kb] +
+                                plasticMicroVelocityGradient[dim * Cb + Mb] * temp_tot[dim * dim * Db + dim * Cb + Kb];
                         }
-
                     }
-
                 }
-
             }
 
-            plasticMicroGradientVelocityGradient = thirdOrderTensor( dim * dim * dim, 0 );
+            plasticMicroGradientVelocityGradient = thirdOrderTensor(dim * dim * dim, 0);
 
-            std::fill( temp_tot.begin( ), temp_tot.end( ), 0 );
+            std::fill(temp_tot.begin(), temp_tot.end(), 0);
 
-            for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
-
-                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                            temp_tot[ dim * dim * Nb + dim * Mb + Kb ]
-                                += microGradientGamma[ Lb ] * microGradientFlowDirection[ dim * dim * dim * Lb + dim * dim * Mb + dim * Kb + Nb ]
-                                 + elasticPsi[ dim * Kb + Lb ] * skewTerm[ dim * dim * Lb + dim * Nb + Mb ];
-
+            for (unsigned int Nb = 0; Nb < dim; Nb++) {
+                for (unsigned int Mb = 0; Mb < dim; Mb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                            temp_tot[dim * dim * Nb + dim * Mb + Kb] +=
+                                microGradientGamma[Lb] *
+                                    microGradientFlowDirection[dim * dim * dim * Lb + dim * dim * Mb + dim * Kb + Nb] +
+                                elasticPsi[dim * Kb + Lb] * skewTerm[dim * dim * Lb + dim * Nb + Mb];
                         }
-
                     }
-
                 }
-
             }
 
-            for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
-
-                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                            plasticMicroGradientVelocityGradient[ dim * dim * Nb + dim * Mb + Kb ]
-                                += inverseElasticPsi[ dim * Nb + Lb ] * temp_tot[ dim * dim * Mb + dim * Kb + Lb ];
-
+            for (unsigned int Nb = 0; Nb < dim; Nb++) {
+                for (unsigned int Mb = 0; Mb < dim; Mb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                            plasticMicroGradientVelocityGradient[dim * dim * Nb + dim * Mb + Kb] +=
+                                inverseElasticPsi[dim * Nb + Lb] * temp_tot[dim * dim * Mb + dim * Kb + Lb];
                         }
-
                     }
-
                 }
-
             }
-
         }
 
-        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
-                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
-                                                          const thirdOrderTensor &microGradientFlowDirection,
-                                                          const secondOrderTensor &plasticMicroVelocityGradient,
-                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
-                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL ){
+        void computePlasticMicroGradientVelocityGradient(const dimVector         &microGradientGamma,
+                                                         const secondOrderTensor &elasticPsi,
+                                                         const secondOrderTensor &inverseElasticPsi,
+                                                         const thirdOrderTensor  &elasticGamma,
+                                                         const thirdOrderTensor  &microGradientFlowDirection,
+                                                         const secondOrderTensor &plasticMicroVelocityGradient,
+                                                         thirdOrderTensor        &plasticMicroGradientVelocityGradient,
+                                                         fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                         fifthOrderTensor  &dPlasticMicroGradientLdPlasticMicroL) {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$ \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right] \f$
+             * \f$ \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[
+             * \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{
+             * M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
+             * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
+             * }^{e} \right] \f$
              *
-             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
-             * 
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not
+             * checked in the code.
+             *
              * \param &microGradientGamma: The micro gradient plastic multiplier.
              * \param &elasticPsi: The elastic micro deformation measure Psi.
              * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
@@ -1369,35 +1352,40 @@ namespace tardigradeHydra{
              * \param &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
              * \param &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
              * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
-             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
+             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient
              *     velocity gradient w.r.t. the micro gradient gamma.
-             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient 
+             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient
              *     velocity gradient w.r.t. the platic micro velocity gradient.
              */
 
             thirdOrderTensor skewTerm;
-            return computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi, elasticGamma,
-                                                                microGradientFlowDirection, plasticMicroVelocityGradient,
-                                                                plasticMicroGradientVelocityGradient, skewTerm,
-                                                                dPlasticMicroGradientLdMicroGradientGamma,
-                                                                dPlasticMicroGradientLdPlasticMicroL );
+            return computePlasticMicroGradientVelocityGradient(microGradientGamma, elasticPsi, inverseElasticPsi,
+                                                               elasticGamma, microGradientFlowDirection,
+                                                               plasticMicroVelocityGradient,
+                                                               plasticMicroGradientVelocityGradient, skewTerm,
+                                                               dPlasticMicroGradientLdMicroGradientGamma,
+                                                               dPlasticMicroGradientLdPlasticMicroL);
         }
 
-        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
-                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
-                                                          const thirdOrderTensor &microGradientFlowDirection,
-                                                          const secondOrderTensor &plasticMicroVelocityGradient,
-                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
-                                                          thirdOrderTensor &skewTerm,
-                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL ){
+        void computePlasticMicroGradientVelocityGradient(
+            const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+            const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+            const thirdOrderTensor &microGradientFlowDirection, const secondOrderTensor &plasticMicroVelocityGradient,
+            thirdOrderTensor &plasticMicroGradientVelocityGradient, thirdOrderTensor &skewTerm,
+            fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+            fifthOrderTensor  &dPlasticMicroGradientLdPlasticMicroL) {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]\f$
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
+             * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
+             * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
+             * }^{e} \right]\f$
              *
-             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
-             * 
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not
+             * checked in the code.
+             *
              * \param &microGradientGamma: The micro gradient plastic multiplier.
              * \param &elasticPsi: The elastic micro deformation measure Psi.
              * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
@@ -1406,78 +1394,74 @@ namespace tardigradeHydra{
              * \param &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
              * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
              * \param &skewTerm: Two times the skew term.
-             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
+             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient
              *     velocity gradient w.r.t. the micro gradient gamma.
-             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient 
+             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient
              *     velocity gradient w.r.t. the platic micro velocity gradient.
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
-                computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
-                                                             elasticGamma, microGradientFlowDirection,
-                                                             plasticMicroVelocityGradient,
-                                                             plasticMicroGradientVelocityGradient, skewTerm )
+                computePlasticMicroGradientVelocityGradient(microGradientGamma, elasticPsi, inverseElasticPsi,
+                                                            elasticGamma, microGradientFlowDirection,
+                                                            plasticMicroVelocityGradient,
+                                                            plasticMicroGradientVelocityGradient, skewTerm)
 
             )
 
-            dPlasticMicroGradientLdPlasticMicroL = fifthOrderTensor( tot_dim * sot_dim, 0 );
-            dPlasticMicroGradientLdMicroGradientGamma = fourthOrderTensor( tot_dim * dim, 0 );
+            dPlasticMicroGradientLdPlasticMicroL      = fifthOrderTensor(tot_dim * sot_dim, 0);
+            dPlasticMicroGradientLdMicroGradientGamma = fourthOrderTensor(tot_dim * dim, 0);
 
-            for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+            for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                for (unsigned int Mb = 0; Mb < dim; Mb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        for (unsigned int Ob = 0; Ob < dim; Ob++) {
+                            for (unsigned int Pb = 0; Pb < dim; Pb++) {
+                                dPlasticMicroGradientLdMicroGradientGamma[dim * dim * dim * Lb + dim * dim * Mb +
+                                                                          dim * Kb + Ob] +=
+                                    inverseElasticPsi[dim * Lb + Pb] *
+                                    microGradientFlowDirection[dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb];
 
-                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+                                dPlasticMicroGradientLdPlasticMicroL[dim * dim * sot_dim * Lb + dim * sot_dim * Mb +
+                                                                     sot_dim * Kb + dim * Lb + Ob] +=
+                                    inverseElasticPsi[dim * Ob + Pb] * elasticGamma[dim * dim * Pb + dim * Mb + Kb];
 
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
-
-                            for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
-
-                                dPlasticMicroGradientLdMicroGradientGamma[ dim * dim * dim * Lb + dim * dim * Mb + dim * Kb + Ob ]
-                                    += inverseElasticPsi[ dim * Lb + Pb ]
-                                     * microGradientFlowDirection[ dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb ];
-
-                                dPlasticMicroGradientLdPlasticMicroL[ dim * dim * sot_dim * Lb + dim * sot_dim * Mb + sot_dim * Kb + dim * Lb + Ob ]
-                                    += inverseElasticPsi[ dim * Ob + Pb ] * elasticGamma[ dim * dim * Pb + dim * Mb + Kb ];
-
-                                dPlasticMicroGradientLdPlasticMicroL[ dim * dim * sot_dim * Lb + dim * sot_dim * Mb + sot_dim * Kb + dim * Ob + Mb ]
-                                    -= inverseElasticPsi[ dim * Lb + Pb ] * elasticGamma[ dim * dim * Pb + dim * Ob + Kb ];
-
+                                dPlasticMicroGradientLdPlasticMicroL[dim * dim * sot_dim * Lb + dim * sot_dim * Mb +
+                                                                     sot_dim * Kb + dim * Ob + Mb] -=
+                                    inverseElasticPsi[dim * Lb + Pb] * elasticGamma[dim * dim * Pb + dim * Ob + Kb];
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
 
-        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
-                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
-                                                          const thirdOrderTensor &microGradientFlowDirection,
-                                                          const secondOrderTensor &plasticMicroVelocityGradient,
-                                                          thirdOrderTensor  &plasticMicroGradientVelocityGradient,
-                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          fifthOrderTensor  &dPlasticMicroGradientLdPlasticMicroL,
-                                                          fifthOrderTensor  &dPlasticMicroGradientLdElasticPsi,
-                                                          sixthOrderTensor  &dPlasticMicroGradientLdElasticGamma,
-                                                          sixthOrderTensor  &dPlasticMicroGradientLdMicroGradientFlowDirection ){
+        void computePlasticMicroGradientVelocityGradient(
+            const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+            const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+            const thirdOrderTensor &microGradientFlowDirection, const secondOrderTensor &plasticMicroVelocityGradient,
+            thirdOrderTensor  &plasticMicroGradientVelocityGradient,
+            fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+            fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL, fifthOrderTensor &dPlasticMicroGradientLdElasticPsi,
+            sixthOrderTensor &dPlasticMicroGradientLdElasticGamma,
+            sixthOrderTensor &dPlasticMicroGradientLdMicroGradientFlowDirection) {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]\f$
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
+             * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
+             * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
+             * }^{e} \right]\f$
              *
-             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
-             * 
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not
+             * checked in the code.
+             *
              * \param &microGradientGamma: The micro gradient plastic multiplier.
              * \param &elasticPsi: The elastic micro deformation measure Psi.
              * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
@@ -1485,9 +1469,9 @@ namespace tardigradeHydra{
              * \param &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
              * \param &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
              * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
-             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
+             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient
              *     velocity gradient w.r.t. the micro gradient gamma.
-             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient 
+             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient
              *     velocity gradient w.r.t. the platic micro velocity gradient.
              * \param &dPlasticMicroGradientLdElasticPsi: The Jacobian of the plastic micro gradient
              *     velocity gradient w.r.t. the elastic micro deformation tensor Psi.
@@ -1497,758 +1481,613 @@ namespace tardigradeHydra{
              *     velocity gradient w.r.t. the micro gradient flow direction.
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
 
             thirdOrderTensor skewTerm;
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
-                computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
-                                                             elasticGamma, microGradientFlowDirection,
-                                                             plasticMicroVelocityGradient,
-                                                             plasticMicroGradientVelocityGradient, skewTerm,
-                                                             dPlasticMicroGradientLdMicroGradientGamma,
-                                                             dPlasticMicroGradientLdPlasticMicroL );
+                computePlasticMicroGradientVelocityGradient(
+                    microGradientGamma, elasticPsi, inverseElasticPsi, elasticGamma, microGradientFlowDirection,
+                    plasticMicroVelocityGradient, plasticMicroGradientVelocityGradient, skewTerm,
+                    dPlasticMicroGradientLdMicroGradientGamma, dPlasticMicroGradientLdPlasticMicroL);
 
             )
 
-            dPlasticMicroGradientLdElasticPsi   = fifthOrderTensor( tot_dim * sot_dim, 0 );
+            dPlasticMicroGradientLdElasticPsi = fifthOrderTensor(tot_dim * sot_dim, 0);
 
-            dPlasticMicroGradientLdElasticGamma = sixthOrderTensor( tot_dim * tot_dim, 0 );
+            dPlasticMicroGradientLdElasticGamma = sixthOrderTensor(tot_dim * tot_dim, 0);
 
-            dPlasticMicroGradientLdMicroGradientFlowDirection = seventhOrderTensor( tot_dim * dim * tot_dim, 0 );
+            dPlasticMicroGradientLdMicroGradientFlowDirection = seventhOrderTensor(tot_dim * dim * tot_dim, 0);
 
-            secondOrderTensor temp_sot1( sot_dim, 0 );
+            secondOrderTensor temp_sot1(sot_dim, 0);
 
-            thirdOrderTensor temp_tot1( tot_dim, 0 );
+            thirdOrderTensor temp_tot1(tot_dim, 0);
 
-            thirdOrderTensor temp_tot2( tot_dim, 0 );
+            thirdOrderTensor temp_tot2(tot_dim, 0);
 
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int Mb = 0; Mb < dim; Mb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        temp_sot1[dim * Db + Kb] +=
+                            plasticMicroVelocityGradient[dim * Db + Mb] * inverseElasticPsi[dim * Mb + Kb];
 
-                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        temp_sot1[ dim * Db + Kb ] += plasticMicroVelocityGradient[ dim * Db + Mb ] * inverseElasticPsi[ dim * Mb + Kb ];
-
-                        for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
-
-                            temp_tot1[ dim * dim * Db + dim * Kb + Ob ] += inverseElasticPsi[ dim * Db + Mb ]
-                                                                         * elasticGamma[ dim * dim * Mb + dim * Kb + Ob ]; 
-
+                        for (unsigned int Ob = 0; Ob < dim; Ob++) {
+                            temp_tot1[dim * dim * Db + dim * Kb + Ob] +=
+                                inverseElasticPsi[dim * Db + Mb] * elasticGamma[dim * dim * Mb + dim * Kb + Ob];
                         }
-
                     }
-
                 }
-
             }
 
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
-
-                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
-
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-
-                        for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
-
-                            temp_tot2[ dim * dim * Db + dim * Kb + Ob ] += plasticMicroVelocityGradient[ dim * Mb + Kb ] * temp_tot1[ dim * dim * Db + dim * Mb + Ob ];
-
-
-
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int Mb = 0; Mb < dim; Mb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        for (unsigned int Ob = 0; Ob < dim; Ob++) {
+                            temp_tot2[dim * dim * Db + dim * Kb + Ob] +=
+                                plasticMicroVelocityGradient[dim * Mb + Kb] * temp_tot1[dim * dim * Db + dim * Mb + Ob];
                         }
-
                     }
-
                 }
-
             }
 
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int Mb = 0; Mb < dim; Mb++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        for (unsigned int Ob = 0; Ob < dim; Ob++) {
+                            dPlasticMicroGradientLdElasticGamma[dim * dim * tot_dim * Db + dim * tot_dim * Mb +
+                                                                tot_dim * Kb + dim * dim * Ob + dim * Mb + Kb] +=
+                                temp_sot1[dim * Db + Ob];
 
-                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+                            for (unsigned int Pb = 0; Pb < dim; Pb++) {
+                                dPlasticMicroGradientLdElasticPsi[dim * dim * sot_dim * Db + dim * sot_dim * Mb +
+                                                                  sot_dim * Kb + dim * Ob + Pb] +=
+                                    inverseElasticPsi[dim * Db + Ob] *
+                                    (skewTerm[dim * dim * Pb + dim * Mb + Kb] -
+                                     plasticMicroGradientVelocityGradient[dim * dim * Pb + dim * Mb + Kb]);
 
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                                dPlasticMicroGradientLdElasticGamma[dim * dim * tot_dim * Db + dim * tot_dim * Mb +
+                                                                    tot_dim * Kb + dim * dim * Ob + dim * Pb + Kb] -=
+                                    plasticMicroVelocityGradient[dim * Pb + Mb] * inverseElasticPsi[dim * Db + Ob];
 
-                        for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+                                dPlasticMicroGradientLdMicroGradientFlowDirection
+                                    [dim * dim * tot_dim * dim * Db + dim * tot_dim * dim * Mb + tot_dim * dim * Kb +
+                                     dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb] +=
+                                    inverseElasticPsi[dim * Db + Pb] * microGradientGamma[Ob];
 
-                            dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Mb + Kb ]
-                                += temp_sot1[ dim * Db + Ob ];
-
-                            for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
-
-                                dPlasticMicroGradientLdElasticPsi[ dim * dim * sot_dim * Db + dim * sot_dim * Mb + sot_dim * Kb + dim * Ob + Pb ]
-                                    += inverseElasticPsi[ dim * Db + Ob ]
-                                     * ( skewTerm[ dim * dim * Pb + dim * Mb + Kb ] - plasticMicroGradientVelocityGradient[ dim * dim * Pb + dim * Mb + Kb ] );
-
-                                dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Pb + Kb ]
-                                    -= plasticMicroVelocityGradient[ dim * Pb + Mb ] * inverseElasticPsi[ dim * Db + Ob ];
-
-                                dPlasticMicroGradientLdMicroGradientFlowDirection[ dim * dim * tot_dim * dim * Db + dim * tot_dim * dim * Mb + tot_dim * dim * Kb + dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb ]
-                                    += inverseElasticPsi[ dim * Db + Pb ] * microGradientGamma[ Ob ];
-
-                                dPlasticMicroGradientLdElasticPsi[ dim * dim * sot_dim * Db + dim * sot_dim * Mb + sot_dim * Kb + dim * Ob + Pb ]
-                                    += inverseElasticPsi[ dim * Db + Ob ] * temp_tot2[ dim * dim * Pb + dim * Mb + Kb ]
-                                     - temp_sot1[ dim * Db + Ob ] * temp_tot1[ dim * dim * Pb + dim * Mb + Kb ];
-
+                                dPlasticMicroGradientLdElasticPsi[dim * dim * sot_dim * Db + dim * sot_dim * Mb +
+                                                                  sot_dim * Kb + dim * Ob + Pb] +=
+                                    inverseElasticPsi[dim * Db + Ob] * temp_tot2[dim * dim * Pb + dim * Mb + Kb] -
+                                    temp_sot1[dim * Db + Ob] * temp_tot1[dim * dim * Pb + dim * Mb + Kb];
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
 
-        void computePlasticMicroGradChi(
-            const variableType &Dt,
-            const secondOrderTensor &currentPlasticDeformationGradient,
-            const secondOrderTensor &currentPlasticMicroDeformation,
-            const secondOrderTensor &currentPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &currentGradientPlasticMicroVelocityGradient,
-            const secondOrderTensor &previousPlasticDeformationGradient,
-            const secondOrderTensor &previousPlasticMicroDeformation,
-            const secondOrderTensor &previousPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &previousGradientPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &previousGradientPlasticMicroDeformation,
-            thirdOrderTensor &gradientPlasticMicroDeformation,
-            const parameterType alpha
-        ){
-            /*!
-             * Evolve the gradient of the plastic micro-deformation measure in the intermediate configuration.
-             *
-             * \param &Dt: The change in time
-             * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient
-             * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation
-             * \param &currentPlasticMicroVelocityGradient: The current value of the plastic micro-velocity gradient
-             * \param &currentGradientPlasticMicroVelocityGradient: The current value of the micro-gradient velocity gradient
-             * \param &previousPlasticDeformationGradient: The previous value of the plastic deformation gradient
-             * \param &previousPlasticMicroDeformation: The previous value of the plastic micro deformation
-             * \param &previousPlasticMicroVelocityGradient: The previous value of the plastic micro-velocity gradient
-             * \param &previousGradientPlasticMicroVelocityGradient: The previous value of the micro-gradient velocity gradient
-             * \param &previousGradientPlasticMicroDeformation: The previous value of the gradient of the plastic micro-deformation measure
-             *     where the gradient is being taken with respect to the reference configuration of the intermediate configuration
-             * \param &gradientPlasticMicroDeformation: The current value of the gradient of the plastic micro-deformation measure
-             *     where the gradient is being taken with respect to the reference configuration of the intermediate configuration
-             * \param alpha: The integration parameter (0 explicit, 1 implicit, 0.5 second-order accurate trapizoidal rule)
-             */
-
-            const parameterType implicit_mult = Dt * alpha;
-            const parameterType explicit_mult = Dt * ( 1 - alpha );
-
-            constexpr unsigned int dim = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = dim * dim * dim;
-            constexpr unsigned int fot_dim = dim * dim * dim * dim;
-
-            // Declare the local variables
-            std::array< floatType, sot_dim > LHS, invLHS;
-            std::array< floatType, tot_dim > RHS;
-
-            std::array< floatType, fot_dim > temp1, temp2;
-
-            // Initialize the local variables
-            std::fill(
-                std::begin( LHS ), std::end( LHS ), 0
-            );
-            std::fill(
-                std::begin( invLHS ), std::end( invLHS ), 0
-            );
-            std::fill(
-                std::begin( RHS ), std::end( RHS ), 0
-            );
-            std::fill(
-                std::begin( temp1 ), std::end( temp1 ), 0
-            );
-            std::fill(
-                std::begin( temp2 ), std::end( temp2 ), 0
-            );
-
-            // Assemble temporary values
-            for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
-
-                    for ( unsigned int A = 0; A < dim; ++A ){
-
-                        for ( unsigned int B = 0; B < dim; ++B ){
-
-                            temp1[ dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B ]
-                                += implicit_mult * currentPlasticMicroDeformation[ dim * Jbar + A ] * currentPlasticDeformationGradient[ 3 * Kbar + B ];
-                            temp2[ dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B ]
-                                += explicit_mult * previousPlasticMicroDeformation[ dim * Jbar + A ] * previousPlasticDeformationGradient[ 3 * Kbar + B ];
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-            // Assemble the RHS
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int JbarKbar = 0; JbarKbar < sot_dim; ++JbarKbar ){
-
-                    RHS[ sot_dim * Ibar + JbarKbar ] += previousGradientPlasticMicroDeformation[ sot_dim * Ibar + JbarKbar ];
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        RHS[ sot_dim * Ibar + AB ] +=  currentGradientPlasticMicroVelocityGradient[ sot_dim * Ibar + JbarKbar ] * temp1[ sot_dim * JbarKbar + AB ]
-                                                    + previousGradientPlasticMicroVelocityGradient[ sot_dim * Ibar + JbarKbar ] * temp2[ sot_dim * JbarKbar + AB ];
-
-                    }
-
-                }
-
-                for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        RHS[ sot_dim * Ibar + AB ] += explicit_mult * previousPlasticMicroVelocityGradient[ 3 * Ibar + Jbar ] * previousGradientPlasticMicroDeformation[ sot_dim * Jbar + AB ];
-
-                    }
-
-                }
-
-            }
-
-            // Assemble the LHS
-            std::transform(
-                std::begin( currentPlasticMicroVelocityGradient ),
-                std::end(   currentPlasticMicroVelocityGradient ),
-                std::begin( LHS ),
-                std::bind(std::multiplies<>(), std::placeholders::_1, -implicit_mult )
-            );
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-                LHS[ dim * Ibar + Ibar ] += 1;
-            }
-
-            // Compute the inverse of the LHS
-            auto map_LHS = getFixedSizeMatrixMap< floatType, dim, dim >( LHS.data( ) );
-            auto map_invLHS = getFixedSizeMatrixMap< floatType, dim, dim >( invLHS.data( ) );
-            map_invLHS = map_LHS.inverse( ).eval( );
-
-            // Update the gradient of the plastic micro deformation
-            gradientPlasticMicroDeformation = thirdOrderTensor( dim * dim * dim, 0 );
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        gradientPlasticMicroDeformation[ sot_dim * Ibar + AB ] += invLHS[ dim * Ibar + Jbar ] * RHS[ sot_dim * Jbar + AB ];
-
-                    }
-
-                }
-
-            }
-
-        }
-
-        void computePlasticMicroGradChi(
-            const variableType &Dt,
-            const secondOrderTensor &currentPlasticDeformationGradient,
-            const secondOrderTensor &currentPlasticMicroDeformation,
-            const secondOrderTensor &currentPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &currentGradientPlasticMicroVelocityGradient,
-            const secondOrderTensor &previousPlasticDeformationGradient,
-            const secondOrderTensor &previousPlasticMicroDeformation,
-            const secondOrderTensor &previousPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &previousGradientPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &previousGradientPlasticMicroDeformation,
-            thirdOrderTensor &gradientPlasticMicroDeformation,
-            fifthOrderTensor &dGradChipdFp,
-            fifthOrderTensor &dGradChipdChip,
-            fifthOrderTensor &dGradChipdMicroLp,
-            sixthOrderTensor &dGradChipdGradMicroLp,
-            const parameterType alpha
-        ){
-            /*!
-             * Evolve the gradient of the plastic micro-deformation measure in the intermediate configuration.
-             *
-             * \param &Dt: The change in time
-             * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient
-             * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation
-             * \param &currentPlasticMicroVelocityGradient: The current value of the plastic micro-velocity gradient
-             * \param &currentGradientPlasticMicroVelocityGradient: The current value of the micro-gradient velocity gradient
-             * \param &previousPlasticDeformationGradient: The previous value of the plastic deformation gradient
-             * \param &previousPlasticMicroDeformation: The previous value of the plastic micro deformation
-             * \param &previousPlasticMicroVelocityGradient: The previous value of the plastic micro-velocity gradient
-             * \param &previousGradientPlasticMicroVelocityGradient: The previous value of the micro-gradient velocity gradient
-             * \param &previousGradientPlasticMicroDeformation: The previous value of the gradient of the plastic micro-deformation measure
-             *     where the gradient is being taken with respect to the reference configuration of the intermediate configuration
-             * \param &gradientPlasticMicroDeformation: The current value of the gradient of the plastic micro-deformation measure
-             *     where the gradient is being taken with respect to the reference configuration of the intermediate configuration
-             * \param &dGradChipdFp: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic deformation gradient
-             * \param &dGradChipdChip: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic micro deformation
-             * \param &dGradChipdMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic micro velocity gradient
-             * \param &dGradChipdGradMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the gradient of the plastic micro velocity gradient
-             * \param alpha: The integration parameter (0 explicit, 1 implicit, 0.5 second-order accurate trapizoidal rule)
-             */
-
-            const parameterType implicit_mult = Dt * alpha;
-            const parameterType explicit_mult = Dt * ( 1 - alpha );
-
-            constexpr unsigned int dim = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = dim * dim * dim;
-            constexpr unsigned int fot_dim = dim * dim * dim * dim;
-
-            // Declare the local variables
-            std::array< floatType, sot_dim > LHS, invLHS;
-            std::array< floatType, tot_dim > RHS;
-
-            std::array< floatType, fot_dim > temp1, temp2;
-            std::array< floatType, tot_dim > temp3;
-
-            // Initialize the local variables
-            std::fill(
-                std::begin( LHS ), std::end( LHS ), 0
-            );
-            std::fill(
-                std::begin( invLHS ), std::end( invLHS ), 0
-            );
-            std::fill(
-                std::begin( RHS ), std::end( RHS ), 0
-            );
-            std::fill(
-                std::begin( temp1 ), std::end( temp1 ), 0
-            );
-            std::fill(
-                std::begin( temp2 ), std::end( temp2 ), 0
-            );
-            std::fill(
-                std::begin( temp3 ), std::end( temp3 ), 0
-            );
-
-
-            // Assemble temporary values
-            for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
-
-                    for ( unsigned int A = 0; A < dim; ++A ){
-
-                        for ( unsigned int B = 0; B < dim; ++B ){
-
-                            temp1[ dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B ]
-                                += implicit_mult * currentPlasticMicroDeformation[ dim * Jbar + A ] * currentPlasticDeformationGradient[ 3 * Kbar + B ];
-                            temp2[ dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B ]
-                                += explicit_mult * previousPlasticMicroDeformation[ dim * Jbar + A ] * previousPlasticDeformationGradient[ 3 * Kbar + B ];
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-            // Assemble the RHS
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int JbarKbar = 0; JbarKbar < sot_dim; ++JbarKbar ){
-
-                    RHS[ sot_dim * Ibar + JbarKbar ] += previousGradientPlasticMicroDeformation[ sot_dim * Ibar + JbarKbar ];
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        RHS[ sot_dim * Ibar + AB ] +=  currentGradientPlasticMicroVelocityGradient[ sot_dim * Ibar + JbarKbar ] * temp1[ sot_dim * JbarKbar + AB ]
-                                                    + previousGradientPlasticMicroVelocityGradient[ sot_dim * Ibar + JbarKbar ] * temp2[ sot_dim * JbarKbar + AB ];
-
-                    }
-
-                }
-
-                for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        RHS[ sot_dim * Ibar + AB ] += explicit_mult * previousPlasticMicroVelocityGradient[ 3 * Ibar + Jbar ] * previousGradientPlasticMicroDeformation[ sot_dim * Jbar + AB ];
-
-                    }
-
-                }
-
-            }
-
-            // Assemble the LHS
-            std::transform(
-                std::begin( currentPlasticMicroVelocityGradient ),
-                std::end(   currentPlasticMicroVelocityGradient ),
-                std::begin( LHS ),
-                std::bind(std::multiplies<>(), std::placeholders::_1, -implicit_mult )
-            );
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-                LHS[ dim * Ibar + Ibar ] += 1;
-            }
-
-            // Compute the inverse of the LHS
-            auto map_LHS = getFixedSizeMatrixMap< floatType, dim, dim >( LHS.data( ) );
-            auto map_invLHS = getFixedSizeMatrixMap< floatType, dim, dim >( invLHS.data( ) );
-            map_invLHS = map_LHS.inverse( ).eval( );
-
-            // Assemble term3
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        temp3[ sot_dim * Ibar + AB ] += implicit_mult * invLHS[ dim * Ibar + Kbar ] * currentGradientPlasticMicroVelocityGradient[ sot_dim * Kbar + AB ];
-
-                    }
-
-                }
-
-            }
-
-            // Update the gradient of the plastic micro deformation
-            gradientPlasticMicroDeformation = thirdOrderTensor( dim * dim * dim, 0 );
-            dGradChipdChip                  = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdFp                    = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdMicroLp               = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdGradMicroLp           = sixthOrderTensor( dim * dim * dim * dim * dim * dim , 0 );
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        gradientPlasticMicroDeformation[ sot_dim * Ibar + AB ] += invLHS[ dim * Ibar + Jbar ] * RHS[ sot_dim * Jbar + AB ];
-
-                        for ( unsigned int DE = 0; DE < sot_dim; ++DE ){
-
-                            dGradChipdGradMicroLp[ sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar + DE ] += invLHS[ dim * Ibar + Jbar ] * temp1[ sot_dim * DE + AB ];
-
-                        }
-
-                    }
-
-                    for ( unsigned int A = 0; A < dim; ++A ){
-
-                        for ( unsigned int B = 0; B < dim; ++B ){
-
-                            for ( unsigned int C = 0; C < dim; ++C ){
-
-                                dGradChipdChip[ dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + A ]
-                                    += temp3[ dim * dim * Ibar + dim * C + Jbar ] * currentPlasticDeformationGradient[ dim * Jbar + B ];
-
-                                dGradChipdFp[   dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + B ]
-                                    += temp3[ dim * dim * Ibar + dim * Jbar + C ] * currentPlasticMicroDeformation[    dim * Jbar + A ];
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                    for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
-
-                        for ( unsigned int Lbar = 0; Lbar < dim; ++Lbar ){
-
-                            dGradChipdMicroLp[ sot_dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar + Lbar ]
-                                += invLHS[ dim * Ibar + Kbar ] * implicit_mult * gradientPlasticMicroDeformation[ sot_dim * Lbar + AB ];
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-        void computePlasticMicroGradChi(
-            const variableType &Dt,
-            const secondOrderTensor &currentPlasticDeformationGradient,
-            const secondOrderTensor &currentPlasticMicroDeformation,
-            const secondOrderTensor &currentPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &currentGradientPlasticMicroVelocityGradient,
-            const secondOrderTensor &previousPlasticDeformationGradient,
-            const secondOrderTensor &previousPlasticMicroDeformation,
-            const secondOrderTensor &previousPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &previousGradientPlasticMicroVelocityGradient,
-            const thirdOrderTensor  &previousGradientPlasticMicroDeformation,
-            thirdOrderTensor &gradientPlasticMicroDeformation,
-            fifthOrderTensor &dGradChipdFp,
-            fifthOrderTensor &dGradChipdChip,
-            fifthOrderTensor &dGradChipdMicroLp,
-            sixthOrderTensor &dGradChipdGradMicroLp,
-            fifthOrderTensor &dGradChipdPreviousFp,
-            fifthOrderTensor &dGradChipdPreviousChip,
-            fifthOrderTensor &dGradChipdPreviousMicroLp,
-            sixthOrderTensor &dGradChipdPreviousGradMicroLp,
-            sixthOrderTensor &dGradChipdPreviousGradChip,
-            const parameterType alpha
-        ){
-            /*!
-             * Evolve the gradient of the plastic micro-deformation measure in the intermediate configuration.
-             *
-             * \param &Dt: The change in time
-             * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient
-             * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation
-             * \param &currentPlasticMicroVelocityGradient: The current value of the plastic micro-velocity gradient
-             * \param &currentGradientPlasticMicroVelocityGradient: The current value of the micro-gradient velocity gradient
-             * \param &previousPlasticDeformationGradient: The previous value of the plastic deformation gradient
-             * \param &previousPlasticMicroDeformation: The previous value of the plastic micro deformation
-             * \param &previousPlasticMicroVelocityGradient: The previous value of the plastic micro-velocity gradient
-             * \param &previousGradientPlasticMicroVelocityGradient: The previous value of the micro-gradient velocity gradient
-             * \param &previousGradientPlasticMicroDeformation: The previous value of the gradient of the plastic micro-deformation measure
-             *     where the gradient is being taken with respect to the reference configuration of the intermediate configuration
-             * \param &gradientPlasticMicroDeformation: The current value of the gradient of the plastic micro-deformation measure
-             *     where the gradient is being taken with respect to the reference configuration of the intermediate configuration
-             * \param &dGradChipdFp: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic deformation gradient
-             * \param &dGradChipdChip: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic micro deformation
-             * \param &dGradChipdMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic micro velocity gradient
-             * \param &dGradChipdGradMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the previous gradient of the plastic micro velocity gradient
-             * \param &dGradChipdPreviousFp: The derivative of the gradient of the plastic micro deformation w.r.t. the previous plastic deformation gradient
-             * \param &dGradChipdPreviousChip: The derivative of the gradient of the plastic micro deformation w.r.t. the previous plastic micro deformation
-             * \param &dGradChipdPreviousMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the previous plastic micro velocity gradient
-             * \param &dGradChipdPreviousGradMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the previous gradient of the plastic micro velocity gradient
-             * \param &dGradChipdPreviousGradChip: The derivative of the gradient of the plastic micro deformation w.r.t. the previous gradient of the plastic micro deformation
-             * \param alpha: The integration parameter (0 explicit, 1 implicit, 0.5 second-order accurate trapizoidal rule)
-             */
-
-            const parameterType implicit_mult = Dt * alpha;
-            const parameterType explicit_mult = Dt * ( 1 - alpha );
-
-            constexpr unsigned int dim = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = dim * dim * dim;
-            constexpr unsigned int fot_dim = dim * dim * dim * dim;
-
-            // Declare the local variables
-            std::array< floatType, sot_dim > LHS, invLHS;
-            std::array< floatType, tot_dim > RHS;
-
-            std::array< floatType, fot_dim > temp1, temp2;
-            std::array< floatType, tot_dim > temp3, temp4;
-
-            // Initialize the local variables
-            std::fill(
-                std::begin( LHS ), std::end( LHS ), 0
-            );
-            std::fill(
-                std::begin( invLHS ), std::end( invLHS ), 0
-            );
-            std::fill(
-                std::begin( RHS ), std::end( RHS ), 0
-            );
-            std::fill(
-                std::begin( temp1 ), std::end( temp1 ), 0
-            );
-            std::fill(
-                std::begin( temp2 ), std::end( temp2 ), 0
-            );
-            std::fill(
-                std::begin( temp3 ), std::end( temp3 ), 0
-            );
-            std::fill(
-                std::begin( temp4 ), std::end( temp4 ), 0
-            );
-
-            // Assemble temporary values
-            for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
-
-                    for ( unsigned int A = 0; A < dim; ++A ){
-
-                        for ( unsigned int B = 0; B < dim; ++B ){
-
-                            temp1[ dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B ]
-                                += implicit_mult * currentPlasticMicroDeformation[ dim * Jbar + A ] * currentPlasticDeformationGradient[ 3 * Kbar + B ];
-                            temp2[ dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B ]
-                                += explicit_mult * previousPlasticMicroDeformation[ dim * Jbar + A ] * previousPlasticDeformationGradient[ 3 * Kbar + B ];
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-            // Assemble the RHS
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int JbarKbar = 0; JbarKbar < sot_dim; ++JbarKbar ){
-
-                    RHS[ sot_dim * Ibar + JbarKbar ] += previousGradientPlasticMicroDeformation[ sot_dim * Ibar + JbarKbar ];
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        RHS[ sot_dim * Ibar + AB ] +=  currentGradientPlasticMicroVelocityGradient[ sot_dim * Ibar + JbarKbar ] * temp1[ sot_dim * JbarKbar + AB ]
-                                                    + previousGradientPlasticMicroVelocityGradient[ sot_dim * Ibar + JbarKbar ] * temp2[ sot_dim * JbarKbar + AB ];
-
-                    }
-
-                }
-
-                for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        RHS[ sot_dim * Ibar + AB ] += explicit_mult * previousPlasticMicroVelocityGradient[ 3 * Ibar + Jbar ] * previousGradientPlasticMicroDeformation[ sot_dim * Jbar + AB ];
-
-                    }
-
-                }
-
-            }
-
-            // Assemble the LHS
-            std::transform(
-                std::begin( currentPlasticMicroVelocityGradient ),
-                std::end(   currentPlasticMicroVelocityGradient ),
-                std::begin( LHS ),
-                std::bind(std::multiplies<>(), std::placeholders::_1, -implicit_mult )
-            );
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-                LHS[ dim * Ibar + Ibar ] += 1;
-            }
-
-            // Compute the inverse of the LHS
-            auto map_LHS = getFixedSizeMatrixMap< floatType, dim, dim >( LHS.data( ) );
-            auto map_invLHS = getFixedSizeMatrixMap< floatType, dim, dim >( invLHS.data( ) );
-            map_invLHS = map_LHS.inverse( ).eval( );
-
-            // Assemble term3
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        temp3[ sot_dim * Ibar + AB ] += implicit_mult * invLHS[ dim * Ibar + Kbar ] * currentGradientPlasticMicroVelocityGradient[ sot_dim * Kbar + AB ];
-                        temp4[ sot_dim * Ibar + AB ] += explicit_mult * invLHS[ dim * Ibar + Kbar ] * previousGradientPlasticMicroVelocityGradient[ sot_dim * Kbar + AB ];
-
-                    }
-
-                }
-
-            }
-
-            // Update the gradient of the plastic micro deformation
-            gradientPlasticMicroDeformation = thirdOrderTensor( dim * dim * dim, 0 );
-            dGradChipdFp                    = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdChip                  = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdMicroLp               = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdGradMicroLp           = sixthOrderTensor( dim * dim * dim * dim * dim * dim, 0 );
-            dGradChipdPreviousFp            = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdPreviousChip          = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdPreviousMicroLp       = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
-            dGradChipdPreviousGradMicroLp   = sixthOrderTensor( dim * dim * dim * dim * dim * dim, 0 );
-            dGradChipdPreviousGradChip      = sixthOrderTensor( dim * dim * dim * dim * dim * dim, 0 );
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
-
-                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                        gradientPlasticMicroDeformation[ sot_dim * Ibar + AB ] += invLHS[ dim * Ibar + Jbar ] * RHS[ sot_dim * Jbar + AB ];
-
-                        dGradChipdPreviousGradChip[ sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar + AB ] += invLHS[ dim * Ibar + Jbar ];
-
-                        for ( unsigned int K = 0; K < dim; ++K ){
-
-                            dGradChipdPreviousGradChip[ dim * dim * dim * sot_dim * Ibar + dim * dim * dim * AB + dim * dim * K + AB ]
-                                += invLHS[ dim * Ibar + Jbar ] * explicit_mult * previousPlasticMicroVelocityGradient[ 3 * Jbar + K ];
-
-                        }
-
-                        for ( unsigned int DE = 0; DE < sot_dim; ++DE ){
-
-                            dGradChipdGradMicroLp[         sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar + DE ] += invLHS[ dim * Ibar + Jbar ] * temp1[ sot_dim * DE + AB ];
-                            dGradChipdPreviousGradMicroLp[ sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar + DE ] += invLHS[ dim * Ibar + Jbar ] * temp2[ sot_dim * DE + AB ];
-
-                        }
-
-                    }
-
-                    for ( unsigned int A = 0; A < dim; ++A ){
-
-                        for ( unsigned int B = 0; B < dim; ++B ){
-
-                            for ( unsigned int C = 0; C < dim; ++C ){
-
-                                dGradChipdChip[ dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + A ]
-                                    += temp3[ dim * dim * Ibar + dim * C + Jbar ] * currentPlasticDeformationGradient[ dim * Jbar + B ];
-
-                                dGradChipdFp[   dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + B ]
-                                    += temp3[ dim * dim * Ibar + dim * Jbar + C ] * currentPlasticMicroDeformation[    dim * Jbar + A ];
-
-                                dGradChipdPreviousChip[ dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + A ]
-                                    += temp4[ dim * dim * Ibar + dim * C + Jbar ] * previousPlasticDeformationGradient[ dim * Jbar + B ];
-
-                                dGradChipdPreviousFp[   dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + B ]
-                                    += temp4[ dim * dim * Ibar + dim * Jbar + C ] * previousPlasticMicroDeformation[ dim * Jbar + A ];
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
-
-                for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
-
-                    for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
-
-                        for ( unsigned int Lbar = 0; Lbar < dim; ++Lbar ){
-
-                            dGradChipdMicroLp[ sot_dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar + Lbar ]
-                                += invLHS[ dim * Ibar + Kbar ] * implicit_mult * gradientPlasticMicroDeformation[ sot_dim * Lbar + AB ];
-
-                            dGradChipdPreviousMicroLp[ dim * dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar + Lbar ]
-                                += invLHS[ dim * Ibar + Kbar ] * explicit_mult * previousGradientPlasticMicroDeformation[ sot_dim * Lbar + AB ];
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-        void evolvePlasticMicroGradChi( const variableType &Dt,
+        void computePlasticMicroGradChi(const variableType      &Dt,
+                                        const secondOrderTensor &currentPlasticDeformationGradient,
                                         const secondOrderTensor &currentPlasticMicroDeformation,
-                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
                                         const secondOrderTensor &currentPlasticMicroVelocityGradient,
-                                        const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                        const thirdOrderTensor  &currentGradientPlasticMicroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticDeformationGradient,
                                         const secondOrderTensor &previousPlasticMicroDeformation,
-                                        const thirdOrderTensor  &previousPlasticMicroGradient,
-                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
                                         const secondOrderTensor &previousPlasticMicroVelocityGradient,
-                                        const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
-                                        thirdOrderTensor        &currentPlasticMicroGradient,
-                                        const parameterType alpha ){
+                                        const thirdOrderTensor  &previousGradientPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousGradientPlasticMicroDeformation,
+                                        thirdOrderTensor &gradientPlasticMicroDeformation, const parameterType alpha) {
+            /*!
+             * Evolve the gradient of the plastic micro-deformation measure in the intermediate configuration.
+             *
+             * \param &Dt: The change in time
+             * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient
+             * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation
+             * \param &currentPlasticMicroVelocityGradient: The current value of the plastic micro-velocity gradient
+             * \param &currentGradientPlasticMicroVelocityGradient: The current value of the micro-gradient velocity
+             * gradient \param &previousPlasticDeformationGradient: The previous value of the plastic deformation
+             * gradient \param &previousPlasticMicroDeformation: The previous value of the plastic micro deformation
+             * \param &previousPlasticMicroVelocityGradient: The previous value of the plastic micro-velocity gradient
+             * \param &previousGradientPlasticMicroVelocityGradient: The previous value of the micro-gradient velocity
+             * gradient \param &previousGradientPlasticMicroDeformation: The previous value of the gradient of the
+             * plastic micro-deformation measure where the gradient is being taken with respect to the reference
+             * configuration of the intermediate configuration \param &gradientPlasticMicroDeformation: The current
+             * value of the gradient of the plastic micro-deformation measure where the gradient is being taken with
+             * respect to the reference configuration of the intermediate configuration \param alpha: The integration
+             * parameter (0 explicit, 1 implicit, 0.5 second-order accurate trapizoidal rule)
+             */
+
+            const parameterType implicit_mult = Dt * alpha;
+            const parameterType explicit_mult = Dt * (1 - alpha);
+
+            constexpr unsigned int dim     = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = dim * dim * dim;
+            constexpr unsigned int fot_dim = dim * dim * dim * dim;
+
+            // Declare the local variables
+            std::array<floatType, sot_dim> LHS, invLHS;
+            std::array<floatType, tot_dim> RHS;
+
+            std::array<floatType, fot_dim> temp1, temp2;
+
+            // Initialize the local variables
+            std::fill(std::begin(LHS), std::end(LHS), 0);
+            std::fill(std::begin(invLHS), std::end(invLHS), 0);
+            std::fill(std::begin(RHS), std::end(RHS), 0);
+            std::fill(std::begin(temp1), std::end(temp1), 0);
+            std::fill(std::begin(temp2), std::end(temp2), 0);
+
+            // Assemble temporary values
+            for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                for (unsigned int Kbar = 0; Kbar < dim; ++Kbar) {
+                    for (unsigned int A = 0; A < dim; ++A) {
+                        for (unsigned int B = 0; B < dim; ++B) {
+                            temp1[dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B] +=
+                                implicit_mult * currentPlasticMicroDeformation[dim * Jbar + A] *
+                                currentPlasticDeformationGradient[3 * Kbar + B];
+                            temp2[dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B] +=
+                                explicit_mult * previousPlasticMicroDeformation[dim * Jbar + A] *
+                                previousPlasticDeformationGradient[3 * Kbar + B];
+                        }
+                    }
+                }
+            }
+
+            // Assemble the RHS
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int JbarKbar = 0; JbarKbar < sot_dim; ++JbarKbar) {
+                    RHS[sot_dim * Ibar + JbarKbar] +=
+                        previousGradientPlasticMicroDeformation[sot_dim * Ibar + JbarKbar];
+
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        RHS[sot_dim * Ibar + AB] +=
+                            currentGradientPlasticMicroVelocityGradient[sot_dim * Ibar + JbarKbar] *
+                                temp1[sot_dim * JbarKbar + AB] +
+                            previousGradientPlasticMicroVelocityGradient[sot_dim * Ibar + JbarKbar] *
+                                temp2[sot_dim * JbarKbar + AB];
+                    }
+                }
+
+                for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        RHS[sot_dim * Ibar + AB] += explicit_mult *
+                                                    previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
+                                                    previousGradientPlasticMicroDeformation[sot_dim * Jbar + AB];
+                    }
+                }
+            }
+
+            // Assemble the LHS
+            std::transform(std::begin(currentPlasticMicroVelocityGradient),
+                           std::end(currentPlasticMicroVelocityGradient), std::begin(LHS),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, -implicit_mult));
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                LHS[dim * Ibar + Ibar] += 1;
+            }
+
+            // Compute the inverse of the LHS
+            auto map_LHS    = getFixedSizeMatrixMap<floatType, dim, dim>(LHS.data());
+            auto map_invLHS = getFixedSizeMatrixMap<floatType, dim, dim>(invLHS.data());
+            map_invLHS      = map_LHS.inverse().eval();
+
+            // Update the gradient of the plastic micro deformation
+            gradientPlasticMicroDeformation = thirdOrderTensor(dim * dim * dim, 0);
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        gradientPlasticMicroDeformation[sot_dim * Ibar + AB] +=
+                            invLHS[dim * Ibar + Jbar] * RHS[sot_dim * Jbar + AB];
+                    }
+                }
+            }
+        }
+
+        void computePlasticMicroGradChi(const variableType      &Dt,
+                                        const secondOrderTensor &currentPlasticDeformationGradient,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &currentGradientPlasticMicroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticDeformationGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousGradientPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousGradientPlasticMicroDeformation,
+                                        thirdOrderTensor        &gradientPlasticMicroDeformation,
+                                        fifthOrderTensor &dGradChipdFp, fifthOrderTensor &dGradChipdChip,
+                                        fifthOrderTensor &dGradChipdMicroLp, sixthOrderTensor &dGradChipdGradMicroLp,
+                                        const parameterType alpha) {
+            /*!
+             * Evolve the gradient of the plastic micro-deformation measure in the intermediate configuration.
+             *
+             * \param &Dt: The change in time
+             * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient
+             * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation
+             * \param &currentPlasticMicroVelocityGradient: The current value of the plastic micro-velocity gradient
+             * \param &currentGradientPlasticMicroVelocityGradient: The current value of the micro-gradient velocity
+             * gradient \param &previousPlasticDeformationGradient: The previous value of the plastic deformation
+             * gradient \param &previousPlasticMicroDeformation: The previous value of the plastic micro deformation
+             * \param &previousPlasticMicroVelocityGradient: The previous value of the plastic micro-velocity gradient
+             * \param &previousGradientPlasticMicroVelocityGradient: The previous value of the micro-gradient velocity
+             * gradient \param &previousGradientPlasticMicroDeformation: The previous value of the gradient of the
+             * plastic micro-deformation measure where the gradient is being taken with respect to the reference
+             * configuration of the intermediate configuration \param &gradientPlasticMicroDeformation: The current
+             * value of the gradient of the plastic micro-deformation measure where the gradient is being taken with
+             * respect to the reference configuration of the intermediate configuration \param &dGradChipdFp: The
+             * derivative of the gradient of the plastic micro deformation w.r.t. the plastic deformation gradient
+             * \param &dGradChipdChip: The derivative of the gradient of the plastic micro deformation w.r.t. the
+             * plastic micro deformation \param &dGradChipdMicroLp: The derivative of the gradient of the plastic micro
+             * deformation w.r.t. the plastic micro velocity gradient \param &dGradChipdGradMicroLp: The derivative of
+             * the gradient of the plastic micro deformation w.r.t. the gradient of the plastic micro velocity gradient
+             * \param alpha: The integration parameter (0 explicit, 1 implicit, 0.5 second-order accurate trapizoidal
+             * rule)
+             */
+
+            const parameterType implicit_mult = Dt * alpha;
+            const parameterType explicit_mult = Dt * (1 - alpha);
+
+            constexpr unsigned int dim     = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = dim * dim * dim;
+            constexpr unsigned int fot_dim = dim * dim * dim * dim;
+
+            // Declare the local variables
+            std::array<floatType, sot_dim> LHS, invLHS;
+            std::array<floatType, tot_dim> RHS;
+
+            std::array<floatType, fot_dim> temp1, temp2;
+            std::array<floatType, tot_dim> temp3;
+
+            // Initialize the local variables
+            std::fill(std::begin(LHS), std::end(LHS), 0);
+            std::fill(std::begin(invLHS), std::end(invLHS), 0);
+            std::fill(std::begin(RHS), std::end(RHS), 0);
+            std::fill(std::begin(temp1), std::end(temp1), 0);
+            std::fill(std::begin(temp2), std::end(temp2), 0);
+            std::fill(std::begin(temp3), std::end(temp3), 0);
+
+            // Assemble temporary values
+            for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                for (unsigned int Kbar = 0; Kbar < dim; ++Kbar) {
+                    for (unsigned int A = 0; A < dim; ++A) {
+                        for (unsigned int B = 0; B < dim; ++B) {
+                            temp1[dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B] +=
+                                implicit_mult * currentPlasticMicroDeformation[dim * Jbar + A] *
+                                currentPlasticDeformationGradient[3 * Kbar + B];
+                            temp2[dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B] +=
+                                explicit_mult * previousPlasticMicroDeformation[dim * Jbar + A] *
+                                previousPlasticDeformationGradient[3 * Kbar + B];
+                        }
+                    }
+                }
+            }
+
+            // Assemble the RHS
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int JbarKbar = 0; JbarKbar < sot_dim; ++JbarKbar) {
+                    RHS[sot_dim * Ibar + JbarKbar] +=
+                        previousGradientPlasticMicroDeformation[sot_dim * Ibar + JbarKbar];
+
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        RHS[sot_dim * Ibar + AB] +=
+                            currentGradientPlasticMicroVelocityGradient[sot_dim * Ibar + JbarKbar] *
+                                temp1[sot_dim * JbarKbar + AB] +
+                            previousGradientPlasticMicroVelocityGradient[sot_dim * Ibar + JbarKbar] *
+                                temp2[sot_dim * JbarKbar + AB];
+                    }
+                }
+
+                for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        RHS[sot_dim * Ibar + AB] += explicit_mult *
+                                                    previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
+                                                    previousGradientPlasticMicroDeformation[sot_dim * Jbar + AB];
+                    }
+                }
+            }
+
+            // Assemble the LHS
+            std::transform(std::begin(currentPlasticMicroVelocityGradient),
+                           std::end(currentPlasticMicroVelocityGradient), std::begin(LHS),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, -implicit_mult));
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                LHS[dim * Ibar + Ibar] += 1;
+            }
+
+            // Compute the inverse of the LHS
+            auto map_LHS    = getFixedSizeMatrixMap<floatType, dim, dim>(LHS.data());
+            auto map_invLHS = getFixedSizeMatrixMap<floatType, dim, dim>(invLHS.data());
+            map_invLHS      = map_LHS.inverse().eval();
+
+            // Assemble term3
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int Kbar = 0; Kbar < dim; ++Kbar) {
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        temp3[sot_dim * Ibar + AB] += implicit_mult * invLHS[dim * Ibar + Kbar] *
+                                                      currentGradientPlasticMicroVelocityGradient[sot_dim * Kbar + AB];
+                    }
+                }
+            }
+
+            // Update the gradient of the plastic micro deformation
+            gradientPlasticMicroDeformation = thirdOrderTensor(dim * dim * dim, 0);
+            dGradChipdChip                  = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdFp                    = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdMicroLp               = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdGradMicroLp           = sixthOrderTensor(dim * dim * dim * dim * dim * dim, 0);
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        gradientPlasticMicroDeformation[sot_dim * Ibar + AB] +=
+                            invLHS[dim * Ibar + Jbar] * RHS[sot_dim * Jbar + AB];
+
+                        for (unsigned int DE = 0; DE < sot_dim; ++DE) {
+                            dGradChipdGradMicroLp[sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar +
+                                                  DE] += invLHS[dim * Ibar + Jbar] * temp1[sot_dim * DE + AB];
+                        }
+                    }
+
+                    for (unsigned int A = 0; A < dim; ++A) {
+                        for (unsigned int B = 0; B < dim; ++B) {
+                            for (unsigned int C = 0; C < dim; ++C) {
+                                dGradChipdChip[dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B +
+                                               dim * C + A] += temp3[dim * dim * Ibar + dim * C + Jbar] *
+                                                               currentPlasticDeformationGradient[dim * Jbar + B];
+
+                                dGradChipdFp[dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B +
+                                             dim * C + B] += temp3[dim * dim * Ibar + dim * Jbar + C] *
+                                                             currentPlasticMicroDeformation[dim * Jbar + A];
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                    for (unsigned int Kbar = 0; Kbar < dim; ++Kbar) {
+                        for (unsigned int Lbar = 0; Lbar < dim; ++Lbar) {
+                            dGradChipdMicroLp[sot_dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar + Lbar] +=
+                                invLHS[dim * Ibar + Kbar] * implicit_mult *
+                                gradientPlasticMicroDeformation[sot_dim * Lbar + AB];
+                        }
+                    }
+                }
+            }
+        }
+
+        void computePlasticMicroGradChi(const variableType      &Dt,
+                                        const secondOrderTensor &currentPlasticDeformationGradient,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &currentGradientPlasticMicroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticDeformationGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousGradientPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousGradientPlasticMicroDeformation,
+                                        thirdOrderTensor        &gradientPlasticMicroDeformation,
+                                        fifthOrderTensor &dGradChipdFp, fifthOrderTensor &dGradChipdChip,
+                                        fifthOrderTensor &dGradChipdMicroLp, sixthOrderTensor &dGradChipdGradMicroLp,
+                                        fifthOrderTensor &dGradChipdPreviousFp,
+                                        fifthOrderTensor &dGradChipdPreviousChip,
+                                        fifthOrderTensor &dGradChipdPreviousMicroLp,
+                                        sixthOrderTensor &dGradChipdPreviousGradMicroLp,
+                                        sixthOrderTensor &dGradChipdPreviousGradChip, const parameterType alpha) {
+            /*!
+             * Evolve the gradient of the plastic micro-deformation measure in the intermediate configuration.
+             *
+             * \param &Dt: The change in time
+             * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient
+             * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation
+             * \param &currentPlasticMicroVelocityGradient: The current value of the plastic micro-velocity gradient
+             * \param &currentGradientPlasticMicroVelocityGradient: The current value of the micro-gradient velocity
+             * gradient \param &previousPlasticDeformationGradient: The previous value of the plastic deformation
+             * gradient \param &previousPlasticMicroDeformation: The previous value of the plastic micro deformation
+             * \param &previousPlasticMicroVelocityGradient: The previous value of the plastic micro-velocity gradient
+             * \param &previousGradientPlasticMicroVelocityGradient: The previous value of the micro-gradient velocity
+             * gradient \param &previousGradientPlasticMicroDeformation: The previous value of the gradient of the
+             * plastic micro-deformation measure where the gradient is being taken with respect to the reference
+             * configuration of the intermediate configuration \param &gradientPlasticMicroDeformation: The current
+             * value of the gradient of the plastic micro-deformation measure where the gradient is being taken with
+             * respect to the reference configuration of the intermediate configuration \param &dGradChipdFp: The
+             * derivative of the gradient of the plastic micro deformation w.r.t. the plastic deformation gradient
+             * \param &dGradChipdChip: The derivative of the gradient of the plastic micro deformation w.r.t. the
+             * plastic micro deformation \param &dGradChipdMicroLp: The derivative of the gradient of the plastic micro
+             * deformation w.r.t. the plastic micro velocity gradient \param &dGradChipdGradMicroLp: The derivative of
+             * the gradient of the plastic micro deformation w.r.t. the previous gradient of the plastic micro velocity
+             * gradient \param &dGradChipdPreviousFp: The derivative of the gradient of the plastic micro deformation
+             * w.r.t. the previous plastic deformation gradient \param &dGradChipdPreviousChip: The derivative of the
+             * gradient of the plastic micro deformation w.r.t. the previous plastic micro deformation \param
+             * &dGradChipdPreviousMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the
+             * previous plastic micro velocity gradient \param &dGradChipdPreviousGradMicroLp: The derivative of the
+             * gradient of the plastic micro deformation w.r.t. the previous gradient of the plastic micro velocity
+             * gradient \param &dGradChipdPreviousGradChip: The derivative of the gradient of the plastic micro
+             * deformation w.r.t. the previous gradient of the plastic micro deformation \param alpha: The integration
+             * parameter (0 explicit, 1 implicit, 0.5 second-order accurate trapizoidal rule)
+             */
+
+            const parameterType implicit_mult = Dt * alpha;
+            const parameterType explicit_mult = Dt * (1 - alpha);
+
+            constexpr unsigned int dim     = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = dim * dim * dim;
+            constexpr unsigned int fot_dim = dim * dim * dim * dim;
+
+            // Declare the local variables
+            std::array<floatType, sot_dim> LHS, invLHS;
+            std::array<floatType, tot_dim> RHS;
+
+            std::array<floatType, fot_dim> temp1, temp2;
+            std::array<floatType, tot_dim> temp3, temp4;
+
+            // Initialize the local variables
+            std::fill(std::begin(LHS), std::end(LHS), 0);
+            std::fill(std::begin(invLHS), std::end(invLHS), 0);
+            std::fill(std::begin(RHS), std::end(RHS), 0);
+            std::fill(std::begin(temp1), std::end(temp1), 0);
+            std::fill(std::begin(temp2), std::end(temp2), 0);
+            std::fill(std::begin(temp3), std::end(temp3), 0);
+            std::fill(std::begin(temp4), std::end(temp4), 0);
+
+            // Assemble temporary values
+            for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                for (unsigned int Kbar = 0; Kbar < dim; ++Kbar) {
+                    for (unsigned int A = 0; A < dim; ++A) {
+                        for (unsigned int B = 0; B < dim; ++B) {
+                            temp1[dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B] +=
+                                implicit_mult * currentPlasticMicroDeformation[dim * Jbar + A] *
+                                currentPlasticDeformationGradient[3 * Kbar + B];
+                            temp2[dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B] +=
+                                explicit_mult * previousPlasticMicroDeformation[dim * Jbar + A] *
+                                previousPlasticDeformationGradient[3 * Kbar + B];
+                        }
+                    }
+                }
+            }
+
+            // Assemble the RHS
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int JbarKbar = 0; JbarKbar < sot_dim; ++JbarKbar) {
+                    RHS[sot_dim * Ibar + JbarKbar] +=
+                        previousGradientPlasticMicroDeformation[sot_dim * Ibar + JbarKbar];
+
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        RHS[sot_dim * Ibar + AB] +=
+                            currentGradientPlasticMicroVelocityGradient[sot_dim * Ibar + JbarKbar] *
+                                temp1[sot_dim * JbarKbar + AB] +
+                            previousGradientPlasticMicroVelocityGradient[sot_dim * Ibar + JbarKbar] *
+                                temp2[sot_dim * JbarKbar + AB];
+                    }
+                }
+
+                for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        RHS[sot_dim * Ibar + AB] += explicit_mult *
+                                                    previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
+                                                    previousGradientPlasticMicroDeformation[sot_dim * Jbar + AB];
+                    }
+                }
+            }
+
+            // Assemble the LHS
+            std::transform(std::begin(currentPlasticMicroVelocityGradient),
+                           std::end(currentPlasticMicroVelocityGradient), std::begin(LHS),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, -implicit_mult));
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                LHS[dim * Ibar + Ibar] += 1;
+            }
+
+            // Compute the inverse of the LHS
+            auto map_LHS    = getFixedSizeMatrixMap<floatType, dim, dim>(LHS.data());
+            auto map_invLHS = getFixedSizeMatrixMap<floatType, dim, dim>(invLHS.data());
+            map_invLHS      = map_LHS.inverse().eval();
+
+            // Assemble term3
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int Kbar = 0; Kbar < dim; ++Kbar) {
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        temp3[sot_dim * Ibar + AB] += implicit_mult * invLHS[dim * Ibar + Kbar] *
+                                                      currentGradientPlasticMicroVelocityGradient[sot_dim * Kbar + AB];
+                        temp4[sot_dim * Ibar + AB] += explicit_mult * invLHS[dim * Ibar + Kbar] *
+                                                      previousGradientPlasticMicroVelocityGradient[sot_dim * Kbar + AB];
+                    }
+                }
+            }
+
+            // Update the gradient of the plastic micro deformation
+            gradientPlasticMicroDeformation = thirdOrderTensor(dim * dim * dim, 0);
+            dGradChipdFp                    = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdChip                  = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdMicroLp               = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdGradMicroLp           = sixthOrderTensor(dim * dim * dim * dim * dim * dim, 0);
+            dGradChipdPreviousFp            = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdPreviousChip          = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdPreviousMicroLp       = fifthOrderTensor(dim * dim * dim * dim * dim, 0);
+            dGradChipdPreviousGradMicroLp   = sixthOrderTensor(dim * dim * dim * dim * dim * dim, 0);
+            dGradChipdPreviousGradChip      = sixthOrderTensor(dim * dim * dim * dim * dim * dim, 0);
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int Jbar = 0; Jbar < dim; ++Jbar) {
+                    for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                        gradientPlasticMicroDeformation[sot_dim * Ibar + AB] +=
+                            invLHS[dim * Ibar + Jbar] * RHS[sot_dim * Jbar + AB];
+
+                        dGradChipdPreviousGradChip[sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB +
+                                                   sot_dim * Jbar + AB] += invLHS[dim * Ibar + Jbar];
+
+                        for (unsigned int K = 0; K < dim; ++K) {
+                            dGradChipdPreviousGradChip[dim * dim * dim * sot_dim * Ibar + dim * dim * dim * AB +
+                                                       dim * dim * K + AB] +=
+                                invLHS[dim * Ibar + Jbar] * explicit_mult *
+                                previousPlasticMicroVelocityGradient[3 * Jbar + K];
+                        }
+
+                        for (unsigned int DE = 0; DE < sot_dim; ++DE) {
+                            dGradChipdGradMicroLp[sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar +
+                                                  DE] += invLHS[dim * Ibar + Jbar] * temp1[sot_dim * DE + AB];
+                            dGradChipdPreviousGradMicroLp[sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB +
+                                                          sot_dim * Jbar + DE] +=
+                                invLHS[dim * Ibar + Jbar] * temp2[sot_dim * DE + AB];
+                        }
+                    }
+
+                    for (unsigned int A = 0; A < dim; ++A) {
+                        for (unsigned int B = 0; B < dim; ++B) {
+                            for (unsigned int C = 0; C < dim; ++C) {
+                                dGradChipdChip[dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B +
+                                               dim * C + A] += temp3[dim * dim * Ibar + dim * C + Jbar] *
+                                                               currentPlasticDeformationGradient[dim * Jbar + B];
+
+                                dGradChipdFp[dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B +
+                                             dim * C + B] += temp3[dim * dim * Ibar + dim * Jbar + C] *
+                                                             currentPlasticMicroDeformation[dim * Jbar + A];
+
+                                dGradChipdPreviousChip[dim * dim * dim * dim * Ibar + dim * dim * dim * A +
+                                                       dim * dim * B + dim * C + A] +=
+                                    temp4[dim * dim * Ibar + dim * C + Jbar] *
+                                    previousPlasticDeformationGradient[dim * Jbar + B];
+
+                                dGradChipdPreviousFp[dim * dim * dim * dim * Ibar + dim * dim * dim * A +
+                                                     dim * dim * B + dim * C + B] +=
+                                    temp4[dim * dim * Ibar + dim * Jbar + C] *
+                                    previousPlasticMicroDeformation[dim * Jbar + A];
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (unsigned int Ibar = 0; Ibar < dim; ++Ibar) {
+                for (unsigned int AB = 0; AB < sot_dim; ++AB) {
+                    for (unsigned int Kbar = 0; Kbar < dim; ++Kbar) {
+                        for (unsigned int Lbar = 0; Lbar < dim; ++Lbar) {
+                            dGradChipdMicroLp[sot_dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar + Lbar] +=
+                                invLHS[dim * Ibar + Kbar] * implicit_mult *
+                                gradientPlasticMicroDeformation[sot_dim * Lbar + AB];
+
+                            dGradChipdPreviousMicroLp[dim * dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar +
+                                                      Lbar] +=
+                                invLHS[dim * Ibar + Kbar] * explicit_mult *
+                                previousGradientPlasticMicroDeformation[sot_dim * Lbar + AB];
+                        }
+                    }
+                }
+            }
+        }
+
+        void evolvePlasticMicroGradChi(const variableType &Dt, const secondOrderTensor &currentPlasticMicroDeformation,
+                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroDeformation,
+                                       const thirdOrderTensor  &previousPlasticMicroGradient,
+                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                       thirdOrderTensor &currentPlasticMicroGradient, const parameterType alpha) {
             /*!
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
              *
@@ -2258,44 +2097,42 @@ namespace tardigradeHydra{
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * \param &previousPlasticMicroDeformation: The plastic micro deformation 
+             * \param &previousPlasticMicroDeformation: The plastic micro deformation
              *     from the last converged increment.
-             * \param &previousPlasticMicroGradient: The micro gradient deformation in the 
+             * \param &previousPlasticMicroGradient: The micro gradient deformation in the
              *     intermediate configuation from the last converged increment.
              * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient
              *     from the last converged increment.
              * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient
              *     from the last converged increment.
-             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient 
+             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient
              *     velocity gradient from the last converged increment.
-             * \param &currentPlasticMicroGradient: The current plastic micro gradient 
+             * \param &currentPlasticMicroGradient: The current plastic micro gradient
              *    deformation in the intermediate configuration.
              * \param alpha: The integration parameter (0 is explicit, 1 is implicit).
              */
 
             sixthOrderTensor LHS;
 
-            evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
-                                       currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
-                                       previousPlasticMicroDeformation, previousPlasticMicroGradient,
-                                       previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
-                                       previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient, LHS,
-                                       alpha );
+            evolvePlasticMicroGradChi(Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
+                                      currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
+                                      previousPlasticMicroDeformation, previousPlasticMicroGradient,
+                                      previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
+                                      previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient, LHS,
+                                      alpha);
         }
 
-        void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const secondOrderTensor &currentPlasticMicroDeformation,
-                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
-                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
-                                        const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
-                                        const secondOrderTensor &previousPlasticMicroDeformation,
-                                        const secondOrderTensor &previousPlasticMicroGradient,
-                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
-                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
-                                        const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
-                                        thirdOrderTensor &currentPlasticMicroGradient,
-                                        sixthOrderTensor &LHS,
-                                        const parameterType alpha ){
+        void evolvePlasticMicroGradChi(const variableType &Dt, const secondOrderTensor &currentPlasticMicroDeformation,
+                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroDeformation,
+                                       const secondOrderTensor &previousPlasticMicroGradient,
+                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                       thirdOrderTensor &currentPlasticMicroGradient, sixthOrderTensor &LHS,
+                                       const parameterType alpha) {
             /*!
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
              *
@@ -2305,276 +2142,138 @@ namespace tardigradeHydra{
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * \param &previousPlasticMicroDeformation: The the plastic micro deformation 
+             * \param &previousPlasticMicroDeformation: The the plastic micro deformation
              *     from the last converged increment.
-             * \param &previousPlasticMicroGradient: The micro gradient deformation in the 
+             * \param &previousPlasticMicroGradient: The micro gradient deformation in the
              *     intermediate configuation from the last converged increment.
              * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient
              *     from the last converged increment.
              * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient
              *     from the last converged increment.
-             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient 
+             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient
              *     velocity gradient from the last converged increment.
-             * \param &currentPlasticMicroGradient: The current plastic micro gradient 
+             * \param &currentPlasticMicroGradient: The current plastic micro gradient
              *    deformation in the intermediate configuration.
              * \param &LHS: The left-hand-side matrix.
              * \param alpha: The integration parameter (0 is explicit, 1 is implicit).
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( currentPlasticMicroDeformation.size() == sot_dim, "The plastic micro-deformation must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(currentPlasticMicroDeformation.size() == sot_dim,
+                                         "The plastic micro-deformation must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( currentPlasticMacroVelocityGradient.size() == sot_dim, "The plastic macro velocity gradient must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(currentPlasticMacroVelocityGradient.size() == sot_dim,
+                                         "The plastic macro velocity gradient must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( currentPlasticMicroVelocityGradient.size() == sot_dim, "The plastic micro velocity gradient must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(currentPlasticMicroVelocityGradient.size() == sot_dim,
+                                         "The plastic micro velocity gradient must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( currentPlasticMicroGradientVelocityGradient.size() == tot_dim, "The plastic micro gradient velocity gradient must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(currentPlasticMicroGradientVelocityGradient.size() == tot_dim,
+                                         "The plastic micro gradient velocity gradient must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroDeformation.size() == sot_dim, "The previous plastic micro-deformation must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(previousPlasticMicroDeformation.size() == sot_dim,
+                                         "The previous plastic micro-deformation must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroGradient.size() == tot_dim, "The previous plastic micro gradient must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(previousPlasticMicroGradient.size() == tot_dim,
+                                         "The previous plastic micro gradient must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMacroVelocityGradient.size() == sot_dim, "The previous plastic macro velocity gradient must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(previousPlasticMacroVelocityGradient.size() == sot_dim,
+                                         "The previous plastic macro velocity gradient must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroVelocityGradient.size() == sot_dim, "The previous plastic micro velocity gradient must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(previousPlasticMicroVelocityGradient.size() == sot_dim,
+                                         "The previous plastic micro velocity gradient must be 3D");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroGradientVelocityGradient.size() == tot_dim, "The previous plastic micro gradient velocity gradient must be 3D" );
+            TARDIGRADE_ERROR_TOOLS_CHECK(previousPlasticMicroGradientVelocityGradient.size() == tot_dim,
+                                         "The previous plastic micro gradient velocity gradient must be 3D");
 
-            //Assemble the A term ( forcing term ) and the fourth order A term
-            thirdOrderTensor DtAtilde( tot_dim, 0 );
-            fourthOrderTensor previousFourthA( fot_dim, 0 );
-            fourthOrderTensor currentFourthA( fot_dim, 0 );
+            // Assemble the A term ( forcing term ) and the fourth order A term
+            thirdOrderTensor  DtAtilde(tot_dim, 0);
+            fourthOrderTensor previousFourthA(fot_dim, 0);
+            fourthOrderTensor currentFourthA(fot_dim, 0);
 
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int B = 0; B < dim; B++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        previousFourthA[dim * dim * dim * Db + dim * dim * B + dim * Kb + Kb] +=
+                            previousPlasticMicroVelocityGradient[dim * Db + B];
 
-                for ( unsigned int B = 0; B < dim; B++ ){
+                        previousFourthA[dim * dim * dim * Db + dim * dim * Db + dim * B + Kb] -=
+                            previousPlasticMacroVelocityGradient[dim * Kb + B];
 
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                        currentFourthA[dim * dim * dim * Db + dim * dim * B + dim * Kb + Kb] +=
+                            currentPlasticMicroVelocityGradient[dim * Db + B];
 
-                        previousFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Kb ]
-                            += previousPlasticMicroVelocityGradient[ dim * Db + B ];
+                        currentFourthA[dim * dim * dim * Db + dim * dim * Db + dim * B + Kb] -=
+                            currentPlasticMacroVelocityGradient[dim * Kb + B];
 
-                        previousFourthA[ dim * dim * dim * Db + dim * dim * Db + dim * B + Kb ]
-                            -= previousPlasticMacroVelocityGradient[ dim * Kb + B ];
-
-                        currentFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Kb ]
-                            += currentPlasticMicroVelocityGradient[ dim * Db + B ];
-
-                        currentFourthA[ dim * dim * dim * Db + dim * dim * Db + dim * B + Kb ]
-                            -= currentPlasticMacroVelocityGradient[ dim * Kb + B ];
-
-                        for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-
-                            DtAtilde[ dim * dim * Db + dim * B + Kb ] += Dt
-                                * ( ( 1 - alpha ) * previousPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Lb + Kb ]
-                                          *  previousPlasticMicroDeformation[ dim * Lb + B ]
-                                + alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Lb + Kb ]
-                                        * currentPlasticMicroDeformation[ dim * Lb + B ] );
-
+                        for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                            DtAtilde[dim * dim * Db + dim * B + Kb] +=
+                                Dt *
+                                ((1 - alpha) *
+                                     previousPlasticMicroGradientVelocityGradient[dim * dim * Db + dim * Lb + Kb] *
+                                     previousPlasticMicroDeformation[dim * Lb + B] +
+                                 alpha * currentPlasticMicroGradientVelocityGradient[dim * dim * Db + dim * Lb + Kb] *
+                                     currentPlasticMicroDeformation[dim * Lb + B]);
                         }
-
                     }
-
                 }
-
             }
 
-            //Assemble the right-hand side and left-hand side term
+            // Assemble the right-hand side and left-hand side term
             thirdOrderTensor RHS = DtAtilde;
             RHS += previousPlasticMicroGradient;
-            LHS = sixthOrderTensor( tot_dim * tot_dim, 0 );
-            for ( unsigned int i = 0; i < tot_dim; i++ ){ LHS[ tot_dim * i + i ] = 1; }
-
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
-                for ( unsigned int B = 0; B < dim; B++ ){
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-                        for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-                           for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-                              RHS[ dim * dim * Db + dim * B + Kb ]
-                                 += Dt * ( 1. - alpha ) * previousFourthA[ dim * dim * dim * Db + dim * dim * Bb + dim * Kb + Lb ]
-                                  * previousPlasticMicroGradient[ dim * dim * Bb + dim * B + Lb ];
-                              LHS[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Lb + dim * B + Bb ]
-                                  -= Dt * alpha * currentFourthA[ dim * dim * dim * Db + dim * dim * Lb + dim * Kb + Bb ];
-                           }
-                        }
-                    }
-                }
+            LHS = sixthOrderTensor(tot_dim * tot_dim, 0);
+            for (unsigned int i = 0; i < tot_dim; i++) {
+                LHS[tot_dim * i + i] = 1;
             }
 
-            //Solve for the current plastic micro gradient
-            unsigned int rank;
-            currentPlasticMicroGradient = tardigradeVectorTools::solveLinearSystem( LHS, RHS, RHS.size( ), RHS.size( ), rank );
-
-            TARDIGRADE_ERROR_TOOLS_CHECK( rank == RHS.size(), "The left hand side matrix is not full rank" );
-
-        }
-
-        void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const secondOrderTensor &currentPlasticMicroDeformation,
-                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
-                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
-                                        const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
-                                        const secondOrderTensor &previousPlasticMicroDeformation,
-                                        const thirdOrderTensor  &previousPlasticMicroGradient,
-                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
-                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
-                                        const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
-                                        thirdOrderTensor        &currentPlasticMicroGradient,
-                                        fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
-                                        fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
-                                        fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
-                                        sixthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
-                                        const parameterType alpha ){
-            /*!
-             * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
-             *
-             * \param &Dt: The change in time.
-             * \param &currentPlasticMicroDeformation: The inverse of the current micro deformation.
-             * \param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
-             * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
-             * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
-             *     velocity gradient.
-             * \param &previousPlasticMicroDeformation: The the plastic micro deformation 
-             *     from the last converged increment.
-             * \param &previousPlasticMicroGradient: The micro gradient deformation in the 
-             *     intermediate configuation from the last converged increment.
-             * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient
-             *     from the last converged increment.
-             * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient
-             *     from the last converged increment.
-             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient 
-             *     velocity gradient from the last converged increment.
-             * \param &currentPlasticMicroGradient: The current plastic micro gradient 
-             *    deformation in the intermediate configuration.
-             * \param &dCurrentPlasticMicroGradientdPlasticMicroDeformation: The jacobian of the plastic 
-             *     micro deformation w.r.t. the plastic micro deformation.
-             * \param &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient: The jacobian of the plastic 
-             *     micro deformation w.r.t. the plastic macro velocity gradient.
-             * \param &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient: The jacobian of the plastic 
-             *     micro deformation w.r.t. the plastic micro velocity gradient.
-             * \param &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient: The jacobian of the plastic 
-             *     micro deformation w.r.t. the plastic micro gradient velocity gradient.
-             * \param alpha: The integration parameter (0 is explicit, 1 is implicit).
-             */
-
-            //Assume 3D
-            constexpr unsigned int dim = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
-            constexpr unsigned int fot_dim = tot_dim * dim;
-
-            //Compute the new currentPlasticMicroGradient
-            sixthOrderTensor LHS;
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
-                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
-                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
-                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
-                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
-                                           LHS, alpha );
-            )
-
-            //Compute the negative partial derivatives w.r.t. currentFourthA and the current part of DtAtilde
-            //We do this in vector form so that we can interface with Eigen easier
-            sixthOrderTensor   negdRdCurrentDtAtilde( dim * dim * dim * dim * dim * dim, 0 );
-            seventhOrderTensor negdRdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim, 0 );
-
-            //Also assemble jacobians of the A terms
-            fifthOrderTensor dCurrentDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
-            sixthOrderTensor dCurrentDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
-            sixthOrderTensor dCurrentFourthAdMacroVelocityGradient( fot_dim * sot_dim, 0 );
-            sixthOrderTensor dCurrentFourthAdMicroVelocityGradient( fot_dim * sot_dim, 0 );
-
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
-                for ( unsigned int B = 0; B < dim; B++ ){
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-                        negdRdCurrentDtAtilde[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb ] += 1;
-
-                        dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Kb + B ] -= 1;
-
-                        dCurrentFourthAdMicroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Kb + dim * Db + B ] += 1;
-
-                        for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
-                            dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + B ]
-                                += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ];
-
-                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Db + dim * Rb + Kb ]
-                                += Dt * alpha * currentPlasticMicroDeformation[ dim * Rb + B ];
-
-                            for ( unsigned int S = 0; S < dim; S++ ){
-
-                                negdRdCurrentFourthA[ dim * dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb + dim * dim * dim * Db + dim * dim * Rb + dim * Kb + S ]
-                                    += Dt * alpha * currentPlasticMicroGradient[ dim * dim * Rb + dim * B + S ];
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int B = 0; B < dim; B++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        for (unsigned int Lb = 0; Lb < dim; Lb++) {
+                            for (unsigned int Bb = 0; Bb < dim; Bb++) {
+                                RHS[dim * dim * Db + dim * B + Kb] +=
+                                    Dt * (1. - alpha) *
+                                    previousFourthA[dim * dim * dim * Db + dim * dim * Bb + dim * Kb + Lb] *
+                                    previousPlasticMicroGradient[dim * dim * Bb + dim * B + Lb];
+                                LHS[dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Lb +
+                                    dim * B + Bb] -=
+                                    Dt * alpha * currentFourthA[dim * dim * dim * Db + dim * dim * Lb + dim * Kb + Bb];
                             }
                         }
                     }
                 }
             }
 
-            //Solve for the Jacobians
-            sixthOrderTensor dCurrentPlasticMicroGradientdCurrentDTAtilde( dim * dim * dim * dim * dim * dim );
-            seventhOrderTensor dCurrentPlasticMicroGradientdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim );
+            // Solve for the current plastic micro gradient
+            unsigned int rank;
+            currentPlasticMicroGradient =
+                tardigradeVectorTools::solveLinearSystem(LHS, RHS, RHS.size(), RHS.size(), rank);
 
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > LHSMat( LHS.data(), tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > nDRDCDA( negdRdCurrentDtAtilde.data(), tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, fot_dim, Eigen::RowMajor > > nDRDCFA( negdRdCurrentFourthA.data(), tot_dim, fot_dim );
-
-            Eigen::ColPivHouseholderQR< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > qrSolver( LHSMat );
-
-            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > X1( dCurrentPlasticMicroGradientdCurrentDTAtilde.data(), tot_dim, tot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, tot_dim, fot_dim, Eigen::RowMajor > > X2( dCurrentPlasticMicroGradientdCurrentFourthA.data(),  tot_dim, fot_dim );
-
-            X1 = qrSolver.solve( nDRDCDA );
-            X2 = qrSolver.solve( nDRDCFA );
-
-            //Assemble the final terms of the deformation
-            auto map_dCurrentDTAtildedPlasticMicroDeformation              = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentDTAtildedPlasticMicroDeformation.data( ) );
-            auto map_dCurrentFourthAdMacroVelocityGradient                 = getFixedSizeMatrixMap< floatType, fot_dim, sot_dim >( dCurrentFourthAdMacroVelocityGradient.data( ) );
-            auto map_dCurrentFourthAdMicroVelocityGradient                 = getFixedSizeMatrixMap< floatType, fot_dim, sot_dim >( dCurrentFourthAdMicroVelocityGradient.data( ) );
-            auto map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data( ) );
-
-            dCurrentPlasticMicroGradientdPlasticMicroDeformation              = fifthOrderTensor( tot_dim * sot_dim );
-            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient         = fifthOrderTensor( tot_dim * sot_dim );
-            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient         = fifthOrderTensor( tot_dim * sot_dim );
-            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = sixthOrderTensor( tot_dim * tot_dim );
-
-            auto map_dCurrentPlasticMicroGradientdPlasticMicroDeformation              = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMicroDeformation.data( )              );
-            auto map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient         = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient.data( )         );
-            auto map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient         = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient.data( )         );
-            auto map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient.data( ) );
-            map_dCurrentPlasticMicroGradientdPlasticMicroDeformation              = ( X1 * map_dCurrentDTAtildedPlasticMicroDeformation ).eval( );
-            map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient         = ( X2 * map_dCurrentFourthAdMacroVelocityGradient ).eval( );
-            map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient         = ( X2 * map_dCurrentFourthAdMicroVelocityGradient ).eval( );
-            map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = ( X1 * map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient ).eval( );
-
+            TARDIGRADE_ERROR_TOOLS_CHECK(rank == RHS.size(), "The left hand side matrix is not full rank");
         }
 
-        void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const secondOrderTensor &currentPlasticMicroDeformation,
-                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
-                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
-                                        const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
-                                        const secondOrderTensor &previousPlasticMicroDeformation,
-                                        const thirdOrderTensor  &previousPlasticMicroGradient,
-                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
-                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
-                                        const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
-                                        thirdOrderTensor &currentPlasticMicroGradient,
-                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
-                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
-                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
-                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
-                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
-                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
-                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
-                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
-                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
-                                        const parameterType alpha ){
+        void evolvePlasticMicroGradChi(
+            const variableType &Dt, const secondOrderTensor &currentPlasticMicroDeformation,
+            const secondOrderTensor &currentPlasticMacroVelocityGradient,
+            const secondOrderTensor &currentPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+            const secondOrderTensor &previousPlasticMicroDeformation,
+            const thirdOrderTensor  &previousPlasticMicroGradient,
+            const secondOrderTensor &previousPlasticMacroVelocityGradient,
+            const secondOrderTensor &previousPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+            thirdOrderTensor        &currentPlasticMicroGradient,
+            fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+            fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+            fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+            sixthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+            const parameterType      alpha) {
             /*!
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
              *
@@ -2584,596 +2283,863 @@ namespace tardigradeHydra{
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * \param &previousPlasticMicroDeformation: The the plastic micro deformation 
+             * \param &previousPlasticMicroDeformation: The the plastic micro deformation
              *     from the last converged increment.
-             * \param &previousPlasticMicroGradient: The micro gradient deformation in the 
+             * \param &previousPlasticMicroGradient: The micro gradient deformation in the
              *     intermediate configuation from the last converged increment.
              * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient
              *     from the last converged increment.
              * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient
              *     from the last converged increment.
-             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient 
+             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient
              *     velocity gradient from the last converged increment.
-             * \param &currentPlasticMicroGradient: The current plastic micro gradient 
+             * \param &currentPlasticMicroGradient: The current plastic micro gradient
              *    deformation in the intermediate configuration.
-             * \param &dCurrentPlasticMicroGradientdPlasticMicroDeformation: The jacobian of the plastic 
+             * \param &dCurrentPlasticMicroGradientdPlasticMicroDeformation: The jacobian of the plastic
              *     micro deformation w.r.t. the plastic micro deformation.
-             * \param &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient: The jacobian of the plastic 
+             * \param &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient: The jacobian of the plastic
              *     micro deformation w.r.t. the plastic macro velocity gradient.
-             * \param &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient: The jacobian of the plastic 
+             * \param &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient: The jacobian of the plastic
              *     micro deformation w.r.t. the plastic micro velocity gradient.
-             * \param &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient: The jacobian of the plastic 
+             * \param &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient: The jacobian of the plastic
              *     micro deformation w.r.t. the plastic micro gradient velocity gradient.
-             * \param &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation: The jacobian of the plastic 
+             * \param alpha: The integration parameter (0 is explicit, 1 is implicit).
+             */
+
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int fot_dim = tot_dim * dim;
+
+            // Compute the new currentPlasticMicroGradient
+            sixthOrderTensor LHS;
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                evolvePlasticMicroGradChi(Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
+                                          currentPlasticMicroVelocityGradient,
+                                          currentPlasticMicroGradientVelocityGradient, previousPlasticMicroDeformation,
+                                          previousPlasticMicroGradient, previousPlasticMacroVelocityGradient,
+                                          previousPlasticMicroVelocityGradient,
+                                          previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
+                                          LHS, alpha);)
+
+            // Compute the negative partial derivatives w.r.t. currentFourthA and the current part of DtAtilde
+            // We do this in vector form so that we can interface with Eigen easier
+            sixthOrderTensor   negdRdCurrentDtAtilde(dim * dim * dim * dim * dim * dim, 0);
+            seventhOrderTensor negdRdCurrentFourthA(dim * dim * dim * dim * dim * dim * dim, 0);
+
+            // Also assemble jacobians of the A terms
+            fifthOrderTensor dCurrentDTAtildedPlasticMicroDeformation(tot_dim * sot_dim, 0);
+            sixthOrderTensor dCurrentDTAtildedPlasticMicroGradientVelocityGradient(tot_dim * tot_dim, 0);
+            sixthOrderTensor dCurrentFourthAdMacroVelocityGradient(fot_dim * sot_dim, 0);
+            sixthOrderTensor dCurrentFourthAdMicroVelocityGradient(fot_dim * sot_dim, 0);
+
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int B = 0; B < dim; B++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        negdRdCurrentDtAtilde[dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B +
+                                              dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb] += 1;
+
+                        dCurrentFourthAdMacroVelocityGradient[dim * dim * dim * sot_dim * Db +
+                                                              dim * dim * sot_dim * Db + dim * sot_dim * B +
+                                                              sot_dim * Kb + dim * Kb + B] -= 1;
+
+                        dCurrentFourthAdMicroVelocityGradient[dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B +
+                                                              dim * sot_dim * Kb + sot_dim * Kb + dim * Db + B] += 1;
+
+                        for (unsigned int Rb = 0; Rb < dim; Rb++) {
+                            dCurrentDTAtildedPlasticMicroDeformation[dim * dim * sot_dim * Db + dim * sot_dim * B +
+                                                                     sot_dim * Kb + dim * Rb + B] +=
+                                Dt * alpha *
+                                currentPlasticMicroGradientVelocityGradient[dim * dim * Db + dim * Rb + Kb];
+
+                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient[dim * dim * tot_dim * Db +
+                                                                                  dim * tot_dim * B + tot_dim * Kb +
+                                                                                  dim * dim * Db + dim * Rb + Kb] +=
+                                Dt * alpha * currentPlasticMicroDeformation[dim * Rb + B];
+
+                            for (unsigned int S = 0; S < dim; S++) {
+                                negdRdCurrentFourthA[dim * dim * dim * dim * dim * dim * Db +
+                                                     dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb +
+                                                     dim * dim * dim * Db + dim * dim * Rb + dim * Kb + S] +=
+                                    Dt * alpha * currentPlasticMicroGradient[dim * dim * Rb + dim * B + S];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Solve for the Jacobians
+            sixthOrderTensor   dCurrentPlasticMicroGradientdCurrentDTAtilde(dim * dim * dim * dim * dim * dim);
+            seventhOrderTensor dCurrentPlasticMicroGradientdCurrentFourthA(dim * dim * dim * dim * dim * dim * dim);
+
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > LHSMat(LHS.data(),
+                                                                                                     tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > nDRDCDA(
+                negdRdCurrentDtAtilde.data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, fot_dim, Eigen::RowMajor> > nDRDCFA(
+                negdRdCurrentFourthA.data(), tot_dim, fot_dim);
+
+            Eigen::ColPivHouseholderQR<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > qrSolver(
+                LHSMat);
+
+            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > X1(
+                dCurrentPlasticMicroGradientdCurrentDTAtilde.data(), tot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dim, fot_dim, Eigen::RowMajor> > X2(
+                dCurrentPlasticMicroGradientdCurrentFourthA.data(), tot_dim, fot_dim);
+
+            X1 = qrSolver.solve(nDRDCDA);
+            X2 = qrSolver.solve(nDRDCFA);
+
+            // Assemble the final terms of the deformation
+            auto map_dCurrentDTAtildedPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dCurrentDTAtildedPlasticMicroDeformation.data());
+            auto map_dCurrentFourthAdMacroVelocityGradient =
+                getFixedSizeMatrixMap<floatType, fot_dim, sot_dim>(dCurrentFourthAdMacroVelocityGradient.data());
+            auto map_dCurrentFourthAdMicroVelocityGradient =
+                getFixedSizeMatrixMap<floatType, fot_dim, sot_dim>(dCurrentFourthAdMicroVelocityGradient.data());
+            auto map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                    dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data());
+
+            dCurrentPlasticMicroGradientdPlasticMicroDeformation              = fifthOrderTensor(tot_dim * sot_dim);
+            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient         = fifthOrderTensor(tot_dim * sot_dim);
+            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient         = fifthOrderTensor(tot_dim * sot_dim);
+            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = sixthOrderTensor(tot_dim * tot_dim);
+
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dCurrentPlasticMicroGradientdPlasticMicroDeformation.data());
+            auto map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient.data());
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient.data());
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                    dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient.data());
+            map_dCurrentPlasticMicroGradientdPlasticMicroDeformation =
+                (X1 * map_dCurrentDTAtildedPlasticMicroDeformation).eval();
+            map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient =
+                (X2 * map_dCurrentFourthAdMacroVelocityGradient).eval();
+            map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient =
+                (X2 * map_dCurrentFourthAdMicroVelocityGradient).eval();
+            map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient =
+                (X1 * map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient).eval();
+        }
+
+        void evolvePlasticMicroGradChi(
+            const variableType &Dt, const secondOrderTensor &currentPlasticMicroDeformation,
+            const secondOrderTensor &currentPlasticMacroVelocityGradient,
+            const secondOrderTensor &currentPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+            const secondOrderTensor &previousPlasticMicroDeformation,
+            const thirdOrderTensor  &previousPlasticMicroGradient,
+            const secondOrderTensor &previousPlasticMacroVelocityGradient,
+            const secondOrderTensor &previousPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+            thirdOrderTensor        &currentPlasticMicroGradient,
+            fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+            fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+            fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+            sixthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+            fifthOrderTensor        &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
+            sixthOrderTensor        &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
+            sixthOrderTensor        &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
+            sixthOrderTensor        &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
+            sixthOrderTensor        &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
+            const parameterType      alpha) {
+            /*!
+             * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
+             *
+             * \param &Dt: The change in time.
+             * \param &currentPlasticMicroDeformation: The inverse of the current micro deformation.
+             * \param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
+             * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
+             * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
+             *     velocity gradient.
+             * \param &previousPlasticMicroDeformation: The the plastic micro deformation
+             *     from the last converged increment.
+             * \param &previousPlasticMicroGradient: The micro gradient deformation in the
+             *     intermediate configuation from the last converged increment.
+             * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient
+             *     from the last converged increment.
+             * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient
+             *     from the last converged increment.
+             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient
+             *     velocity gradient from the last converged increment.
+             * \param &currentPlasticMicroGradient: The current plastic micro gradient
+             *    deformation in the intermediate configuration.
+             * \param &dCurrentPlasticMicroGradientdPlasticMicroDeformation: The jacobian of the plastic
+             *     micro deformation w.r.t. the plastic micro deformation.
+             * \param &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient: The jacobian of the plastic
+             *     micro deformation w.r.t. the plastic macro velocity gradient.
+             * \param &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient: The jacobian of the plastic
+             *     micro deformation w.r.t. the plastic micro velocity gradient.
+             * \param &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient: The jacobian of the plastic
+             *     micro deformation w.r.t. the plastic micro gradient velocity gradient.
+             * \param &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation: The jacobian of the plastic
              *     micro deformation w.r.t. the previous plastic micro deformation.
-             * \param &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient: The jacobian of the plastic 
-             *     micro deformation w.r.t. the intermediate configuration spatial gradient of the plastic micro deformation from the last
-             *     converged increment
-             * \param &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient: The jacobian of the plastic 
-             *     micro deformation w.r.t. the previous plastic macro velocity gradient.
-             * \param &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient: The jacobian of the plastic 
-             *     micro deformation w.r.t. the previous plastic micro velocity gradient.
-             * \param &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient: The jacobian of the plastic 
+             * \param &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient: The jacobian of the plastic
+             *     micro deformation w.r.t. the intermediate configuration spatial gradient of the plastic micro
+             * deformation from the last converged increment \param
+             * &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient: The jacobian of the plastic micro
+             * deformation w.r.t. the previous plastic macro velocity gradient. \param
+             * &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient: The jacobian of the plastic micro
+             * deformation w.r.t. the previous plastic micro velocity gradient. \param
+             * &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient: The jacobian of the plastic
              *     micro deformation w.r.t. the previous plastic micro gradient velocity gradient.
              * \param alpha: The integration parameter (0 is explicit, 1 is implicit).
              */
 
-            //Assume 3D
-            constexpr unsigned int dim = 3;
+            // Assume 3D
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            //Compute the new currentPlasticMicroGradient
+            // Compute the new currentPlasticMicroGradient
             sixthOrderTensor LHS;
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
-                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
-                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
-                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
-                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
-                                           LHS, alpha );
-            )
+                evolvePlasticMicroGradChi(Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
+                                          currentPlasticMicroVelocityGradient,
+                                          currentPlasticMicroGradientVelocityGradient, previousPlasticMicroDeformation,
+                                          previousPlasticMicroGradient, previousPlasticMacroVelocityGradient,
+                                          previousPlasticMicroVelocityGradient,
+                                          previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
+                                          LHS, alpha);)
 
-            //Compute the negative partial derivatives w.r.t. currentFourthA and the current part of DtAtilde
-            //We do this in vector form so that we can interface with Eigen easier
-            sixthOrderTensor   negdRdCurrentDtAtilde( tot_dim * tot_dim, 0 );
-            seventhOrderTensor negdRdCurrentFourthA( tot_dim * fot_dim, 0 );
+            // Compute the negative partial derivatives w.r.t. currentFourthA and the current part of DtAtilde
+            // We do this in vector form so that we can interface with Eigen easier
+            sixthOrderTensor   negdRdCurrentDtAtilde(tot_dim * tot_dim, 0);
+            seventhOrderTensor negdRdCurrentFourthA(tot_dim * fot_dim, 0);
 
-            //Also assemble jacobians of the A terms
-            fifthOrderTensor dCurrentDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
-            sixthOrderTensor dCurrentDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
-            sixthOrderTensor dCurrentFourthAdMacroVelocityGradient( fot_dim * sot_dim, 0 );
-            sixthOrderTensor dCurrentFourthAdMicroVelocityGradient( fot_dim * sot_dim, 0 );
+            // Also assemble jacobians of the A terms
+            fifthOrderTensor dCurrentDTAtildedPlasticMicroDeformation(tot_dim * sot_dim, 0);
+            sixthOrderTensor dCurrentDTAtildedPlasticMicroGradientVelocityGradient(tot_dim * tot_dim, 0);
+            sixthOrderTensor dCurrentFourthAdMacroVelocityGradient(fot_dim * sot_dim, 0);
+            sixthOrderTensor dCurrentFourthAdMicroVelocityGradient(fot_dim * sot_dim, 0);
 
-            fifthOrderTensor dPreviousDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
-            sixthOrderTensor dPreviousDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
+            fifthOrderTensor dPreviousDTAtildedPlasticMicroDeformation(tot_dim * sot_dim, 0);
+            sixthOrderTensor dPreviousDTAtildedPlasticMicroGradientVelocityGradient(tot_dim * tot_dim, 0);
 
-            sixthOrderTensor dRHSdPreviousPlasticMicroGradient( tot_dim * tot_dim, 0 );
-            fifthOrderTensor dRHSdPreviousPlasticMacroVelocityGradient( tot_dim * sot_dim, 0 );
-            fifthOrderTensor dRHSdPreviousPlasticMicroVelocityGradient( tot_dim * sot_dim, 0 );
+            sixthOrderTensor dRHSdPreviousPlasticMicroGradient(tot_dim * tot_dim, 0);
+            fifthOrderTensor dRHSdPreviousPlasticMacroVelocityGradient(tot_dim * sot_dim, 0);
+            fifthOrderTensor dRHSdPreviousPlasticMicroVelocityGradient(tot_dim * sot_dim, 0);
 
-            for ( unsigned int Db = 0; Db < dim; Db++ ){
-                for ( unsigned int B = 0; B < dim; B++ ){
-                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-                        negdRdCurrentDtAtilde[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb ] += 1;
+            for (unsigned int Db = 0; Db < dim; Db++) {
+                for (unsigned int B = 0; B < dim; B++) {
+                    for (unsigned int Kb = 0; Kb < dim; Kb++) {
+                        negdRdCurrentDtAtilde[dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B +
+                                              dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb] += 1;
 
-                        dCurrentFourthAdMicroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Kb + dim * Db + B ] += 1;
+                        dCurrentFourthAdMicroVelocityGradient[dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B +
+                                                              dim * sot_dim * Kb + sot_dim * Kb + dim * Db + B] += 1;
 
-                        dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Kb + B ] -= 1;
+                        dCurrentFourthAdMacroVelocityGradient[dim * dim * dim * sot_dim * Db +
+                                                              dim * dim * sot_dim * Db + dim * sot_dim * B +
+                                                              sot_dim * Kb + dim * Kb + B] -= 1;
 
-                        dRHSdPreviousPlasticMicroGradient[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb ] += 1;
+                        dRHSdPreviousPlasticMicroGradient[dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B +
+                                                          dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb] += 1;
 
-                        for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
+                        for (unsigned int Rb = 0; Rb < dim; Rb++) {
+                            dCurrentDTAtildedPlasticMicroDeformation[dim * dim * sot_dim * Db + dim * sot_dim * B +
+                                                                     sot_dim * Kb + dim * Rb + B] +=
+                                Dt * alpha *
+                                currentPlasticMicroGradientVelocityGradient[dim * dim * Db + dim * Rb + Kb];
 
-                            dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + B ]
-                                += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ];
+                            dPreviousDTAtildedPlasticMicroDeformation[dim * dim * sot_dim * Db + dim * sot_dim * B +
+                                                                      sot_dim * Kb + dim * Rb + B] +=
+                                Dt * (1. - alpha) *
+                                previousPlasticMicroGradientVelocityGradient[dim * dim * Db + dim * Rb + Kb];
 
-                            dPreviousDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + B ]
-                                += Dt * ( 1. - alpha ) * previousPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ];
+                            dRHSdPreviousPlasticMacroVelocityGradient[dim * dim * dim * dim * Db + dim * dim * dim * B +
+                                                                      dim * dim * Kb + dim * Rb + Kb] -=
+                                Dt * (1. - alpha) * previousPlasticMicroGradient[dim * dim * Db + dim * B + Rb];
 
-                            dRHSdPreviousPlasticMacroVelocityGradient[ dim * dim * dim * dim * Db + dim * dim * dim * B + dim * dim * Kb + dim * Rb + Kb ]
-                                -= Dt * ( 1. - alpha ) * previousPlasticMicroGradient[ dim * dim * Db + dim * B + Rb ];
+                            dRHSdPreviousPlasticMicroVelocityGradient[dim * dim * dim * dim * Db + dim * dim * dim * B +
+                                                                      dim * dim * Kb + dim * Db + Rb] +=
+                                Dt * (1. - alpha) * previousPlasticMicroGradient[dim * dim * Rb + dim * B + Kb];
 
-                            dRHSdPreviousPlasticMicroVelocityGradient[ dim * dim * dim * dim * Db + dim * dim * dim * B + dim * dim * Kb + dim * Db + Rb ]
-                                += Dt * ( 1. - alpha ) * previousPlasticMicroGradient[ dim * dim * Rb + dim * B + Kb ];
+                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient[dim * dim * tot_dim * Db +
+                                                                                  dim * tot_dim * B + tot_dim * Kb +
+                                                                                  dim * dim * Db + dim * Rb + Kb] +=
+                                Dt * alpha * currentPlasticMicroDeformation[dim * Rb + B];
 
-                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Db + dim * Rb + Kb ]
-                                += Dt * alpha * currentPlasticMicroDeformation[ dim * Rb + B ];
+                            dPreviousDTAtildedPlasticMicroGradientVelocityGradient[dim * dim * tot_dim * Db +
+                                                                                   dim * tot_dim * B + tot_dim * Kb +
+                                                                                   dim * dim * Db + dim * Rb + Kb] +=
+                                Dt * (1. - alpha) * previousPlasticMicroDeformation[dim * Rb + B];
 
-                            dPreviousDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Db + dim * Rb + Kb ]
-                                += Dt * ( 1. - alpha ) * previousPlasticMicroDeformation[ dim * Rb + B ];
+                            dRHSdPreviousPlasticMicroGradient[dim * dim * dim * dim * dim * Db +
+                                                              dim * dim * dim * dim * B + dim * dim * dim * Kb +
+                                                              dim * dim * Rb + dim * B + Kb] +=
+                                Dt * (1 - alpha) * previousPlasticMicroVelocityGradient[dim * Db + Rb];
 
-                            dRHSdPreviousPlasticMicroGradient[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Rb + dim * B + Kb ]
-                                += Dt * ( 1 - alpha ) * previousPlasticMicroVelocityGradient[ dim * Db + Rb ];
+                            dRHSdPreviousPlasticMicroGradient[dim * dim * dim * dim * dim * Db +
+                                                              dim * dim * dim * dim * B + dim * dim * dim * Kb +
+                                                              dim * dim * Db + dim * B + Rb] -=
+                                Dt * (1 - alpha) * previousPlasticMacroVelocityGradient[dim * Rb + Kb];
 
-                            dRHSdPreviousPlasticMicroGradient[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Db + dim * B + Rb ]
-                                -= Dt * ( 1 - alpha ) * previousPlasticMacroVelocityGradient[ dim * Rb + Kb ];
-
-                            for ( unsigned int S = 0; S < dim; S++ ){
-
-                                negdRdCurrentFourthA[ dim * dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb + dim * dim * dim * Db + dim * dim * Rb + dim * Kb + S ]
-                                    += Dt * alpha * currentPlasticMicroGradient[ dim * dim * Rb + dim * B + S ];
-
+                            for (unsigned int S = 0; S < dim; S++) {
+                                negdRdCurrentFourthA[dim * dim * dim * dim * dim * dim * Db +
+                                                     dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb +
+                                                     dim * dim * dim * Db + dim * dim * Rb + dim * Kb + S] +=
+                                    Dt * alpha * currentPlasticMicroGradient[dim * dim * Rb + dim * B + S];
                             }
                         }
                     }
                 }
             }
 
-            sixthOrderTensor dCurrentPlasticMicroGradientdCurrentDTAtilde( tot_dim * tot_dim, 0 );
-            seventhOrderTensor dCurrentPlasticMicroGradientdCurrentFourthA( tot_dim * fot_dim, 0 );
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient = sixthOrderTensor( tot_dim * tot_dim, 0 );
-            dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient = fifthOrderTensor( tot_dim * sot_dim, 0 );
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient = fifthOrderTensor( tot_dim * sot_dim, 0 );
+            sixthOrderTensor   dCurrentPlasticMicroGradientdCurrentDTAtilde(tot_dim * tot_dim, 0);
+            seventhOrderTensor dCurrentPlasticMicroGradientdCurrentFourthA(tot_dim * fot_dim, 0);
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient         = sixthOrderTensor(tot_dim * tot_dim, 0);
+            dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient = fifthOrderTensor(tot_dim * sot_dim, 0);
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient = fifthOrderTensor(tot_dim * sot_dim, 0);
 
-            //Solve for the Jacobians
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > LHSMat(    LHS.data(),                                       tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > nDRDCDA(   negdRdCurrentDtAtilde.data(),                     tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, fot_dim, Eigen::RowMajor > > nDRDCFA(   negdRdCurrentFourthA.data(),                      tot_dim, fot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > DRDPPMG(   dRHSdPreviousPlasticMicroGradient.data(),         tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > DRDPPMaVG( dRHSdPreviousPlasticMacroVelocityGradient.data(), tot_dim, sot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > DRDPPMiVG( dRHSdPreviousPlasticMicroVelocityGradient.data(), tot_dim, sot_dim );
+            // Solve for the Jacobians
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > LHSMat(LHS.data(),
+                                                                                                     tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > nDRDCDA(
+                negdRdCurrentDtAtilde.data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, fot_dim, Eigen::RowMajor> > nDRDCFA(
+                negdRdCurrentFourthA.data(), tot_dim, fot_dim);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > DRDPPMG(
+                dRHSdPreviousPlasticMicroGradient.data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > DRDPPMaVG(
+                dRHSdPreviousPlasticMacroVelocityGradient.data(), tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > DRDPPMiVG(
+                dRHSdPreviousPlasticMicroVelocityGradient.data(), tot_dim, sot_dim);
 
-            Eigen::ColPivHouseholderQR< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > qrSolver( LHSMat );
+            Eigen::ColPivHouseholderQR<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > qrSolver(
+                LHSMat);
 
-            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > X1(          dCurrentPlasticMicroGradientdCurrentDTAtilde.data(),                      tot_dim, tot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, tot_dim, fot_dim, Eigen::RowMajor > > X2(          dCurrentPlasticMicroGradientdCurrentFourthA.data(),                       tot_dim, fot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > DCPMGDPMG(   dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient.data(),         tot_dim, tot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > DCPMGDPMaVG( dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient.data(), tot_dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > DCPMGDPMiVG( dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient.data(), tot_dim, sot_dim );
+            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > X1(
+                dCurrentPlasticMicroGradientdCurrentDTAtilde.data(), tot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dim, fot_dim, Eigen::RowMajor> > X2(
+                dCurrentPlasticMicroGradientdCurrentFourthA.data(), tot_dim, fot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > DCPMGDPMG(
+                dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient.data(), tot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > DCPMGDPMaVG(
+                dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient.data(), tot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > DCPMGDPMiVG(
+                dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient.data(), tot_dim, sot_dim);
 
-            X1          = qrSolver.solve( nDRDCDA );
-            X2          = qrSolver.solve( nDRDCFA );
-            DCPMGDPMG   = qrSolver.solve( DRDPPMG );
-            DCPMGDPMaVG = qrSolver.solve( DRDPPMaVG );
-            DCPMGDPMiVG = qrSolver.solve( DRDPPMiVG );
+            X1          = qrSolver.solve(nDRDCDA);
+            X2          = qrSolver.solve(nDRDCFA);
+            DCPMGDPMG   = qrSolver.solve(DRDPPMG);
+            DCPMGDPMaVG = qrSolver.solve(DRDPPMaVG);
+            DCPMGDPMiVG = qrSolver.solve(DRDPPMiVG);
 
-            //Assemble the final terms of the deformation
+            // Assemble the final terms of the deformation
 
-            auto map_dCurrentDTAtildedPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentDTAtildedPlasticMicroDeformation.data( ) );
-            auto map_dCurrentFourthAdMacroVelocityGradient    = getFixedSizeMatrixMap< floatType, fot_dim, sot_dim >( dCurrentFourthAdMacroVelocityGradient.data( ) );
-            auto map_dCurrentFourthAdMicroVelocityGradient    = getFixedSizeMatrixMap< floatType, fot_dim, sot_dim >( dCurrentFourthAdMicroVelocityGradient.data( ) );
-            auto map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data( ) );
-            auto map_dPreviousDTAtildedPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPreviousDTAtildedPlasticMicroDeformation.data( ) );
-            auto map_dPreviousDTAtildedPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dPreviousDTAtildedPlasticMicroGradientVelocityGradient.data( ) );
+            auto map_dCurrentDTAtildedPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dCurrentDTAtildedPlasticMicroDeformation.data());
+            auto map_dCurrentFourthAdMacroVelocityGradient =
+                getFixedSizeMatrixMap<floatType, fot_dim, sot_dim>(dCurrentFourthAdMacroVelocityGradient.data());
+            auto map_dCurrentFourthAdMicroVelocityGradient =
+                getFixedSizeMatrixMap<floatType, fot_dim, sot_dim>(dCurrentFourthAdMicroVelocityGradient.data());
+            auto map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                    dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data());
+            auto map_dPreviousDTAtildedPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPreviousDTAtildedPlasticMicroDeformation.data());
+            auto map_dPreviousDTAtildedPlasticMicroGradientVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                    dPreviousDTAtildedPlasticMicroGradientVelocityGradient.data());
 
-            dCurrentPlasticMicroGradientdPlasticMicroDeformation                      = fifthOrderTensor( tot_dim * sot_dim );
-            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient                 = fifthOrderTensor( tot_dim * sot_dim );
-            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient                 = fifthOrderTensor( tot_dim * sot_dim );
-            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient         = sixthOrderTensor( tot_dim * tot_dim );
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation              = fifthOrderTensor( tot_dim * sot_dim );
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = sixthOrderTensor( tot_dim * tot_dim );
+            dCurrentPlasticMicroGradientdPlasticMicroDeformation              = fifthOrderTensor(tot_dim * sot_dim);
+            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient         = fifthOrderTensor(tot_dim * sot_dim);
+            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient         = fifthOrderTensor(tot_dim * sot_dim);
+            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = sixthOrderTensor(tot_dim * tot_dim);
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation      = fifthOrderTensor(tot_dim * sot_dim);
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient =
+                sixthOrderTensor(tot_dim * tot_dim);
 
-            auto map_dCurrentPlasticMicroGradientdPlasticMicroDeformation                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMicroDeformation.data( ) );
-            auto map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient                 = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient.data( ) );
-            auto map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient                 = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient.data( ) );
-            auto map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient         = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient.data( ) );
-            auto map_dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation              = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation.data( ) );
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dCurrentPlasticMicroGradientdPlasticMicroDeformation.data());
+            auto map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient.data());
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient.data());
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                    dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient.data());
+            auto map_dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation.data());
 
-            auto map_dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient.data( ) );
+            auto map_dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                    dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient.data());
 
-            map_dCurrentPlasticMicroGradientdPlasticMicroDeformation                      = ( X1 * map_dCurrentDTAtildedPlasticMicroDeformation ).eval( );
+            map_dCurrentPlasticMicroGradientdPlasticMicroDeformation =
+                (X1 * map_dCurrentDTAtildedPlasticMicroDeformation).eval();
 
-            map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient                 = ( X2 * map_dCurrentFourthAdMacroVelocityGradient ).eval( );
+            map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient =
+                (X2 * map_dCurrentFourthAdMacroVelocityGradient).eval();
 
-            map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient                 = ( X2 * map_dCurrentFourthAdMicroVelocityGradient ).eval( );
+            map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient =
+                (X2 * map_dCurrentFourthAdMicroVelocityGradient).eval();
 
-            map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient         = ( X1 * map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient ).eval( );
+            map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient =
+                (X1 * map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient).eval();
 
-            map_dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation              = ( X1 * map_dPreviousDTAtildedPlasticMicroDeformation ).eval( );
+            map_dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation =
+                (X1 * map_dPreviousDTAtildedPlasticMicroDeformation).eval();
 
-            map_dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = ( X1 * map_dPreviousDTAtildedPlasticMicroGradientVelocityGradient ).eval( );
-
+            map_dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient =
+                (X1 * map_dPreviousDTAtildedPlasticMicroGradientVelocityGradient).eval();
         }
 
-        void evolvePlasticDeformation( const variableType &Dt,
-                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
-                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
-                                       const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
-                                       const secondOrderTensor &previousPlasticDeformationGradient,
-                                       const secondOrderTensor &previousPlasticMicroDeformation,
-                                       const thirdOrderTensor  &previousPlasticMicroGradient,
-                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
-                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
-                                       const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
-                                       secondOrderTensor &currentPlasticDeformationGradient,
-                                       secondOrderTensor &currentPlasticMicroDeformation,
-                                       thirdOrderTensor  &currentPlasticMicroGradient,
-                                       const parameterType alphaMacro,
-                                       const parameterType alphaMicro,
-                                       const parameterType alphaMicroGradient ){
+        void evolvePlasticDeformation(const variableType      &Dt,
+                                      const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                      const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                      const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                      const secondOrderTensor &previousPlasticDeformationGradient,
+                                      const secondOrderTensor &previousPlasticMicroDeformation,
+                                      const thirdOrderTensor  &previousPlasticMicroGradient,
+                                      const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                      const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                      const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                      secondOrderTensor       &currentPlasticDeformationGradient,
+                                      secondOrderTensor       &currentPlasticMicroDeformation,
+                                      thirdOrderTensor &currentPlasticMicroGradient, const parameterType alphaMacro,
+                                      const parameterType alphaMicro, const parameterType alphaMicroGradient) {
             /*!
              * Evolve the plastic deformation
              *
              * \param &Dt: The timestep
              * \param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
-             * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient 
+             * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * \param &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last 
+             * \param &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last
              *     converged timestep.
-             * \param &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged 
+             * \param &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged
              *     timestep.
-             * \param &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged 
+             * \param &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged
              *     timestep.
-             * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the 
+             * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the
              *     last converged timestep.
-             * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the 
+             * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the
              *     last converged timestep.
-             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient 
+             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient
              *     at the end of the last converged timestep.
              * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient.
              * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation.
              * \param &currentPlasticMicroGradient: The current value of the plastic micro gradient.
-             * \param alphaMacro: The integration parameter for the macro plasticity. 0 explicit, 1 implicit. Defaults to 0.5.
-             * \param alphaMicro: The integration parameter for the micro plasticity. 0 explicit, 1 implicit. Defaults to 0.5.
-             * \param alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
+             * \param alphaMacro: The integration parameter for the macro plasticity. 0 explicit, 1 implicit. Defaults
+             * to 0.5. \param alphaMicro: The integration parameter for the micro plasticity. 0 explicit, 1 implicit.
+             * Defaults to 0.5. \param alphaMicroGradient: The integration parameter for the micro gradient plasticity.
+             * Defaults to 0.5.
              */
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-                                            1. - alphaMacro, 1 );
-//                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-//                                                                    currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-//                                                                    alphaMacro );
+                tardigradeConstitutiveTools::evolveF(Dt, previousPlasticDeformationGradient,
+                                                     previousPlasticMacroVelocityGradient,
+                                                     currentPlasticMacroVelocityGradient,
+                                                     currentPlasticDeformationGradient, 1. - alphaMacro, 1);
+                //                tardigradeConstitutiveTools::evolveFExponentialMap( Dt,
+                //                previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                //                                                                    currentPlasticMacroVelocityGradient,
+                //                                                                    currentPlasticDeformationGradient,
+                //                                                                    alphaMacro );
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-                                            1. - alphaMicro, 1 );
-//                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-//                                                                    currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-//                                                                    alphaMicro );
+                tardigradeConstitutiveTools::evolveF(Dt, previousPlasticMicroDeformation,
+                                                     previousPlasticMicroVelocityGradient,
+                                                     currentPlasticMicroVelocityGradient,
+                                                     currentPlasticMicroDeformation, 1. - alphaMicro, 1);
+                //                tardigradeConstitutiveTools::evolveFExponentialMap( Dt,
+                //                previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                //                                                                    currentPlasticMicroVelocityGradient,
+                //                                                                    currentPlasticMicroDeformation,
+                //                                                                    alphaMicro );
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMicroGradChi(
-                    Dt,
-                    currentPlasticDeformationGradient,    currentPlasticMicroDeformation,
-                    currentPlasticMicroVelocityGradient,  currentPlasticMicroGradientVelocityGradient,
-                    previousPlasticDeformationGradient,   previousPlasticMicroDeformation,
-                    previousPlasticMicroVelocityGradient, previousPlasticMicroGradientVelocityGradient,
-                    previousPlasticMicroGradient,         currentPlasticMicroGradient,
-                    alphaMicroGradient
-                );
-            )
-
+                computePlasticMicroGradChi(Dt, currentPlasticDeformationGradient, currentPlasticMicroDeformation,
+                                           currentPlasticMicroVelocityGradient,
+                                           currentPlasticMicroGradientVelocityGradient,
+                                           previousPlasticDeformationGradient, previousPlasticMicroDeformation,
+                                           previousPlasticMicroVelocityGradient,
+                                           previousPlasticMicroGradientVelocityGradient, previousPlasticMicroGradient,
+                                           currentPlasticMicroGradient, alphaMicroGradient);)
         }
 
-        void evolvePlasticDeformation( const variableType &Dt,
-                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
-                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
-                                       const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
-                                       const secondOrderTensor &previousPlasticDeformationGradient,
-                                       const secondOrderTensor &previousPlasticMicroDeformation,
-                                       const thirdOrderTensor  &previousPlasticMicroGradient,
-                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
-                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
-                                       const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
-                                       secondOrderTensor &currentPlasticDeformationGradient,
-                                       secondOrderTensor &currentPlasticMicroDeformation,
-                                       thirdOrderTensor  &currentPlasticMicroGradient,
-                                       fourthOrderTensor &dPlasticFdPlasticMacroL,
-                                       fourthOrderTensor &dPlasticMicroDeformationdPlasticMicroL,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPlasticMacroL,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPlasticMicroL,
-                                       sixthOrderTensor  &dPlasticMicroGradientdPlasticMicroGradientL,
-                                       const parameterType alphaMacro,
-                                       const parameterType alphaMicro,
-                                       const parameterType alphaMicroGradient ){
+        void evolvePlasticDeformation(
+            const variableType &Dt, const secondOrderTensor &currentPlasticMacroVelocityGradient,
+            const secondOrderTensor &currentPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+            const secondOrderTensor &previousPlasticDeformationGradient,
+            const secondOrderTensor &previousPlasticMicroDeformation,
+            const thirdOrderTensor  &previousPlasticMicroGradient,
+            const secondOrderTensor &previousPlasticMacroVelocityGradient,
+            const secondOrderTensor &previousPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+            secondOrderTensor &currentPlasticDeformationGradient, secondOrderTensor &currentPlasticMicroDeformation,
+            thirdOrderTensor &currentPlasticMicroGradient, fourthOrderTensor &dPlasticFdPlasticMacroL,
+            fourthOrderTensor &dPlasticMicroDeformationdPlasticMicroL,
+            fifthOrderTensor  &dPlasticMicroGradientdPlasticMacroL,
+            fifthOrderTensor  &dPlasticMicroGradientdPlasticMicroL,
+            sixthOrderTensor &dPlasticMicroGradientdPlasticMicroGradientL, const parameterType alphaMacro,
+            const parameterType alphaMicro, const parameterType alphaMicroGradient) {
             /*!
              * Evolve the plastic deformation
              *
              * \param &Dt: The timestep
              * \param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
-             * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient 
+             * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * \param &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last 
+             * \param &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last
              *     converged timestep.
-             * \param &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged 
+             * \param &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged
              *     timestep.
-             * \param &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged 
+             * \param &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged
              *     timestep.
-             * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the 
+             * \param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the
              *     last converged timestep.
-             * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the 
+             * \param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the
              *     last converged timestep.
-             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient 
+             * \param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient
              *     at the end of the last converged timestep.
              * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient.
              * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation.
              * \param &currentPlasticMicroGradient: The current value of the plastic micro gradient.
-             * \param &dPlasticFdPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the plastic 
+             * \param &dPlasticFdPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the plastic
              *     macro velocity gradient.
-             * \param &dPlasticMicroDeformationdPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. 
+             * \param &dPlasticMicroDeformationdPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t.
              *     the plastic micro velocity gradient.
-             * \param &dPlasticMicroGradientdPlasticMacroL: The Jacobian of the plastic micro gradient deformation 
+             * \param &dPlasticMicroGradientdPlasticMacroL: The Jacobian of the plastic micro gradient deformation
              *     w.r.t. the plastic macro velocity gradient.
              * \param &dPlasticMicroGradientdPlasticMicroL: The Jacobian of the plastic micro gradient deformation
              *     w.r.t. the plastic micro velocity gradient.
-             * \param &dPlasticMicroGradientdPlasticMicroGradientL: The Jacobian of the plastic micro gradient deformation
-             *     w.r.t. the plastic micro gradient velocity gradient.
-             * \param alphaMacro: The integration parameter for the macro plasticity. Defaults to 0.5.
-             * \param alphaMicro: The integration parameter for the micro plasticity. Defaults to 0.5.
-             * \param alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
+             * \param &dPlasticMicroGradientdPlasticMicroGradientL: The Jacobian of the plastic micro gradient
+             * deformation w.r.t. the plastic micro gradient velocity gradient. \param alphaMacro: The integration
+             * parameter for the macro plasticity. Defaults to 0.5. \param alphaMicro: The integration parameter for the
+             * micro plasticity. Defaults to 0.5. \param alphaMicroGradient: The integration parameter for the micro
+             * gradient plasticity. Defaults to 0.5.
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-                                            dPlasticFdPlasticMacroL, 1. - alphaMacro, 1 );
-//                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-//                                                                    currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-//                                                                    dPlasticFdPlasticMacroL, alphaMacro );
+                tardigradeConstitutiveTools::evolveFFlatJ(Dt, previousPlasticDeformationGradient,
+                                                          previousPlasticMacroVelocityGradient,
+                                                          currentPlasticMacroVelocityGradient,
+                                                          currentPlasticDeformationGradient, dPlasticFdPlasticMacroL,
+                                                          1. - alphaMacro, 1);
+                //                tardigradeConstitutiveTools::evolveFExponentialMap( Dt,
+                //                previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                //                                                                    currentPlasticMacroVelocityGradient,
+                //                                                                    currentPlasticDeformationGradient,
+                //                                                                    dPlasticFdPlasticMacroL,
+                //                                                                    alphaMacro );
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-                                            dPlasticMicroDeformationdPlasticMicroL, 1. - alphaMicro, 1 );
-//                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-//                                                                    currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-//                                                                    dPlasticMicroDeformationdPlasticMicroL, alphaMicro );
+                tardigradeConstitutiveTools::evolveFFlatJ(Dt, previousPlasticMicroDeformation,
+                                                          previousPlasticMicroVelocityGradient,
+                                                          currentPlasticMicroVelocityGradient,
+                                                          currentPlasticMicroDeformation,
+                                                          dPlasticMicroDeformationdPlasticMicroL, 1. - alphaMicro, 1);
+                //                tardigradeConstitutiveTools::evolveFExponentialMap( Dt,
+                //                previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                //                                                                    currentPlasticMicroVelocityGradient,
+                //                                                                    currentPlasticMicroDeformation,
+                //                                                                    dPlasticMicroDeformationdPlasticMicroL,
+                //                                                                    alphaMicro );
             )
 
-            fifthOrderTensor dPlasticMicroGradientdPlasticDeformationGradient, dPlasticMicroGradientdPlasticMicroDeformation;
+            fifthOrderTensor dPlasticMicroGradientdPlasticDeformationGradient,
+                dPlasticMicroGradientdPlasticMicroDeformation;
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 computePlasticMicroGradChi(
-                    Dt,
-                    currentPlasticDeformationGradient,    currentPlasticMicroDeformation,
-                    currentPlasticMicroVelocityGradient,  currentPlasticMicroGradientVelocityGradient,
-                    previousPlasticDeformationGradient,   previousPlasticMicroDeformation,
+                    Dt, currentPlasticDeformationGradient, currentPlasticMicroDeformation,
+                    currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
+                    previousPlasticDeformationGradient, previousPlasticMicroDeformation,
                     previousPlasticMicroVelocityGradient, previousPlasticMicroGradientVelocityGradient,
-                    previousPlasticMicroGradient,         currentPlasticMicroGradient,
-                    dPlasticMicroGradientdPlasticDeformationGradient,
-                    dPlasticMicroGradientdPlasticMicroDeformation,
-                    dPlasticMicroGradientdPlasticMicroL,  dPlasticMicroGradientdPlasticMicroGradientL,
-                    alphaMicroGradient
-                );
-            )
+                    previousPlasticMicroGradient, currentPlasticMicroGradient,
+                    dPlasticMicroGradientdPlasticDeformationGradient, dPlasticMicroGradientdPlasticMicroDeformation,
+                    dPlasticMicroGradientdPlasticMicroL, dPlasticMicroGradientdPlasticMicroGradientL,
+                    alphaMicroGradient);)
 
-            dPlasticMicroGradientdPlasticMacroL = fifthOrderTensor( tot_dim * sot_dim, 0 );
-            auto map_dPlasticMicroGradientdPlasticDeformationGradient         = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticDeformationGradient.data( ) );
-            auto map_dPlasticDeformationGradientdPlasticMacroL                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPlasticMacroL.data( ) );
-            auto map_dPlasticMicroGradientdPlasticMacroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMacroL.data( ) );
+            dPlasticMicroGradientdPlasticMacroL = fifthOrderTensor(tot_dim * sot_dim, 0);
+            auto map_dPlasticMicroGradientdPlasticDeformationGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dPlasticMicroGradientdPlasticDeformationGradient.data());
+            auto map_dPlasticDeformationGradientdPlasticMacroL =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticFdPlasticMacroL.data());
+            auto map_dPlasticMicroGradientdPlasticMacroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticMicroGradientdPlasticMacroL.data());
 
-            auto map_dPlasticMicroGradientdPlasticMicroDeformation            = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroDeformation.data( ) );
-            auto map_dPlasticMicroDeformationdPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPlasticMicroL.data( ) );
-            auto map_dPlasticMicroGradientdPlasticMicroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroL.data( ) );
+            auto map_dPlasticMicroGradientdPlasticMicroDeformation = getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                dPlasticMicroGradientdPlasticMicroDeformation.data());
+            auto map_dPlasticMicroDeformationdPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMicroDeformationdPlasticMicroL.data());
+            auto map_dPlasticMicroGradientdPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticMicroGradientdPlasticMicroL.data());
 
-            map_dPlasticMicroGradientdPlasticMacroL = ( map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPlasticMacroL ).eval( );
-            map_dPlasticMicroGradientdPlasticMicroL += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPlasticMicroL ).eval( );
-
+            map_dPlasticMicroGradientdPlasticMacroL =
+                (map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPlasticMacroL)
+                    .eval();
+            map_dPlasticMicroGradientdPlasticMicroL +=
+                (map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPlasticMicroL).eval();
         }
 
-        void evolvePlasticDeformation( const variableType &Dt,
-                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
-                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
-                                       const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
-                                       const secondOrderTensor &previousPlasticDeformationGradient,
-                                       const secondOrderTensor &previousPlasticMicroDeformation,
-                                       const thirdOrderTensor  &previousPlasticMicroGradient,
-                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
-                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
-                                       const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
-                                       secondOrderTensor &currentPlasticDeformationGradient,
-                                       secondOrderTensor &currentPlasticMicroDeformation,
-                                       thirdOrderTensor  &currentPlasticMicroGradient,
-                                       fourthOrderTensor &dPlasticFdPlasticMacroL,
-                                       fourthOrderTensor &dPlasticMicroDeformationdPlasticMicroL,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPlasticMacroL,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPlasticMicroL,
-                                       sixthOrderTensor  &dPlasticMicroGradientdPlasticMicroGradientL,
-                                       fourthOrderTensor &dPlasticFdPreviousPlasticF,
-                                       fourthOrderTensor &dPlasticFdPreviousPlasticMacroL,
-                                       fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
-                                       fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroL,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticF,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroGradient,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMacroL,
-                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroL,
-                                       sixthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroGradientL,
-                                       const parameterType alphaMacro,
-                                       const parameterType alphaMicro,
-                                       const parameterType alphaMicroGradient ){
+        void evolvePlasticDeformation(
+            const variableType &Dt, const secondOrderTensor &currentPlasticMacroVelocityGradient,
+            const secondOrderTensor &currentPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+            const secondOrderTensor &previousPlasticDeformationGradient,
+            const secondOrderTensor &previousPlasticMicroDeformation,
+            const thirdOrderTensor  &previousPlasticMicroGradient,
+            const secondOrderTensor &previousPlasticMacroVelocityGradient,
+            const secondOrderTensor &previousPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+            secondOrderTensor &currentPlasticDeformationGradient, secondOrderTensor &currentPlasticMicroDeformation,
+            thirdOrderTensor &currentPlasticMicroGradient, fourthOrderTensor &dPlasticFdPlasticMacroL,
+            fourthOrderTensor &dPlasticMicroDeformationdPlasticMicroL,
+            fifthOrderTensor  &dPlasticMicroGradientdPlasticMacroL,
+            fifthOrderTensor  &dPlasticMicroGradientdPlasticMicroL,
+            sixthOrderTensor  &dPlasticMicroGradientdPlasticMicroGradientL,
+            fourthOrderTensor &dPlasticFdPreviousPlasticF, fourthOrderTensor &dPlasticFdPreviousPlasticMacroL,
+            fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+            fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroL,
+            fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticF,
+            fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
+            fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroGradient,
+            fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMacroL,
+            fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroL,
+            sixthOrderTensor &dPlasticMicroGradientdPreviousPlasticMicroGradientL, const parameterType alphaMacro,
+            const parameterType alphaMicro, const parameterType alphaMicroGradient) {
             /*!
              * Evolve the plastic deformation
              *
              * :param &Dt: The timestep
              * :param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
              * :param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
-             * :param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient 
+             * :param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * :param &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last 
+             * :param &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last
              *     converged timestep.
-             * :param &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged 
+             * :param &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged
              *     timestep.
-             * :param &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged 
+             * :param &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged
              *     timestep.
-             * :param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the 
+             * :param &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the
              *     last converged timestep.
-             * :param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the 
+             * :param &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the
              *     last converged timestep.
-             * :param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient 
+             * :param &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient
              *     at the end of the last converged timestep.
              * :param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient.
              * :param &currentPlasticMicroDeformation: The current value of the plastic micro deformation.
              * :param &currentPlasticMicroGradient: The current value of the plastic micro gradient.
-             * :param &dPlasticFdPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the plastic 
+             * :param &dPlasticFdPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the plastic
              *     macro velocity gradient.
-             * :param &dPlasticMicroDeformationdPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. 
+             * :param &dPlasticMicroDeformationdPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t.
              *     the plastic micro velocity gradient.
-             * :param &dPlasticMicroGradientdPlasticMacroL: The Jacobian of the plastic micro gradient deformation 
+             * :param &dPlasticMicroGradientdPlasticMacroL: The Jacobian of the plastic micro gradient deformation
              *     w.r.t. the plastic macro velocity gradient.
              * :param &dPlasticMicroGradientdPlasticMicroL: The Jacobian of the plastic micro gradient deformation
              *     w.r.t. the plastic micro velocity gradient.
-             * :param &dPlasticMicroGradientdPlasticMicroGradientL: The Jacobian of the plastic micro gradient deformation
-             *     w.r.t. the plastic micro gradient velocity gradient.
-             * :param &dPlasticFdPreviousPlasticF: The Jacobian of the plastic deformation gradient w.r.t. the previous
-             *     plastic deformation gradient.
-             * :param &dPlasticFdPreviousPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the previous plastic 
-             *     macro velocity gradient.
-             * :param &dPlasticMicroDeformationdPreviousPlasticMicroDeformation: The Jacobian of the plastic micro deformation w.r.t. the previous
-             *     plastic micro deformation
-             * :param &dPlasticMicroDeformationdPreviousPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. 
-             *     the previous plastic micro velocity gradient.
-             * :param &dPlasticMicroGradientdPreviousPlasticF: The Jacobian of the plastic micro gradient deformation 
-             *     w.r.t. the previous plastic deformation gradient
-             * :param &dPlasticMicroGradientdPreviousPlasticMicroDeformation: The Jacobian of the plastic micro gradient deformation 
-             *     w.r.t. the previous plastic micro deformation.
-             * :param &dPlasticMicroGradientdPreviousPlasticMicroGradient: The Jacobian of the plastic micro gradient deformation 
-             *     w.r.t. the previous spatial gradient in the intermediate configuration of the plastic macro deformation.
-             * :param &dPlasticMicroGradientdPreviousPlasticMacroL: The Jacobian of the plastic micro gradient deformation 
-             *     w.r.t. the previous plastic macro velocity gradient.
-             * :param &dPlasticMicroGradientdPreviousPlasticMicroL: The Jacobian of the plastic micro gradient deformation
+             * :param &dPlasticMicroGradientdPlasticMicroGradientL: The Jacobian of the plastic micro gradient
+             * deformation w.r.t. the plastic micro gradient velocity gradient. :param &dPlasticFdPreviousPlasticF: The
+             * Jacobian of the plastic deformation gradient w.r.t. the previous plastic deformation gradient. :param
+             * &dPlasticFdPreviousPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the previous
+             * plastic macro velocity gradient. :param &dPlasticMicroDeformationdPreviousPlasticMicroDeformation: The
+             * Jacobian of the plastic micro deformation w.r.t. the previous plastic micro deformation :param
+             * &dPlasticMicroDeformationdPreviousPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. the
+             * previous plastic micro velocity gradient. :param &dPlasticMicroGradientdPreviousPlasticF: The Jacobian of
+             * the plastic micro gradient deformation w.r.t. the previous plastic deformation gradient :param
+             * &dPlasticMicroGradientdPreviousPlasticMicroDeformation: The Jacobian of the plastic micro gradient
+             * deformation w.r.t. the previous plastic micro deformation. :param
+             * &dPlasticMicroGradientdPreviousPlasticMicroGradient: The Jacobian of the plastic micro gradient
+             * deformation w.r.t. the previous spatial gradient in the intermediate configuration of the plastic macro
+             * deformation. :param &dPlasticMicroGradientdPreviousPlasticMacroL: The Jacobian of the plastic micro
+             * gradient deformation w.r.t. the previous plastic macro velocity gradient. :param
+             * &dPlasticMicroGradientdPreviousPlasticMicroL: The Jacobian of the plastic micro gradient deformation
              *     w.r.t. the previous plastic micro velocity gradient.
-             * :param &dPlasticMicroGradientdPreviousPlasticMicroGradientL: The Jacobian of the plastic micro gradient deformation
-             *     w.r.t. the previous plastic micro gradient velocity gradient.
-             * :param alphaMacro: The integration parameter for the macro plasticity. Defaults to 0.5.
-             * :param alphaMicro: The integration parameter for the micro plasticity. Defaults to 0.5.
-             * :param alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
+             * :param &dPlasticMicroGradientdPreviousPlasticMicroGradientL: The Jacobian of the plastic micro gradient
+             * deformation w.r.t. the previous plastic micro gradient velocity gradient. :param alphaMacro: The
+             * integration parameter for the macro plasticity. Defaults to 0.5. :param alphaMicro: The integration
+             * parameter for the micro plasticity. Defaults to 0.5. :param alphaMicroGradient: The integration parameter
+             * for the micro gradient plasticity. Defaults to 0.5.
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-                                            dPlasticFdPlasticMacroL, dPlasticFdPreviousPlasticF, dPlasticFdPreviousPlasticMacroL, 1. - alphaMacro, 1 );
-//                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-//                                                                    currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-//                                                                    dPlasticFdPlasticMacroL, dPlasticFdPreviousPlasticF, dPlasticFdPreviousPlasticMacroL, alphaMacro );
+                tardigradeConstitutiveTools::evolveFFlatJ(
+                    Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                    currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient, dPlasticFdPlasticMacroL,
+                    dPlasticFdPreviousPlasticF, dPlasticFdPreviousPlasticMacroL, 1. - alphaMacro, 1);
+                //                tardigradeConstitutiveTools::evolveFExponentialMap( Dt,
+                //                previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                //                                                                    currentPlasticMacroVelocityGradient,
+                //                                                                    currentPlasticDeformationGradient,
+                //                                                                    dPlasticFdPlasticMacroL,
+                //                                                                    dPlasticFdPreviousPlasticF,
+                //                                                                    dPlasticFdPreviousPlasticMacroL,
+                //                                                                    alphaMacro );
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-                                            dPlasticMicroDeformationdPlasticMicroL, dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
-                                            dPlasticMicroDeformationdPreviousPlasticMicroL, 1. - alphaMicro, 1 );
-//                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-//                                                                    currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-//                                                                    dPlasticMicroDeformationdPlasticMicroL, dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
-//                                                                    dPlasticMicroDeformationdPreviousPlasticMicroL, alphaMicro );
+                tardigradeConstitutiveTools::evolveFFlatJ(
+                    Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                    currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
+                    dPlasticMicroDeformationdPlasticMicroL, dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+                    dPlasticMicroDeformationdPreviousPlasticMicroL, 1. - alphaMicro, 1);
+                //                tardigradeConstitutiveTools::evolveFExponentialMap( Dt,
+                //                previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                //                                                                    currentPlasticMicroVelocityGradient,
+                //                                                                    currentPlasticMicroDeformation,
+                //                                                                    dPlasticMicroDeformationdPlasticMicroL,
+                //                                                                    dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+                //                                                                    dPlasticMicroDeformationdPreviousPlasticMicroL,
+                //                                                                    alphaMicro );
             )
 
-            fifthOrderTensor dPlasticMicroGradientdPlasticDeformationGradient, dPlasticMicroGradientdPlasticMicroDeformation;
+            fifthOrderTensor dPlasticMicroGradientdPlasticDeformationGradient,
+                dPlasticMicroGradientdPlasticMicroDeformation;
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 computePlasticMicroGradChi(
-                    Dt,
-                    currentPlasticDeformationGradient,    currentPlasticMicroDeformation,
-                    currentPlasticMicroVelocityGradient,  currentPlasticMicroGradientVelocityGradient,
-                    previousPlasticDeformationGradient,   previousPlasticMicroDeformation,
+                    Dt, currentPlasticDeformationGradient, currentPlasticMicroDeformation,
+                    currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
+                    previousPlasticDeformationGradient, previousPlasticMicroDeformation,
                     previousPlasticMicroVelocityGradient, previousPlasticMicroGradientVelocityGradient,
-                    previousPlasticMicroGradient,         currentPlasticMicroGradient,
-                    dPlasticMicroGradientdPlasticDeformationGradient,
-                    dPlasticMicroGradientdPlasticMicroDeformation,
-                    dPlasticMicroGradientdPlasticMicroL,
-                    dPlasticMicroGradientdPlasticMicroGradientL,
-                    dPlasticMicroGradientdPreviousPlasticF,
-                    dPlasticMicroGradientdPreviousPlasticMicroDeformation,
-                    dPlasticMicroGradientdPreviousPlasticMicroL,
-                    dPlasticMicroGradientdPreviousPlasticMicroGradientL,
-                    dPlasticMicroGradientdPreviousPlasticMicroGradient,
-                    alphaMicroGradient
-                );
-            )
+                    previousPlasticMicroGradient, currentPlasticMicroGradient,
+                    dPlasticMicroGradientdPlasticDeformationGradient, dPlasticMicroGradientdPlasticMicroDeformation,
+                    dPlasticMicroGradientdPlasticMicroL, dPlasticMicroGradientdPlasticMicroGradientL,
+                    dPlasticMicroGradientdPreviousPlasticF, dPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                    dPlasticMicroGradientdPreviousPlasticMicroL, dPlasticMicroGradientdPreviousPlasticMicroGradientL,
+                    dPlasticMicroGradientdPreviousPlasticMicroGradient, alphaMicroGradient);)
 
-            dPlasticMicroGradientdPlasticMacroL         = fifthOrderTensor( tot_dim * sot_dim, 0 );
-            dPlasticMicroGradientdPreviousPlasticMacroL = fifthOrderTensor( tot_dim * sot_dim, 0 );
-            auto map_dPlasticMicroGradientdPlasticDeformationGradient         = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticDeformationGradient.data( ) );
-            auto map_dPlasticMicroGradientdPreviousPlasticF                   = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticF.data( ) );
-            auto map_dPlasticDeformationGradientdPlasticMacroL                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPlasticMacroL.data( ) );
-            auto map_dPlasticDeformationGradientdPreviousPlasticMacroL        = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPreviousPlasticMacroL.data( ) );
-            auto map_dPlasticDeformationGradientdPreviousPlasticF             = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPreviousPlasticF.data( ) );
-            auto map_dPlasticMicroGradientdPlasticMacroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMacroL.data( ) );
-            auto map_dPlasticMicroGradientdPreviousPlasticMacroL              = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticMacroL.data( ) );
+            dPlasticMicroGradientdPlasticMacroL         = fifthOrderTensor(tot_dim * sot_dim, 0);
+            dPlasticMicroGradientdPreviousPlasticMacroL = fifthOrderTensor(tot_dim * sot_dim, 0);
+            auto map_dPlasticMicroGradientdPlasticDeformationGradient =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dPlasticMicroGradientdPlasticDeformationGradient.data());
+            auto map_dPlasticMicroGradientdPreviousPlasticF =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticMicroGradientdPreviousPlasticF.data());
+            auto map_dPlasticDeformationGradientdPlasticMacroL =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticFdPlasticMacroL.data());
+            auto map_dPlasticDeformationGradientdPreviousPlasticMacroL =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticFdPreviousPlasticMacroL.data());
+            auto map_dPlasticDeformationGradientdPreviousPlasticF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticFdPreviousPlasticF.data());
+            auto map_dPlasticMicroGradientdPlasticMacroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticMicroGradientdPlasticMacroL.data());
+            auto map_dPlasticMicroGradientdPreviousPlasticMacroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticMicroGradientdPreviousPlasticMacroL.data());
 
-            auto map_dPlasticMicroGradientdPlasticMicroDeformation            = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroDeformation.data( ) );
-            auto map_dPlasticMicroGradientdPreviousPlasticMicroDeformation    = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticMicroDeformation.data( ) );
-            auto map_dPlasticMicroDeformationdPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPlasticMicroL.data( ) );
-            auto map_dPlasticMicroDeformationdPreviousPlasticMicroL           = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPreviousPlasticMicroL.data( ) );
-            auto map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPreviousPlasticMicroDeformation.data( ) );
-            auto map_dPlasticMicroGradientdPlasticMicroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroL.data( ) );
-            auto map_dPlasticMicroGradientdPreviousPlasticMicroL              = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticMicroL.data( ) );
+            auto map_dPlasticMicroGradientdPlasticMicroDeformation = getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                dPlasticMicroGradientdPlasticMicroDeformation.data());
+            auto map_dPlasticMicroGradientdPreviousPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dPlasticMicroGradientdPreviousPlasticMicroDeformation.data());
+            auto map_dPlasticMicroDeformationdPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMicroDeformationdPlasticMicroL.data());
+            auto map_dPlasticMicroDeformationdPreviousPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                    dPlasticMicroDeformationdPreviousPlasticMicroL.data());
+            auto map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                    dPlasticMicroDeformationdPreviousPlasticMicroDeformation.data());
+            auto map_dPlasticMicroGradientdPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticMicroGradientdPlasticMicroL.data());
+            auto map_dPlasticMicroGradientdPreviousPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticMicroGradientdPreviousPlasticMicroL.data());
 
-            map_dPlasticMicroGradientdPlasticMacroL                    = ( map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPlasticMacroL ).eval( );
-            map_dPlasticMicroGradientdPreviousPlasticMacroL            = ( map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPreviousPlasticMacroL ).eval( );
-            map_dPlasticMicroGradientdPreviousPlasticF                += ( map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPreviousPlasticF ).eval( );
-            map_dPlasticMicroGradientdPlasticMicroL                   += ( map_dPlasticMicroGradientdPlasticMicroDeformation    * map_dPlasticMicroDeformationdPlasticMicroL ).eval( );
-            map_dPlasticMicroGradientdPreviousPlasticMicroL           += ( map_dPlasticMicroGradientdPlasticMicroDeformation    * map_dPlasticMicroDeformationdPreviousPlasticMicroL ).eval( );
-            map_dPlasticMicroGradientdPreviousPlasticMicroDeformation += ( map_dPlasticMicroGradientdPlasticMicroDeformation    * map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation ).eval( );
-
+            map_dPlasticMicroGradientdPlasticMacroL =
+                (map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPlasticMacroL)
+                    .eval();
+            map_dPlasticMicroGradientdPreviousPlasticMacroL = (map_dPlasticMicroGradientdPlasticDeformationGradient *
+                                                               map_dPlasticDeformationGradientdPreviousPlasticMacroL)
+                                                                  .eval();
+            map_dPlasticMicroGradientdPreviousPlasticF += (map_dPlasticMicroGradientdPlasticDeformationGradient *
+                                                           map_dPlasticDeformationGradientdPreviousPlasticF)
+                                                              .eval();
+            map_dPlasticMicroGradientdPlasticMicroL +=
+                (map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPlasticMicroL).eval();
+            map_dPlasticMicroGradientdPreviousPlasticMicroL +=
+                (map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPreviousPlasticMicroL)
+                    .eval();
+            map_dPlasticMicroGradientdPreviousPlasticMicroDeformation +=
+                (map_dPlasticMicroGradientdPlasticMicroDeformation *
+                 map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation)
+                    .eval();
         }
 
-        void residual::setMacroDrivingStress( ){
+        void residual::setMacroDrivingStress() {
             /*!
-             * Set the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration)
+             * Set the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current
+             * configuration of plastic configuration)
              */
 
-            setDrivingStresses( false );
-
+            setDrivingStresses(false);
         }
 
-        void residual::setSymmetricMicroDrivingStress( ){
+        void residual::setSymmetricMicroDrivingStress() {
             /*!
              * Set the symmetric micro driving stress (stress in current configuration of plastic configuration)
              */
 
-            setDrivingStresses( false );
-
+            setDrivingStresses(false);
         }
 
-        void residual::setHigherOrderDrivingStress( ){
+        void residual::setHigherOrderDrivingStress() {
             /*!
              * Set the higher-order driving stress (stress in current configuration of plastic configuration)
              */
 
-            setDrivingStresses( false );
-
+            setDrivingStresses(false);
         }
 
-        void residual::setPreviousMacroDrivingStress( ){
+        void residual::setPreviousMacroDrivingStress() {
             /*!
-             * Set the previous macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration)
+             * Set the previous macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in
+             * current configuration of plastic configuration)
              */
 
-            setDrivingStresses( true );
-
+            setDrivingStresses(true);
         }
 
-        void residual::setPreviousSymmetricMicroDrivingStress( ){
+        void residual::setPreviousSymmetricMicroDrivingStress() {
             /*!
-             * Set the previous symmetric micro driving stress (stress in current configuration of plastic configuration)
+             * Set the previous symmetric micro driving stress (stress in current configuration of plastic
+             * configuration)
              */
 
-            setDrivingStresses( true );
-
+            setDrivingStresses(true);
         }
 
-        void residual::setPreviousHigherOrderDrivingStress( ){
+        void residual::setPreviousHigherOrderDrivingStress() {
             /*!
              * Set the previous higher-order driving stress (stress in current configuration of plastic configuration)
              */
 
-            setDrivingStresses( true );
-
+            setDrivingStresses(true);
         }
 
-        void residual::setDrivingStresses( const bool isPrevious ){
+        void residual::setDrivingStresses(const bool isPrevious) {
             /*!
              * Set the driving stresses for the plasticity
-             * 
+             *
              * We here assume that the driving stresses are in the current configuration of
              * this residual's configuration.
              *
@@ -3184,290 +3150,289 @@ namespace tardigradeHydra{
 
             floatVector chip;
 
-            setDrivingStresses( isPrevious, Fp, chip );
-
+            setDrivingStresses(isPrevious, Fp, chip);
         }
 
-        void residual::setDrivingStresses( const bool isPrevious, floatVector &Fp, floatVector &chip ){
+        void residual::setDrivingStresses(const bool isPrevious, floatVector &Fp, floatVector &chip) {
             /*!
              * Set the driving stresses for the plasticity
-             * 
+             *
              * We here assume that the driving stresses are in the current configuration of
              * this residual's configuration.
              *
              * We also assume that the stress from hydra is in the reference configuration
-             * 
+             *
              * \param isPrevious: Whether the values should be computed for the previous stress or not
              * \param &Fp: The following deformation gradient from the reference to the intermediate configuration
              * \param &chip: The following micro gradient from the reference to the intermediate configuration
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension();
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            const unsigned int tot_dim = hydra->getTOTDimension();
 
             const floatVector *stress;
 
-            setDataStorageBase< secondOrderTensor > macroDrivingStress;
+            SetDataStorageBase<secondOrderTensor> macroDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > symmetricMicroDrivingStress;
+            SetDataStorageBase<secondOrderTensor> symmetricMicroDrivingStress;
 
-            setDataStorageBase< thirdOrderTensor > higherOrderDrivingStress;
+            SetDataStorageBase<thirdOrderTensor> higherOrderDrivingStress;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                stress = hydra->getPreviousStress();
 
-                stress = hydra->getPreviousStress( );
+                Fp = hydra->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
-                Fp     = hydra->getPreviousFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
+                chip = hydra->getPreviousFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
-                chip   = hydra->getPreviousFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                macroDrivingStress = get_SetDataStorage_previousMacroDrivingStress();
 
-                macroDrivingStress          = get_setDataStorage_previousMacroDrivingStress( );
+                symmetricMicroDrivingStress = get_SetDataStorage_previousSymmetricMicroDrivingStress();
 
-                symmetricMicroDrivingStress = get_setDataStorage_previousSymmetricMicroDrivingStress( );
+                higherOrderDrivingStress = get_SetDataStorage_previousHigherOrderDrivingStress();
 
-                higherOrderDrivingStress    = get_setDataStorage_previousHigherOrderDrivingStress( );
+            } else {
+                stress = hydra->getStress();
 
-            }
-            else{
+                Fp = hydra->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
-                stress = hydra->getStress( );
+                chip = hydra->getFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
-                Fp     = hydra->getFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
+                macroDrivingStress = get_SetDataStorage_macroDrivingStress();
 
-                chip   = hydra->getFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                symmetricMicroDrivingStress = get_SetDataStorage_symmetricMicroDrivingStress();
 
-                macroDrivingStress          = get_setDataStorage_macroDrivingStress( );
-
-                symmetricMicroDrivingStress = get_setDataStorage_symmetricMicroDrivingStress( );
-
-                higherOrderDrivingStress    = get_setDataStorage_higherOrderDrivingStress( );
-
+                higherOrderDrivingStress = get_SetDataStorage_higherOrderDrivingStress();
             }
 
             // Extract the stresses from the stress vector
-            secondOrderTensor PK2Stress(                     stress->begin( ),               stress->begin( ) + 1 * sot_dim );
+            secondOrderTensor PK2Stress(stress->begin(), stress->begin() + 1 * sot_dim);
 
-            secondOrderTensor referenceSymmetricMicroStress( stress->begin( ) + 1 * sot_dim, stress->begin( ) + 2 * sot_dim );
+            secondOrderTensor referenceSymmetricMicroStress(stress->begin() + 1 * sot_dim,
+                                                            stress->begin() + 2 * sot_dim);
 
-            thirdOrderTensor referenceHigherOrderStress(     stress->begin( ) + 2 * sot_dim, stress->begin( ) + 2 * sot_dim + tot_dim );
+            thirdOrderTensor referenceHigherOrderStress(stress->begin() + 2 * sot_dim,
+                                                        stress->begin() + 2 * sot_dim + tot_dim);
 
             // Push the stresses forward to the current configuration of the plastic configuration
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, *macroDrivingStress.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::pushForwardPK2Stress(PK2Stress, Fp,
+                                                                                           *macroDrivingStress.value));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, *symmetricMicroDrivingStress.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::pushForwardReferenceMicroStress(
+                referenceSymmetricMicroStress, Fp, *symmetricMicroDrivingStress.value));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, *higherOrderDrivingStress.value ) );
-
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::pushForwardHigherOrderStress(
+                referenceHigherOrderStress, Fp, chip, *higherOrderDrivingStress.value));
         }
 
-        void residual::setdMacroDrivingStressdMacroStress( ){
+        void residual::setdMacroDrivingStressdMacroStress() {
             /*!
-             * Set the jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the macro stress
+             * Set the jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress
+             * in current configuration of plastic configuration) w.r.t. the macro stress
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdSymmetricMicroDrivingStressdMicroStress( ){
+        void residual::setdSymmetricMicroDrivingStressdMicroStress() {
             /*!
-             * Set the jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the micro stress
+             * Set the jacobian of the symmetric micro driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the micro stress
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdHigherOrderDrivingStressdHigherOrderStress( ){
+        void residual::setdHigherOrderDrivingStressdHigherOrderStress() {
             /*!
-             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress
+             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdMacroDrivingStressdF( ){
+        void residual::setdMacroDrivingStressdF() {
             /*!
-             * Set the jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the deformation gradient
+             * Set the jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress
+             * in current configuration of plastic configuration) w.r.t. the deformation gradient
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdSymmetricMicroDrivingStressdF( ){
+        void residual::setdSymmetricMicroDrivingStressdF() {
             /*!
-             * Set the jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the deformation gradient
+             * Set the jacobian of the symmetric micro driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the deformation gradient
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdHigherOrderDrivingStressdF( ){
+        void residual::setdHigherOrderDrivingStressdF() {
             /*!
-             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the deformation gradient
+             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress w.r.t. the deformation gradient
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdHigherOrderDrivingStressdChi( ){
+        void residual::setdHigherOrderDrivingStressdChi() {
             /*!
-             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the micro deformation
+             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress w.r.t. the micro deformation
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdMacroDrivingStressdFn( ){
+        void residual::setdMacroDrivingStressdFn() {
             /*!
-             * Set the jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the sub deformation gradients
+             * Set the jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress
+             * in current configuration of plastic configuration) w.r.t. the sub deformation gradients
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdSymmetricMicroDrivingStressdFn( ){
+        void residual::setdSymmetricMicroDrivingStressdFn() {
             /*!
-             * Set the jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the sub deformation gradients
+             * Set the jacobian of the symmetric micro driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the sub deformation gradients
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdHigherOrderDrivingStressdFn( ){
+        void residual::setdHigherOrderDrivingStressdFn() {
             /*!
-             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the sub deformation gradients
+             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress w.r.t. the sub deformation gradients
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setdHigherOrderDrivingStressdChin( ){
+        void residual::setdHigherOrderDrivingStressdChin() {
             /*!
-             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the sub micro deformations
+             * Set the jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress w.r.t. the sub micro deformations
              */
 
-            setDrivingStressesJacobians( false );
-
+            setDrivingStressesJacobians(false);
         }
 
-        void residual::setPreviousdMacroDrivingStressdMacroStress( ){
+        void residual::setPreviousdMacroDrivingStressdMacroStress() {
             /*!
-             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the macro stress
+             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress
+             * (stress in current configuration of plastic configuration) w.r.t. the macro stress
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdSymmetricMicroDrivingStressdMicroStress( ){
+        void residual::setPreviousdSymmetricMicroDrivingStressdMicroStress() {
             /*!
-             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the micro stress
+             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of
+             * plastic configuration) w.r.t. the micro stress
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdHigherOrderDrivingStressdHigherOrderStress( ){
+        void residual::setPreviousdHigherOrderDrivingStressdHigherOrderStress() {
             /*!
-             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdMacroDrivingStressdF( ){
+        void residual::setPreviousdMacroDrivingStressdF() {
             /*!
-             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the deformation gradient
+             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress
+             * (stress in current configuration of plastic configuration) w.r.t. the deformation gradient
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdSymmetricMicroDrivingStressdF( ){
+        void residual::setPreviousdSymmetricMicroDrivingStressdF() {
             /*!
-             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the deformation gradient
+             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of
+             * plastic configuration) w.r.t. the deformation gradient
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdHigherOrderDrivingStressdF( ){
+        void residual::setPreviousdHigherOrderDrivingStressdF() {
             /*!
-             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the deformation gradient
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress w.r.t. the deformation gradient
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdHigherOrderDrivingStressdChi( ){
+        void residual::setPreviousdHigherOrderDrivingStressdChi() {
             /*!
-             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the micro deformation
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress w.r.t. the micro deformation
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdMacroDrivingStressdFn( ){
+        void residual::setPreviousdMacroDrivingStressdFn() {
             /*!
-             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the sub deformation gradients
+             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress
+             * (stress in current configuration of plastic configuration) w.r.t. the sub deformation gradients
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdSymmetricMicroDrivingStressdFn( ){
+        void residual::setPreviousdSymmetricMicroDrivingStressdFn() {
             /*!
-             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the sub deformation gradients
+             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of
+             * plastic configuration) w.r.t. the sub deformation gradients
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdHigherOrderDrivingStressdFn( ){
+        void residual::setPreviousdHigherOrderDrivingStressdFn() {
             /*!
-             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the sub deformation gradients
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress w.r.t. the sub deformation gradients
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setPreviousdHigherOrderDrivingStressdChin( ){
+        void residual::setPreviousdHigherOrderDrivingStressdChin() {
             /*!
-             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the sub micro deformations
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic
+             * configuration) w.r.t. the higher order stress w.r.t. the sub micro deformations
              */
 
-            setDrivingStressesJacobians( true );
-
+            setDrivingStressesJacobians(true);
         }
 
-        void residual::setDrivingStressesJacobians( const bool isPrevious ){
+        void residual::setDrivingStressesJacobians(const bool isPrevious) {
             /*!
              * Set the driving stresses for the plasticity along with the Jacobians
-             * 
+             *
              * We here assume that the driving stresses are in the current configuration of
              * this residual's configuration.
              *
              * We also assume that the stress from hydra is in the reference configuration
-             * 
+             *
              * \param isPrevious: Whether the values should be computed for the previous stress or not
              */
 
@@ -3477,31 +3442,32 @@ namespace tardigradeHydra{
 
             floatVector dFpdFn, dChipdChin;
 
-            setDrivingStressesJacobians( isPrevious, Fp, chip, dFpdF, dFpdFn, dChipdChi, dChipdChin );
-
+            setDrivingStressesJacobians(isPrevious, Fp, chip, dFpdF, dFpdFn, dChipdChi, dChipdChin);
         }
 
-        void residual::setDrivingStressesJacobians(
-            const bool isPrevious, secondOrderTensor &Fp, secondOrderTensor &chip,
-            fourthOrderTensor &dFpdF, floatVector &dFpdFn,
-            fourthOrderTensor &dChipdChi, floatVector &dChipdChin
-        ){
+        void residual::setDrivingStressesJacobians(const bool isPrevious, secondOrderTensor &Fp,
+                                                   secondOrderTensor &chip, fourthOrderTensor &dFpdF,
+                                                   floatVector &dFpdFn, fourthOrderTensor &dChipdChi,
+                                                   floatVector &dChipdChin) {
             /*!
              * Set the driving stresses for the plasticity along with the Jacobians
-             * 
+             *
              * We here assume that the driving stresses are in the current configuration of
              * this residual's configuration.
              *
              * We also assume that the stress from hydra is in the reference configuration
-             * 
+             *
              * \param isPrevious: Whether the values should be computed for the previous stress or not
              * \param &Fp: The following deformation gradient from the reference to the intermediate configuration
              * \param &chip: The following micro gradient from the reference to the intermediate configuration
-             * \param &dFpdF: The derivative of the following deformation gradient from the reference to the intermediate configuration w.r.t. the deformation gradient
-             * \param &dFpdFn: The derivative of the following deformation gradient from the reference to the intermediate configuration w.r.t. the sub deformation gradients
-             * \param &dChipdChi: The derivative of the following micro gradient from the reference to the intermediate configuration w.r.t. the micro deformation
-             * \param &dChipdChin: The derivative of the following micro gradient from the reference to the intermediate configuration w.r.t. the sub micro deformations
-             * 
+             * \param &dFpdF: The derivative of the following deformation gradient from the reference to the
+             * intermediate configuration w.r.t. the deformation gradient \param &dFpdFn: The derivative of the
+             * following deformation gradient from the reference to the intermediate configuration w.r.t. the sub
+             * deformation gradients \param &dChipdChi: The derivative of the following micro gradient from the
+             * reference to the intermediate configuration w.r.t. the micro deformation \param &dChipdChin: The
+             * derivative of the following micro gradient from the reference to the intermediate configuration w.r.t.
+             * the sub micro deformations
+             *
              */
 
             constexpr unsigned int dim = 3;
@@ -3510,7 +3476,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations();
 
             const floatVector *stress;
 
@@ -3526,759 +3492,709 @@ namespace tardigradeHydra{
 
             const floatVector *dChi1dChin;
 
-            setDataStorageBase< secondOrderTensor > macroDrivingStress;
+            SetDataStorageBase<secondOrderTensor> macroDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > symmetricMicroDrivingStress;
+            SetDataStorageBase<secondOrderTensor> symmetricMicroDrivingStress;
 
-            setDataStorageBase< thirdOrderTensor > higherOrderDrivingStress;
+            SetDataStorageBase<thirdOrderTensor> higherOrderDrivingStress;
 
-            setDataStorageBase< fourthOrderTensor > dMacrodPK2;
+            SetDataStorageBase<fourthOrderTensor> dMacrodPK2;
 
-            setDataStorageBase< fourthOrderTensor > dMicrodSigma;
+            SetDataStorageBase<fourthOrderTensor> dMicrodSigma;
 
-            setDataStorageBase< sixthOrderTensor > dHigherdM;
+            SetDataStorageBase<sixthOrderTensor> dHigherdM;
 
-            setDataStorageBase< fourthOrderTensor > dMacroDrivingStressdF;
+            SetDataStorageBase<fourthOrderTensor> dMacroDrivingStressdF;
 
-            setDataStorageBase< fourthOrderTensor > dMicroDrivingStressdF;
+            SetDataStorageBase<fourthOrderTensor> dMicroDrivingStressdF;
 
-            setDataStorageBase< fifthOrderTensor > dHigherDrivingStressdF;
+            SetDataStorageBase<fifthOrderTensor> dHigherDrivingStressdF;
 
-            setDataStorageBase< fifthOrderTensor > dHigherDrivingStressdChi;
+            SetDataStorageBase<fifthOrderTensor> dHigherDrivingStressdChi;
 
-            setDataStorageBase< floatVector > dMacroDrivingStressdFn;
+            SetDataStorageBase<floatVector> dMacroDrivingStressdFn;
 
-            setDataStorageBase< floatVector > dMicroDrivingStressdFn;
+            SetDataStorageBase<floatVector> dMicroDrivingStressdFn;
 
-            setDataStorageBase< floatVector > dHigherDrivingStressdFn;
+            SetDataStorageBase<floatVector> dHigherDrivingStressdFn;
 
-            setDataStorageBase< floatVector > dHigherDrivingStressdChin;
+            SetDataStorageBase<floatVector> dHigherDrivingStressdChin;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                stress = hydra->getPreviousStress();
 
-                stress = hydra->getPreviousStress( );
+                dF1dF = hydra->get_previousdF1dF();
 
-                dF1dF         = hydra->get_previousdF1dF( );
+                dF1dFn = hydra->get_previousdF1dFn();
 
-                dF1dFn        = hydra->get_previousdF1dFn( );
+                dFpdSubFs = hydra->getPreviousFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                dFpdSubFs     = hydra->getPreviousFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dChi1dChi = hydra->get_previousdChi1dChi();
 
-                dChi1dChi     = hydra->get_previousdChi1dChi( );
+                dChi1dChin = hydra->get_previousdChi1dChin();
 
-                dChi1dChin    = hydra->get_previousdChi1dChin( );
+                dChipdSubChis =
+                    hydra->getPreviousFollowingMicroConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                dChipdSubChis = hydra->getPreviousFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                Fp = hydra->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
-                Fp            = hydra->getPreviousFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
+                chip = hydra->getPreviousFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
-                chip          = hydra->getPreviousFollowingMicroConfiguration(    ( *getPlasticConfigurationIndex( ) ) - 1 );
+                macroDrivingStress = get_SetDataStorage_previousMacroDrivingStress();
 
-                macroDrivingStress          = get_setDataStorage_previousMacroDrivingStress( );
+                symmetricMicroDrivingStress = get_SetDataStorage_previousSymmetricMicroDrivingStress();
 
-                symmetricMicroDrivingStress = get_setDataStorage_previousSymmetricMicroDrivingStress( );
+                higherOrderDrivingStress = get_SetDataStorage_previousHigherOrderDrivingStress();
 
-                higherOrderDrivingStress    = get_setDataStorage_previousHigherOrderDrivingStress( );
+                dMacrodPK2 = get_SetDataStorage_previousdMacroDrivingStressdMacroStress();
 
-                dMacrodPK2                  = get_setDataStorage_previousdMacroDrivingStressdMacroStress( );
+                dMicrodSigma = get_SetDataStorage_previousdSymmetricMicroDrivingStressdMicroStress();
 
-                dMicrodSigma                = get_setDataStorage_previousdSymmetricMicroDrivingStressdMicroStress( );
+                dHigherdM = get_SetDataStorage_previousdHigherOrderDrivingStressdHigherOrderStress();
 
-                dHigherdM                   = get_setDataStorage_previousdHigherOrderDrivingStressdHigherOrderStress( );
+                dMacroDrivingStressdF = get_SetDataStorage_previousdMacroDrivingStressdF();
 
-                dMacroDrivingStressdF       = get_setDataStorage_previousdMacroDrivingStressdF( );
+                dMicroDrivingStressdF = get_SetDataStorage_previousdSymmetricMicroDrivingStressdF();
 
-                dMicroDrivingStressdF       = get_setDataStorage_previousdSymmetricMicroDrivingStressdF( );
+                dHigherDrivingStressdF = get_SetDataStorage_previousdHigherOrderDrivingStressdF();
 
-                dHigherDrivingStressdF      = get_setDataStorage_previousdHigherOrderDrivingStressdF( );
+                dHigherDrivingStressdChi = get_SetDataStorage_previousdHigherOrderDrivingStressdChi();
 
-                dHigherDrivingStressdChi    = get_setDataStorage_previousdHigherOrderDrivingStressdChi( );
+                dMacroDrivingStressdFn = get_SetDataStorage_previousdMacroDrivingStressdFn();
 
-                dMacroDrivingStressdFn      = get_setDataStorage_previousdMacroDrivingStressdFn( );
+                dMicroDrivingStressdFn = get_SetDataStorage_previousdSymmetricMicroDrivingStressdFn();
 
-                dMicroDrivingStressdFn      = get_setDataStorage_previousdSymmetricMicroDrivingStressdFn( );
+                dHigherDrivingStressdFn = get_SetDataStorage_previousdHigherOrderDrivingStressdFn();
 
-                dHigherDrivingStressdFn     = get_setDataStorage_previousdHigherOrderDrivingStressdFn( );
+                dHigherDrivingStressdChin = get_SetDataStorage_previousdHigherOrderDrivingStressdChin();
 
-                dHigherDrivingStressdChin   = get_setDataStorage_previousdHigherOrderDrivingStressdChin( );
+            } else {
+                stress = hydra->getStress();
 
-            }
-            else{
+                dF1dF = hydra->get_dF1dF();
 
-                stress = hydra->getStress( );
+                dF1dFn = hydra->get_dF1dFn();
 
-                dF1dF         = hydra->get_dF1dF( );
+                dFpdSubFs = hydra->getFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                dF1dFn        = hydra->get_dF1dFn( );
+                dChi1dChi = hydra->get_dChi1dChi();
 
-                dFpdSubFs     = hydra->getFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dChi1dChin = hydra->get_dChi1dChin();
 
-                dChi1dChi     = hydra->get_dChi1dChi( );
+                dChipdSubChis = hydra->getFollowingMicroConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                dChi1dChin    = hydra->get_dChi1dChin( );
+                Fp = hydra->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
-                dChipdSubChis = hydra->getFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                chip = hydra->getFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
-                Fp            = hydra->getFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
+                macroDrivingStress = get_SetDataStorage_macroDrivingStress();
 
-                chip          = hydra->getFollowingMicroConfiguration(    ( *getPlasticConfigurationIndex( ) ) - 1 );
+                symmetricMicroDrivingStress = get_SetDataStorage_symmetricMicroDrivingStress();
 
-                macroDrivingStress          = get_setDataStorage_macroDrivingStress( );
+                higherOrderDrivingStress = get_SetDataStorage_higherOrderDrivingStress();
 
-                symmetricMicroDrivingStress = get_setDataStorage_symmetricMicroDrivingStress( );
+                dMacrodPK2 = get_SetDataStorage_dMacroDrivingStressdMacroStress();
 
-                higherOrderDrivingStress    = get_setDataStorage_higherOrderDrivingStress( );
+                dMicrodSigma = get_SetDataStorage_dSymmetricMicroDrivingStressdMicroStress();
 
-                dMacrodPK2                  = get_setDataStorage_dMacroDrivingStressdMacroStress( );
+                dHigherdM = get_SetDataStorage_dHigherOrderDrivingStressdHigherOrderStress();
 
-                dMicrodSigma                = get_setDataStorage_dSymmetricMicroDrivingStressdMicroStress( );
+                dMacroDrivingStressdF = get_SetDataStorage_dMacroDrivingStressdF();
 
-                dHigherdM                   = get_setDataStorage_dHigherOrderDrivingStressdHigherOrderStress( );
+                dMicroDrivingStressdF = get_SetDataStorage_dSymmetricMicroDrivingStressdF();
 
-                dMacroDrivingStressdF       = get_setDataStorage_dMacroDrivingStressdF( );
+                dHigherDrivingStressdF = get_SetDataStorage_dHigherOrderDrivingStressdF();
 
-                dMicroDrivingStressdF       = get_setDataStorage_dSymmetricMicroDrivingStressdF( );
+                dHigherDrivingStressdChi = get_SetDataStorage_dHigherOrderDrivingStressdChi();
 
-                dHigherDrivingStressdF      = get_setDataStorage_dHigherOrderDrivingStressdF( );
+                dMacroDrivingStressdFn = get_SetDataStorage_dMacroDrivingStressdFn();
 
-                dHigherDrivingStressdChi    = get_setDataStorage_dHigherOrderDrivingStressdChi( );
+                dMicroDrivingStressdFn = get_SetDataStorage_dSymmetricMicroDrivingStressdFn();
 
-                dMacroDrivingStressdFn      = get_setDataStorage_dMacroDrivingStressdFn( );
+                dHigherDrivingStressdFn = get_SetDataStorage_dHigherOrderDrivingStressdFn();
 
-                dMicroDrivingStressdFn      = get_setDataStorage_dSymmetricMicroDrivingStressdFn( );
-
-                dHigherDrivingStressdFn     = get_setDataStorage_dHigherOrderDrivingStressdFn( );
-
-                dHigherDrivingStressdChin   = get_setDataStorage_dHigherOrderDrivingStressdChin( );
-
+                dHigherDrivingStressdChin = get_SetDataStorage_dHigherOrderDrivingStressdChin();
             }
 
-            dFpdF      = fourthOrderTensor( sot_dim * sot_dim, 0 );
+            dFpdF = fourthOrderTensor(sot_dim * sot_dim, 0);
 
-            dFpdFn     = fourthOrderTensor( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+            dFpdFn = fourthOrderTensor(sot_dim * (num_configs - 1) * sot_dim, 0);
 
-            dChipdChi  = fourthOrderTensor( sot_dim * sot_dim, 0 );
+            dChipdChi = fourthOrderTensor(sot_dim * sot_dim, 0);
 
-            dChipdChin = fourthOrderTensor( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+            dChipdChin = fourthOrderTensor(sot_dim * (num_configs - 1) * sot_dim, 0);
 
             // Assemble the derivatives of the deformation gradient map
-            for ( unsigned int i = 0; i < sot_dim; i++ ){
+            for (unsigned int i = 0; i < sot_dim; i++) {
+                for (unsigned int k = 0; k < sot_dim; k++) {
+                    for (unsigned int j = 0; j < sot_dim; j++) {
+                        dFpdF[sot_dim * i + j] += dFpdSubFs[num_configs * sot_dim * i + k] * (*dF1dF)[sot_dim * k + j];
 
-                for ( unsigned int k = 0; k < sot_dim; k++ ){
-
-                    for ( unsigned int j = 0; j < sot_dim; j++ ){
-
-                        dFpdF[ sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ sot_dim * k + j ];
-
-                        dChipdChi[ sot_dim * i + j ] += dChipdSubChis[ num_configs * sot_dim * i +  k ] * ( *dChi1dChi )[ sot_dim * k + j ];
-
+                        dChipdChi[sot_dim * i + j] +=
+                            dChipdSubChis[num_configs * sot_dim * i + k] * (*dChi1dChi)[sot_dim * k + j];
                     }
-
                 }
 
-                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){ //TODO: Investigate ways to prevent cache misses here
+                for (unsigned int j = 0; j < (num_configs - 1) * sot_dim;
+                     j++) {  // TODO: Investigate ways to prevent cache misses here
 
-                    dFpdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + j + sot_dim ];
+                    dFpdFn[(num_configs - 1) * sot_dim * i + j] += dFpdSubFs[num_configs * sot_dim * i + j + sot_dim];
 
-                    dChipdChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dChipdSubChis[ num_configs * sot_dim * i + j + sot_dim ];
+                    dChipdChin[(num_configs - 1) * sot_dim * i + j] +=
+                        dChipdSubChis[num_configs * sot_dim * i + j + sot_dim];
 
-                    for ( unsigned int k = 0; k < sot_dim; k++ ){
+                    for (unsigned int k = 0; k < sot_dim; k++) {
+                        dFpdFn[(num_configs - 1) * sot_dim * i + j] +=
+                            dFpdSubFs[num_configs * sot_dim * i + k] * (*dF1dFn)[(num_configs - 1) * sot_dim * k + j];
 
-                        dFpdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
-
-                        dChipdChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dChipdSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChin )[ ( num_configs - 1 ) * sot_dim * k + j ];
-
+                        dChipdChin[(num_configs - 1) * sot_dim * i + j] +=
+                            dChipdSubChis[num_configs * sot_dim * i + k] *
+                            (*dChi1dChin)[(num_configs - 1) * sot_dim * k + j];
                     }
-
                 }
-
             }
 
             // Extract the stresses from the stress vector
-            secondOrderTensor PK2Stress(                     stress->begin( ),               stress->begin( ) + 1 * sot_dim );
+            secondOrderTensor PK2Stress(stress->begin(), stress->begin() + 1 * sot_dim);
 
-            secondOrderTensor referenceSymmetricMicroStress( stress->begin( ) + 1 * sot_dim, stress->begin( ) + 2 * sot_dim );;
+            secondOrderTensor referenceSymmetricMicroStress(stress->begin() + 1 * sot_dim,
+                                                            stress->begin() + 2 * sot_dim);
+            ;
 
-            thirdOrderTensor  referenceHigherOrderStress(    stress->begin( ) + 2 * sot_dim, stress->begin( ) + 2 * sot_dim + tot_dim );
+            thirdOrderTensor referenceHigherOrderStress(stress->begin() + 2 * sot_dim,
+                                                        stress->begin() + 2 * sot_dim + tot_dim);
 
             // Push the stresses forward to the current configuration of the plastic configuration
             fourthOrderTensor dMacrodFp;
 
             fourthOrderTensor dMicrodFp;
 
-            fifthOrderTensor  dHigherdFp;
+            fifthOrderTensor dHigherdFp;
 
-            fifthOrderTensor  dHigherdChip;
+            fifthOrderTensor dHigherdChip;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, *macroDrivingStress.value,
-                                                                                             *dMacrodPK2.value, dMacrodFp ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::pushForwardPK2Stress(
+                PK2Stress, Fp, *macroDrivingStress.value, *dMacrodPK2.value, dMacrodFp));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, *symmetricMicroDrivingStress.value,
-                                                                                                        *dMicrodSigma.value, dMicrodFp ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::pushForwardReferenceMicroStress(
+                referenceSymmetricMicroStress, Fp, *symmetricMicroDrivingStress.value, *dMicrodSigma.value, dMicrodFp));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, *higherOrderDrivingStress.value,
-                                                                                                     *dHigherdM.value, dHigherdFp, dHigherdChip ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::pushForwardHigherOrderStress(
+                referenceHigherOrderStress, Fp, chip, *higherOrderDrivingStress.value, *dHigherdM.value, dHigherdFp,
+                dHigherdChip));
 
-            auto map_dMacrodFp    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMacrodFp.data( )    );
-            auto map_dMicrodFp    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicrodFp.data( )    );
-            auto map_dHigherdFp   = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dHigherdFp.data( )   );
-            auto map_dHigherdChip = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dHigherdChip.data( ) );
-            auto map_dFpdF        = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dFpdF.data( )        );
-            auto map_dChipdChi    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dChipdChi.data( )    );
+            auto map_dMacrodFp    = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMacrodFp.data());
+            auto map_dMicrodFp    = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMicrodFp.data());
+            auto map_dHigherdFp   = getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dHigherdFp.data());
+            auto map_dHigherdChip = getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dHigherdChip.data());
+            auto map_dFpdF        = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dFpdF.data());
+            auto map_dChipdChi    = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dChipdChi.data());
 
-            auto map_dFpdFn       = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dFpdFn.data( )    ,    ( num_configs - 1 ) * sot_dim );
-            auto map_dChipdChin   = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dChipdChin.data( ),    ( num_configs - 1 ) * sot_dim );
+            auto map_dFpdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dFpdFn.data(), (num_configs - 1) * sot_dim);
+            auto map_dChipdChin =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dChipdChin.data(), (num_configs - 1) * sot_dim);
 
-            auto map_dMacroDrivingStressdF    = dMacroDrivingStressdF.zeroMap<    floatType, sot_dim, sot_dim >( );
-            auto map_dMicroDrivingStressdF    = dMicroDrivingStressdF.zeroMap<    floatType, sot_dim, sot_dim >( );
-            auto map_dHigherDrivingStressdF   = dHigherDrivingStressdF.zeroMap<   floatType, tot_dim, sot_dim >( );
-            auto map_dHigherDrivingStressdChi = dHigherDrivingStressdChi.zeroMap< floatType, tot_dim, sot_dim >( );
+            auto map_dMacroDrivingStressdF    = dMacroDrivingStressdF.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dMicroDrivingStressdF    = dMicroDrivingStressdF.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dHigherDrivingStressdF   = dHigherDrivingStressdF.zeroMap<floatType, tot_dim, sot_dim>();
+            auto map_dHigherDrivingStressdChi = dHigherDrivingStressdChi.zeroMap<floatType, tot_dim, sot_dim>();
 
-            auto map_dMacroDrivingStressdFn    = dMacroDrivingStressdFn.zeroMap<    floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroDrivingStressdFn    = dMicroDrivingStressdFn.zeroMap<    floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_dHigherDrivingStressdFn   = dHigherDrivingStressdFn.zeroMap<   floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_dHigherDrivingStressdChin = dHigherDrivingStressdChin.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto map_dMacroDrivingStressdFn =
+                dMacroDrivingStressdFn.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
+            auto map_dMicroDrivingStressdFn =
+                dMicroDrivingStressdFn.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
+            auto map_dHigherDrivingStressdFn =
+                dHigherDrivingStressdFn.zeroMap<floatType, tot_dim>((num_configs - 1) * sot_dim);
+            auto map_dHigherDrivingStressdChin =
+                dHigherDrivingStressdChin.zeroMap<floatType, tot_dim>((num_configs - 1) * sot_dim);
 
-            map_dMacroDrivingStressdF     = ( map_dMacrodFp * map_dFpdF ).eval( );
+            map_dMacroDrivingStressdF = (map_dMacrodFp * map_dFpdF).eval();
 
-            map_dMicroDrivingStressdF     = ( map_dMicrodFp * map_dFpdF ).eval( );
+            map_dMicroDrivingStressdF = (map_dMicrodFp * map_dFpdF).eval();
 
-            map_dHigherDrivingStressdF    = ( map_dHigherdFp * map_dFpdF ).eval( );
+            map_dHigherDrivingStressdF = (map_dHigherdFp * map_dFpdF).eval();
 
-            map_dHigherDrivingStressdChi  = ( map_dHigherdChip * map_dChipdChi ).eval( );
+            map_dHigherDrivingStressdChi = (map_dHigherdChip * map_dChipdChi).eval();
 
-            map_dMacroDrivingStressdFn    = ( map_dMacrodFp * map_dFpdFn ).eval( );
+            map_dMacroDrivingStressdFn = (map_dMacrodFp * map_dFpdFn).eval();
 
-            map_dMicroDrivingStressdFn    = ( map_dMicrodFp * map_dFpdFn ).eval( );
+            map_dMicroDrivingStressdFn = (map_dMicrodFp * map_dFpdFn).eval();
 
-            map_dHigherDrivingStressdFn   = ( map_dHigherdFp * map_dFpdFn ).eval( );
+            map_dHigherDrivingStressdFn = (map_dHigherdFp * map_dFpdFn).eval();
 
-            map_dHigherDrivingStressdChin = ( map_dHigherdChip * map_dChipdChin ).eval( );
-
+            map_dHigherDrivingStressdChin = (map_dHigherdChip * map_dChipdChin).eval();
         }
 
-        void residual::extractMaterialParameters( const parameterVector &parameters ){
+        void residual::extractMaterialParameters(const parameterVector &parameters) {
             /*!
              * Extract the parameters from the parameter vector
              *
              * \param &parameters: The incoming parameter vector
-             * :param parameterVector &macroHardeningParameters: The parameters used in the hardening of the macro Strain ISV
-             *     (initial cohesion, hardening modulus). If four parameters are provided then they are
-             *     (initial cohesion, hardening modulus, min cohesion, smoothing ratio )
-             * :param parameterVector &microHardeningParameters: The parameters used in the hardening of the micro Strain ISV
-             *     (initial cohesion, hardening modulus). If four parameters are provided then they are
-             *     (initial cohesion, hardening modulus, min cohesion, smoothing ratio )
-             * :param parameterVector &microGradientHardeningParameters: The parameters used in the hardening of the micro Gradient Strain ISV
-             *     (initial cohesion, hardening modulus). If four parameters are provided then they are
-             *     (initial cohesion, hardening modulus, min cohesion, smoothing ratio )
-             * :param parameterVector &macroFlowParameters: The parameters used in the macro flow direction computation.
-             *     (friction angle, beta )
-             * :param parameterVector &microFlowParameters: The parameters used in the micro flow direction computation
-             *     (friction angle, beta )
-             * :param parameterVector &microGradientFlowParameters: The parameters used in the micro Gradient flow direction computation.
+             * :param parameterVector &macroHardeningParameters: The parameters used in the hardening of the macro
+             * Strain ISV (initial cohesion, hardening modulus). If four parameters are provided then they are (initial
+             * cohesion, hardening modulus, min cohesion, smoothing ratio ) :param parameterVector
+             * &microHardeningParameters: The parameters used in the hardening of the micro Strain ISV (initial
+             * cohesion, hardening modulus). If four parameters are provided then they are (initial cohesion, hardening
+             * modulus, min cohesion, smoothing ratio ) :param parameterVector &microGradientHardeningParameters: The
+             * parameters used in the hardening of the micro Gradient Strain ISV (initial cohesion, hardening modulus).
+             * If four parameters are provided then they are (initial cohesion, hardening modulus, min cohesion,
+             * smoothing ratio ) :param parameterVector &macroFlowParameters: The parameters used in the macro flow
+             * direction computation. (friction angle, beta ) :param parameterVector &microFlowParameters: The
+             * parameters used in the micro flow direction computation (friction angle, beta ) :param parameterVector
+             * &microGradientFlowParameters: The parameters used in the micro Gradient flow direction computation.
              *     (friction angle, beta )
              * :param parameterVector &macroYieldParameters: The parameters used in the macro yielding computation.
              *     (friction angle, beta )
              * :param parameterVector &microYieldParameters: The parameters used in the micro yielding computation
              *     (friction angle, beta )
-             * :param parameterVector &microGradientYieldParameters: The parameters used in the micro Gradient yielding computation.
-             *     (friction angle, beta )
+             * :param parameterVector &microGradientYieldParameters: The parameters used in the micro Gradient yielding
+             * computation. (friction angle, beta )
              */
-        
-            if ( parameters.size() == 0 ){
-        
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "The parameter vector has a length of zero" ) );
-        
+
+            if (parameters.size() == 0) {
+                TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error("The parameter vector has a length of zero"));
             }
-        
+
             unsigned int start = 0;
             unsigned int span;
-        
-            std::vector< parameterVector > outputs( 9 );
-        
-            //Extract the material parameters
-            for ( unsigned int i = 0; i < outputs.size(); i++ ){
-                span = ( unsigned int )std::floor( parameters[ start ]  + 0.5 ); //Extract the span of the parameter set
-        
-                if ( parameters.size() < start + 1 + span ){
+
+            std::vector<parameterVector> outputs(9);
+
+            // Extract the material parameters
+            for (unsigned int i = 0; i < outputs.size(); i++) {
+                span = (unsigned int)std::floor(parameters[start] + 0.5);  // Extract the span of the parameter set
+
+                if (parameters.size() < start + 1 + span) {
                     std::string outstr = "fparams is not long enough to contain all of the required parameters:\n";
-                    outstr +=            "    filling variable " + std::to_string( i ) + "\n";
-                    outstr +=            "    size =          "  + std::to_string( parameters.size() ) + "\n";
-                    outstr +=            "    required size = "  + std::to_string( start + 1 + span );
-        
-                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( outstr ); )
-        
+                    outstr += "    filling variable " + std::to_string(i) + "\n";
+                    outstr += "    size =          " + std::to_string(parameters.size()) + "\n";
+                    outstr += "    required size = " + std::to_string(start + 1 + span);
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error(outstr);)
                 }
-        
-                outputs[ i ] = parameterVector( parameters.begin() + start + 1, parameters.begin() + start + 1 + span );
-        
+
+                outputs[i] = parameterVector(parameters.begin() + start + 1, parameters.begin() + start + 1 + span);
+
                 start = start + 1 + span;
             }
 
-            //Set the output values
-            if ( outputs[ 0 ].size( ) == 4 ){
+            // Set the output values
+            if (outputs[0].size() == 4) {
+                setMinMacroCohesion(outputs[0][2]);
 
-                setMinMacroCohesion(    outputs[ 0 ][ 2 ] );
+                setMacroSmoothingRatio(outputs[0][3]);
 
-                setMacroSmoothingRatio( outputs[ 0 ][ 3 ] );
+                set_macroHardeningParameters(floatVector(outputs[0].begin(), outputs[0].begin() + 2));
 
-                set_macroHardeningParameters( floatVector( outputs[ 0 ].begin( ), outputs[ 0 ].begin( ) + 2 ) );
-
-            }
-            else{
-
-                set_macroHardeningParameters(         outputs[ 0 ] );
-
+            } else {
+                set_macroHardeningParameters(outputs[0]);
             }
 
-            setBaseMacroSmoothingRatio( *getMacroSmoothingRatio( ) );
-            setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
-            setMacroA(  ( *get_macroHardeningParameters( ) )[ 1 ] );
+            setBaseMacroSmoothingRatio(getMacroSmoothingRatio());
+            setMacroC0((*get_macroHardeningParameters())[0]);
+            setMacroA((*get_macroHardeningParameters())[1]);
 
-            if ( outputs[ 1 ].size( ) == 4 ){
+            if (outputs[1].size() == 4) {
+                setMinMicroCohesion(outputs[1][2]);
 
-                setMinMicroCohesion(    outputs[ 1 ][ 2 ] );
+                setMicroSmoothingRatio(outputs[1][3]);
 
-                setMicroSmoothingRatio( outputs[ 1 ][ 3 ] );
+                set_microHardeningParameters(floatVector(outputs[1].begin(), outputs[1].begin() + 2));
 
-                set_microHardeningParameters( floatVector( outputs[ 1 ].begin( ), outputs[ 1 ].begin( ) + 2 ) );
-
-            }
-            else{
-
-                set_microHardeningParameters(         outputs[ 1 ] );
-
+            } else {
+                set_microHardeningParameters(outputs[1]);
             }
 
-            setBaseMicroSmoothingRatio( *getMicroSmoothingRatio( ) );
-            setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
-            setMicroA(  ( *get_microHardeningParameters( ) )[ 1 ] );
+            setBaseMicroSmoothingRatio(getMicroSmoothingRatio());
+            setMicroC0((*get_microHardeningParameters())[0]);
+            setMicroA((*get_microHardeningParameters())[1]);
 
-            if ( outputs[ 2 ].size( ) == 4 ){
- 
-                setMinMicroGradientCohesion(    outputs[ 2 ][ 2 ] );
+            if (outputs[2].size() == 4) {
+                setMinMicroGradientCohesion(outputs[2][2]);
 
-                setMicroGradientSmoothingRatio( outputs[ 2 ][ 3 ] );
+                setMicroGradientSmoothingRatio(outputs[2][3]);
 
-                set_microGradientHardeningParameters( floatVector( outputs[ 2 ].begin( ), outputs[ 2 ].begin( ) + 2 ) );
+                set_microGradientHardeningParameters(floatVector(outputs[2].begin(), outputs[2].begin() + 2));
 
-            }
-            else{
-
-                set_microGradientHardeningParameters( outputs[ 2 ] );
-
+            } else {
+                set_microGradientHardeningParameters(outputs[2]);
             }
 
-            setBaseMicroGradientSmoothingRatio( *getMicroGradientSmoothingRatio( ) );
-            setMicroGradientC0( floatVector( hydra->getDimension( ), ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
-            setMicroGradientA(  floatVector( hydra->getDimension( ), ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
-        
-            set_macroFlowParameters(              outputs[ 3 ] );
-        
-            set_microFlowParameters(              outputs[ 4 ] );
-        
-            set_microGradientFlowParameters(      outputs[ 5 ] );
-        
-            set_macroYieldParameters(             outputs[ 6 ] );
-        
-            set_microYieldParameters(             outputs[ 7 ] );
-        
-            set_microGradientYieldParameters(     outputs[ 8 ] );
-        
+            setBaseMicroGradientSmoothingRatio(getMicroGradientSmoothingRatio());
+            setMicroGradientC0(floatVector(hydra->getDimension(), (*get_microGradientHardeningParameters())[0]));
+            setMicroGradientA(floatVector(hydra->getDimension(), (*get_microGradientHardeningParameters())[1]));
+
+            set_macroFlowParameters(outputs[3]);
+
+            set_microFlowParameters(outputs[4]);
+
+            set_microGradientFlowParameters(outputs[5]);
+
+            set_macroYieldParameters(outputs[6]);
+
+            set_microYieldParameters(outputs[7]);
+
+            set_microGradientYieldParameters(outputs[8]);
         }
 
-        const unsigned int* residual::getPlasticConfigurationIndex( ){
+        const unsigned int residual::getPlasticConfigurationIndex() {
             /*!
              * Get plastic configuration index
              */
 
-            return &_plasticConfigurationIndex;
-
+            return _plasticConfigurationIndex;
         }
 
-        const std::vector< unsigned int >* residual::getStateVariableIndices( ){
+        const std::vector<unsigned int> *residual::getStateVariableIndices() {
             /*!
              * Get state variable indices
              */
 
             return &_stateVariableIndices;
-
         }
 
-        const floatType* residual::getIntegrationParameter( ){
+        const floatType residual::getIntegrationParameter() {
             /*!
              * Get the integration parameter
              */
 
-            return &_integrationParameter;
-
+            return _integrationParameter;
         }
 
-        void residual::setPlasticStateVariables( const bool isPrevious ){
+        void residual::setPlasticStateVariables(const bool isPrevious) {
             /*!
              * Set the plastic state variables
-             * 
-             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic state variables
+             *
+             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic
+             * state variables
              */
 
             const floatVector *nonlinearISVs;
 
-            setDataStorageBase< floatVector > plasticStateVariables;
+            SetDataStorageBase<floatVector> plasticStateVariables;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables();
 
-                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+                plasticStateVariables = get_SetDataStorage_previousPlasticStateVariables();
 
-                plasticStateVariables = get_setDataStorage_previousPlasticStateVariables( );
+            } else {
+                nonlinearISVs = hydra->get_nonLinearSolveStateVariables();
 
-            }
-            else{
-
-                nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
-
-                plasticStateVariables = get_setDataStorage_plasticStateVariables( );
-
+                plasticStateVariables = get_SetDataStorage_plasticStateVariables();
             }
 
-            plasticStateVariables.zero( getStateVariableIndices( )->size( ) );
+            plasticStateVariables.zero(getStateVariableIndices()->size());
 
-            for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
-
-                ( *plasticStateVariables.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
-
+            for (auto ind = getStateVariableIndices()->begin(); ind != getStateVariableIndices()->end(); ind++) {
+                (*plasticStateVariables.value)[(unsigned int)(ind - getStateVariableIndices()->begin())] =
+                    (*nonlinearISVs)[*ind];
             }
-
         }
 
-        void residual::setPlasticStateVariables( ){
+        void residual::setPlasticStateVariables() {
             /*!
              * Set the plastic state variables
              */
 
-            setPlasticStateVariables( false );
-
+            setPlasticStateVariables(false);
         }
 
-        void residual::setPreviousPlasticStateVariables( ){
+        void residual::setPreviousPlasticStateVariables() {
             /*!
              * Set the previous plastic state variables
              */
 
-            setPlasticStateVariables( true );
-
+            setPlasticStateVariables(true);
         }
 
-        void residual::setPlasticMultipliers( const bool isPrevious ){
+        void residual::setPlasticMultipliers(const bool isPrevious) {
             /*!
              * Set the plastic multipliers
-             * 
-             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic multipliers
+             *
+             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic
+             * multipliers
              */
 
             const floatVector *nonlinearISVs;
 
-            setDataStorageBase< floatVector > plasticMultipliers;
+            SetDataStorageBase<floatVector> plasticMultipliers;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables();
 
-                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+                plasticMultipliers = get_SetDataStorage_previousPlasticMultipliers();
 
-                plasticMultipliers = get_setDataStorage_previousPlasticMultipliers( );
+            } else {
+                nonlinearISVs = hydra->get_nonLinearSolveStateVariables();
 
-            }
-            else{
-
-                nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
-
-                plasticMultipliers = get_setDataStorage_plasticMultipliers( );
-
+                plasticMultipliers = get_SetDataStorage_plasticMultipliers();
             }
 
-            plasticMultipliers.zero( *getNumPlasticMultipliers( ) );
+            plasticMultipliers.zero(getNumPlasticMultipliers());
 
-            for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind++ ){
-
-                ( *plasticMultipliers.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
-
+            for (auto ind = getStateVariableIndices()->begin();
+                 ind != getStateVariableIndices()->begin() + getNumPlasticMultipliers(); ind++) {
+                (*plasticMultipliers.value)[(unsigned int)(ind - getStateVariableIndices()->begin())] =
+                    (*nonlinearISVs)[*ind];
             }
-
         }
 
-        void residual::setPlasticMultipliers( ){
+        void residual::setPlasticMultipliers() {
             /*!
              * Set the plastic multipliers
              */
 
-            setPlasticMultipliers( false );
-
+            setPlasticMultipliers(false);
         }
 
-        void residual::setPreviousPlasticMultipliers( ){
+        void residual::setPreviousPlasticMultipliers() {
             /*!
              * Set the previous plastic multipliers
              */
 
-            setPlasticMultipliers( true );
-
+            setPlasticMultipliers(true);
         }
 
-        void residual::setPlasticStrainLikeISVs( const bool isPrevious ){
+        void residual::setPlasticStrainLikeISVs(const bool isPrevious) {
             /*!
              * Set the plastic strain-like internal state variables
-             * 
-             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic multipliers
+             *
+             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic
+             * multipliers
              */
 
             const floatVector *nonlinearISVs;
 
-            setDataStorageBase< floatVector > plasticStrainLikeISVs;
+            SetDataStorageBase<floatVector> plasticStrainLikeISVs;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables();
 
-                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+                plasticStrainLikeISVs = get_SetDataStorage_previousPlasticStrainLikeISVs();
 
-                plasticStrainLikeISVs = get_setDataStorage_previousPlasticStrainLikeISVs( );
+            } else {
+                nonlinearISVs = hydra->get_nonLinearSolveStateVariables();
 
-            }
-            else{
-
-                nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
-
-                plasticStrainLikeISVs = get_setDataStorage_plasticStrainLikeISVs( );
-
+                plasticStrainLikeISVs = get_SetDataStorage_plasticStrainLikeISVs();
             }
 
-            plasticStrainLikeISVs.zero( *getNumStrainLikePlasticStateVariables( ) );
+            plasticStrainLikeISVs.zero(getNumStrainLikePlasticStateVariables());
 
-            for ( auto ind = getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind != getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ) + *getNumStrainLikePlasticStateVariables( ); ind++ ){
-
-                ( *plasticStrainLikeISVs.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) - *getNumPlasticMultipliers( ) ] = ( *nonlinearISVs )[ *ind ];
-
+            for (auto ind = getStateVariableIndices()->begin() + getNumPlasticMultipliers();
+                 ind != getStateVariableIndices()->begin() + getNumPlasticMultipliers() +
+                            getNumStrainLikePlasticStateVariables();
+                 ind++) {
+                (*plasticStrainLikeISVs
+                      .value)[(unsigned int)(ind - getStateVariableIndices()->begin()) - getNumPlasticMultipliers()] =
+                    (*nonlinearISVs)[*ind];
             }
-
         }
 
-        void residual::setPlasticStrainLikeISVs( ){
+        void residual::setPlasticStrainLikeISVs() {
             /*!
              * Set the plastic strain-like isvs
              */
 
-            setPlasticStrainLikeISVs( false );
-
+            setPlasticStrainLikeISVs(false);
         }
 
-        void residual::setPreviousPlasticStrainLikeISVs( ){
+        void residual::setPreviousPlasticStrainLikeISVs() {
             /*!
              * Set the previous plastic strain-like isvs
              */
 
-            setPlasticStrainLikeISVs( true );
-
+            setPlasticStrainLikeISVs(true);
         }
 
-        void residual::setdMacroFlowdc( ){
+        void residual::setdMacroFlowdc() {
             /*!
              * Set the derivative of the macro flow potential w.r.t. the cohesion
              */
 
-            setFlowPotentialGradients( false );
-
+            setFlowPotentialGradients(false);
         }
 
-        void residual::setdMicroFlowdc( ){
+        void residual::setdMicroFlowdc() {
             /*!
              * Set the derivative of the micro flow potential w.r.t. the cohesion
              */
 
-            setFlowPotentialGradients( false );
-
+            setFlowPotentialGradients(false);
         }
 
-        void residual::setdMicroGradientFlowdc( ){
+        void residual::setdMicroGradientFlowdc() {
             /*!
              * Set the derivative of the micro gradient flow potential w.r.t. the cohesion
              */
 
-            setFlowPotentialGradients( false );
-
+            setFlowPotentialGradients(false);
         }
 
-        void residual::setdMacroFlowdDrivingStress( ){
+        void residual::setdMacroFlowdDrivingStress() {
             /*!
              * Set the derivative of the macro flow potential w.r.t. the macro driving stress
              */
 
-            setFlowPotentialGradients( false );
-
+            setFlowPotentialGradients(false);
         }
 
-        void residual::setdMicroFlowdDrivingStress( ){
+        void residual::setdMicroFlowdDrivingStress() {
             /*!
              * Set the derivative of the micro flow potential w.r.t. the micro driving stress
              */
 
-            setFlowPotentialGradients( false );
-
+            setFlowPotentialGradients(false);
         }
 
-        void residual::setdMicroGradientFlowdDrivingStress( ){
+        void residual::setdMicroGradientFlowdDrivingStress() {
             /*!
              * Set the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress
              */
 
-            setFlowPotentialGradients( false );
-
+            setFlowPotentialGradients(false);
         }
 
-        void residual::setPreviousdMacroFlowdc( ){
+        void residual::setPreviousdMacroFlowdc() {
             /*!
              * Set the previous derivative of the macro flow potential w.r.t. the cohesion
              */
 
-            setFlowPotentialGradients( true );
-
+            setFlowPotentialGradients(true);
         }
 
-        void residual::setPreviousdMicroFlowdc( ){
+        void residual::setPreviousdMicroFlowdc() {
             /*!
              * Set the previous derivative of the micro flow potential w.r.t. the cohesion
              */
 
-            setFlowPotentialGradients( true );
-
+            setFlowPotentialGradients(true);
         }
 
-        void residual::setPreviousdMicroGradientFlowdc( ){
+        void residual::setPreviousdMicroGradientFlowdc() {
             /*!
              * Set the previous derivative of the micro gradient flow potential w.r.t. the cohesion
              */
 
-            setFlowPotentialGradients( true );
-
+            setFlowPotentialGradients(true);
         }
 
-        void residual::setPreviousdMacroFlowdDrivingStress( ){
+        void residual::setPreviousdMacroFlowdDrivingStress() {
             /*!
              * Set the previous derivative of the macro flow potential w.r.t. the macro driving stress
              */
 
-            setFlowPotentialGradients( true );
-
+            setFlowPotentialGradients(true);
         }
 
-        void residual::setPreviousdMicroFlowdDrivingStress( ){
+        void residual::setPreviousdMicroFlowdDrivingStress() {
             /*!
              * Set the previous derivative of the micro flow potential w.r.t. the micro driving stress
              */
 
-            setFlowPotentialGradients( true );
-
+            setFlowPotentialGradients(true);
         }
 
-        void residual::setPreviousdMicroGradientFlowdDrivingStress( ){
+        void residual::setPreviousdMicroGradientFlowdDrivingStress() {
             /*!
              * Set the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress
              */
 
-            setFlowPotentialGradients( true );
-
+            setFlowPotentialGradients(true);
         }
 
-        void residual::setFlowPotentialGradients( const bool isPrevious ){
+        void residual::setFlowPotentialGradients(const bool isPrevious) {
             /*!
              * Set the gradients of the flow potential
              *
              * \param &isPrevious: Flag for whether to set the current (false) or previous (true) gradients
              */
 
-            const floatType   *macroCohesion;
+            const floatType *macroCohesion;
 
-            const floatType   *microCohesion;
+            const floatType *microCohesion;
 
-            const dimVector  *microGradientCohesion;
+            const dimVector *microGradientCohesion;
 
             const secondOrderTensor *macroDrivingStress;
 
             const secondOrderTensor *microDrivingStress;
 
-            const thirdOrderTensor  *microGradientDrivingStress;
+            const thirdOrderTensor *microGradientDrivingStress;
 
             const secondOrderTensor *precedingDeformationGradient;
 
-            const floatVector *macroFlowParameters         = get_macroFlowParameters( );
+            const floatVector *macroFlowParameters = get_macroFlowParameters();
 
-            const floatVector *microFlowParameters         = get_microFlowParameters( );
+            const floatVector *microFlowParameters = get_microFlowParameters();
 
-            const floatVector *microGradientFlowParameters = get_microGradientFlowParameters( );
+            const floatVector *microGradientFlowParameters = get_microGradientFlowParameters();
 
-            setDataStorageBase< floatType > dMacroFlowdCohesion;
+            SetDataStorageBase<floatType> dMacroFlowdCohesion;
 
-            setDataStorageBase< floatType > dMicroFlowdCohesion;
+            SetDataStorageBase<floatType> dMicroFlowdCohesion;
 
-            setDataStorageBase< secondOrderTensor > dMicroGradientFlowdCohesion;
+            SetDataStorageBase<secondOrderTensor> dMicroGradientFlowdCohesion;
 
-            setDataStorageBase< secondOrderTensor > dMacroFlowdDrivingStress;
+            SetDataStorageBase<secondOrderTensor> dMacroFlowdDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > dMicroFlowdDrivingStress;
+            SetDataStorageBase<secondOrderTensor> dMicroFlowdDrivingStress;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientFlowdDrivingStress;
+            SetDataStorageBase<fourthOrderTensor> dMicroGradientFlowdDrivingStress;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                precedingDeformationGradient = get_previousPrecedingDeformationGradient();
 
-                precedingDeformationGradient       = get_previousPrecedingDeformationGradient( );
+                macroCohesion = get_previousMacroCohesion();
 
-                macroCohesion                      = get_previousMacroCohesion( );
+                microCohesion = get_previousMicroCohesion();
 
-                microCohesion                      = get_previousMicroCohesion( );
+                microGradientCohesion = get_previousMicroGradientCohesion();
 
-                microGradientCohesion              = get_previousMicroGradientCohesion( );
+                macroDrivingStress = get_previousMacroDrivingStress();
 
-                macroDrivingStress                 = get_previousMacroDrivingStress( );
+                microDrivingStress = get_previousSymmetricMicroDrivingStress();
 
-                microDrivingStress                 = get_previousSymmetricMicroDrivingStress( );
+                microGradientDrivingStress = get_previousHigherOrderDrivingStress();
 
-                microGradientDrivingStress         = get_previousHigherOrderDrivingStress( );
+                dMacroFlowdCohesion = get_SetDataStorage_previousdMacroFlowdc();
 
-                dMacroFlowdCohesion                = get_setDataStorage_previousdMacroFlowdc( );
+                dMicroFlowdCohesion = get_SetDataStorage_previousdMicroFlowdc();
 
-                dMicroFlowdCohesion                = get_setDataStorage_previousdMicroFlowdc( );
+                dMicroGradientFlowdCohesion = get_SetDataStorage_previousdMicroGradientFlowdc();
 
-                dMicroGradientFlowdCohesion        = get_setDataStorage_previousdMicroGradientFlowdc( );
+                dMacroFlowdDrivingStress = get_SetDataStorage_previousdMacroFlowdDrivingStress();
 
-                dMacroFlowdDrivingStress           = get_setDataStorage_previousdMacroFlowdDrivingStress( );
+                dMicroFlowdDrivingStress = get_SetDataStorage_previousdMicroFlowdDrivingStress();
 
-                dMicroFlowdDrivingStress           = get_setDataStorage_previousdMicroFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress = get_SetDataStorage_previousdMicroGradientFlowdDrivingStress();
+            } else {
+                precedingDeformationGradient = get_precedingDeformationGradient();
 
-                dMicroGradientFlowdDrivingStress   = get_setDataStorage_previousdMicroGradientFlowdDrivingStress( );
-            }
-            else{
+                macroCohesion = get_macroCohesion();
 
-                precedingDeformationGradient       = get_precedingDeformationGradient( );
+                microCohesion = get_microCohesion();
 
-                macroCohesion                      = get_macroCohesion( );
+                microGradientCohesion = get_microGradientCohesion();
 
-                microCohesion                      = get_microCohesion( );
+                macroDrivingStress = get_macroDrivingStress();
 
-                microGradientCohesion              = get_microGradientCohesion( );
+                microDrivingStress = get_symmetricMicroDrivingStress();
 
-                macroDrivingStress                 = get_macroDrivingStress( );
+                microGradientDrivingStress = get_higherOrderDrivingStress();
 
-                microDrivingStress                 = get_symmetricMicroDrivingStress( );
+                dMacroFlowdCohesion = get_SetDataStorage_dMacroFlowdc();
 
-                microGradientDrivingStress         = get_higherOrderDrivingStress( );
+                dMicroFlowdCohesion = get_SetDataStorage_dMicroFlowdc();
 
-                dMacroFlowdCohesion                = get_setDataStorage_dMacroFlowdc( );
+                dMicroGradientFlowdCohesion = get_SetDataStorage_dMicroGradientFlowdc();
 
-                dMicroFlowdCohesion                = get_setDataStorage_dMicroFlowdc( );
+                dMacroFlowdDrivingStress = get_SetDataStorage_dMacroFlowdDrivingStress();
 
-                dMicroGradientFlowdCohesion        = get_setDataStorage_dMicroGradientFlowdc( );
+                dMicroFlowdDrivingStress = get_SetDataStorage_dMicroFlowdDrivingStress();
 
-                dMacroFlowdDrivingStress           = get_setDataStorage_dMacroFlowdDrivingStress( );
-
-                dMicroFlowdDrivingStress           = get_setDataStorage_dMicroFlowdDrivingStress( );
-
-                dMicroGradientFlowdDrivingStress   = get_setDataStorage_dMicroGradientFlowdDrivingStress( );
-
+                dMicroGradientFlowdDrivingStress = get_SetDataStorage_dMicroGradientFlowdDrivingStress();
             }
 
             floatType tempYield;
@@ -4287,221 +4203,224 @@ namespace tardigradeHydra{
 
             secondOrderTensor dMacroFlowdPrecedingF, dMicroFlowdPrecedingF;
 
-            fourthOrderTensor  dMicroGradientFlowdPrecedingF;
+            fourthOrderTensor dMicroGradientFlowdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
-                                                                                        ( *macroFlowParameters )[ 0 ], ( *macroFlowParameters )[ 1 ],
-                                                                                        tempYield, *dMacroFlowdDrivingStress.value, *dMacroFlowdCohesion.value, dMacroFlowdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeSecondOrderDruckerPragerYieldEquation(
+                *macroDrivingStress, *macroCohesion, *precedingDeformationGradient, (*macroFlowParameters)[0],
+                (*macroFlowParameters)[1], tempYield, *dMacroFlowdDrivingStress.value, *dMacroFlowdCohesion.value,
+                dMacroFlowdPrecedingF));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, *precedingDeformationGradient,
-                                                                                        ( *microFlowParameters )[ 0 ], ( *microFlowParameters )[ 1 ],
-                                                                                        tempYield, *dMicroFlowdDrivingStress.value, *dMicroFlowdCohesion.value, dMicroFlowdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeSecondOrderDruckerPragerYieldEquation(
+                *microDrivingStress, *microCohesion, *precedingDeformationGradient, (*microFlowParameters)[0],
+                (*microFlowParameters)[1], tempYield, *dMicroFlowdDrivingStress.value, *dMicroFlowdCohesion.value,
+                dMicroFlowdPrecedingF));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
-                                                                                       ( *microGradientFlowParameters )[ 0 ], ( *microGradientFlowParameters )[ 1 ],
-                                                                                       tempVectorYield, *dMicroGradientFlowdDrivingStress.value, *dMicroGradientFlowdCohesion.value, dMicroGradientFlowdPrecedingF ) );
-
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeHigherOrderDruckerPragerYieldEquation(
+                *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
+                (*microGradientFlowParameters)[0], (*microGradientFlowParameters)[1], tempVectorYield,
+                *dMicroGradientFlowdDrivingStress.value, *dMicroGradientFlowdCohesion.value,
+                dMicroGradientFlowdPrecedingF));
         }
 
-        void residual::setd2MacroFlowdDrivingStressdStress( ){
+        void residual::setd2MacroFlowdDrivingStressdStress() {
             /*!
-             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the macro stress
+             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the
+             * macro stress
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MacroFlowdDrivingStressdF( ){
+        void residual::setd2MacroFlowdDrivingStressdF() {
             /*!
-             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the deformation gradient
+             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the
+             * deformation gradient
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MacroFlowdDrivingStressdFn( ){
+        void residual::setd2MacroFlowdDrivingStressdFn() {
             /*!
-             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the sub deformation gradients
+             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the
+             * sub deformation gradients
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MicroFlowdDrivingStressdStress( ){
+        void residual::setd2MicroFlowdDrivingStressdStress() {
             /*!
-             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the micro stress
+             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the
+             * micro stress
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MicroFlowdDrivingStressdF( ){
+        void residual::setd2MicroFlowdDrivingStressdF() {
             /*!
-             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the deformation gradient
+             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the
+             * deformation gradient
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MicroFlowdDrivingStressdFn( ){
+        void residual::setd2MicroFlowdDrivingStressdFn() {
             /*!
-             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the sub deformation gradients
+             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the
+             * sub deformation gradients
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MicroGradientFlowdDrivingStressdStress( ){
+        void residual::setd2MicroGradientFlowdDrivingStressdStress() {
             /*!
-             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the micro gradient stress
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving
+             * stress w.r.t. the micro gradient stress
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MicroGradientFlowdDrivingStressdF( ){
+        void residual::setd2MicroGradientFlowdDrivingStressdF() {
             /*!
-             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the deformation gradient
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving
+             * stress w.r.t. the deformation gradient
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MicroGradientFlowdDrivingStressdFn( ){
+        void residual::setd2MicroGradientFlowdDrivingStressdFn() {
             /*!
-             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the sub deformation gradients
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving
+             * stress w.r.t. the sub deformation gradients
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MicroGradientFlowdDrivingStressdChi( ){
+        void residual::setd2MicroGradientFlowdDrivingStressdChi() {
             /*!
-             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the micro deformation
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving
+             * stress w.r.t. the micro deformation
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setd2MicroGradientFlowdDrivingStressdChin( ){
+        void residual::setd2MicroGradientFlowdDrivingStressdChin() {
             /*!
-             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the sub micro deformation
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving
+             * stress w.r.t. the sub micro deformation
              */
 
-            setFlowPotentialGradientsJacobians( false );
-
+            setFlowPotentialGradientsJacobians(false);
         }
 
-        void residual::setPreviousd2MacroFlowdDrivingStressdStress( ){
+        void residual::setPreviousd2MacroFlowdDrivingStressdStress() {
             /*!
-             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the macro stress
+             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress
+             * w.r.t. the macro stress
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MacroFlowdDrivingStressdF( ){
+        void residual::setPreviousd2MacroFlowdDrivingStressdF() {
             /*!
-             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the deformation gradient
+             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress
+             * w.r.t. the deformation gradient
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MacroFlowdDrivingStressdFn( ){
+        void residual::setPreviousd2MacroFlowdDrivingStressdFn() {
             /*!
-             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the sub deformation gradients
+             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress
+             * w.r.t. the sub deformation gradients
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MicroFlowdDrivingStressdStress( ){
+        void residual::setPreviousd2MicroFlowdDrivingStressdStress() {
             /*!
-             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the micro stress
+             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress
+             * w.r.t. the micro stress
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MicroFlowdDrivingStressdF( ){
+        void residual::setPreviousd2MicroFlowdDrivingStressdF() {
             /*!
-             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the deformation gradient
+             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress
+             * w.r.t. the deformation gradient
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MicroFlowdDrivingStressdFn( ){
+        void residual::setPreviousd2MicroFlowdDrivingStressdFn() {
             /*!
-             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the sub deformation gradients
+             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress
+             * w.r.t. the sub deformation gradients
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MicroGradientFlowdDrivingStressdStress( ){
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdStress() {
             /*!
-             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the micro gradient stress
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the
+             * micro-gradient driving stress w.r.t. the micro gradient stress
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MicroGradientFlowdDrivingStressdF( ){
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdF() {
             /*!
-             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the deformation gradient
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the
+             * micro-gradient driving stress w.r.t. the deformation gradient
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MicroGradientFlowdDrivingStressdFn( ){
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdFn() {
             /*!
-             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the sub deformation gradients
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the
+             * micro-gradient driving stress w.r.t. the sub deformation gradients
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MicroGradientFlowdDrivingStressdChi( ){
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdChi() {
             /*!
-             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the micro deformation
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the
+             * micro-gradient driving stress w.r.t. the micro deformation
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setPreviousd2MicroGradientFlowdDrivingStressdChin( ){
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdChin() {
             /*!
-             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the sub micro deformation
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the
+             * micro-gradient driving stress w.r.t. the sub micro deformation
              */
 
-            setFlowPotentialGradientsJacobians( true );
-
+            setFlowPotentialGradientsJacobians(true);
         }
 
-        void residual::setFlowPotentialGradientsJacobians( const bool isPrevious ){
+        void residual::setFlowPotentialGradientsJacobians(const bool isPrevious) {
             /*!
              * Set the Jacobians of the flow potential gradients
              *
@@ -4516,11 +4435,11 @@ namespace tardigradeHydra{
 
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations();
 
-            const floatType   *macroCohesion;
+            const floatType *macroCohesion;
 
-            const floatType   *microCohesion;
+            const floatType *microCohesion;
 
             const dimVector *microGradientCohesion;
 
@@ -4528,7 +4447,7 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *microDrivingStress;
 
-            const thirdOrderTensor  *microGradientDrivingStress;
+            const thirdOrderTensor *microGradientDrivingStress;
 
             const fourthOrderTensor *dMacroDrivingStressdStress;
 
@@ -4558,353 +4477,389 @@ namespace tardigradeHydra{
 
             const floatVector *dPrecedingFdFn;
 
-            const floatVector *macroFlowParameters         = get_macroFlowParameters( );
+            const floatVector *macroFlowParameters = get_macroFlowParameters();
 
-            const floatVector *microFlowParameters         = get_microFlowParameters( );
+            const floatVector *microFlowParameters = get_microFlowParameters();
 
-            const floatVector *microGradientFlowParameters = get_microGradientFlowParameters( );
+            const floatVector *microGradientFlowParameters = get_microGradientFlowParameters();
 
-            setDataStorageBase< floatType > dMacroFlowdCohesion;
+            SetDataStorageBase<floatType> dMacroFlowdCohesion;
 
-            setDataStorageBase< floatType > dMicroFlowdCohesion;
+            SetDataStorageBase<floatType> dMicroFlowdCohesion;
 
-            setDataStorageBase< secondOrderTensor > dMicroGradientFlowdCohesion;
+            SetDataStorageBase<secondOrderTensor> dMicroGradientFlowdCohesion;
 
-            setDataStorageBase< secondOrderTensor > dMacroFlowdDrivingStress;
+            SetDataStorageBase<secondOrderTensor> dMacroFlowdDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > dMicroFlowdDrivingStress;
+            SetDataStorageBase<secondOrderTensor> dMicroFlowdDrivingStress;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientFlowdDrivingStress;
+            SetDataStorageBase<fourthOrderTensor> dMicroGradientFlowdDrivingStress;
 
-            setDataStorageBase< fourthOrderTensor > d2MacroFlowdDrivingStressdMacroStress;
+            SetDataStorageBase<fourthOrderTensor> d2MacroFlowdDrivingStressdMacroStress;
 
-            setDataStorageBase< fourthOrderTensor > d2MicroFlowdDrivingStressdMicroStress;
+            SetDataStorageBase<fourthOrderTensor> d2MicroFlowdDrivingStressdMicroStress;
 
-            setDataStorageBase< seventhOrderTensor > d2MicroGradientFlowdDrivingStressdMicroGradientStress;
+            SetDataStorageBase<seventhOrderTensor> d2MicroGradientFlowdDrivingStressdMicroGradientStress;
 
-            setDataStorageBase< fourthOrderTensor > d2MacroFlowdDrivingStressdF;
+            SetDataStorageBase<fourthOrderTensor> d2MacroFlowdDrivingStressdF;
 
-            setDataStorageBase< fourthOrderTensor > d2MicroFlowdDrivingStressdF;
+            SetDataStorageBase<fourthOrderTensor> d2MicroFlowdDrivingStressdF;
 
-            setDataStorageBase< sixthOrderTensor > d2MicroGradientFlowdDrivingStressdF;
+            SetDataStorageBase<sixthOrderTensor> d2MicroGradientFlowdDrivingStressdF;
 
-            setDataStorageBase< sixthOrderTensor > d2MicroGradientFlowdDrivingStressdChi;
+            SetDataStorageBase<sixthOrderTensor> d2MicroGradientFlowdDrivingStressdChi;
 
-            setDataStorageBase< floatVector > d2MacroFlowdDrivingStressdFn;
+            SetDataStorageBase<floatVector> d2MacroFlowdDrivingStressdFn;
 
-            setDataStorageBase< floatVector > d2MicroFlowdDrivingStressdFn;
+            SetDataStorageBase<floatVector> d2MicroFlowdDrivingStressdFn;
 
-            setDataStorageBase< floatVector > d2MicroGradientFlowdDrivingStressdFn;
+            SetDataStorageBase<floatVector> d2MicroGradientFlowdDrivingStressdFn;
 
-            setDataStorageBase< floatVector > d2MicroGradientFlowdDrivingStressdChin;
+            SetDataStorageBase<floatVector> d2MicroGradientFlowdDrivingStressdChin;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                precedingDeformationGradient = get_previousPrecedingDeformationGradient();
 
-                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+                dPrecedingFdF = get_previousdPrecedingDeformationGradientdF();
 
-                dPrecedingFdF                      = get_previousdPrecedingDeformationGradientdF( );
+                dPrecedingFdFn = get_previousdPrecedingDeformationGradientdFn();
 
-                dPrecedingFdFn                     = get_previousdPrecedingDeformationGradientdFn( );
+                macroCohesion = get_previousMacroCohesion();
 
-                macroCohesion                      = get_previousMacroCohesion( );
+                microCohesion = get_previousMicroCohesion();
 
-                microCohesion                      = get_previousMicroCohesion( );
+                microGradientCohesion = get_previousMicroGradientCohesion();
 
-                microGradientCohesion              = get_previousMicroGradientCohesion( );
+                dMacroDrivingStressdStress = get_previousdMacroDrivingStressdMacroStress();
 
-                dMacroDrivingStressdStress         = get_previousdMacroDrivingStressdMacroStress( );
+                dMicroDrivingStressdStress = get_previousdSymmetricMicroDrivingStressdMicroStress();
 
-                dMicroDrivingStressdStress         = get_previousdSymmetricMicroDrivingStressdMicroStress( );
+                dMicroGradientDrivingStressdStress = get_previousdHigherOrderDrivingStressdHigherOrderStress();
 
-                dMicroGradientDrivingStressdStress = get_previousdHigherOrderDrivingStressdHigherOrderStress( );
+                dMacroDrivingStressdF = get_previousdMacroDrivingStressdF();
 
-                dMacroDrivingStressdF              = get_previousdMacroDrivingStressdF( );
+                dMicroDrivingStressdF = get_previousdSymmetricMicroDrivingStressdF();
 
-                dMicroDrivingStressdF              = get_previousdSymmetricMicroDrivingStressdF( );
+                dMicroGradientDrivingStressdF = get_previousdHigherOrderDrivingStressdF();
 
-                dMicroGradientDrivingStressdF      = get_previousdHigherOrderDrivingStressdF( );
+                dMicroGradientDrivingStressdChi = get_previousdHigherOrderDrivingStressdChi();
 
-                dMicroGradientDrivingStressdChi    = get_previousdHigherOrderDrivingStressdChi( );
+                dMacroDrivingStressdFn = get_previousdMacroDrivingStressdFn();
 
-                dMacroDrivingStressdFn             = get_previousdMacroDrivingStressdFn( );
+                dMicroDrivingStressdFn = get_previousdSymmetricMicroDrivingStressdFn();
 
-                dMicroDrivingStressdFn             = get_previousdSymmetricMicroDrivingStressdFn( );
+                dMicroGradientDrivingStressdFn = get_previousdHigherOrderDrivingStressdFn();
 
-                dMicroGradientDrivingStressdFn     = get_previousdHigherOrderDrivingStressdFn( );
+                dMicroGradientDrivingStressdChin = get_previousdHigherOrderDrivingStressdChin();
 
-                dMicroGradientDrivingStressdChin   = get_previousdHigherOrderDrivingStressdChin( );
+                macroDrivingStress = get_previousMacroDrivingStress();
 
-                macroDrivingStress                 = get_previousMacroDrivingStress( );
+                microDrivingStress = get_previousSymmetricMicroDrivingStress();
 
-                microDrivingStress                 = get_previousSymmetricMicroDrivingStress( );
+                microGradientDrivingStress = get_previousHigherOrderDrivingStress();
 
-                microGradientDrivingStress         = get_previousHigherOrderDrivingStress( );
+                dMacroFlowdCohesion = get_SetDataStorage_previousdMacroFlowdc();
 
-                dMacroFlowdCohesion                = get_setDataStorage_previousdMacroFlowdc( );
+                dMicroFlowdCohesion = get_SetDataStorage_previousdMicroFlowdc();
 
-                dMicroFlowdCohesion                = get_setDataStorage_previousdMicroFlowdc( );
+                dMicroGradientFlowdCohesion = get_SetDataStorage_previousdMicroGradientFlowdc();
 
-                dMicroGradientFlowdCohesion        = get_setDataStorage_previousdMicroGradientFlowdc( );
+                dMacroFlowdDrivingStress = get_SetDataStorage_previousdMacroFlowdDrivingStress();
 
-                dMacroFlowdDrivingStress           = get_setDataStorage_previousdMacroFlowdDrivingStress( );
+                dMicroFlowdDrivingStress = get_SetDataStorage_previousdMicroFlowdDrivingStress();
 
-                dMicroFlowdDrivingStress           = get_setDataStorage_previousdMicroFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress = get_SetDataStorage_previousdMicroGradientFlowdDrivingStress();
 
-                dMicroGradientFlowdDrivingStress   = get_setDataStorage_previousdMicroGradientFlowdDrivingStress( );
+                d2MacroFlowdDrivingStressdMacroStress = get_SetDataStorage_previousd2MacroFlowdDrivingStressdStress();
 
-                d2MacroFlowdDrivingStressdMacroStress = get_setDataStorage_previousd2MacroFlowdDrivingStressdStress( );
+                d2MicroFlowdDrivingStressdMicroStress = get_SetDataStorage_previousd2MicroFlowdDrivingStressdStress();
 
-                d2MicroFlowdDrivingStressdMicroStress = get_setDataStorage_previousd2MicroFlowdDrivingStressdStress( );
+                d2MicroGradientFlowdDrivingStressdMicroGradientStress =
+                    get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdStress();
 
-                d2MicroGradientFlowdDrivingStressdMicroGradientStress = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdStress( );
+                d2MacroFlowdDrivingStressdF = get_SetDataStorage_previousd2MacroFlowdDrivingStressdF();
 
-                d2MacroFlowdDrivingStressdF                           = get_setDataStorage_previousd2MacroFlowdDrivingStressdF( );
+                d2MicroFlowdDrivingStressdF = get_SetDataStorage_previousd2MicroFlowdDrivingStressdF();
 
-                d2MicroFlowdDrivingStressdF                           = get_setDataStorage_previousd2MicroFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdF = get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdF();
 
-                d2MicroGradientFlowdDrivingStressdF                   = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdChi =
+                    get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdChi();
 
-                d2MicroGradientFlowdDrivingStressdChi                 = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdChi( );
+                d2MacroFlowdDrivingStressdFn = get_SetDataStorage_previousd2MacroFlowdDrivingStressdFn();
 
-                d2MacroFlowdDrivingStressdFn                          = get_setDataStorage_previousd2MacroFlowdDrivingStressdFn( );
+                d2MicroFlowdDrivingStressdFn = get_SetDataStorage_previousd2MicroFlowdDrivingStressdFn();
 
-                d2MicroFlowdDrivingStressdFn                          = get_setDataStorage_previousd2MicroFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdFn =
+                    get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdFn();
 
-                d2MicroGradientFlowdDrivingStressdFn                  = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdChin =
+                    get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdChin();
 
-                d2MicroGradientFlowdDrivingStressdChin                = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdChin( );
+            } else {
+                precedingDeformationGradient = get_precedingDeformationGradient();
 
-            }
-            else{
+                dPrecedingFdF = get_dPrecedingDeformationGradientdF();
 
-                precedingDeformationGradient = get_precedingDeformationGradient( );
+                dPrecedingFdFn = get_dPrecedingDeformationGradientdFn();
 
-                dPrecedingFdF                                         = get_dPrecedingDeformationGradientdF( );
+                macroCohesion = get_macroCohesion();
 
-                dPrecedingFdFn                                        = get_dPrecedingDeformationGradientdFn( );
+                microCohesion = get_microCohesion();
 
-                macroCohesion                                         = get_macroCohesion( );
+                microGradientCohesion = get_microGradientCohesion();
 
-                microCohesion                                         = get_microCohesion( );
+                dMacroDrivingStressdStress = get_dMacroDrivingStressdMacroStress();
 
-                microGradientCohesion                                 = get_microGradientCohesion( );
+                dMicroDrivingStressdStress = get_dSymmetricMicroDrivingStressdMicroStress();
 
-                dMacroDrivingStressdStress                            = get_dMacroDrivingStressdMacroStress( );
+                dMicroGradientDrivingStressdStress = get_dHigherOrderDrivingStressdHigherOrderStress();
 
-                dMicroDrivingStressdStress                            = get_dSymmetricMicroDrivingStressdMicroStress( );
+                dMacroDrivingStressdF = get_dMacroDrivingStressdF();
 
-                dMicroGradientDrivingStressdStress                    = get_dHigherOrderDrivingStressdHigherOrderStress( );
+                dMicroDrivingStressdF = get_dSymmetricMicroDrivingStressdF();
 
-                dMacroDrivingStressdF                                 = get_dMacroDrivingStressdF( );
+                dMicroGradientDrivingStressdF = get_dHigherOrderDrivingStressdF();
 
-                dMicroDrivingStressdF                                 = get_dSymmetricMicroDrivingStressdF( );
+                dMicroGradientDrivingStressdChi = get_dHigherOrderDrivingStressdChi();
 
-                dMicroGradientDrivingStressdF                         = get_dHigherOrderDrivingStressdF( );
+                dMacroDrivingStressdFn = get_dMacroDrivingStressdFn();
 
-                dMicroGradientDrivingStressdChi                       = get_dHigherOrderDrivingStressdChi( );
+                dMicroDrivingStressdFn = get_dSymmetricMicroDrivingStressdFn();
 
-                dMacroDrivingStressdFn                                = get_dMacroDrivingStressdFn( );
+                dMicroGradientDrivingStressdFn = get_dHigherOrderDrivingStressdFn();
 
-                dMicroDrivingStressdFn                                = get_dSymmetricMicroDrivingStressdFn( );
+                dMicroGradientDrivingStressdChin = get_dHigherOrderDrivingStressdChin();
 
-                dMicroGradientDrivingStressdFn                        = get_dHigherOrderDrivingStressdFn( );
+                macroDrivingStress = get_macroDrivingStress();
 
-                dMicroGradientDrivingStressdChin                      = get_dHigherOrderDrivingStressdChin( );
+                microDrivingStress = get_symmetricMicroDrivingStress();
 
-                macroDrivingStress                                    = get_macroDrivingStress( );
+                microGradientDrivingStress = get_higherOrderDrivingStress();
 
-                microDrivingStress                                    = get_symmetricMicroDrivingStress( );
+                dMacroFlowdCohesion = get_SetDataStorage_dMacroFlowdc();
 
-                microGradientDrivingStress                            = get_higherOrderDrivingStress( );
+                dMicroFlowdCohesion = get_SetDataStorage_dMicroFlowdc();
 
-                dMacroFlowdCohesion                                   = get_setDataStorage_dMacroFlowdc( );
+                dMicroGradientFlowdCohesion = get_SetDataStorage_dMicroGradientFlowdc();
 
-                dMicroFlowdCohesion                                   = get_setDataStorage_dMicroFlowdc( );
+                dMacroFlowdDrivingStress = get_SetDataStorage_dMacroFlowdDrivingStress();
 
-                dMicroGradientFlowdCohesion                           = get_setDataStorage_dMicroGradientFlowdc( );
+                dMicroFlowdDrivingStress = get_SetDataStorage_dMicroFlowdDrivingStress();
 
-                dMacroFlowdDrivingStress                              = get_setDataStorage_dMacroFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress = get_SetDataStorage_dMicroGradientFlowdDrivingStress();
 
-                dMicroFlowdDrivingStress                              = get_setDataStorage_dMicroFlowdDrivingStress( );
+                d2MacroFlowdDrivingStressdMacroStress = get_SetDataStorage_d2MacroFlowdDrivingStressdStress();
 
-                dMicroGradientFlowdDrivingStress                      = get_setDataStorage_dMicroGradientFlowdDrivingStress( );
+                d2MicroFlowdDrivingStressdMicroStress = get_SetDataStorage_d2MicroFlowdDrivingStressdStress();
 
-                d2MacroFlowdDrivingStressdMacroStress                 = get_setDataStorage_d2MacroFlowdDrivingStressdStress( );
+                d2MicroGradientFlowdDrivingStressdMicroGradientStress =
+                    get_SetDataStorage_d2MicroGradientFlowdDrivingStressdStress();
 
-                d2MicroFlowdDrivingStressdMicroStress                 = get_setDataStorage_d2MicroFlowdDrivingStressdStress( );
+                d2MacroFlowdDrivingStressdF = get_SetDataStorage_d2MacroFlowdDrivingStressdF();
 
-                d2MicroGradientFlowdDrivingStressdMicroGradientStress = get_setDataStorage_d2MicroGradientFlowdDrivingStressdStress( );
+                d2MicroFlowdDrivingStressdF = get_SetDataStorage_d2MicroFlowdDrivingStressdF();
 
-                d2MacroFlowdDrivingStressdF                           = get_setDataStorage_d2MacroFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdF = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdF();
 
-                d2MicroFlowdDrivingStressdF                           = get_setDataStorage_d2MicroFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdChi = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdChi();
 
-                d2MicroGradientFlowdDrivingStressdF                   = get_setDataStorage_d2MicroGradientFlowdDrivingStressdF( );
+                d2MacroFlowdDrivingStressdFn = get_SetDataStorage_d2MacroFlowdDrivingStressdFn();
 
-                d2MicroGradientFlowdDrivingStressdChi                 = get_setDataStorage_d2MicroGradientFlowdDrivingStressdChi( );
+                d2MicroFlowdDrivingStressdFn = get_SetDataStorage_d2MicroFlowdDrivingStressdFn();
 
-                d2MacroFlowdDrivingStressdFn                          = get_setDataStorage_d2MacroFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdFn = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdFn();
 
-                d2MicroFlowdDrivingStressdFn                          = get_setDataStorage_d2MicroFlowdDrivingStressdFn( );
-
-                d2MicroGradientFlowdDrivingStressdFn                  = get_setDataStorage_d2MicroGradientFlowdDrivingStressdFn( );
-
-                d2MicroGradientFlowdDrivingStressdChin                = get_setDataStorage_d2MicroGradientFlowdDrivingStressdChin( );
-
+                d2MicroGradientFlowdDrivingStressdChin = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdChin();
             }
 
             floatType tempYield;
 
             floatVector tempVectorYield;
 
-            secondOrderTensor dMacroFlowdPrecedingF,    dMicroFlowdPrecedingF;
+            secondOrderTensor dMacroFlowdPrecedingF, dMicroFlowdPrecedingF;
 
-            thirdOrderTensor  dMicroGradientFlowdPrecedingF;
+            thirdOrderTensor dMicroGradientFlowdPrecedingF;
 
-            fourthOrderTensor d2MacroFlowdDrivingStress2,         d2MacroFlowdDrivingStressdPrecedingF,
-                              d2MicroFlowdDrivingStress2,         d2MicroFlowdDrivingStressdPrecedingF;
+            fourthOrderTensor d2MacroFlowdDrivingStress2, d2MacroFlowdDrivingStressdPrecedingF,
+                d2MicroFlowdDrivingStress2, d2MicroFlowdDrivingStressdPrecedingF;
 
             seventhOrderTensor d2MicroGradientFlowdDrivingStress2;
             sixthOrderTensor   d2MicroGradientFlowdDrivingStressdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
-                                                                                        ( *macroFlowParameters )[ 0 ], ( *macroFlowParameters )[ 1 ],
-                                                                                        tempYield, *dMacroFlowdDrivingStress.value, *dMacroFlowdCohesion.value, dMacroFlowdPrecedingF,
-                                                                                        d2MacroFlowdDrivingStress2, d2MacroFlowdDrivingStressdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeSecondOrderDruckerPragerYieldEquation(
+                *macroDrivingStress, *macroCohesion, *precedingDeformationGradient, (*macroFlowParameters)[0],
+                (*macroFlowParameters)[1], tempYield, *dMacroFlowdDrivingStress.value, *dMacroFlowdCohesion.value,
+                dMacroFlowdPrecedingF, d2MacroFlowdDrivingStress2, d2MacroFlowdDrivingStressdPrecedingF));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, *precedingDeformationGradient,
-                                                                                        ( *microFlowParameters )[ 0 ], ( *microFlowParameters )[ 1 ],
-                                                                                        tempYield, *dMicroFlowdDrivingStress.value, *dMicroFlowdCohesion.value, dMicroFlowdPrecedingF,
-                                                                                        d2MicroFlowdDrivingStress2, d2MicroFlowdDrivingStressdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeSecondOrderDruckerPragerYieldEquation(
+                *microDrivingStress, *microCohesion, *precedingDeformationGradient, (*microFlowParameters)[0],
+                (*microFlowParameters)[1], tempYield, *dMicroFlowdDrivingStress.value, *dMicroFlowdCohesion.value,
+                dMicroFlowdPrecedingF, d2MicroFlowdDrivingStress2, d2MicroFlowdDrivingStressdPrecedingF));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
-                                                                                       ( *microGradientFlowParameters )[ 0 ], ( *microGradientFlowParameters )[ 1 ],
-                                                                                       tempVectorYield, *dMicroGradientFlowdDrivingStress.value, *dMicroGradientFlowdCohesion.value, dMicroGradientFlowdPrecedingF,
-                                                                                       d2MicroGradientFlowdDrivingStress2, d2MicroGradientFlowdDrivingStressdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeHigherOrderDruckerPragerYieldEquation(
+                *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
+                (*microGradientFlowParameters)[0], (*microGradientFlowParameters)[1], tempVectorYield,
+                *dMicroGradientFlowdDrivingStress.value, *dMicroGradientFlowdCohesion.value,
+                dMicroGradientFlowdPrecedingF, d2MicroGradientFlowdDrivingStress2,
+                d2MicroGradientFlowdDrivingStressdPrecedingF));
 
-            auto map_d2MacroFlowdDrivingStress2                    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( d2MacroFlowdDrivingStress2.data( )                   );
-            auto map_d2MacroFlowdDrivingStressdPrecedingF          = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( d2MacroFlowdDrivingStressdPrecedingF.data( )         );
-            auto map_d2MicroFlowdDrivingStress2                    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( d2MicroFlowdDrivingStress2.data( )                   );
-            auto map_d2MicroFlowdDrivingStressdPrecedingF          = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( d2MicroFlowdDrivingStressdPrecedingF.data( )         );
-            auto map_d2MicroGradientFlowdDrivingStress2            = getFixedSizeMatrixMap< floatType, fot_dim, tot_dim >( d2MicroGradientFlowdDrivingStress2.data( )           );
-            auto map_d2MicroGradientFlowdDrivingStressdPrecedingF  = getFixedSizeMatrixMap< floatType, fot_dim, sot_dim >( d2MicroGradientFlowdDrivingStressdPrecedingF.data( ) );
+            auto map_d2MacroFlowdDrivingStress2 =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2MacroFlowdDrivingStress2.data());
+            auto map_d2MacroFlowdDrivingStressdPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2MacroFlowdDrivingStressdPrecedingF.data());
+            auto map_d2MicroFlowdDrivingStress2 =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2MicroFlowdDrivingStress2.data());
+            auto map_d2MicroFlowdDrivingStressdPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2MicroFlowdDrivingStressdPrecedingF.data());
+            auto map_d2MicroGradientFlowdDrivingStress2 =
+                getFixedSizeMatrixMap<floatType, fot_dim, tot_dim>(d2MicroGradientFlowdDrivingStress2.data());
+            auto map_d2MicroGradientFlowdDrivingStressdPrecedingF =
+                getFixedSizeMatrixMap<floatType, fot_dim, sot_dim>(d2MicroGradientFlowdDrivingStressdPrecedingF.data());
 
-            auto map_dMacroDrivingStressdStress                    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMacroDrivingStressdStress->data( ) );
-            auto map_dMicroDrivingStressdStress                    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroDrivingStressdStress->data( ) );
-            auto map_dMicroGradientDrivingStressdStress            = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dMicroGradientDrivingStressdStress->data( ) );
-            auto map_dMacroDrivingStressdF                         = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMacroDrivingStressdF->data( ) );
-            auto map_dMicroDrivingStressdF                         = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroDrivingStressdF->data( ) );
-            auto map_dMicroGradientDrivingStressdF                 = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dMicroGradientDrivingStressdF->data( ) );
-            auto map_dPrecedingFdF                                 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPrecedingFdF->data( ) );
-            auto map_dMicroGradientDrivingStressdChi               = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dMicroGradientDrivingStressdChi->data( ) );
+            auto map_dMacroDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMacroDrivingStressdStress->data());
+            auto map_dMicroDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMicroDrivingStressdStress->data());
+            auto map_dMicroGradientDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(dMicroGradientDrivingStressdStress->data());
+            auto map_dMacroDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMacroDrivingStressdF->data());
+            auto map_dMicroDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMicroDrivingStressdF->data());
+            auto map_dMicroGradientDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dMicroGradientDrivingStressdF->data());
+            auto map_dPrecedingFdF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPrecedingFdF->data());
+            auto map_dMicroGradientDrivingStressdChi =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dMicroGradientDrivingStressdChi->data());
 
-            auto map_dMacroDrivingStressdFn                        = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dMacroDrivingStressdFn->data( ),           ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroDrivingStressdFn                        = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dMicroDrivingStressdFn->data( ),           ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroGradientDrivingStressdFn                = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dMicroGradientDrivingStressdFn->data( ),   ( num_configs - 1 ) * sot_dim );
-            auto map_dPrecedingFdFn                                = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPrecedingFdFn->data( ),                   ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroGradientDrivingStressdChin              = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dMicroGradientDrivingStressdChin->data( ), ( num_configs - 1 ) * sot_dim );
+            auto map_dMacroDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dMacroDrivingStressdFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_dMicroDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dMicroDrivingStressdFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_dMicroGradientDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dMicroGradientDrivingStressdFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_dPrecedingFdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dPrecedingFdFn->data(), (num_configs - 1) * sot_dim);
+            auto map_dMicroGradientDrivingStressdChin =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dMicroGradientDrivingStressdChin->data(),
+                                                                  (num_configs - 1) * sot_dim);
 
-            auto map_d2MacroFlowdDrivingStressdMacroStress                 = d2MacroFlowdDrivingStressdMacroStress.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_d2MicroFlowdDrivingStressdMicroStress                 = d2MicroFlowdDrivingStressdMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_d2MicroGradientFlowdDrivingStressdMicroGradientStress = d2MicroGradientFlowdDrivingStressdMicroGradientStress.zeroMap< floatType, fot_dim, tot_dim >( );
-            auto map_d2MacroFlowdDrivingStressdF                           = d2MacroFlowdDrivingStressdF.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_d2MicroFlowdDrivingStressdF                           = d2MicroFlowdDrivingStressdF.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_d2MicroGradientFlowdDrivingStressdF                   = d2MicroGradientFlowdDrivingStressdF.zeroMap< floatType, fot_dim, sot_dim >( );
-            auto map_d2MicroGradientFlowdDrivingStressdChi                 = d2MicroGradientFlowdDrivingStressdChi.zeroMap< floatType, fot_dim, sot_dim >( );
+            auto map_d2MacroFlowdDrivingStressdMacroStress =
+                d2MacroFlowdDrivingStressdMacroStress.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_d2MicroFlowdDrivingStressdMicroStress =
+                d2MicroFlowdDrivingStressdMicroStress.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_d2MicroGradientFlowdDrivingStressdMicroGradientStress =
+                d2MicroGradientFlowdDrivingStressdMicroGradientStress.zeroMap<floatType, fot_dim, tot_dim>();
+            auto map_d2MacroFlowdDrivingStressdF = d2MacroFlowdDrivingStressdF.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_d2MicroFlowdDrivingStressdF = d2MicroFlowdDrivingStressdF.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_d2MicroGradientFlowdDrivingStressdF =
+                d2MicroGradientFlowdDrivingStressdF.zeroMap<floatType, fot_dim, sot_dim>();
+            auto map_d2MicroGradientFlowdDrivingStressdChi =
+                d2MicroGradientFlowdDrivingStressdChi.zeroMap<floatType, fot_dim, sot_dim>();
 
-            auto map_d2MacroFlowdDrivingStressdFn                          = d2MacroFlowdDrivingStressdFn.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_d2MicroFlowdDrivingStressdFn                          = d2MicroFlowdDrivingStressdFn.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_d2MicroGradientFlowdDrivingStressdFn                  = d2MicroGradientFlowdDrivingStressdFn.zeroMap< floatType, fot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_d2MicroGradientFlowdDrivingStressdChin                = d2MicroGradientFlowdDrivingStressdChin.zeroMap< floatType, fot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto map_d2MacroFlowdDrivingStressdFn =
+                d2MacroFlowdDrivingStressdFn.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
+            auto map_d2MicroFlowdDrivingStressdFn =
+                d2MicroFlowdDrivingStressdFn.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
+            auto map_d2MicroGradientFlowdDrivingStressdFn =
+                d2MicroGradientFlowdDrivingStressdFn.zeroMap<floatType, fot_dim>((num_configs - 1) * sot_dim);
+            auto map_d2MicroGradientFlowdDrivingStressdChin =
+                d2MicroGradientFlowdDrivingStressdChin.zeroMap<floatType, fot_dim>((num_configs - 1) * sot_dim);
 
-            map_d2MacroFlowdDrivingStressdMacroStress = ( map_d2MacroFlowdDrivingStress2 * map_dMacroDrivingStressdStress ).eval( );
+            map_d2MacroFlowdDrivingStressdMacroStress =
+                (map_d2MacroFlowdDrivingStress2 * map_dMacroDrivingStressdStress).eval();
 
-            map_d2MicroFlowdDrivingStressdMicroStress = ( map_d2MicroFlowdDrivingStress2 * map_dMicroDrivingStressdStress ).eval( );
+            map_d2MicroFlowdDrivingStressdMicroStress =
+                (map_d2MicroFlowdDrivingStress2 * map_dMicroDrivingStressdStress).eval();
 
-            map_d2MicroGradientFlowdDrivingStressdMicroGradientStress = ( map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdStress ).eval( );
+            map_d2MicroGradientFlowdDrivingStressdMicroGradientStress =
+                (map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdStress).eval();
 
-            map_d2MacroFlowdDrivingStressdF  = ( map_d2MacroFlowdDrivingStress2 * map_dMacroDrivingStressdF ).eval( );
-            map_d2MacroFlowdDrivingStressdF += ( map_d2MacroFlowdDrivingStressdPrecedingF * map_dPrecedingFdF ).eval( );
+            map_d2MacroFlowdDrivingStressdF = (map_d2MacroFlowdDrivingStress2 * map_dMacroDrivingStressdF).eval();
+            map_d2MacroFlowdDrivingStressdF += (map_d2MacroFlowdDrivingStressdPrecedingF * map_dPrecedingFdF).eval();
 
-            map_d2MicroFlowdDrivingStressdF  = ( map_d2MicroFlowdDrivingStress2 * map_dMicroDrivingStressdF ).eval( );
-            map_d2MicroFlowdDrivingStressdF += ( map_d2MicroFlowdDrivingStressdPrecedingF * map_dPrecedingFdF ).eval( );
+            map_d2MicroFlowdDrivingStressdF = (map_d2MicroFlowdDrivingStress2 * map_dMicroDrivingStressdF).eval();
+            map_d2MicroFlowdDrivingStressdF += (map_d2MicroFlowdDrivingStressdPrecedingF * map_dPrecedingFdF).eval();
 
-            map_d2MicroGradientFlowdDrivingStressdF  = ( map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdF ).eval( );
-            map_d2MicroGradientFlowdDrivingStressdF += ( map_d2MicroGradientFlowdDrivingStressdPrecedingF * map_dPrecedingFdF ).eval( );
+            map_d2MicroGradientFlowdDrivingStressdF =
+                (map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdF).eval();
+            map_d2MicroGradientFlowdDrivingStressdF +=
+                (map_d2MicroGradientFlowdDrivingStressdPrecedingF * map_dPrecedingFdF).eval();
 
-            map_d2MicroGradientFlowdDrivingStressdChi = ( map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdChi ).eval( );
+            map_d2MicroGradientFlowdDrivingStressdChi =
+                (map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdChi).eval();
 
-            map_d2MacroFlowdDrivingStressdFn  = ( map_d2MacroFlowdDrivingStress2 * map_dMacroDrivingStressdFn ).eval( );
-            map_d2MacroFlowdDrivingStressdFn += ( map_d2MacroFlowdDrivingStressdPrecedingF * map_dPrecedingFdFn ).eval( );
+            map_d2MacroFlowdDrivingStressdFn = (map_d2MacroFlowdDrivingStress2 * map_dMacroDrivingStressdFn).eval();
+            map_d2MacroFlowdDrivingStressdFn += (map_d2MacroFlowdDrivingStressdPrecedingF * map_dPrecedingFdFn).eval();
 
-            map_d2MicroFlowdDrivingStressdFn  = ( map_d2MicroFlowdDrivingStress2 * map_dMicroDrivingStressdFn ).eval( );
-            map_d2MicroFlowdDrivingStressdFn += ( map_d2MicroFlowdDrivingStressdPrecedingF * map_dPrecedingFdFn ).eval( );
+            map_d2MicroFlowdDrivingStressdFn = (map_d2MicroFlowdDrivingStress2 * map_dMicroDrivingStressdFn).eval();
+            map_d2MicroFlowdDrivingStressdFn += (map_d2MicroFlowdDrivingStressdPrecedingF * map_dPrecedingFdFn).eval();
 
-            map_d2MicroGradientFlowdDrivingStressdFn  = ( map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdFn ).eval( );
-            map_d2MicroGradientFlowdDrivingStressdFn += ( map_d2MicroGradientFlowdDrivingStressdPrecedingF * map_dPrecedingFdFn ).eval( );
+            map_d2MicroGradientFlowdDrivingStressdFn =
+                (map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdFn).eval();
+            map_d2MicroGradientFlowdDrivingStressdFn +=
+                (map_d2MicroGradientFlowdDrivingStressdPrecedingF * map_dPrecedingFdFn).eval();
 
-            map_d2MicroGradientFlowdDrivingStressdChin = ( map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdChin ).eval( );
-
+            map_d2MicroGradientFlowdDrivingStressdChin =
+                (map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdChin).eval();
         }
 
-        void residual::setMacroCohesion( ){
+        void residual::setMacroCohesion() {
             /*!
              * Set the macro cohesion
              */
 
-            setCohesions( false );
-
+            setCohesions(false);
         }
 
-        void residual::setMicroCohesion( ){
+        void residual::setMicroCohesion() {
             /*!
              * Set the micro cohesion
              */
 
-            setCohesions( false );
-
+            setCohesions(false);
         }
 
-        void residual::setMicroGradientCohesion( ){
+        void residual::setMicroGradientCohesion() {
             /*!
              * Set the micro gradient cohesion
              */
 
-            setCohesions( false );
-
+            setCohesions(false);
         }
 
-        void residual::setPreviousMacroCohesion( ){
+        void residual::setPreviousMacroCohesion() {
             /*!
              * Set the previous macro cohesion
              */
 
-            setCohesions( true );
-
+            setCohesions(true);
         }
 
-        void residual::setPreviousMicroCohesion( ){
+        void residual::setPreviousMicroCohesion() {
             /*!
              * Set the previous macro cohesion
              */
 
-            setCohesions( true );
-
+            setCohesions(true);
         }
 
-        void residual::setPreviousMicroGradientCohesion( ){
+        void residual::setPreviousMicroGradientCohesion() {
             /*!
              * Set the micro gradient cohesion
              */
 
-            setCohesions( true );
-
+            setCohesions(true);
         }
 
-        void residual::setCohesions( const bool isPrevious ){
+        void residual::setCohesions(const bool isPrevious) {
             /*!
              * Set the values of the cohesion
-             * 
+             *
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) cohesions
              */
 
@@ -4912,548 +4867,540 @@ namespace tardigradeHydra{
 
             const floatVector *plasticStrainLikeISVs;
 
-            setDataStorageBase< floatType > macroCohesion;
+            SetDataStorageBase<floatType> macroCohesion;
 
-            setDataStorageBase< floatType > microCohesion;
+            SetDataStorageBase<floatType> microCohesion;
 
-            setDataStorageBase< dimVector > microGradientCohesion;
+            SetDataStorageBase<dimVector> microGradientCohesion;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                plasticStrainLikeISVs = get_previousPlasticStrainLikeISVs();
 
-                plasticStrainLikeISVs = get_previousPlasticStrainLikeISVs( );
+                macroCohesion = get_SetDataStorage_previousMacroCohesion();
 
-                macroCohesion               = get_setDataStorage_previousMacroCohesion( );
+                microCohesion = get_SetDataStorage_previousMicroCohesion();
 
-                microCohesion               = get_setDataStorage_previousMicroCohesion( );
+                microGradientCohesion = get_SetDataStorage_previousMicroGradientCohesion();
 
-                microGradientCohesion       = get_setDataStorage_previousMicroGradientCohesion( );
+            } else {
+                plasticStrainLikeISVs = get_plasticStrainLikeISVs();
 
-            }
-            else{
+                macroCohesion = get_SetDataStorage_macroCohesion();
 
-                plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+                microCohesion = get_SetDataStorage_microCohesion();
 
-                macroCohesion               = get_setDataStorage_macroCohesion( );
-
-                microCohesion               = get_setDataStorage_microCohesion( );
-
-                microGradientCohesion       = get_setDataStorage_microGradientCohesion( );
-
+                microGradientCohesion = get_SetDataStorage_microGradientCohesion();
             }
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( get_macroHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_macroHardeningParameters( )->size( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK(get_macroHardeningParameters()->size() == 2,
+                                         "The micro hardening parameters must have a length of 2 rather than " +
+                                             std::to_string(get_macroHardeningParameters()->size()));
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( get_microHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microHardeningParameters( )->size( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK(get_microHardeningParameters()->size() == 2,
+                                         "The micro hardening parameters must have a length of 2 rather than " +
+                                             std::to_string(get_microHardeningParameters()->size()));
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( get_microGradientHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microGradientHardeningParameters( )->size( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK(get_microGradientHardeningParameters()->size() == 2,
+                                         "The micro hardening parameters must have a length of 2 rather than " +
+                                             std::to_string(get_microGradientHardeningParameters()->size()));
 
-            *macroCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], getMacroA( ), getMacroC0( ), *getMacroSmoothingRatio( ), *getMinMacroCohesion( ) );
+            *macroCohesion.value = smoothLinearCohesion((*plasticStrainLikeISVs)[0], getMacroA(), getMacroC0(),
+                                                        getMacroSmoothingRatio(), getMinMacroCohesion());
 
-            *microCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], getMicroA( ), getMicroC0( ), *getMicroSmoothingRatio( ), *getMinMicroCohesion( ) );
-                
-            microGradientCohesion.zero( dim );
+            *microCohesion.value = smoothLinearCohesion((*plasticStrainLikeISVs)[1], getMicroA(), getMicroC0(),
+                                                        getMicroSmoothingRatio(), getMinMicroCohesion());
 
-            for ( unsigned int i = 0; i < dim; i++ ){
+            microGradientCohesion.zero(dim);
 
-                ( *microGradientCohesion.value )[ i ] = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ i + 2 ], getMicroGradientA( )[ i ],
-                                                                              getMicroGradientC0( )[ i ], ( *getMicroGradientSmoothingRatio( ) )[ i ], *getMinMicroGradientCohesion( ) );
-
+            for (unsigned int i = 0; i < dim; i++) {
+                (*microGradientCohesion.value)[i] =
+                    smoothLinearCohesion((*plasticStrainLikeISVs)[i + 2], getMicroGradientA()[i],
+                                         getMicroGradientC0()[i], getMicroGradientSmoothingRatio()[i],
+                                         getMinMicroGradientCohesion());
             }
-
         }
 
-        void residual::setdMacroCohesiondStateVariables( ){
+        void residual::setdMacroCohesiondStateVariables() {
             /*!
              * Set the jacobian of the macro cohesion w.r.t. the nonlinear state variables
              */
 
-            setCohesionsJacobians( false );
-
+            setCohesionsJacobians(false);
         }
 
-        void residual::setdMicroCohesiondStateVariables( ){
+        void residual::setdMicroCohesiondStateVariables() {
             /*!
              * Set the jacobian of the micro cohesion w.r.t. the nonlinear state variables
              */
 
-            setCohesionsJacobians( false );
-
+            setCohesionsJacobians(false);
         }
 
-        void residual::setdMicroGradientCohesiondStateVariables( ){
+        void residual::setdMicroGradientCohesiondStateVariables() {
             /*!
              * Set the jacobian of the micro gradient cohesion w.r.t. the nonlinear state variables
              */
 
-            setCohesionsJacobians( false );
-
+            setCohesionsJacobians(false);
         }
 
-        void residual::setPreviousdMacroCohesiondStateVariables( ){
+        void residual::setPreviousdMacroCohesiondStateVariables() {
             /*!
              * Set the jacobians of the previous macro cohesion w.r.t. the nonlinear state variables
              */
 
-            setCohesionsJacobians( true );
-
+            setCohesionsJacobians(true);
         }
 
-        void residual::setPreviousdMicroCohesiondStateVariables( ){
+        void residual::setPreviousdMicroCohesiondStateVariables() {
             /*!
              * Set the jacobians of the previous macro cohesion w.r.t. the nonlinear state variables
              */
 
-            setCohesionsJacobians( true );
-
+            setCohesionsJacobians(true);
         }
 
-        void residual::setPreviousdMicroGradientCohesiondStateVariables( ){
+        void residual::setPreviousdMicroGradientCohesiondStateVariables() {
             /*!
              * Set the jacobians of the micro gradient cohesion w.r.t. the nonlinear state variables
              */
 
-            setCohesionsJacobians( true );
-
+            setCohesionsJacobians(true);
         }
 
-        void residual::setCohesionsJacobians( const bool isPrevious ){
+        void residual::setCohesionsJacobians(const bool isPrevious) {
             /*!
              * Set the values of the cohesion and their Jacobians
-             * 
+             *
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) cohesions
              */
 
             constexpr unsigned int dim = 3;
 
-            const unsigned int num_pms   = get_plasticMultipliers( )->size( );
+            const unsigned int num_pms = get_plasticMultipliers()->size();
 
-            const unsigned int num_pisvs = get_plasticStateVariables( )->size( );
+            const unsigned int num_pisvs = get_plasticStateVariables()->size();
 
             const floatVector *plasticStrainLikeISVs;
 
-            setDataStorageBase< floatType > macroCohesion;
+            SetDataStorageBase<floatType> macroCohesion;
 
-            setDataStorageBase< floatType > microCohesion;
+            SetDataStorageBase<floatType> microCohesion;
 
-            setDataStorageBase< dimVector > microGradientCohesion;
+            SetDataStorageBase<dimVector> microGradientCohesion;
 
-            setDataStorageBase< floatVector > dMacroCohesiondISVs;
+            SetDataStorageBase<floatVector> dMacroCohesiondISVs;
 
-            setDataStorageBase< floatVector > dMicroCohesiondISVs;
+            SetDataStorageBase<floatVector> dMicroCohesiondISVs;
 
-            setDataStorageBase< floatVector > dMicroGradientCohesiondISVs;
+            SetDataStorageBase<floatVector> dMicroGradientCohesiondISVs;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                plasticStrainLikeISVs = get_previousPlasticStrainLikeISVs();
 
-                plasticStrainLikeISVs       = get_previousPlasticStrainLikeISVs( );
+                macroCohesion = get_SetDataStorage_previousMacroCohesion();
 
-                macroCohesion               = get_setDataStorage_previousMacroCohesion( );
+                microCohesion = get_SetDataStorage_previousMicroCohesion();
 
-                microCohesion               = get_setDataStorage_previousMicroCohesion( );
+                microGradientCohesion = get_SetDataStorage_previousMicroGradientCohesion();
 
-                microGradientCohesion       = get_setDataStorage_previousMicroGradientCohesion( );
+                dMacroCohesiondISVs = get_SetDataStorage_previousdMacroCohesiondStateVariables();
 
-                dMacroCohesiondISVs         = get_setDataStorage_previousdMacroCohesiondStateVariables( );
+                dMicroCohesiondISVs = get_SetDataStorage_previousdMicroCohesiondStateVariables();
 
-                dMicroCohesiondISVs         = get_setDataStorage_previousdMicroCohesiondStateVariables( );
+                dMicroGradientCohesiondISVs = get_SetDataStorage_previousdMicroGradientCohesiondStateVariables();
 
-                dMicroGradientCohesiondISVs = get_setDataStorage_previousdMicroGradientCohesiondStateVariables( );
+            } else {
+                plasticStrainLikeISVs = get_plasticStrainLikeISVs();
 
-            }
-            else{
+                macroCohesion = get_SetDataStorage_macroCohesion();
 
-                plasticStrainLikeISVs       = get_plasticStrainLikeISVs( );
+                microCohesion = get_SetDataStorage_microCohesion();
 
-                macroCohesion               = get_setDataStorage_macroCohesion( );
+                microGradientCohesion = get_SetDataStorage_microGradientCohesion();
 
-                microCohesion               = get_setDataStorage_microCohesion( );
+                dMacroCohesiondISVs = get_SetDataStorage_dMacroCohesiondStateVariables();
 
-                microGradientCohesion       = get_setDataStorage_microGradientCohesion( );
+                dMicroCohesiondISVs = get_SetDataStorage_dMicroCohesiondStateVariables();
 
-                dMacroCohesiondISVs         = get_setDataStorage_dMacroCohesiondStateVariables( );
-
-                dMicroCohesiondISVs         = get_setDataStorage_dMicroCohesiondStateVariables( );
-
-                dMicroGradientCohesiondISVs = get_setDataStorage_dMicroGradientCohesiondStateVariables( );
-
+                dMicroGradientCohesiondISVs = get_SetDataStorage_dMicroGradientCohesiondStateVariables();
             }
 
-            const unsigned int num_psisvs = plasticStrainLikeISVs->size( );
+            const unsigned int num_psisvs = plasticStrainLikeISVs->size();
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( get_macroHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_macroHardeningParameters( )->size( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK(get_macroHardeningParameters()->size() == 2,
+                                         "The micro hardening parameters must have a length of 2 rather than " +
+                                             std::to_string(get_macroHardeningParameters()->size()));
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( get_microHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microHardeningParameters( )->size( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK(get_microHardeningParameters()->size() == 2,
+                                         "The micro hardening parameters must have a length of 2 rather than " +
+                                             std::to_string(get_microHardeningParameters()->size()));
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( get_microGradientHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microGradientHardeningParameters( )->size( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK(get_microGradientHardeningParameters()->size() == 2,
+                                         "The micro hardening parameters must have a length of 2 rather than " +
+                                             std::to_string(get_microGradientHardeningParameters()->size()));
 
-            dMacroCohesiondISVs.zero( num_pisvs );
+            dMacroCohesiondISVs.zero(num_pisvs);
 
-            dMicroCohesiondISVs.zero( num_pisvs );
+            dMicroCohesiondISVs.zero(num_pisvs);
 
-            dMicroGradientCohesiondISVs.zero( ( get_plasticStrainLikeISVs( )->size( ) - 2 ) * num_pisvs );
+            dMicroGradientCohesiondISVs.zero((get_plasticStrainLikeISVs()->size() - 2) * num_pisvs);
 
-            *macroCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], getMacroA( ), getMacroC0( ), *getMacroSmoothingRatio( ), *getMinMacroCohesion( ) );
+            *macroCohesion.value = smoothLinearCohesion((*plasticStrainLikeISVs)[0], getMacroA(), getMacroC0(),
+                                                        getMacroSmoothingRatio(), getMinMacroCohesion());
 
-            ( *dMacroCohesiondISVs.value )[ num_pms + 0 ] = smoothLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ 0 ], getMacroA( ), getMacroC0( ),
-                                                                                            *getMacroSmoothingRatio( ), *getMinMacroCohesion( ) );
+            (*dMacroCohesiondISVs.value)[num_pms + 0] =
+                smoothLinearCohesionDerivative((*plasticStrainLikeISVs)[0], getMacroA(), getMacroC0(),
+                                               getMacroSmoothingRatio(), getMinMacroCohesion());
 
-            *microCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], getMicroA( ), getMicroC0( ), *getMicroSmoothingRatio( ), *getMinMicroCohesion( ) );
+            *microCohesion.value = smoothLinearCohesion((*plasticStrainLikeISVs)[1], getMicroA(), getMicroC0(),
+                                                        getMicroSmoothingRatio(), getMinMicroCohesion());
 
-            ( *dMicroCohesiondISVs.value )[ num_pms + 1 ] = smoothLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ 1 ], getMicroA( ), getMicroC0( ),
-                                                                                            *getMicroSmoothingRatio( ), *getMinMicroCohesion( ) );
+            (*dMicroCohesiondISVs.value)[num_pms + 1] =
+                smoothLinearCohesionDerivative((*plasticStrainLikeISVs)[1], getMicroA(), getMicroC0(),
+                                               getMicroSmoothingRatio(), getMinMicroCohesion());
 
-            microGradientCohesion.zero( dim );
+            microGradientCohesion.zero(dim);
 
-            for ( unsigned int i = 2; i < num_psisvs; i++ ){
+            for (unsigned int i = 2; i < num_psisvs; i++) {
+                (*microGradientCohesion.value)[i - 2] =
+                    smoothLinearCohesion((*plasticStrainLikeISVs)[i], getMicroGradientA()[i - 2],
+                                         getMicroGradientC0()[i - 2], getMicroGradientSmoothingRatio()[i - 2],
+                                         getMinMicroGradientCohesion());
 
-                ( *microGradientCohesion.value )[ i - 2 ] = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ i ], getMicroGradientA( )[ i - 2 ], getMicroGradientC0( )[ i - 2 ],
-                                                                                  ( *getMicroGradientSmoothingRatio( ) )[ i - 2 ], *getMinMicroGradientCohesion( ) );
-
-                ( *dMicroGradientCohesiondISVs.value )[ num_pisvs * ( i - 2 ) + get_plasticMultipliers( )->size( ) + i ]
-                    = smoothLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ i ], getMicroGradientA( )[ i - 2 ], getMicroGradientC0( )[ i - 2 ],
-                                                      ( *getMicroGradientSmoothingRatio( ) )[ i - 2 ], *getMinMicroGradientCohesion( ) );
-
+                (*dMicroGradientCohesiondISVs.value)[num_pisvs * (i - 2) + get_plasticMultipliers()->size() + i] =
+                    smoothLinearCohesionDerivative((*plasticStrainLikeISVs)[i], getMicroGradientA()[i - 2],
+                                                   getMicroGradientC0()[i - 2], getMicroGradientSmoothingRatio()[i - 2],
+                                                   getMinMicroGradientCohesion());
             }
-
         }
 
-        void residual::setPlasticStrainLikeISVEvolutionRates( ){
+        void residual::setPlasticStrainLikeISVEvolutionRates() {
             /*!
              * Set the evolution rates of the strain-like ISVs
              */
 
-            setPlasticStrainLikeISVEvolutionRates( false );
-
+            setPlasticStrainLikeISVEvolutionRates(false);
         }
 
-        void residual::setPreviousPlasticStrainLikeISVEvolutionRates( ){
+        void residual::setPreviousPlasticStrainLikeISVEvolutionRates() {
             /*!
              * Set the previous evolution rates of the strain-like ISVs
              */
 
-            setPlasticStrainLikeISVEvolutionRates( true );
-
+            setPlasticStrainLikeISVEvolutionRates(true);
         }
 
-        void residual::setPlasticStrainLikeISVEvolutionRates( const bool isPrevious ){
+        void residual::setPlasticStrainLikeISVEvolutionRates(const bool isPrevious) {
             /*!
              * Set the evolution rates of the strain-like ISVs
-             * 
+             *
              * \param isPrevious: A flag for if we should set the current (false) or previous (true) ISV evolution rates
              */
 
-            const floatType   *dMacroFlowdc;
+            const floatType *dMacroFlowdc;
 
-            const floatType   *dMicroFlowdc;
+            const floatType *dMicroFlowdc;
 
             const secondOrderTensor *dMicroGradientFlowdc;
 
             const floatVector *plasticMultipliers;
 
-            setDataStorageBase< floatVector > evolutionRates;
+            SetDataStorageBase<floatVector> evolutionRates;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                plasticMultipliers = get_previousPlasticMultipliers();
 
-                plasticMultipliers    = get_previousPlasticMultipliers( );
+                dMacroFlowdc = get_previousdMacroFlowdc();
 
-                dMacroFlowdc          = get_previousdMacroFlowdc( );
+                dMicroFlowdc = get_previousdMicroFlowdc();
 
-                dMicroFlowdc          = get_previousdMicroFlowdc( );
+                dMicroGradientFlowdc = get_previousdMicroGradientFlowdc();
 
-                dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
+                evolutionRates = get_SetDataStorage_previousPlasticStrainLikeISVEvolutionRates();
 
-                evolutionRates = get_setDataStorage_previousPlasticStrainLikeISVEvolutionRates( );
+            } else {
+                plasticMultipliers = get_plasticMultipliers();
 
-            }
-            else{
+                dMacroFlowdc = get_dMacroFlowdc();
 
-                plasticMultipliers    = get_plasticMultipliers( );
+                dMicroFlowdc = get_dMicroFlowdc();
 
-                dMacroFlowdc          = get_dMacroFlowdc( );
+                dMicroGradientFlowdc = get_dMicroGradientFlowdc();
 
-                dMicroFlowdc          = get_dMicroFlowdc( );
-
-                dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
-
-                evolutionRates = get_setDataStorage_plasticStrainLikeISVEvolutionRates( );
-
+                evolutionRates = get_SetDataStorage_plasticStrainLikeISVEvolutionRates();
             }
 
-            const unsigned int num_pm = plasticMultipliers->size( );
+            const unsigned int num_pm = plasticMultipliers->size();
 
-            evolutionRates.zero( plasticMultipliers->size( ) );
+            evolutionRates.zero(plasticMultipliers->size());
 
-            ( *evolutionRates.value )[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
+            (*evolutionRates.value)[0] = -(*dMacroFlowdc) * (*plasticMultipliers)[0];
 
-            ( *evolutionRates.value )[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
+            (*evolutionRates.value)[1] = -(*dMicroFlowdc) * (*plasticMultipliers)[1];
 
-            for ( unsigned int i = 2; i < num_pm; i++ ){
-
-                for ( unsigned int j = 2; j < num_pm; j++ ){
-
-                    ( *evolutionRates.value )[ i ] -= ( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ] * ( *plasticMultipliers )[ j ];
-
+            for (unsigned int i = 2; i < num_pm; i++) {
+                for (unsigned int j = 2; j < num_pm; j++) {
+                    (*evolutionRates.value)[i] -=
+                        (*dMicroGradientFlowdc)[3 * (i - 2) + j - 2] * (*plasticMultipliers)[j];
                 }
-
             }
-
         }
 
-        void residual::setdPlasticStrainLikeISVEvolutionRatesdStateVariables( ){
+        void residual::setdPlasticStrainLikeISVEvolutionRatesdStateVariables() {
             /*!
              * Set the Jacobian of the evolution rates of the strain-like ISVs w.r.t. the nonlinear state variables
              */
 
-            setPlasticStrainLikeISVEvolutionRatesJacobians( false );
-
+            setPlasticStrainLikeISVEvolutionRatesJacobians(false);
         }
 
-        void residual::setPreviousdPlasticStrainLikeISVEvolutionRatesdStateVariables( ){
+        void residual::setPreviousdPlasticStrainLikeISVEvolutionRatesdStateVariables() {
             /*!
-             * Set the Jacobian of the previous evolution rates of the strain-like ISVs w.r.t. the nonlinear state variables
+             * Set the Jacobian of the previous evolution rates of the strain-like ISVs w.r.t. the nonlinear state
+             * variables
              */
 
-            setPlasticStrainLikeISVEvolutionRatesJacobians( true );
-
+            setPlasticStrainLikeISVEvolutionRatesJacobians(true);
         }
 
-        void residual::setPlasticStrainLikeISVEvolutionRatesJacobians( const bool isPrevious ){
+        void residual::setPlasticStrainLikeISVEvolutionRatesJacobians(const bool isPrevious) {
             /*!
              * Set the evolution rates and Jacobians of the strain-like ISVs
-             * 
+             *
              * \param isPrevious: A flag for if we should set the current (false) or previous (true) ISV evolution rates
              */
 
-            const floatType   *dMacroFlowdc;
+            const floatType *dMacroFlowdc;
 
-            const floatType   *dMicroFlowdc;
+            const floatType *dMicroFlowdc;
 
             const secondOrderTensor *dMicroGradientFlowdc;
 
             const floatVector *plasticMultipliers;
 
-            setDataStorageBase< floatVector > evolutionRates;
+            SetDataStorageBase<floatVector> evolutionRates;
 
-            setDataStorageBase< floatVector > dEvolutionRatesdStateVariables;
+            SetDataStorageBase<floatVector> dEvolutionRatesdStateVariables;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                plasticMultipliers = get_previousPlasticMultipliers();
 
-                plasticMultipliers    = get_previousPlasticMultipliers( );
+                dMacroFlowdc = get_previousdMacroFlowdc();
 
-                dMacroFlowdc          = get_previousdMacroFlowdc( );
+                dMicroFlowdc = get_previousdMicroFlowdc();
 
-                dMicroFlowdc          = get_previousdMicroFlowdc( );
+                dMicroGradientFlowdc = get_previousdMicroGradientFlowdc();
 
-                dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
+                evolutionRates = get_SetDataStorage_previousPlasticStrainLikeISVEvolutionRates();
 
-                evolutionRates       = get_setDataStorage_previousPlasticStrainLikeISVEvolutionRates( );
+                dEvolutionRatesdStateVariables =
+                    get_SetDataStorage_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables();
 
-                dEvolutionRatesdStateVariables = get_setDataStorage_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( );
+            } else {
+                plasticMultipliers = get_plasticMultipliers();
 
-            }
-            else{
+                dMacroFlowdc = get_dMacroFlowdc();
 
-                plasticMultipliers    = get_plasticMultipliers( );
+                dMicroFlowdc = get_dMicroFlowdc();
 
-                dMacroFlowdc          = get_dMacroFlowdc( );
+                dMicroGradientFlowdc = get_dMicroGradientFlowdc();
 
-                dMicroFlowdc          = get_dMicroFlowdc( );
+                evolutionRates = get_SetDataStorage_plasticStrainLikeISVEvolutionRates();
 
-                dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
-
-                evolutionRates       = get_setDataStorage_plasticStrainLikeISVEvolutionRates( );
-
-                dEvolutionRatesdStateVariables = get_setDataStorage_dPlasticStrainLikeISVEvolutionRatesdStateVariables( );
-
+                dEvolutionRatesdStateVariables =
+                    get_SetDataStorage_dPlasticStrainLikeISVEvolutionRatesdStateVariables();
             }
 
-            const unsigned int num_pm = plasticMultipliers->size( );
+            const unsigned int num_pm = plasticMultipliers->size();
 
-            const unsigned int num_psvs = get_plasticStateVariables( )->size( );
+            const unsigned int num_psvs = get_plasticStateVariables()->size();
 
-            evolutionRates.zero( num_pm );
+            evolutionRates.zero(num_pm);
 
-            dEvolutionRatesdStateVariables.zero( num_pm * num_psvs );
+            dEvolutionRatesdStateVariables.zero(num_pm * num_psvs);
 
-            ( *evolutionRates.value )[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
+            (*evolutionRates.value)[0] = -(*dMacroFlowdc) * (*plasticMultipliers)[0];
 
-            ( *evolutionRates.value )[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
+            (*evolutionRates.value)[1] = -(*dMicroFlowdc) * (*plasticMultipliers)[1];
 
-            ( *dEvolutionRatesdStateVariables.value )[ num_psvs * 0 + 0 ] = -( *dMacroFlowdc );
+            (*dEvolutionRatesdStateVariables.value)[num_psvs * 0 + 0] = -(*dMacroFlowdc);
 
-            ( *dEvolutionRatesdStateVariables.value )[ num_psvs * 1 + 1 ] = -( *dMicroFlowdc );
+            (*dEvolutionRatesdStateVariables.value)[num_psvs * 1 + 1] = -(*dMicroFlowdc);
 
-            for ( unsigned int i = 2; i < num_pm; i++ ){
+            for (unsigned int i = 2; i < num_pm; i++) {
+                for (unsigned int j = 2; j < num_pm; j++) {
+                    (*evolutionRates.value)[i] -=
+                        (*dMicroGradientFlowdc)[3 * (i - 2) + j - 2] * (*plasticMultipliers)[j];
 
-                for ( unsigned int j = 2; j < num_pm; j++ ){
-
-                    ( *evolutionRates.value )[ i ] -= ( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ] * ( *plasticMultipliers )[ j ];
-
-                    ( *dEvolutionRatesdStateVariables.value )[ num_psvs * i + j ] = -( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ];
-
+                    (*dEvolutionRatesdStateVariables.value)[num_psvs * i + j] =
+                        -(*dMicroGradientFlowdc)[3 * (i - 2) + j - 2];
                 }
-
             }
-
         }
 
-        void residual::setUpdatedPlasticStrainLikeISVs( ){
+        void residual::setUpdatedPlasticStrainLikeISVs() {
             /*!
              * Set the updated strain like ISVs
              */
 
-            const floatVector *previousPlasticStrainLikeISVs = get_previousPlasticStrainLikeISVs( );
+            const floatVector *previousPlasticStrainLikeISVs = get_previousPlasticStrainLikeISVs();
 
-            const floatVector *evolutionRates                = get_plasticStrainLikeISVEvolutionRates( );
+            const floatVector *evolutionRates = get_plasticStrainLikeISVEvolutionRates();
 
-            const floatVector *previousEvolutionRates        = get_previousPlasticStrainLikeISVEvolutionRates( );
+            const floatVector *previousEvolutionRates = get_previousPlasticStrainLikeISVEvolutionRates();
 
             floatVector dISVs;
-            auto updatedISVs = get_setDataStorage_updatedPlasticStrainLikeISVs( );
+            auto        updatedISVs = get_SetDataStorage_updatedPlasticStrainLikeISVs();
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, 1 - ( *getIntegrationParameter( ) ) ) );
-
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::midpointEvolution(
+                hydra->getDeltaTime(), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs,
+                *updatedISVs.value, 1 - getIntegrationParameter()));
         }
 
-        void residual::setdUpdatedPlasticStrainLikeISVsdStateVariables( ){
+        void residual::setdUpdatedPlasticStrainLikeISVsdStateVariables() {
             /*!
              * Set the updated plastic strain-like ISVs jacobians
              */
 
-            setUpdatedPlasticStrainLikeISVsJacobians( false );
-
+            setUpdatedPlasticStrainLikeISVsJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticStrainLikeISVsdPreviousStateVariables( ){
+        void residual::setdUpdatedPlasticStrainLikeISVsdPreviousStateVariables() {
             /*!
              * Set the previous updated plastic strain-like ISVs jacobians
              */
 
-            setUpdatedPlasticStrainLikeISVsJacobians( true );
-
+            setUpdatedPlasticStrainLikeISVsJacobians(true);
         }
 
-        void residual::setUpdatedPlasticStrainLikeISVsJacobians( const bool addPrevious ){
+        void residual::setUpdatedPlasticStrainLikeISVsJacobians(const bool addPrevious) {
             /*!
              * Set the updated plastic strain like ISVs Jacobians
-             * 
-             * \param addPrevious: Flag for whether to add the Jacobians w.r.t. the previous state variables (true) or not (false)
+             *
+             * \param addPrevious: Flag for whether to add the Jacobians w.r.t. the previous state variables (true) or
+             * not (false)
              */
 
-            const floatVector *previousPlasticStrainLikeISVs = get_previousPlasticStrainLikeISVs( );
+            const floatVector *previousPlasticStrainLikeISVs = get_previousPlasticStrainLikeISVs();
 
-            const floatVector *evolutionRates                = get_plasticStrainLikeISVEvolutionRates( );
+            const floatVector *evolutionRates = get_plasticStrainLikeISVEvolutionRates();
 
-            const floatVector *previousEvolutionRates        = get_previousPlasticStrainLikeISVEvolutionRates( );
+            const floatVector *previousEvolutionRates = get_previousPlasticStrainLikeISVEvolutionRates();
 
-            const unsigned int num_isvs = previousPlasticStrainLikeISVs->size( );
-            const unsigned int num_psvs = get_plasticStateVariables( )->size( );
+            const unsigned int num_isvs = previousPlasticStrainLikeISVs->size();
+            const unsigned int num_psvs = get_plasticStateVariables()->size();
 
             floatVector dISVs;
 
             floatVector dISVsdEvolutionRates;
 
-            auto updatedISVs = get_setDataStorage_updatedPlasticStrainLikeISVs( );
+            auto updatedISVs = get_SetDataStorage_updatedPlasticStrainLikeISVs();
 
-            auto dUpdatedPlasticStrainLikeISVsdStateVariables = get_setDataStorage_dUpdatedPlasticStrainLikeISVsdStateVariables( );
+            auto dUpdatedPlasticStrainLikeISVsdStateVariables =
+                get_SetDataStorage_dUpdatedPlasticStrainLikeISVsdStateVariables();
 
-            if ( addPrevious ){
-
+            if (addPrevious) {
                 floatVector dISVsdPreviousEvolutionRates;
 
-                auto dISVsdStateVariables = get_setDataStorage_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( );
+                auto dISVsdStateVariables = get_SetDataStorage_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables();
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::midpointEvolutionFlatJ(
+                    hydra->getDeltaTime(), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates,
+                    dISVs, *updatedISVs.value, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates,
+                    1 - getIntegrationParameter()));
 
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dISVsdPreviousEvolutionRates( dISVsdPreviousEvolutionRates.data( ), num_isvs, num_isvs );
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( )->data( ), num_isvs, num_psvs );
+                Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor> > map_dISVsdPreviousEvolutionRates(
+                    dISVsdPreviousEvolutionRates.data(), num_isvs, num_isvs);
+                Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor> >
+                    map_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables(
+                        get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables()->data(), num_isvs, num_psvs);
 
-                dISVsdStateVariables.zero( num_isvs * num_psvs );
-                Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dISVsdStateVariables( dISVsdStateVariables.value->data( ), num_isvs, num_psvs );
+                dISVsdStateVariables.zero(num_isvs * num_psvs);
+                Eigen::Map<Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor> > map_dISVsdStateVariables(
+                    dISVsdStateVariables.value->data(), num_isvs, num_psvs);
 
-                map_dISVsdStateVariables = ( map_dISVsdPreviousEvolutionRates * map_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables ).eval( );
+                map_dISVsdStateVariables =
+                    (map_dISVsdPreviousEvolutionRates * map_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables)
+                        .eval();
 
-                for ( unsigned int i = 0; i < num_isvs; i++ ){
-
-                    ( *dISVsdStateVariables.value )[ num_psvs * i  + i + ( *getNumPlasticMultipliers( ) ) ] += 1;
-
+                for (unsigned int i = 0; i < num_isvs; i++) {
+                    (*dISVsdStateVariables.value)[num_psvs * i + i + getNumPlasticMultipliers()] += 1;
                 }
 
+            } else {
+                TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::midpointEvolutionFlatJ(
+                    hydra->getDeltaTime(), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates,
+                    dISVs, *updatedISVs.value, dISVsdEvolutionRates, 1 - getIntegrationParameter()));
             }
-            else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+            Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor> > map_dISVsdEvolutionRates(
+                dISVsdEvolutionRates.data(), num_isvs, num_isvs);
+            Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor> >
+                map_dPlasticStrainLikeISVEvolutionRatesdStateVariables(
+                    get_dPlasticStrainLikeISVEvolutionRatesdStateVariables()->data(), num_isvs, num_psvs);
 
-            }
+            dUpdatedPlasticStrainLikeISVsdStateVariables.zero(num_isvs * num_psvs);
+            Eigen::Map<Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor> >
+                map_dUpdatedPlasticStrainLikeISVsdStateVariables(
+                    dUpdatedPlasticStrainLikeISVsdStateVariables.value->data(), num_isvs, num_psvs);
 
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dISVsdEvolutionRates( dISVsdEvolutionRates.data( ), num_isvs, num_isvs );
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dPlasticStrainLikeISVEvolutionRatesdStateVariables( get_dPlasticStrainLikeISVEvolutionRatesdStateVariables( )->data( ), num_isvs, num_psvs );
-
-            dUpdatedPlasticStrainLikeISVsdStateVariables.zero( num_isvs * num_psvs );
-            Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dUpdatedPlasticStrainLikeISVsdStateVariables( dUpdatedPlasticStrainLikeISVsdStateVariables.value->data( ), num_isvs, num_psvs );
-
-            map_dUpdatedPlasticStrainLikeISVsdStateVariables = ( map_dISVsdEvolutionRates * map_dPlasticStrainLikeISVEvolutionRatesdStateVariables ).eval( );
-
+            map_dUpdatedPlasticStrainLikeISVsdStateVariables =
+                (map_dISVsdEvolutionRates * map_dPlasticStrainLikeISVEvolutionRatesdStateVariables).eval();
         }
 
-        void residual::setMacroYield( ){
+        void residual::setMacroYield() {
             /*!
              * Set the value of the macro-yield equation
              */
 
-            setYield( false );
-
+            setYield(false);
         }
 
-        void residual::setMicroYield( ){
+        void residual::setMicroYield() {
             /*!
              * Set the value of the micro-yield equation
              */
 
-            setYield( false );
-
+            setYield(false);
         }
 
-        void residual::setMicroGradientYield( ){
+        void residual::setMicroGradientYield() {
             /*!
              * Set the value of the micro gradient-yield equation
              */
 
-            setYield( false );
-
+            setYield(false);
         }
 
-        void residual::setPreviousMacroYield( ){
+        void residual::setPreviousMacroYield() {
             /*!
              * Set the previous value of the macro-yield equation
              */
 
-            setYield( true );
-
+            setYield(true);
         }
 
-        void residual::setPreviousMicroYield( ){
+        void residual::setPreviousMicroYield() {
             /*!
              * Set the previous value of the micro-yield equation
              */
 
-            setYield( true );
-
+            setYield(true);
         }
 
-        void residual::setPreviousMicroGradientYield( ){
+        void residual::setPreviousMicroGradientYield() {
             /*!
              * Set the previous value of the micro gradient-yield equation
              */
 
-            setYield( true );
-
+            setYield(true);
         }
 
-        void residual::setYield( const bool isPrevious ){
+        void residual::setYield(const bool isPrevious) {
             /*!
              * Set the values of the yield equations
-             * 
+             *
              * \param isPrevious: A flag for if the current (false) or previous (true) values should be calculated
              */
 
@@ -5461,346 +5408,314 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *microDrivingStress;
 
-            const thirdOrderTensor  *microGradientDrivingStress;
+            const thirdOrderTensor *microGradientDrivingStress;
 
-            const floatType   *macroCohesion;
+            const floatType *macroCohesion;
 
-            const floatType   *microCohesion;
+            const floatType *microCohesion;
 
-            const dimVector   *microGradientCohesion;
+            const dimVector *microGradientCohesion;
 
             const secondOrderTensor *precedingDeformationGradient;
 
-            const floatVector *macroYieldParameters = get_macroYieldParameters( );
+            const floatVector *macroYieldParameters = get_macroYieldParameters();
 
-            const floatVector *microYieldParameters = get_microYieldParameters( );
+            const floatVector *microYieldParameters = get_microYieldParameters();
 
-            const floatVector *microGradientYieldParameters = get_microGradientYieldParameters( );
+            const floatVector *microGradientYieldParameters = get_microGradientYieldParameters();
 
-            setDataStorageBase< floatType > macroYield;
+            SetDataStorageBase<floatType> macroYield;
 
-            setDataStorageBase< floatType > microYield;
+            SetDataStorageBase<floatType> microYield;
 
-            setDataStorageBase< dimVector > microGradientYield;
+            SetDataStorageBase<dimVector> microGradientYield;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                precedingDeformationGradient = get_previousPrecedingDeformationGradient();
 
-                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+                macroDrivingStress = get_previousMacroDrivingStress();
 
-                macroDrivingStress         = get_previousMacroDrivingStress( );
+                microDrivingStress = get_previousSymmetricMicroDrivingStress();
 
-                microDrivingStress         = get_previousSymmetricMicroDrivingStress( );
+                microGradientDrivingStress = get_previousHigherOrderDrivingStress();
 
-                microGradientDrivingStress = get_previousHigherOrderDrivingStress( );
+                macroCohesion = get_previousMacroCohesion();
 
-                macroCohesion              = get_previousMacroCohesion( );
+                microCohesion = get_previousMicroCohesion();
 
-                microCohesion              = get_previousMicroCohesion( );
+                microGradientCohesion = get_previousMicroGradientCohesion();
 
-                microGradientCohesion      = get_previousMicroGradientCohesion( );
+                macroYield = get_SetDataStorage_previousMacroYield();
 
-                macroYield                 = get_setDataStorage_previousMacroYield( );
+                microYield = get_SetDataStorage_previousMicroYield();
 
-                microYield                 = get_setDataStorage_previousMicroYield( );
+                microGradientYield = get_SetDataStorage_previousMicroGradientYield();
 
-                microGradientYield         = get_setDataStorage_previousMicroGradientYield( );
+            } else {
+                precedingDeformationGradient = get_precedingDeformationGradient();
 
-            }
-            else{
+                macroDrivingStress = get_macroDrivingStress();
 
-                precedingDeformationGradient = get_precedingDeformationGradient( );
+                microDrivingStress = get_symmetricMicroDrivingStress();
 
-                macroDrivingStress         = get_macroDrivingStress( );
+                microGradientDrivingStress = get_higherOrderDrivingStress();
 
-                microDrivingStress         = get_symmetricMicroDrivingStress( );
+                macroCohesion = get_macroCohesion();
 
-                microGradientDrivingStress = get_higherOrderDrivingStress( );
+                microCohesion = get_microCohesion();
 
-                macroCohesion              = get_macroCohesion( );
+                microGradientCohesion = get_microGradientCohesion();
 
-                microCohesion              = get_microCohesion( );
+                macroYield = get_SetDataStorage_macroYield();
 
-                microGradientCohesion      = get_microGradientCohesion( );
+                microYield = get_SetDataStorage_microYield();
 
-                macroYield                 = get_setDataStorage_macroYield( );
-
-                microYield                 = get_setDataStorage_microYield( );
-
-                microGradientYield         = get_setDataStorage_microGradientYield( );
-
+                microGradientYield = get_SetDataStorage_microGradientYield();
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
-                                                                                        ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
-                                                                                        *macroYield.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeSecondOrderDruckerPragerYieldEquation(
+                *macroDrivingStress, *macroCohesion, *precedingDeformationGradient, (*macroYieldParameters)[0],
+                (*macroYieldParameters)[1], *macroYield.value));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, *precedingDeformationGradient,
-                                                                                        ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
-                                                                                        *microYield.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeSecondOrderDruckerPragerYieldEquation(
+                *microDrivingStress, *microCohesion, *precedingDeformationGradient, (*microYieldParameters)[0],
+                (*microYieldParameters)[1], *microYield.value));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
-                                                                                        ( *microGradientYieldParameters )[ 0 ], ( *microGradientYieldParameters )[ 1 ],
-                                                                                        *microGradientYield.value ) );
-
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeHigherOrderDruckerPragerYieldEquation(
+                *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
+                (*microGradientYieldParameters)[0], (*microGradientYieldParameters)[1], *microGradientYield.value));
         }
 
-        void residual::setdMacroYielddStress( ){
+        void residual::setdMacroYielddStress() {
             /*!
              * Set the Jacobian of the macro yield stress w.r.t. the macro stress measure
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMacroYielddStateVariables( ){
+        void residual::setdMacroYielddStateVariables() {
             /*!
              * Set the Jacobian of the macro yield stress w.r.t. the state variables
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMacroYielddF( ){
+        void residual::setdMacroYielddF() {
             /*!
              * Set the Jacobian of the macro yield stress w.r.t. the deformation gradient
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMacroYielddFn( ){
+        void residual::setdMacroYielddFn() {
             /*!
              * Set the Jacobian of the macro yield stress w.r.t. the sub deformation gradients
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroYielddStress( ){
+        void residual::setdMicroYielddStress() {
             /*!
              * Set the Jacobian of the micro yield stress w.r.t. the micro stress measure
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroYielddStateVariables( ){
+        void residual::setdMicroYielddStateVariables() {
             /*!
              * Set the Jacobian of the micro yield stress w.r.t. the state variables
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroYielddF( ){
+        void residual::setdMicroYielddF() {
             /*!
              * Set the Jacobian of the micro yield stress w.r.t. the deformation gradient
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroYielddFn( ){
+        void residual::setdMicroYielddFn() {
             /*!
              * Set the Jacobian of the micro yield stress w.r.t. the sub deformation gradients
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroGradientYielddStress( ){
+        void residual::setdMicroGradientYielddStress() {
             /*!
              * Set the Jacobian of the micro gradient yield stress w.r.t. the micro gradient stress measure
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroGradientYielddStateVariables( ){
+        void residual::setdMicroGradientYielddStateVariables() {
             /*!
              * Set the Jacobian of the micro gradient yield stress w.r.t. the state variables
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroGradientYielddF( ){
+        void residual::setdMicroGradientYielddF() {
             /*!
              * Set the Jacobian of the micro gradient yield stress w.r.t. the deformation gradient
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroGradientYielddFn( ){
+        void residual::setdMicroGradientYielddFn() {
             /*!
              * Set the Jacobian of the micro gradient yield stress w.r.t. the sub deformation gradient
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroGradientYielddChi( ){
+        void residual::setdMicroGradientYielddChi() {
             /*!
              * Set the Jacobian of the micro gradient yield stress w.r.t. the micro deformation
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setdMicroGradientYielddChin( ){
+        void residual::setdMicroGradientYielddChin() {
             /*!
              * Set the Jacobian of the micro gradient yield stress w.r.t. the sub micro deformations
              */
 
-            setYieldJacobians( false );
-
+            setYieldJacobians(false);
         }
 
-        void residual::setPreviousdMacroYielddStress( ){
+        void residual::setPreviousdMacroYielddStress() {
             /*!
              * Set the previous Jacobian of the macro yield stress w.r.t. the macro stress measure
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMacroYielddStateVariables( ){
+        void residual::setPreviousdMacroYielddStateVariables() {
             /*!
              * Set the previous Jacobian of the macro yield stress w.r.t. the state variables
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMacroYielddF( ){
+        void residual::setPreviousdMacroYielddF() {
             /*!
              * Set the previous Jacobian of the macro yield stress w.r.t. the deformation gradient
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMacroYielddFn( ){
+        void residual::setPreviousdMacroYielddFn() {
             /*!
              * Set the previous Jacobian of the macro yield stress w.r.t. the sub deformation gradients
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroYielddStress( ){
+        void residual::setPreviousdMicroYielddStress() {
             /*!
              * Set the previous Jacobian of the micro yield stress w.r.t. the micro stress measure
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroYielddStateVariables( ){
+        void residual::setPreviousdMicroYielddStateVariables() {
             /*!
              * Set the previous Jacobian of the micro yield stress w.r.t. the state variables
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroYielddF( ){
+        void residual::setPreviousdMicroYielddF() {
             /*!
              * Set the previous Jacobian of the micro yield stress w.r.t. the deformation gradient
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroYielddFn( ){
+        void residual::setPreviousdMicroYielddFn() {
             /*!
              * Set the previous Jacobian of the micro yield stress w.r.t. the sub deformation gradients
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroGradientYielddStress( ){
+        void residual::setPreviousdMicroGradientYielddStress() {
             /*!
              * Set the previous Jacobian of the micro gradient yield stress w.r.t. the micro gradient stress measure
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroGradientYielddStateVariables( ){
+        void residual::setPreviousdMicroGradientYielddStateVariables() {
             /*!
              * Set the previous Jacobian of the micro gradient yield stress w.r.t. the state variables
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroGradientYielddF( ){
+        void residual::setPreviousdMicroGradientYielddF() {
             /*!
              * Set the previous Jacobian of the micro gradient yield stress w.r.t. the deformation gradient
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroGradientYielddFn( ){
+        void residual::setPreviousdMicroGradientYielddFn() {
             /*!
              * Set the previous Jacobian of the micro gradient yield stress w.r.t. the sub deformation gradient
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroGradientYielddChi( ){
+        void residual::setPreviousdMicroGradientYielddChi() {
             /*!
              * Set the previous Jacobian of the micro gradient yield stress w.r.t. the micro deformation
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setPreviousdMicroGradientYielddChin( ){
+        void residual::setPreviousdMicroGradientYielddChin() {
             /*!
              * Set the previous Jacobian of the micro gradient yield stress w.r.t. the sub micro deformations
              */
 
-            setYieldJacobians( true );
-
+            setYieldJacobians(true);
         }
 
-        void residual::setYieldJacobians( const bool isPrevious ){
+        void residual::setYieldJacobians(const bool isPrevious) {
             /*!
              * Set the value and jacobians of the yield functions
-             * 
-             * \param isPrevious: Flag for whether to get the jacobians of the current (false) or previous (true) yield functions
+             *
+             * \param isPrevious: Flag for whether to get the jacobians of the current (false) or previous (true) yield
+             * functions
              */
 
             constexpr unsigned int dim = 3;
@@ -5809,21 +5724,21 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations();
 
-            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+            const unsigned int num_isvs = get_plasticStateVariables()->size();
 
             const secondOrderTensor *macroDrivingStress;
 
             const secondOrderTensor *microDrivingStress;
 
-            const thirdOrderTensor  *microGradientDrivingStress;
+            const thirdOrderTensor *microGradientDrivingStress;
 
-            const floatType   *macroCohesion;
+            const floatType *macroCohesion;
 
-            const floatType   *microCohesion;
+            const floatType *microCohesion;
 
-            const dimVector   *microGradientCohesion;
+            const dimVector *microGradientCohesion;
 
             const floatVector *dMacroCohesiondStateVariables;
 
@@ -5859,222 +5774,218 @@ namespace tardigradeHydra{
 
             const floatVector *dPrecedingFdFn;
 
-            const floatVector *macroYieldParameters = get_macroYieldParameters( );
+            const floatVector *macroYieldParameters = get_macroYieldParameters();
 
-            const floatVector *microYieldParameters = get_microYieldParameters( );
+            const floatVector *microYieldParameters = get_microYieldParameters();
 
-            const floatVector *microGradientYieldParameters = get_microGradientYieldParameters( );
+            const floatVector *microGradientYieldParameters = get_microGradientYieldParameters();
 
-            setDataStorageBase< floatType > macroYield;
+            SetDataStorageBase<floatType> macroYield;
 
-            setDataStorageBase< floatType > microYield;
+            SetDataStorageBase<floatType> microYield;
 
-            setDataStorageBase< dimVector > microGradientYield;
+            SetDataStorageBase<dimVector> microGradientYield;
 
-            setDataStorageBase< secondOrderTensor > dMacroYielddStress;
+            SetDataStorageBase<secondOrderTensor> dMacroYielddStress;
 
-            setDataStorageBase< floatVector > dMacroYielddStateVariables;
+            SetDataStorageBase<floatVector> dMacroYielddStateVariables;
 
-            setDataStorageBase< secondOrderTensor > dMacroYielddF;
+            SetDataStorageBase<secondOrderTensor> dMacroYielddF;
 
-            setDataStorageBase< floatVector > dMacroYielddFn;
+            SetDataStorageBase<floatVector> dMacroYielddFn;
 
-            setDataStorageBase< secondOrderTensor > dMicroYielddStress;
+            SetDataStorageBase<secondOrderTensor> dMicroYielddStress;
 
-            setDataStorageBase< floatVector > dMicroYielddStateVariables;
+            SetDataStorageBase<floatVector> dMicroYielddStateVariables;
 
-            setDataStorageBase< secondOrderTensor > dMicroYielddF;
+            SetDataStorageBase<secondOrderTensor> dMicroYielddF;
 
-            setDataStorageBase< floatVector > dMicroYielddFn;
+            SetDataStorageBase<floatVector> dMicroYielddFn;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientYielddStress;
+            SetDataStorageBase<fourthOrderTensor> dMicroGradientYielddStress;
 
-            setDataStorageBase< floatVector > dMicroGradientYielddStateVariables;
+            SetDataStorageBase<floatVector> dMicroGradientYielddStateVariables;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientYielddF;
+            SetDataStorageBase<fourthOrderTensor> dMicroGradientYielddF;
 
-            setDataStorageBase< floatVector > dMicroGradientYielddFn;
+            SetDataStorageBase<floatVector> dMicroGradientYielddFn;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientYielddChi;
+            SetDataStorageBase<fourthOrderTensor> dMicroGradientYielddChi;
 
-            setDataStorageBase< floatVector > dMicroGradientYielddChin;
+            SetDataStorageBase<floatVector> dMicroGradientYielddChin;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                precedingDeformationGradient = get_previousPrecedingDeformationGradient();
 
-                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+                dPrecedingFdF = get_previousdPrecedingDeformationGradientdF();
 
-                dPrecedingFdF  = get_previousdPrecedingDeformationGradientdF( );
+                dPrecedingFdFn = get_previousdPrecedingDeformationGradientdFn();
 
-                dPrecedingFdFn = get_previousdPrecedingDeformationGradientdFn( );
+                dMacroCohesiondStateVariables = get_previousdMacroCohesiondStateVariables();
 
-                dMacroCohesiondStateVariables         = get_previousdMacroCohesiondStateVariables( );
+                dMicroCohesiondStateVariables = get_previousdMicroCohesiondStateVariables();
 
-                dMicroCohesiondStateVariables         = get_previousdMicroCohesiondStateVariables( );
+                dMicroGradientCohesiondStateVariables = get_previousdMicroGradientCohesiondStateVariables();
 
-                dMicroGradientCohesiondStateVariables = get_previousdMicroGradientCohesiondStateVariables( );
+                dMacroDrivingStressdStress = get_previousdMacroDrivingStressdMacroStress();
 
-                dMacroDrivingStressdStress            = get_previousdMacroDrivingStressdMacroStress( );
+                dMicroDrivingStressdStress = get_previousdSymmetricMicroDrivingStressdMicroStress();
 
-                dMicroDrivingStressdStress            = get_previousdSymmetricMicroDrivingStressdMicroStress( );
+                dMicroGradientDrivingStressdStress = get_previousdHigherOrderDrivingStressdHigherOrderStress();
 
-                dMicroGradientDrivingStressdStress    = get_previousdHigherOrderDrivingStressdHigherOrderStress( );
+                dMacroDrivingStressdF = get_previousdMacroDrivingStressdF();
 
-                dMacroDrivingStressdF                 = get_previousdMacroDrivingStressdF( );
+                dMicroDrivingStressdF = get_previousdSymmetricMicroDrivingStressdF();
 
-                dMicroDrivingStressdF                 = get_previousdSymmetricMicroDrivingStressdF( );
+                dMicroGradientDrivingStressdF = get_previousdHigherOrderDrivingStressdF();
 
-                dMicroGradientDrivingStressdF         = get_previousdHigherOrderDrivingStressdF( );
+                dMicroGradientDrivingStressdChi = get_previousdHigherOrderDrivingStressdChi();
 
-                dMicroGradientDrivingStressdChi       = get_previousdHigherOrderDrivingStressdChi( );
+                dMacroDrivingStressdFn = get_previousdMacroDrivingStressdFn();
 
-                dMacroDrivingStressdFn                = get_previousdMacroDrivingStressdFn( );
+                dMicroDrivingStressdFn = get_previousdSymmetricMicroDrivingStressdFn();
 
-                dMicroDrivingStressdFn                = get_previousdSymmetricMicroDrivingStressdFn( );
+                dMicroGradientDrivingStressdFn = get_previousdHigherOrderDrivingStressdFn();
 
-                dMicroGradientDrivingStressdFn        = get_previousdHigherOrderDrivingStressdFn( );
+                dMicroGradientDrivingStressdChin = get_previousdHigherOrderDrivingStressdChin();
 
-                dMicroGradientDrivingStressdChin      = get_previousdHigherOrderDrivingStressdChin( );
+                macroDrivingStress = get_previousMacroDrivingStress();
 
-                macroDrivingStress                    = get_previousMacroDrivingStress( );
+                microDrivingStress = get_previousSymmetricMicroDrivingStress();
 
-                microDrivingStress                    = get_previousSymmetricMicroDrivingStress( );
+                microGradientDrivingStress = get_previousHigherOrderDrivingStress();
 
-                microGradientDrivingStress            = get_previousHigherOrderDrivingStress( );
+                macroCohesion = get_previousMacroCohesion();
 
-                macroCohesion                         = get_previousMacroCohesion( );
+                microCohesion = get_previousMicroCohesion();
 
-                microCohesion                         = get_previousMicroCohesion( );
+                microGradientCohesion = get_previousMicroGradientCohesion();
 
-                microGradientCohesion                 = get_previousMicroGradientCohesion( );
+                macroYield = get_SetDataStorage_previousMacroYield();
 
-                macroYield                            = get_setDataStorage_previousMacroYield( );
+                microYield = get_SetDataStorage_previousMicroYield();
 
-                microYield                            = get_setDataStorage_previousMicroYield( );
+                microGradientYield = get_SetDataStorage_previousMicroGradientYield();
 
-                microGradientYield                    = get_setDataStorage_previousMicroGradientYield( );
+                dMacroYielddStress = get_SetDataStorage_previousdMacroYielddStress();
 
-                dMacroYielddStress                    = get_setDataStorage_previousdMacroYielddStress( );
+                dMacroYielddStateVariables = get_SetDataStorage_previousdMacroYielddStateVariables();
 
-                dMacroYielddStateVariables            = get_setDataStorage_previousdMacroYielddStateVariables( );
+                dMacroYielddF = get_SetDataStorage_previousdMacroYielddF();
 
-                dMacroYielddF                         = get_setDataStorage_previousdMacroYielddF( );
+                dMacroYielddFn = get_SetDataStorage_previousdMacroYielddFn();
 
-                dMacroYielddFn                        = get_setDataStorage_previousdMacroYielddFn( );
+                dMicroYielddStress = get_SetDataStorage_previousdMicroYielddStress();
 
-                dMicroYielddStress                    = get_setDataStorage_previousdMicroYielddStress( );
+                dMicroYielddStateVariables = get_SetDataStorage_previousdMicroYielddStateVariables();
 
-                dMicroYielddStateVariables            = get_setDataStorage_previousdMicroYielddStateVariables( );
+                dMicroYielddF = get_SetDataStorage_previousdMicroYielddF();
 
-                dMicroYielddF                         = get_setDataStorage_previousdMicroYielddF( );
+                dMicroYielddFn = get_SetDataStorage_previousdMicroYielddFn();
 
-                dMicroYielddFn                        = get_setDataStorage_previousdMicroYielddFn( );
+                dMicroGradientYielddStress = get_SetDataStorage_previousdMicroGradientYielddStress();
 
-                dMicroGradientYielddStress            = get_setDataStorage_previousdMicroGradientYielddStress( );
+                dMicroGradientYielddStateVariables = get_SetDataStorage_previousdMicroGradientYielddStateVariables();
 
-                dMicroGradientYielddStateVariables    = get_setDataStorage_previousdMicroGradientYielddStateVariables( );
+                dMicroGradientYielddF = get_SetDataStorage_previousdMicroGradientYielddF();
 
-                dMicroGradientYielddF                 = get_setDataStorage_previousdMicroGradientYielddF( );
+                dMicroGradientYielddFn = get_SetDataStorage_previousdMicroGradientYielddFn();
 
-                dMicroGradientYielddFn                = get_setDataStorage_previousdMicroGradientYielddFn( );
+                dMicroGradientYielddChi = get_SetDataStorage_previousdMicroGradientYielddChi();
 
-                dMicroGradientYielddChi               = get_setDataStorage_previousdMicroGradientYielddChi( );
+                dMicroGradientYielddChin = get_SetDataStorage_previousdMicroGradientYielddChin();
 
-                dMicroGradientYielddChin              = get_setDataStorage_previousdMicroGradientYielddChin( );
+            } else {
+                precedingDeformationGradient = get_precedingDeformationGradient();
 
-            }
-            else{
+                dPrecedingFdF = get_dPrecedingDeformationGradientdF();
 
-                precedingDeformationGradient = get_precedingDeformationGradient( );
+                dPrecedingFdFn = get_dPrecedingDeformationGradientdFn();
 
-                dPrecedingFdF  = get_dPrecedingDeformationGradientdF( );
+                dMacroCohesiondStateVariables = get_dMacroCohesiondStateVariables();
 
-                dPrecedingFdFn = get_dPrecedingDeformationGradientdFn( );
+                dMicroCohesiondStateVariables = get_dMicroCohesiondStateVariables();
 
-                dMacroCohesiondStateVariables         = get_dMacroCohesiondStateVariables( );
+                dMicroGradientCohesiondStateVariables = get_dMicroGradientCohesiondStateVariables();
 
-                dMicroCohesiondStateVariables         = get_dMicroCohesiondStateVariables( );
+                dMacroDrivingStressdStress = get_dMacroDrivingStressdMacroStress();
 
-                dMicroGradientCohesiondStateVariables = get_dMicroGradientCohesiondStateVariables( );
+                dMicroDrivingStressdStress = get_dSymmetricMicroDrivingStressdMicroStress();
 
-                dMacroDrivingStressdStress         = get_dMacroDrivingStressdMacroStress( );
+                dMicroGradientDrivingStressdStress = get_dHigherOrderDrivingStressdHigherOrderStress();
 
-                dMicroDrivingStressdStress         = get_dSymmetricMicroDrivingStressdMicroStress( );
+                dMacroDrivingStressdF = get_dMacroDrivingStressdF();
 
-                dMicroGradientDrivingStressdStress = get_dHigherOrderDrivingStressdHigherOrderStress( );
+                dMicroDrivingStressdF = get_dSymmetricMicroDrivingStressdF();
 
-                dMacroDrivingStressdF              = get_dMacroDrivingStressdF( );
+                dMicroGradientDrivingStressdF = get_dHigherOrderDrivingStressdF();
 
-                dMicroDrivingStressdF              = get_dSymmetricMicroDrivingStressdF( );
+                dMicroGradientDrivingStressdChi = get_dHigherOrderDrivingStressdChi();
 
-                dMicroGradientDrivingStressdF      = get_dHigherOrderDrivingStressdF( );
+                dMacroDrivingStressdFn = get_dMacroDrivingStressdFn();
 
-                dMicroGradientDrivingStressdChi    = get_dHigherOrderDrivingStressdChi( );
+                dMicroDrivingStressdFn = get_dSymmetricMicroDrivingStressdFn();
 
-                dMacroDrivingStressdFn             = get_dMacroDrivingStressdFn( );
+                dMicroGradientDrivingStressdFn = get_dHigherOrderDrivingStressdFn();
 
-                dMicroDrivingStressdFn             = get_dSymmetricMicroDrivingStressdFn( );
+                dMicroGradientDrivingStressdChin = get_dHigherOrderDrivingStressdChin();
 
-                dMicroGradientDrivingStressdFn     = get_dHigherOrderDrivingStressdFn( );
+                macroDrivingStress = get_macroDrivingStress();
 
-                dMicroGradientDrivingStressdChin   = get_dHigherOrderDrivingStressdChin( );
+                microDrivingStress = get_symmetricMicroDrivingStress();
 
-                macroDrivingStress                 = get_macroDrivingStress( );
+                microGradientDrivingStress = get_higherOrderDrivingStress();
 
-                microDrivingStress                 = get_symmetricMicroDrivingStress( );
+                macroCohesion = get_macroCohesion();
 
-                microGradientDrivingStress         = get_higherOrderDrivingStress( );
+                microCohesion = get_microCohesion();
 
-                macroCohesion                      = get_macroCohesion( );
+                microGradientCohesion = get_microGradientCohesion();
 
-                microCohesion                      = get_microCohesion( );
+                macroYield = get_SetDataStorage_macroYield();
 
-                microGradientCohesion              = get_microGradientCohesion( );
+                microYield = get_SetDataStorage_microYield();
 
-                macroYield                         = get_setDataStorage_macroYield( );
+                microGradientYield = get_SetDataStorage_microGradientYield();
 
-                microYield                         = get_setDataStorage_microYield( );
+                dMacroYielddStress = get_SetDataStorage_dMacroYielddStress();
 
-                microGradientYield                 = get_setDataStorage_microGradientYield( );
+                dMacroYielddStateVariables = get_SetDataStorage_dMacroYielddStateVariables();
 
-                dMacroYielddStress                 = get_setDataStorage_dMacroYielddStress( );
+                dMacroYielddF = get_SetDataStorage_dMacroYielddF();
 
-                dMacroYielddStateVariables         = get_setDataStorage_dMacroYielddStateVariables( );
+                dMacroYielddFn = get_SetDataStorage_dMacroYielddFn();
 
-                dMacroYielddF                      = get_setDataStorage_dMacroYielddF( );
+                dMicroYielddStress = get_SetDataStorage_dMicroYielddStress();
 
-                dMacroYielddFn                     = get_setDataStorage_dMacroYielddFn( );
+                dMicroYielddStateVariables = get_SetDataStorage_dMicroYielddStateVariables();
 
-                dMicroYielddStress                 = get_setDataStorage_dMicroYielddStress( );
+                dMicroYielddF = get_SetDataStorage_dMicroYielddF();
 
-                dMicroYielddStateVariables         = get_setDataStorage_dMicroYielddStateVariables( );
+                dMicroYielddFn = get_SetDataStorage_dMicroYielddFn();
 
-                dMicroYielddF                      = get_setDataStorage_dMicroYielddF( );
+                dMicroGradientYielddStress = get_SetDataStorage_dMicroGradientYielddStress();
 
-                dMicroYielddFn                     = get_setDataStorage_dMicroYielddFn( );
+                dMicroGradientYielddStateVariables = get_SetDataStorage_dMicroGradientYielddStateVariables();
 
-                dMicroGradientYielddStress         = get_setDataStorage_dMicroGradientYielddStress( );
+                dMicroGradientYielddF = get_SetDataStorage_dMicroGradientYielddF();
 
-                dMicroGradientYielddStateVariables = get_setDataStorage_dMicroGradientYielddStateVariables( );
+                dMicroGradientYielddFn = get_SetDataStorage_dMicroGradientYielddFn();
 
-                dMicroGradientYielddF              = get_setDataStorage_dMicroGradientYielddF( );
+                dMicroGradientYielddChi = get_SetDataStorage_dMicroGradientYielddChi();
 
-                dMicroGradientYielddFn             = get_setDataStorage_dMicroGradientYielddFn( );
-
-                dMicroGradientYielddChi            = get_setDataStorage_dMicroGradientYielddChi( );
-
-                dMicroGradientYielddChin           = get_setDataStorage_dMicroGradientYielddChin( );
-
+                dMicroGradientYielddChin = get_SetDataStorage_dMicroGradientYielddChin();
             }
 
             secondOrderTensor dMacroYielddDrivingStress;
 
-            floatType   dMacroYielddCohesion;
+            floatType dMacroYielddCohesion;
 
             secondOrderTensor dMacroYielddPrecedingF;
 
             secondOrderTensor dMicroYielddDrivingStress;
 
-            floatType   dMicroYielddCohesion;
+            floatType dMicroYielddCohesion;
 
             secondOrderTensor dMicroYielddPrecedingF;
 
@@ -6084,176 +5995,199 @@ namespace tardigradeHydra{
 
             thirdOrderTensor dMicroGradientYielddPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
-                                                                                        ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
-                                                                                        *macroYield.value, dMacroYielddDrivingStress, dMacroYielddCohesion, dMacroYielddPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeSecondOrderDruckerPragerYieldEquation(
+                *macroDrivingStress, *macroCohesion, *precedingDeformationGradient, (*macroYieldParameters)[0],
+                (*macroYieldParameters)[1], *macroYield.value, dMacroYielddDrivingStress, dMacroYielddCohesion,
+                dMacroYielddPrecedingF));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, *precedingDeformationGradient,
-                                                                                        ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
-                                                                                        *microYield.value, dMicroYielddDrivingStress, dMicroYielddCohesion, dMicroYielddPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeSecondOrderDruckerPragerYieldEquation(
+                *microDrivingStress, *microCohesion, *precedingDeformationGradient, (*microYieldParameters)[0],
+                (*microYieldParameters)[1], *microYield.value, dMicroYielddDrivingStress, dMicroYielddCohesion,
+                dMicroYielddPrecedingF));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
-                                                                                        ( *microGradientYieldParameters )[ 0 ], ( *microGradientYieldParameters )[ 1 ],
-                                                                                        *microGradientYield.value, dMicroGradientYielddDrivingStress, dMicroGradientYielddCohesion,
-                                                                                        dMicroGradientYielddPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computeHigherOrderDruckerPragerYieldEquation(
+                *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
+                (*microGradientYieldParameters)[0], (*microGradientYieldParameters)[1], *microGradientYield.value,
+                dMicroGradientYielddDrivingStress, dMicroGradientYielddCohesion, dMicroGradientYielddPrecedingF));
 
-            auto map_dMacroYielddDrivingStress         = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dMacroYielddDrivingStress.data( ) );
-            auto map_dMacroYielddPrecedingF            = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dMacroYielddPrecedingF.data( ) );
-            auto map_dMicroYielddDrivingStress         = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dMicroYielddDrivingStress.data( ) );
-            auto map_dMicroYielddPrecedingF            = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dMicroYielddPrecedingF.data( ) );
-            auto map_dMicroGradientYielddDrivingStress = getFixedSizeMatrixMap< floatType,       3, tot_dim >( dMicroGradientYielddDrivingStress.data( ) );
-            auto map_dMicroGradientYielddCohesion      = getFixedSizeMatrixMap< floatType,       3,       3 >( dMicroGradientYielddCohesion.data( ) );
-            auto map_dMicroGradientYielddPrecedingF    = getFixedSizeMatrixMap< floatType,       3, sot_dim >( dMicroGradientYielddPrecedingF.data( ) );
+            auto map_dMacroYielddDrivingStress =
+                getFixedSizeMatrixMap<floatType, 1, sot_dim>(dMacroYielddDrivingStress.data());
+            auto map_dMacroYielddPrecedingF =
+                getFixedSizeMatrixMap<floatType, 1, sot_dim>(dMacroYielddPrecedingF.data());
+            auto map_dMicroYielddDrivingStress =
+                getFixedSizeMatrixMap<floatType, 1, sot_dim>(dMicroYielddDrivingStress.data());
+            auto map_dMicroYielddPrecedingF =
+                getFixedSizeMatrixMap<floatType, 1, sot_dim>(dMicroYielddPrecedingF.data());
+            auto map_dMicroGradientYielddDrivingStress =
+                getFixedSizeMatrixMap<floatType, 3, tot_dim>(dMicroGradientYielddDrivingStress.data());
+            auto map_dMicroGradientYielddCohesion =
+                getFixedSizeMatrixMap<floatType, 3, 3>(dMicroGradientYielddCohesion.data());
+            auto map_dMicroGradientYielddPrecedingF =
+                getFixedSizeMatrixMap<floatType, 3, sot_dim>(dMicroGradientYielddPrecedingF.data());
 
-            auto map_dPrecedingFdF                         = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPrecedingFdF->data( ) );
-            auto map_dMacroDrivingStressdStress            = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMacroDrivingStressdStress->data( ) );
-            auto map_dMicroDrivingStressdStress            = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroDrivingStressdStress->data( ) );
-            auto map_dMicroGradientDrivingStressdStress    = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dMicroGradientDrivingStressdStress->data( ) );
-            auto map_dMacroDrivingStressdF                 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMacroDrivingStressdF->data( ) );
-            auto map_dMicroDrivingStressdF                 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroDrivingStressdF->data( ) );
-            auto map_dMicroGradientDrivingStressdF         = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dMicroGradientDrivingStressdF->data( ) );
-            auto map_dMicroGradientDrivingStressdChi       = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dMicroGradientDrivingStressdChi->data( ) );
+            auto map_dPrecedingFdF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPrecedingFdF->data());
+            auto map_dMacroDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMacroDrivingStressdStress->data());
+            auto map_dMicroDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMicroDrivingStressdStress->data());
+            auto map_dMicroGradientDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(dMicroGradientDrivingStressdStress->data());
+            auto map_dMacroDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMacroDrivingStressdF->data());
+            auto map_dMicroDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMicroDrivingStressdF->data());
+            auto map_dMicroGradientDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dMicroGradientDrivingStressdF->data());
+            auto map_dMicroGradientDrivingStressdChi =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dMicroGradientDrivingStressdChi->data());
 
-            auto map_dPrecedingFdFn                        = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPrecedingFdFn->data( ),                        ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroGradientCohesiondStateVariables = getDynamicColumnSizeMatrixMap< floatType,       3 >( dMicroGradientCohesiondStateVariables->data( ), num_isvs                      );
-            auto map_dMacroDrivingStressdFn                = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dMacroDrivingStressdFn->data( ),                ( num_configs - 1 ) * sot_dim    );
-            auto map_dMicroDrivingStressdFn                = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dMicroDrivingStressdFn->data( ),                ( num_configs - 1 ) * sot_dim    );
-            auto map_dMicroGradientDrivingStressdFn        = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dMicroGradientDrivingStressdFn->data( ),        ( num_configs - 1 ) * sot_dim    );
-            auto map_dMicroGradientDrivingStressdChin      = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dMicroGradientDrivingStressdChin->data( ),      ( num_configs - 1 ) * sot_dim    );
+            auto map_dPrecedingFdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dPrecedingFdFn->data(), (num_configs - 1) * sot_dim);
+            auto map_dMicroGradientCohesiondStateVariables =
+                getDynamicColumnSizeMatrixMap<floatType, 3>(dMicroGradientCohesiondStateVariables->data(), num_isvs);
+            auto map_dMacroDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dMacroDrivingStressdFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_dMicroDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dMicroDrivingStressdFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_dMicroGradientDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dMicroGradientDrivingStressdFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_dMicroGradientDrivingStressdChin =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dMicroGradientDrivingStressdChin->data(),
+                                                                  (num_configs - 1) * sot_dim);
 
-            auto map_dMacroYielddStress                 = dMacroYielddStress.zeroMap< floatType, 1, sot_dim >( );
-            auto map_dMacroYielddF                      = dMacroYielddF.zeroMap< floatType, 1, sot_dim >( );
-            auto map_dMacroYielddFn                     = dMacroYielddFn.zeroMap< floatType, 1 >( ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroYielddStress                 = dMicroYielddStress.zeroMap< floatType, 1, sot_dim >( );
-            auto map_dMicroYielddF                      = dMicroYielddF.zeroMap< floatType, 1, sot_dim >( );
-            auto map_dMicroYielddFn                     = dMicroYielddFn.zeroMap< floatType, 1 >( ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroGradientYielddStress         = dMicroGradientYielddStress.zeroMap< floatType, 3, tot_dim >( );
-            auto map_dMicroGradientYielddStateVariables = dMicroGradientYielddStateVariables.zeroMap< floatType, 3 >( ( num_configs - 1 ) * num_isvs );
-            auto map_dMicroGradientYielddF              = dMicroGradientYielddF.zeroMap< floatType, 3, sot_dim >( );
-            auto map_dMicroGradientYielddFn             = dMicroGradientYielddFn.zeroMap< floatType, 3 >( ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroGradientYielddChi            = dMicroGradientYielddChi.zeroMap< floatType, 3, sot_dim >( );
-            auto map_dMicroGradientYielddChin           = dMicroGradientYielddChin.zeroMap< floatType, 3 >( ( num_configs - 1 ) * sot_dim );
+            auto map_dMacroYielddStress         = dMacroYielddStress.zeroMap<floatType, 1, sot_dim>();
+            auto map_dMacroYielddF              = dMacroYielddF.zeroMap<floatType, 1, sot_dim>();
+            auto map_dMacroYielddFn             = dMacroYielddFn.zeroMap<floatType, 1>((num_configs - 1) * sot_dim);
+            auto map_dMicroYielddStress         = dMicroYielddStress.zeroMap<floatType, 1, sot_dim>();
+            auto map_dMicroYielddF              = dMicroYielddF.zeroMap<floatType, 1, sot_dim>();
+            auto map_dMicroYielddFn             = dMicroYielddFn.zeroMap<floatType, 1>((num_configs - 1) * sot_dim);
+            auto map_dMicroGradientYielddStress = dMicroGradientYielddStress.zeroMap<floatType, 3, tot_dim>();
+            auto map_dMicroGradientYielddStateVariables =
+                dMicroGradientYielddStateVariables.zeroMap<floatType, 3>((num_configs - 1) * num_isvs);
+            auto map_dMicroGradientYielddF  = dMicroGradientYielddF.zeroMap<floatType, 3, sot_dim>();
+            auto map_dMicroGradientYielddFn = dMicroGradientYielddFn.zeroMap<floatType, 3>((num_configs - 1) * sot_dim);
+            auto map_dMicroGradientYielddChi = dMicroGradientYielddChi.zeroMap<floatType, 3, sot_dim>();
+            auto map_dMicroGradientYielddChin =
+                dMicroGradientYielddChin.zeroMap<floatType, 3>((num_configs - 1) * sot_dim);
 
-            map_dMacroYielddStress = ( map_dMacroYielddDrivingStress * map_dMacroDrivingStressdStress ).eval( );
+            map_dMacroYielddStress = (map_dMacroYielddDrivingStress * map_dMacroDrivingStressdStress).eval();
 
-            *dMacroYielddStateVariables.value = dMacroYielddCohesion * ( *dMacroCohesiondStateVariables );
+            *dMacroYielddStateVariables.value = dMacroYielddCohesion * (*dMacroCohesiondStateVariables);
 
-            map_dMacroYielddF  = ( map_dMacroYielddDrivingStress * map_dMacroDrivingStressdF ).eval( );
-            map_dMacroYielddF += ( map_dMacroYielddPrecedingF * map_dPrecedingFdF ).eval( );
+            map_dMacroYielddF = (map_dMacroYielddDrivingStress * map_dMacroDrivingStressdF).eval();
+            map_dMacroYielddF += (map_dMacroYielddPrecedingF * map_dPrecedingFdF).eval();
 
-            map_dMacroYielddFn  = ( map_dMacroYielddDrivingStress * map_dMacroDrivingStressdFn ).eval( );
-            map_dMacroYielddFn += ( map_dMacroYielddPrecedingF * map_dPrecedingFdFn ).eval( );
+            map_dMacroYielddFn = (map_dMacroYielddDrivingStress * map_dMacroDrivingStressdFn).eval();
+            map_dMacroYielddFn += (map_dMacroYielddPrecedingF * map_dPrecedingFdFn).eval();
 
-            map_dMicroYielddStress = ( map_dMicroYielddDrivingStress * map_dMicroDrivingStressdStress ).eval( );
+            map_dMicroYielddStress = (map_dMicroYielddDrivingStress * map_dMicroDrivingStressdStress).eval();
 
-            *dMicroYielddStateVariables.value = dMicroYielddCohesion * ( *dMicroCohesiondStateVariables );
+            *dMicroYielddStateVariables.value = dMicroYielddCohesion * (*dMicroCohesiondStateVariables);
 
-            map_dMicroYielddF  = ( map_dMicroYielddDrivingStress * map_dMicroDrivingStressdF ).eval( );
-            map_dMicroYielddF += ( map_dMicroYielddPrecedingF * map_dPrecedingFdF ).eval( );
+            map_dMicroYielddF = (map_dMicroYielddDrivingStress * map_dMicroDrivingStressdF).eval();
+            map_dMicroYielddF += (map_dMicroYielddPrecedingF * map_dPrecedingFdF).eval();
 
-            map_dMicroYielddFn  = ( map_dMicroYielddDrivingStress * map_dMicroDrivingStressdFn ).eval( );
-            map_dMicroYielddFn += ( map_dMicroYielddPrecedingF * map_dPrecedingFdFn ).eval( );
+            map_dMicroYielddFn = (map_dMicroYielddDrivingStress * map_dMicroDrivingStressdFn).eval();
+            map_dMicroYielddFn += (map_dMicroYielddPrecedingF * map_dPrecedingFdFn).eval();
 
-            map_dMicroGradientYielddStress = ( map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdStress ).eval( );
+            map_dMicroGradientYielddStress =
+                (map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdStress).eval();
 
-            map_dMicroGradientYielddStateVariables = ( map_dMicroGradientYielddCohesion * map_dMicroGradientCohesiondStateVariables ).eval( );
+            map_dMicroGradientYielddStateVariables =
+                (map_dMicroGradientYielddCohesion * map_dMicroGradientCohesiondStateVariables).eval();
 
-            map_dMicroGradientYielddF  = ( map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdF ).eval( );
-            map_dMicroGradientYielddF += ( map_dMicroGradientYielddPrecedingF * map_dPrecedingFdF ).eval( );
+            map_dMicroGradientYielddF =
+                (map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdF).eval();
+            map_dMicroGradientYielddF += (map_dMicroGradientYielddPrecedingF * map_dPrecedingFdF).eval();
 
-            map_dMicroGradientYielddFn  = ( map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdFn ).eval( );
-            map_dMicroGradientYielddFn += ( map_dMicroGradientYielddPrecedingF * map_dPrecedingFdFn ).eval( );
+            map_dMicroGradientYielddFn =
+                (map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdFn).eval();
+            map_dMicroGradientYielddFn += (map_dMicroGradientYielddPrecedingF * map_dPrecedingFdFn).eval();
 
-            map_dMicroGradientYielddChi = ( map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdChi ).eval( );
+            map_dMicroGradientYielddChi =
+                (map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdChi).eval();
 
-            map_dMicroGradientYielddChin = ( map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdChin ).eval( );
-
+            map_dMicroGradientYielddChin =
+                (map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdChin).eval();
         }
 
-        void residual::setPrecedingDeformationGradient( ){
+        void residual::setPrecedingDeformationGradient() {
             /*!
              * Set the preceding deformation gradient
              */
 
-            setPrecedingDeformationGradient( false );
-
+            setPrecedingDeformationGradient(false);
         }
 
-        void residual::setPreviousPrecedingDeformationGradient( ){
+        void residual::setPreviousPrecedingDeformationGradient() {
             /*!
              * Set the previous preceding deformation gradient
              */
 
-            setPrecedingDeformationGradient( true );
-
+            setPrecedingDeformationGradient(true);
         }
 
-        void residual::setPrecedingDeformationGradient( const bool isPrevious ){
+        void residual::setPrecedingDeformationGradient(const bool isPrevious) {
             /*!
              * Set the preceding deformation gradient to the plastic configuration
-             * 
+             *
              * \param isPrevious: Whether to set the current (false) or previous (true) preceding deformation gradient
              */
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                set_previousPrecedingDeformationGradient(
+                    hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
-                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
-
+            } else {
+                set_precedingDeformationGradient(hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
             }
-            else{
-
-                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
-
-            }
-
         }
 
-        void residual::setdPrecedingDeformationGradientdF( ){
+        void residual::setdPrecedingDeformationGradientdF() {
             /*!
              * Set the jacobian of the preceding deformation gradient w.r.t. the deformation gradient
              */
 
-            setPrecedingDeformationGradientJacobians( false );
-
+            setPrecedingDeformationGradientJacobians(false);
         }
 
-        void residual::setdPrecedingDeformationGradientdFn( ){
+        void residual::setdPrecedingDeformationGradientdFn() {
             /*!
              * Set the jacobian of the preceding deformation gradient w.r.t. the sub-deformation gradients
              */
 
-            setPrecedingDeformationGradientJacobians( false );
-
+            setPrecedingDeformationGradientJacobians(false);
         }
 
-        void residual::setPreviousdPrecedingDeformationGradientdF( ){
+        void residual::setPreviousdPrecedingDeformationGradientdF() {
             /*!
              * Set the previous jacobian of the preceding deformation gradient w.r.t. the deformation gradient
              */
 
-            setPrecedingDeformationGradientJacobians( true );
-
+            setPrecedingDeformationGradientJacobians(true);
         }
 
-        void residual::setPreviousdPrecedingDeformationGradientdFn( ){
+        void residual::setPreviousdPrecedingDeformationGradientdFn() {
             /*!
              * Set the previous jacobian of the preceding deformation gradient w.r.t. the sub-deformation gradients
              */
 
-            setPrecedingDeformationGradientJacobians( true );
-
+            setPrecedingDeformationGradientJacobians(true);
         }
 
-        void residual::setPrecedingDeformationGradientJacobians( const bool isPrevious ){
+        void residual::setPrecedingDeformationGradientJacobians(const bool isPrevious) {
             /*!
              * Set the preceding deformation gradient to the plastic configuration and its jacobians
-             * 
+             *
              * \param isPrevious: Whether to set the current (false) or previous (true) preceding deformation gradient
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension();
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations();
 
             floatVector dPrecedingFdSubFs;
 
@@ -6261,159 +6195,141 @@ namespace tardigradeHydra{
 
             const floatVector *dF1dFn;
 
-            setDataStorageBase< fourthOrderTensor > dPrecedingFdF;
+            SetDataStorageBase<fourthOrderTensor> dPrecedingFdF;
 
-            setDataStorageBase< floatVector > dPrecedingFdFn;
+            SetDataStorageBase<floatVector> dPrecedingFdFn;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                set_previousPrecedingDeformationGradient(
+                    hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
-                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
 
-                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dF1dF = hydra->get_previousdF1dF();
 
-                dF1dF  = hydra->get_previousdF1dF( );
+                dF1dFn = hydra->get_previousdF1dFn();
 
-                dF1dFn = hydra->get_previousdF1dFn( );
+                dPrecedingFdF = get_SetDataStorage_previousdPrecedingDeformationGradientdF();
 
-                dPrecedingFdF  = get_setDataStorage_previousdPrecedingDeformationGradientdF( );
+                dPrecedingFdFn = get_SetDataStorage_previousdPrecedingDeformationGradientdFn();
 
-                dPrecedingFdFn = get_setDataStorage_previousdPrecedingDeformationGradientdFn( );
+            } else {
+                set_precedingDeformationGradient(hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
 
-            }
-            else{
+                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
 
-                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                dF1dF = hydra->get_dF1dF();
 
-                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dF1dFn = hydra->get_dF1dFn();
 
-                dF1dF  = hydra->get_dF1dF( );
+                dPrecedingFdF = get_SetDataStorage_dPrecedingDeformationGradientdF();
 
-                dF1dFn = hydra->get_dF1dFn( );
-
-                dPrecedingFdF  = get_setDataStorage_dPrecedingDeformationGradientdF( );
-
-                dPrecedingFdFn = get_setDataStorage_dPrecedingDeformationGradientdFn( );
-
+                dPrecedingFdFn = get_SetDataStorage_dPrecedingDeformationGradientdFn();
             }
 
             // Construct the derivatives of the preceding F
 
-            dPrecedingFdF.zero( sot_dim * sot_dim );
+            dPrecedingFdF.zero(sot_dim * sot_dim);
 
-            dPrecedingFdFn.zero( sot_dim * ( num_configs - 1 ) * sot_dim );
+            dPrecedingFdFn.zero(sot_dim * (num_configs - 1) * sot_dim);
 
-            for ( unsigned int i = 0; i < sot_dim; i++ ){
-
-                for ( unsigned int k = 0; k < sot_dim; k++ ){
-
-                    for ( unsigned int j = 0; j < sot_dim; j++ ){
-
-                        ( *dPrecedingFdF.value )[ sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ sot_dim * k + j ];
-
+            for (unsigned int i = 0; i < sot_dim; i++) {
+                for (unsigned int k = 0; k < sot_dim; k++) {
+                    for (unsigned int j = 0; j < sot_dim; j++) {
+                        (*dPrecedingFdF.value)[sot_dim * i + j] +=
+                            dPrecedingFdSubFs[num_configs * sot_dim * i + k] * (*dF1dF)[sot_dim * k + j];
                     }
-
                 }
 
-                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){ //TODO: See if this can be sped up by accessing the cache better
+                for (unsigned int j = 0; j < (num_configs - 1) * sot_dim;
+                     j++) {  // TODO: See if this can be sped up by accessing the cache better
 
-                    ( *dPrecedingFdFn.value )[ ( num_configs - 1 ) * sot_dim * i + j ] = dPrecedingFdSubFs[ num_configs * sot_dim * i + sot_dim + j ];
+                    (*dPrecedingFdFn.value)[(num_configs - 1) * sot_dim * i + j] =
+                        dPrecedingFdSubFs[num_configs * sot_dim * i + sot_dim + j];
 
-                    for ( unsigned int k = 0; k < sot_dim; k++ ){
-
-                        ( *dPrecedingFdFn.value )[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
-
+                    for (unsigned int k = 0; k < sot_dim; k++) {
+                        (*dPrecedingFdFn.value)[(num_configs - 1) * sot_dim * i + j] +=
+                            dPrecedingFdSubFs[num_configs * sot_dim * i + k] *
+                            (*dF1dFn)[(num_configs - 1) * sot_dim * k + j];
                     }
-
                 }
-
             }
-
         }
 
-        void residual::setPrecedingMicroDeformation( ){
+        void residual::setPrecedingMicroDeformation() {
             /*!
              * Set the preceding micro deformation
              */
 
-            setPrecedingMicroDeformation( false );
-
+            setPrecedingMicroDeformation(false);
         }
 
-        void residual::setPreviousPrecedingMicroDeformation( ){
+        void residual::setPreviousPrecedingMicroDeformation() {
             /*!
              * Set the previous preceding micro deformation
              */
 
-            setPrecedingMicroDeformation( true );
-
+            setPrecedingMicroDeformation(true);
         }
 
-        void residual::setPrecedingMicroDeformation( const bool isPrevious ){
+        void residual::setPrecedingMicroDeformation(const bool isPrevious) {
             /*!
              * Set the preceding micro deformation to the plastic configuration
-             * 
+             *
              * \param isPrevious: Whether to set the current (false) or previous (true) preceding micro deformation
              */
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                set_previousPrecedingMicroDeformation(
+                    hydra->getPreviousPrecedingMicroConfiguration(getPlasticConfigurationIndex()));
 
-                set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
-
+            } else {
+                set_precedingMicroDeformation(hydra->getPrecedingMicroConfiguration(getPlasticConfigurationIndex()));
             }
-            else{
-
-                set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
-
-            }
-
         }
 
-        void residual::setdPrecedingMicroDeformationdChi( ){
+        void residual::setdPrecedingMicroDeformationdChi() {
             /*!
              * Set the jacobian of the preceding micro deformation w.r.t. the micro deformation
              */
 
-            setPrecedingMicroDeformationJacobians( false );
-
+            setPrecedingMicroDeformationJacobians(false);
         }
 
-        void residual::setdPrecedingMicroDeformationdChin( ){
+        void residual::setdPrecedingMicroDeformationdChin() {
             /*!
              * Set the jacobian of the preceding micro deformation w.r.t. the sub micro deformation
              */
 
-            setPrecedingMicroDeformationJacobians( false );
-
+            setPrecedingMicroDeformationJacobians(false);
         }
 
-        void residual::setPreviousdPrecedingMicroDeformationdChi( ){
+        void residual::setPreviousdPrecedingMicroDeformationdChi() {
             /*!
              * Set the previous jacobian of the preceding micro deformation w.r.t. the micro deformation
              */
 
-            setPrecedingMicroDeformationJacobians( true );
-
+            setPrecedingMicroDeformationJacobians(true);
         }
 
-        void residual::setPreviousdPrecedingMicroDeformationdChin( ){
+        void residual::setPreviousdPrecedingMicroDeformationdChin() {
             /*!
              * Set the previous jacobian of the preceding micro deformation w.r.t. the sub-micro deformation
              */
 
-            setPrecedingMicroDeformationJacobians( true );
-
+            setPrecedingMicroDeformationJacobians(true);
         }
 
-        void residual::setPrecedingMicroDeformationJacobians( const bool isPrevious ){
+        void residual::setPrecedingMicroDeformationJacobians(const bool isPrevious) {
             /*!
              * Set the preceding micro deformation to the plastic configuration and its jacobians
-             * 
+             *
              * \param isPrevious: Whether to set the current (false) or previous (true) preceding micro deformation
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension();
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations();
 
             floatVector dPrecedingChidSubChis;
 
@@ -6421,309 +6337,289 @@ namespace tardigradeHydra{
 
             const floatVector *dChi1dChin;
 
-            setDataStorageBase< fourthOrderTensor > dPrecedingChidChi;
+            SetDataStorageBase<fourthOrderTensor> dPrecedingChidChi;
 
-            setDataStorageBase< floatVector >       dPrecedingChidChin;
+            SetDataStorageBase<floatVector> dPrecedingChidChin;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                set_previousPrecedingMicroDeformation(
+                    hydra->getPreviousPrecedingMicroConfiguration(getPlasticConfigurationIndex()));
 
-                set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+                dPrecedingChidSubChis =
+                    hydra->getPreviousPrecedingMicroConfigurationJacobian(getPlasticConfigurationIndex());
 
-                dPrecedingChidSubChis = hydra->getPreviousPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dChi1dChi = hydra->get_previousdChi1dChi();
 
-                dChi1dChi  = hydra->get_previousdChi1dChi( );
+                dChi1dChin = hydra->get_previousdChi1dChin();
 
-                dChi1dChin = hydra->get_previousdChi1dChin( );
+                dPrecedingChidChi = get_SetDataStorage_previousdPrecedingMicroDeformationdChi();
 
-                dPrecedingChidChi  = get_setDataStorage_previousdPrecedingMicroDeformationdChi( );
+                dPrecedingChidChin = get_SetDataStorage_previousdPrecedingMicroDeformationdChin();
 
-                dPrecedingChidChin = get_setDataStorage_previousdPrecedingMicroDeformationdChin( );
+            } else {
+                set_precedingMicroDeformation(hydra->getPrecedingMicroConfiguration(getPlasticConfigurationIndex()));
 
-            }
-            else{
+                dPrecedingChidSubChis = hydra->getPrecedingMicroConfigurationJacobian(getPlasticConfigurationIndex());
 
-                set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+                dChi1dChi = hydra->get_dChi1dChi();
 
-                dPrecedingChidSubChis = hydra->getPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dChi1dChin = hydra->get_dChi1dChin();
 
-                dChi1dChi  = hydra->get_dChi1dChi( );
+                dPrecedingChidChi = get_SetDataStorage_dPrecedingMicroDeformationdChi();
 
-                dChi1dChin = hydra->get_dChi1dChin( );
-
-                dPrecedingChidChi  = get_setDataStorage_dPrecedingMicroDeformationdChi( );
-
-                dPrecedingChidChin = get_setDataStorage_dPrecedingMicroDeformationdChin( );
-
+                dPrecedingChidChin = get_SetDataStorage_dPrecedingMicroDeformationdChin();
             }
 
             // Construct the derivatives of the preceding F
 
-            dPrecedingChidChi.zero( sot_dim * sot_dim );
-            dPrecedingChidChin.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
+            dPrecedingChidChi.zero(sot_dim * sot_dim);
+            dPrecedingChidChin.zero(sot_dim * sot_dim * (num_configs - 1));
 
-            for ( unsigned int i = 0; i < sot_dim; i++ ){
-
-                for ( unsigned int k = 0; k < sot_dim; k++ ){
-
-                    for ( unsigned int j = 0; j < sot_dim; j++ ){
-
-                        ( *dPrecedingChidChi.value )[ sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChi )[ sot_dim * k + j ];
-
+            for (unsigned int i = 0; i < sot_dim; i++) {
+                for (unsigned int k = 0; k < sot_dim; k++) {
+                    for (unsigned int j = 0; j < sot_dim; j++) {
+                        (*dPrecedingChidChi.value)[sot_dim * i + j] +=
+                            dPrecedingChidSubChis[num_configs * sot_dim * i + k] * (*dChi1dChi)[sot_dim * k + j];
                     }
-
                 }
 
-                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){ //TODO: See if this can be sped up by accessing the cache better
+                for (unsigned int j = 0; j < (num_configs - 1) * sot_dim;
+                     j++) {  // TODO: See if this can be sped up by accessing the cache better
 
-                    ( *dPrecedingChidChin.value )[ ( num_configs - 1 ) * sot_dim * i + j ] = dPrecedingChidSubChis[ num_configs * sot_dim * i + sot_dim + j ];
+                    (*dPrecedingChidChin.value)[(num_configs - 1) * sot_dim * i + j] =
+                        dPrecedingChidSubChis[num_configs * sot_dim * i + sot_dim + j];
 
-                    for ( unsigned int k = 0; k < sot_dim; k++ ){
-
-                        ( *dPrecedingChidChin.value )[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChin )[ ( num_configs - 1 ) * sot_dim * k + j ];
-
+                    for (unsigned int k = 0; k < sot_dim; k++) {
+                        (*dPrecedingChidChin.value)[(num_configs - 1) * sot_dim * i + j] +=
+                            dPrecedingChidSubChis[num_configs * sot_dim * i + k] *
+                            (*dChi1dChin)[(num_configs - 1) * sot_dim * k + j];
                     }
-
                 }
-
             }
-
         }
 
-        void residual::setPrecedingGradientMicroDeformation( ){
+        void residual::setPrecedingGradientMicroDeformation() {
             /*!
              * Set the preceding gradient of the micro-deformation
              */
 
-            setPrecedingGradientMicroDeformation( false );
-
+            setPrecedingGradientMicroDeformation(false);
         }
 
-        void residual::setPreviousPrecedingGradientMicroDeformation( ){
+        void residual::setPreviousPrecedingGradientMicroDeformation() {
             /*!
              * Set the previous preceding gradient of the micro-deformation
              */
 
-            setPrecedingGradientMicroDeformation( true );
-
+            setPrecedingGradientMicroDeformation(true);
         }
 
-        void residual::setPrecedingGradientMicroDeformation( const bool isPrevious ){
+        void residual::setPrecedingGradientMicroDeformation(const bool isPrevious) {
             /*!
              * Set the preceding gradient w.r.t. the micro deformation
-             * 
-             * \param isPrevious: Flag for whether to set the current (flase) or previous (true) gradient of the micro deformation
+             *
+             * \param isPrevious: Flag for whether to set the current (flase) or previous (true) gradient of the micro
+             * deformation
              */
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            const unsigned int tot_dim = hydra->getTOTDimension();
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                set_previousPrecedingGradientMicroDeformation(
+                    thirdOrderTensor(hydra->get_previousGradientMicroConfigurations()->begin(),
+                                     hydra->get_previousGradientMicroConfigurations()->begin() +
+                                         tot_dim));  // TODO: Generalize this expression
 
-                set_previousPrecedingGradientMicroDeformation( thirdOrderTensor( hydra->get_previousGradientMicroConfigurations( )->begin( ),
-                                                                                 hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim ) ); //TODO: Generalize this expression
-
+            } else {
+                set_precedingGradientMicroDeformation(thirdOrderTensor(
+                    hydra->get_gradientMicroConfigurations()->begin(),
+                    hydra->get_gradientMicroConfigurations()->begin() + tot_dim));  // TODO: Generalize this expression
             }
-            else{
-
-                set_precedingGradientMicroDeformation( thirdOrderTensor( hydra->get_gradientMicroConfigurations( )->begin( ),
-                                                                         hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim ) ); //TODO: Generalize this expression
-
-            }
-
         }
 
-        void residual::setdPrecedingGradientMicroDeformationdFn( ){
+        void residual::setdPrecedingGradientMicroDeformationdFn() {
             /*!
              * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub configurations
              */
 
-            setPrecedingGradientMicroDeformationJacobians( false );
-
+            setPrecedingGradientMicroDeformationJacobians(false);
         }
 
-        void residual::setdPrecedingGradientMicroDeformationdChi( ){
+        void residual::setdPrecedingGradientMicroDeformationdChi() {
             /*!
              * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the micro deformation
              */
 
-            setPrecedingGradientMicroDeformationJacobians( false );
-
+            setPrecedingGradientMicroDeformationJacobians(false);
         }
 
-        void residual::setdPrecedingGradientMicroDeformationdChin( ){
+        void residual::setdPrecedingGradientMicroDeformationdChin() {
             /*!
              * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub-micro deformations
              */
 
-            setPrecedingGradientMicroDeformationJacobians( false );
-
+            setPrecedingGradientMicroDeformationJacobians(false);
         }
 
-        void residual::setdPrecedingGradientMicroDeformationdGradChi( ){
+        void residual::setdPrecedingGradientMicroDeformationdGradChi() {
             /*!
-             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial gradient of the micro deformation
+             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial gradient of the
+             * micro deformation
              */
 
-            setPrecedingGradientMicroDeformationJacobians( false );
-
+            setPrecedingGradientMicroDeformationJacobians(false);
         }
 
-        void residual::setdPrecedingGradientMicroDeformationdGradChin( ){
+        void residual::setdPrecedingGradientMicroDeformationdGradChin() {
             /*!
-             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial local gradient of the sub-micro deformations
+             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial local gradient of
+             * the sub-micro deformations
              */
 
-            setPrecedingGradientMicroDeformationJacobians( false );
-
+            setPrecedingGradientMicroDeformationJacobians(false);
         }
 
-        void residual::setPreviousdPrecedingGradientMicroDeformationdFn( ){
+        void residual::setPreviousdPrecedingGradientMicroDeformationdFn() {
             /*!
-             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub configurations
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub
+             * configurations
              */
 
-            setPrecedingGradientMicroDeformationJacobians( true );
-
+            setPrecedingGradientMicroDeformationJacobians(true);
         }
 
-        void residual::setPreviousdPrecedingGradientMicroDeformationdChi( ){
+        void residual::setPreviousdPrecedingGradientMicroDeformationdChi() {
             /*!
              * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the micro deformation
              */
 
-            setPrecedingGradientMicroDeformationJacobians( true );
-
+            setPrecedingGradientMicroDeformationJacobians(true);
         }
 
-        void residual::setPreviousdPrecedingGradientMicroDeformationdChin( ){
+        void residual::setPreviousdPrecedingGradientMicroDeformationdChin() {
             /*!
-             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub-micro deformations
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub-micro
+             * deformations
              */
 
-            setPrecedingGradientMicroDeformationJacobians( true );
-
+            setPrecedingGradientMicroDeformationJacobians(true);
         }
 
-        void residual::setPreviousdPrecedingGradientMicroDeformationdGradChi( ){
+        void residual::setPreviousdPrecedingGradientMicroDeformationdGradChi() {
             /*!
-             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial gradient of the micro deformation
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial gradient
+             * of the micro deformation
              */
 
-            setPrecedingGradientMicroDeformationJacobians( true );
-
+            setPrecedingGradientMicroDeformationJacobians(true);
         }
 
-        void residual::setPreviousdPrecedingGradientMicroDeformationdGradChin( ){
+        void residual::setPreviousdPrecedingGradientMicroDeformationdGradChin() {
             /*!
-             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial local gradient of the sub-micro deformations
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial local
+             * gradient of the sub-micro deformations
              */
 
-            setPrecedingGradientMicroDeformationJacobians( true );
-
+            setPrecedingGradientMicroDeformationJacobians(true);
         }
 
-        void residual::setPrecedingGradientMicroDeformationJacobians( const bool isPrevious ){
+        void residual::setPrecedingGradientMicroDeformationJacobians(const bool isPrevious) {
             /*!
              * Set the preceding gradient w.r.t. the micro deformation
-             * 
-             * \param isPrevious: Flag for whether to set the current (flase) or previous (true) gradient of the micro deformation
+             *
+             * \param isPrevious: Flag for whether to set the current (flase) or previous (true) gradient of the micro
+             * deformation
              */
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            const unsigned int tot_dim = hydra->getTOTDimension();
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                set_previousPrecedingGradientMicroDeformation(
+                    thirdOrderTensor(hydra->get_previousGradientMicroConfigurations()->begin(),
+                                     hydra->get_previousGradientMicroConfigurations()->begin() +
+                                         tot_dim));  // TODO: Generalize this expression
 
-                set_previousPrecedingGradientMicroDeformation( thirdOrderTensor( hydra->get_previousGradientMicroConfigurations( )->begin( ),
-                                                                                 hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim ) ); //TODO: Generalize this expression
+                set_previousdPrecedingGradientMicroDeformationdFn(*hydra->get_previousdGradChi1dFn());
 
-                set_previousdPrecedingGradientMicroDeformationdFn(       *hydra->get_previousdGradChi1dFn( ) );
+                set_previousdPrecedingGradientMicroDeformationdChi(*hydra->get_previousdGradChi1dChi());
 
-                set_previousdPrecedingGradientMicroDeformationdChi(      *hydra->get_previousdGradChi1dChi( ) );
+                set_previousdPrecedingGradientMicroDeformationdChin(*hydra->get_previousdGradChi1dChin());
 
-                set_previousdPrecedingGradientMicroDeformationdChin(     *hydra->get_previousdGradChi1dChin( ) );
+                set_previousdPrecedingGradientMicroDeformationdGradChi(*hydra->get_previousdGradChi1dGradChi());
 
-                set_previousdPrecedingGradientMicroDeformationdGradChi(  *hydra->get_previousdGradChi1dGradChi( ) );
+                set_previousdPrecedingGradientMicroDeformationdGradChin(*hydra->get_previousdGradChi1dGradChin());
 
-                set_previousdPrecedingGradientMicroDeformationdGradChin( *hydra->get_previousdGradChi1dGradChin( ) );
+            } else {
+                set_precedingGradientMicroDeformation(thirdOrderTensor(
+                    hydra->get_gradientMicroConfigurations()->begin(),
+                    hydra->get_gradientMicroConfigurations()->begin() + tot_dim));  // TODO: Generalize this expression
+                                                                                    //
+                set_dPrecedingGradientMicroDeformationdFn(*hydra->get_dGradChi1dFn());
 
+                set_dPrecedingGradientMicroDeformationdChi(*hydra->get_dGradChi1dChi());
+
+                set_dPrecedingGradientMicroDeformationdChin(*hydra->get_dGradChi1dChin());
+
+                set_dPrecedingGradientMicroDeformationdGradChi(*hydra->get_dGradChi1dGradChi());
+
+                set_dPrecedingGradientMicroDeformationdGradChin(*hydra->get_dGradChi1dGradChin());
             }
-            else{
-
-                set_precedingGradientMicroDeformation( thirdOrderTensor( hydra->get_gradientMicroConfigurations( )->begin( ),
-                                                                         hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim ) ); //TODO: Generalize this expression
-                                                                                                                                       //
-                set_dPrecedingGradientMicroDeformationdFn(       *hydra->get_dGradChi1dFn( ) );
-
-                set_dPrecedingGradientMicroDeformationdChi(      *hydra->get_dGradChi1dChi( ) );
-
-                set_dPrecedingGradientMicroDeformationdChin(     *hydra->get_dGradChi1dChin( ) );
-
-                set_dPrecedingGradientMicroDeformationdGradChi(  *hydra->get_dGradChi1dGradChi( ) );
-
-                set_dPrecedingGradientMicroDeformationdGradChin( *hydra->get_dGradChi1dGradChin( ) );
-
-            }
-
         }
 
-        void residual::setPlasticMacroVelocityGradient( ){
+        void residual::setPlasticMacroVelocityGradient() {
             /*!
              * Set the plastic macro velocity gradient
              */
 
-            setPlasticVelocityGradients( false );
-
+            setPlasticVelocityGradients(false);
         }
 
-        void residual::setPreviousPlasticMacroVelocityGradient( ){
+        void residual::setPreviousPlasticMacroVelocityGradient() {
             /*!
              * Set the previous plastic macro velocity gradient
              */
 
-            setPlasticVelocityGradients( true );
-
+            setPlasticVelocityGradients(true);
         }
 
-        void residual::setPlasticMicroVelocityGradient( ){
+        void residual::setPlasticMicroVelocityGradient() {
             /*!
              * Set the plastic micro velocity gradient
              */
 
-            setPlasticVelocityGradients( false );
-
+            setPlasticVelocityGradients(false);
         }
 
-        void residual::setPreviousPlasticMicroVelocityGradient( ){
+        void residual::setPreviousPlasticMicroVelocityGradient() {
             /*!
              * Set the previous plastic macro velocity gradient
              */
 
-            setPlasticVelocityGradients( true );
-
+            setPlasticVelocityGradients(true);
         }
 
-        void residual::setPlasticGradientMicroVelocityGradient( ){
+        void residual::setPlasticGradientMicroVelocityGradient() {
             /*!
              * Set the plastic gradient micro velocity gradient
              */
 
-            setPlasticVelocityGradients( false );
-
+            setPlasticVelocityGradients(false);
         }
 
-        void residual::setPreviousPlasticGradientMicroVelocityGradient( ){
+        void residual::setPreviousPlasticGradientMicroVelocityGradient() {
             /*!
              * Set the previous plastic gradient macro velocity gradient
              */
 
-            setPlasticVelocityGradients( true );
-
+            setPlasticVelocityGradients(true);
         }
 
-        void residual::setPlasticVelocityGradients( const bool isPrevious ){
+        void residual::setPlasticVelocityGradients(const bool isPrevious) {
             /*!
              * Set the plastic macro velocity gradient
-             * 
-             * \param isPrevious: Flag for if the previous (true) or current (false) velocity gradient should be calculated
+             *
+             * \param isPrevious: Flag for if the previous (true) or current (false) velocity gradient should be
+             * calculated
              */
 
             constexpr unsigned int dim = 3;
@@ -6734,7 +6630,7 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *precedingMicroDeformation;
 
-            const thirdOrderTensor  *precedingGradientMicroDeformation;
+            const thirdOrderTensor *precedingGradientMicroDeformation;
 
             const floatVector *plasticMultipliers;
 
@@ -6744,470 +6640,438 @@ namespace tardigradeHydra{
 
             const fourthOrderTensor *dMicroGradientFlowdDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > macroVelocityGradient;
+            SetDataStorageBase<secondOrderTensor> macroVelocityGradient;
 
-            setDataStorageBase< secondOrderTensor > microVelocityGradient;
+            SetDataStorageBase<secondOrderTensor> microVelocityGradient;
 
-            setDataStorageBase< thirdOrderTensor >  gradientMicroVelocityGradient;
+            SetDataStorageBase<thirdOrderTensor> gradientMicroVelocityGradient;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                precedingDeformationGradient = get_previousPrecedingDeformationGradient();
 
-                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+                precedingMicroDeformation = get_previousPrecedingMicroDeformation();
 
-                precedingMicroDeformation = get_previousPrecedingMicroDeformation( );
+                precedingGradientMicroDeformation = get_previousPrecedingGradientMicroDeformation();
 
-                precedingGradientMicroDeformation = get_previousPrecedingGradientMicroDeformation( );
+                plasticMultipliers = get_previousPlasticMultipliers();
 
-                plasticMultipliers = get_previousPlasticMultipliers( );
+                dMacroFlowdDrivingStress = get_previousdMacroFlowdDrivingStress();
 
-                dMacroFlowdDrivingStress = get_previousdMacroFlowdDrivingStress( );
+                dMicroFlowdDrivingStress = get_previousdMicroFlowdDrivingStress();
 
-                dMicroFlowdDrivingStress = get_previousdMicroFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress();
 
-                dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress( );
+                macroVelocityGradient = get_SetDataStorage_previousPlasticMacroVelocityGradient();
 
-                macroVelocityGradient         = get_setDataStorage_previousPlasticMacroVelocityGradient( );
+                microVelocityGradient = get_SetDataStorage_previousPlasticMicroVelocityGradient();
 
-                microVelocityGradient         = get_setDataStorage_previousPlasticMicroVelocityGradient( );
+                gradientMicroVelocityGradient = get_SetDataStorage_previousPlasticGradientMicroVelocityGradient();
 
-                gradientMicroVelocityGradient = get_setDataStorage_previousPlasticGradientMicroVelocityGradient( );
+            } else {
+                precedingDeformationGradient = get_precedingDeformationGradient();
 
-            }
-            else{
+                precedingMicroDeformation = get_precedingMicroDeformation();
 
-                precedingDeformationGradient = get_precedingDeformationGradient( );
+                precedingGradientMicroDeformation = get_precedingGradientMicroDeformation();
 
-                precedingMicroDeformation = get_precedingMicroDeformation( );
+                plasticMultipliers = get_plasticMultipliers();
 
-                precedingGradientMicroDeformation = get_precedingGradientMicroDeformation( );
+                dMacroFlowdDrivingStress = get_dMacroFlowdDrivingStress();
 
-                plasticMultipliers = get_plasticMultipliers( );
+                dMicroFlowdDrivingStress = get_dMicroFlowdDrivingStress();
 
-                dMacroFlowdDrivingStress = get_dMacroFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress();
 
-                dMicroFlowdDrivingStress = get_dMicroFlowdDrivingStress( );
+                macroVelocityGradient = get_SetDataStorage_plasticMacroVelocityGradient();
 
-                dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress( );
+                microVelocityGradient = get_SetDataStorage_plasticMicroVelocityGradient();
 
-                macroVelocityGradient         = get_setDataStorage_plasticMacroVelocityGradient( );
-
-                microVelocityGradient         = get_setDataStorage_plasticMicroVelocityGradient( );
-
-                gradientMicroVelocityGradient = get_setDataStorage_plasticGradientMicroVelocityGradient( );
-
+                gradientMicroVelocityGradient = get_SetDataStorage_plasticGradientMicroVelocityGradient();
             }
 
             // Form the preceding RCG and its inverse
             secondOrderTensor precedingRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::computeRightCauchyGreen(*precedingDeformationGradient, precedingRCG));
 
             secondOrderTensor inversePrecedingRCG = precedingRCG;
-            auto map_inversePrecedingRCG = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingRCG.data( ) );
-            map_inversePrecedingRCG = map_inversePrecedingRCG.inverse( ).eval( );
+            auto map_inversePrecedingRCG = getFixedSizeMatrixMap<floatType, dim, dim>(inversePrecedingRCG.data());
+            map_inversePrecedingRCG      = map_inversePrecedingRCG.inverse().eval();
 
             // Form the precedingPsi and its inverse
-            secondOrderTensor precedingPsi( sot_dim, 0 );
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computePsi( *precedingDeformationGradient, *precedingMicroDeformation, precedingPsi ) );
+            secondOrderTensor precedingPsi(sot_dim, 0);
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computePsi(*precedingDeformationGradient,
+                                                                                 *precedingMicroDeformation,
+                                                                                 precedingPsi));
 
             secondOrderTensor inversePrecedingPsi = precedingPsi;
-            auto map_inversePrecedingPsi = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingPsi.data( ) );
-            map_inversePrecedingPsi = map_inversePrecedingPsi.inverse( ).eval( );
+            auto map_inversePrecedingPsi = getFixedSizeMatrixMap<floatType, dim, dim>(inversePrecedingPsi.data());
+            map_inversePrecedingPsi      = map_inversePrecedingPsi.inverse().eval();
 
             // Form the preceding micro RCG and its inverse
             secondOrderTensor precedingMicroRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::computeRightCauchyGreen(*precedingMicroDeformation, precedingMicroRCG));
 
             // Form Gamma
             thirdOrderTensor precedingGamma;
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeGamma( *precedingDeformationGradient, *precedingGradientMicroDeformation, precedingGamma ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeGamma(*precedingDeformationGradient,
+                                                                                   *precedingGradientMicroDeformation,
+                                                                                   precedingGamma));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMacroVelocityGradient( ( *plasticMultipliers )[ 0 ], ( *plasticMultipliers )[ 1 ],
-                                                     inversePrecedingRCG, *dMacroFlowdDrivingStress, *dMicroFlowdDrivingStress,
-                                                     *macroVelocityGradient.value )
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(computePlasticMacroVelocityGradient(
+                (*plasticMultipliers)[0], (*plasticMultipliers)[1], inversePrecedingRCG, *dMacroFlowdDrivingStress,
+                *dMicroFlowdDrivingStress, *macroVelocityGradient.value))
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMicroVelocityGradient( ( *plasticMultipliers )[ 1 ], precedingMicroRCG, precedingPsi, inversePrecedingPsi,
-                                                     *dMicroFlowdDrivingStress, *microVelocityGradient.value );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(computePlasticMicroVelocityGradient((*plasticMultipliers)[1],
+                                                                             precedingMicroRCG, precedingPsi,
+                                                                             inversePrecedingPsi,
+                                                                             *dMicroFlowdDrivingStress,
+                                                                             *microVelocityGradient.value);)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMicroGradientVelocityGradient( floatVector( plasticMultipliers->begin( ) + 2, plasticMultipliers->end( ) ),
-                                                             precedingPsi, inversePrecedingPsi, precedingGamma,
-                                                             *dMicroGradientFlowdDrivingStress,
-                                                             *microVelocityGradient.value, *gradientMicroVelocityGradient.value );
-            )
-
+            TARDIGRADE_ERROR_TOOLS_CATCH(computePlasticMicroGradientVelocityGradient(
+                                             floatVector(plasticMultipliers->begin() + 2, plasticMultipliers->end()),
+                                             precedingPsi, inversePrecedingPsi, precedingGamma,
+                                             *dMicroGradientFlowdDrivingStress, *microVelocityGradient.value,
+                                             *gradientMicroVelocityGradient.value);)
         }
 
-        void residual::setdPlasticMacroVelocityGradientdMacroStress( ){
+        void residual::setdPlasticMacroVelocityGradientdMacroStress() {
             /*!
              * Set the Jacobian of the plastic macro velocity gradient w.r.t. the macro stress
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMacroVelocityGradientdMacroStress( ){
+        void residual::setPreviousdPlasticMacroVelocityGradientdMacroStress() {
             /*!
              * Set the Jacobian of the previous plastic macro velocity gradient w.r.t. the macro stress
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMacroVelocityGradientdMicroStress( ){
+        void residual::setdPlasticMacroVelocityGradientdMicroStress() {
             /*!
              * Set the Jacobian of the plastic macro velocity gradient w.r.t. the micro stress
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMacroVelocityGradientdMicroStress( ){
+        void residual::setPreviousdPlasticMacroVelocityGradientdMicroStress() {
             /*!
              * Set the Jacobian of the previous plastic macro velocity gradient w.r.t. the micro stress
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMacroVelocityGradientdF( ){
+        void residual::setdPlasticMacroVelocityGradientdF() {
             /*!
              * Set the Jacobian of the plastic macro velocity gradient w.r.t. the deformation gradient
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMacroVelocityGradientdF( ){
+        void residual::setPreviousdPlasticMacroVelocityGradientdF() {
             /*!
              * Set the Jacobian of the previous plastic macro velocity gradient w.r.t. the deformation gradient
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMacroVelocityGradientdFn( ){
+        void residual::setdPlasticMacroVelocityGradientdFn() {
             /*!
              * Set the Jacobian of the plastic macro velocity gradient w.r.t. the sub deformation gradients
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMacroVelocityGradientdFn( ){
+        void residual::setPreviousdPlasticMacroVelocityGradientdFn() {
             /*!
              * Set the Jacobian of the previous plastic macro velocity gradient w.r.t. the sub deformation gradients
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMacroVelocityGradientdStateVariables( ){
+        void residual::setdPlasticMacroVelocityGradientdStateVariables() {
             /*!
              * Set the Jacobian of the plastic macro velocity gradient w.r.t. the state variables
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMacroVelocityGradientdStateVariables( ){
+        void residual::setPreviousdPlasticMacroVelocityGradientdStateVariables() {
             /*!
              * Set the Jacobian of the previous plastic macro velocity gradient w.r.t. the state variables
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMicroVelocityGradientdMicroStress( ){
+        void residual::setdPlasticMicroVelocityGradientdMicroStress() {
             /*!
              * Set the Jacobian of the plastic micro velocity gradient w.r.t. the micro stress
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMicroVelocityGradientdMicroStress( ){
+        void residual::setPreviousdPlasticMicroVelocityGradientdMicroStress() {
             /*!
              * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the micro stress
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMicroVelocityGradientdF( ){
+        void residual::setdPlasticMicroVelocityGradientdF() {
             /*!
              * Set the Jacobian of the plastic micro velocity gradient w.r.t. the deformation gradient
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMicroVelocityGradientdF( ){
+        void residual::setPreviousdPlasticMicroVelocityGradientdF() {
             /*!
              * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the deformation gradient
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMicroVelocityGradientdFn( ){
+        void residual::setdPlasticMicroVelocityGradientdFn() {
             /*!
              * Set the Jacobian of the plastic micro velocity gradient w.r.t. the sub deformation gradients
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMicroVelocityGradientdFn( ){
+        void residual::setPreviousdPlasticMicroVelocityGradientdFn() {
             /*!
              * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the sub deformation gradients
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMicroVelocityGradientdChi( ){
+        void residual::setdPlasticMicroVelocityGradientdChi() {
             /*!
              * Set the Jacobian of the plastic micro velocity gradient w.r.t. the micro deformation
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMicroVelocityGradientdChi( ){
+        void residual::setPreviousdPlasticMicroVelocityGradientdChi() {
             /*!
              * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the micro deformation
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMicroVelocityGradientdChin( ){
+        void residual::setdPlasticMicroVelocityGradientdChin() {
             /*!
              * Set the Jacobian of the plastic micro velocity gradient w.r.t. the sub micro deformations
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMicroVelocityGradientdChin( ){
+        void residual::setPreviousdPlasticMicroVelocityGradientdChin() {
             /*!
              * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the sub micro deformations
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticMicroVelocityGradientdStateVariables( ){
+        void residual::setdPlasticMicroVelocityGradientdStateVariables() {
             /*!
              * Set the Jacobian of the plastic micro velocity gradient w.r.t. the state variables
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticMicroVelocityGradientdStateVariables( ){
+        void residual::setPreviousdPlasticMicroVelocityGradientdStateVariables() {
             /*!
              * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the state variables
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdMicroStress( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdMicroStress() {
             /*!
              * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the micro stress
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdMicroStress( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdMicroStress() {
             /*!
              * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the micro stress
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdHigherOrderStress( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdHigherOrderStress() {
             /*!
              * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the higher order stress
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdHigherOrderStress( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdHigherOrderStress() {
             /*!
              * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the higher order stress
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdF( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdF() {
             /*!
              * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the deformation gradient
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdF( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdF() {
             /*!
              * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the deformation gradient
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdFn( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdFn() {
             /*!
              * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the sub deformation gradients
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdFn( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdFn() {
             /*!
-             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the sub deformation gradients
+             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the sub deformation
+             * gradients
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdChi( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdChi() {
             /*!
              * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the micro deformation
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdChi( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdChi() {
             /*!
              * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the micro deformation
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdChin( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdChin() {
             /*!
              * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the sub micro deformation
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdChin( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdChin() {
             /*!
-             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the sub micro deformation
+             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the sub micro
+             * deformation
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdGradChi( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdGradChi() {
             /*!
-             * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the spatial gradient of the micro deformation
+             * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the spatial gradient of the micro
+             * deformation
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdGradChi( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdGradChi() {
             /*!
-             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the spatial gradient of the sub micro deformation
+             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the spatial gradient of
+             * the sub micro deformation
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdGradChin( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdGradChin() {
             /*!
-             * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the local spatial gradient of the sub micro deformations
+             * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the local spatial gradient of the
+             * sub micro deformations
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdGradChin( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdGradChin() {
             /*!
-             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the local spatial gradient of the sub micro deformations
+             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the local spatial
+             * gradient of the sub micro deformations
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setdPlasticGradientMicroVelocityGradientdStateVariables( ){
+        void residual::setdPlasticGradientMicroVelocityGradientdStateVariables() {
             /*!
-             * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the local spatial gradient of the state variables
+             * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the local spatial gradient of the
+             * state variables
              */
 
-            setPlasticVelocityGradientsJacobians( false );
-
+            setPlasticVelocityGradientsJacobians(false);
         }
 
-        void residual::setPreviousdPlasticGradientMicroVelocityGradientdStateVariables( ){
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdStateVariables() {
             /*!
-             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the local spatial gradient of the state variables
+             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the local spatial
+             * gradient of the state variables
              */
 
-            setPlasticVelocityGradientsJacobians( true );
-
+            setPlasticVelocityGradientsJacobians(true);
         }
 
-        void residual::setPlasticVelocityGradientsJacobians( const bool isPrevious ){
+        void residual::setPlasticVelocityGradientsJacobians(const bool isPrevious) {
             /*!
              * Set the plastic macro velocity gradient and their Jacobians
-             * 
-             * \param isPrevious: Flag for if the previous (true) or current (false) velocity gradient should be calculated
+             *
+             * \param isPrevious: Flag for if the previous (true) or current (false) velocity gradient should be
+             * calculated
              */
 
             constexpr unsigned int dim = 3;
@@ -7222,9 +7086,9 @@ namespace tardigradeHydra{
 
             constexpr unsigned int siot_dim = fiot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations();
 
-            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+            const unsigned int num_isvs = get_plasticStateVariables()->size();
 
             const secondOrderTensor *precedingDeformationGradient;
 
@@ -7280,257 +7144,260 @@ namespace tardigradeHydra{
 
             const floatVector *d2MicroGradientFlowdDrivingStressdChin;
 
-            setDataStorageBase< secondOrderTensor > macroVelocityGradient;
+            SetDataStorageBase<secondOrderTensor> macroVelocityGradient;
 
-            setDataStorageBase< secondOrderTensor > microVelocityGradient;
+            SetDataStorageBase<secondOrderTensor> microVelocityGradient;
 
-            setDataStorageBase< thirdOrderTensor >  gradientMicroVelocityGradient;
+            SetDataStorageBase<thirdOrderTensor> gradientMicroVelocityGradient;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMacroLdMacroStress;
+            SetDataStorageBase<secondOrderTensor> dPlasticMacroLdMacroStress;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMacroLdMicroStress;
+            SetDataStorageBase<secondOrderTensor> dPlasticMacroLdMicroStress;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMicroLdMicroStress;
+            SetDataStorageBase<secondOrderTensor> dPlasticMicroLdMicroStress;
 
-            setDataStorageBase< fifthOrderTensor >  dPlasticGradientMicroLdMicroStress;
+            SetDataStorageBase<fifthOrderTensor> dPlasticGradientMicroLdMicroStress;
 
-            setDataStorageBase< sixthOrderTensor >  dPlasticGradientMicroLdHigherOrderStress;
+            SetDataStorageBase<sixthOrderTensor> dPlasticGradientMicroLdHigherOrderStress;
 
-            setDataStorageBase< fourthOrderTensor > dPlasticMacroLdF;
+            SetDataStorageBase<fourthOrderTensor> dPlasticMacroLdF;
 
-            setDataStorageBase< floatVector > dPlasticMacroLdFn;
+            SetDataStorageBase<floatVector> dPlasticMacroLdFn;
 
-            setDataStorageBase< fourthOrderTensor > dPlasticMicroLdF;
+            SetDataStorageBase<fourthOrderTensor> dPlasticMicroLdF;
 
-            setDataStorageBase< floatVector > dPlasticMicroLdFn;
+            SetDataStorageBase<floatVector> dPlasticMicroLdFn;
 
-            setDataStorageBase< fifthOrderTensor > dPlasticGradientMicroLdF;
+            SetDataStorageBase<fifthOrderTensor> dPlasticGradientMicroLdF;
 
-            setDataStorageBase< floatVector > dPlasticGradientMicroLdFn;
+            SetDataStorageBase<floatVector> dPlasticGradientMicroLdFn;
 
-            setDataStorageBase< fourthOrderTensor > dPlasticMicroLdChi;
+            SetDataStorageBase<fourthOrderTensor> dPlasticMicroLdChi;
 
-            setDataStorageBase< floatVector > dPlasticMicroLdChin;
+            SetDataStorageBase<floatVector> dPlasticMicroLdChin;
 
-            setDataStorageBase< fifthOrderTensor > dPlasticGradientMicroLdChi;
+            SetDataStorageBase<fifthOrderTensor> dPlasticGradientMicroLdChi;
 
-            setDataStorageBase< floatVector > dPlasticGradientMicroLdChin;
+            SetDataStorageBase<floatVector> dPlasticGradientMicroLdChin;
 
-            setDataStorageBase< sixthOrderTensor > dPlasticGradientMicroLdGradChi;
+            SetDataStorageBase<sixthOrderTensor> dPlasticGradientMicroLdGradChi;
 
-            setDataStorageBase< floatVector > dPlasticGradientMicroLdGradChin;
+            SetDataStorageBase<floatVector> dPlasticGradientMicroLdGradChin;
 
-            setDataStorageBase< floatVector > dPlasticMacroLdISVs;
+            SetDataStorageBase<floatVector> dPlasticMacroLdISVs;
 
-            setDataStorageBase< floatVector > dPlasticMicroLdISVs;
+            SetDataStorageBase<floatVector> dPlasticMicroLdISVs;
 
-            setDataStorageBase< floatVector > dPlasticGradientMicroLdISVs;
+            SetDataStorageBase<floatVector> dPlasticGradientMicroLdISVs;
 
-            if ( isPrevious ){
+            if (isPrevious) {
+                dPrecedingFdF = get_previousdPrecedingDeformationGradientdF();
 
-                dPrecedingFdF = get_previousdPrecedingDeformationGradientdF( );
+                dPrecedingFdFn = get_previousdPrecedingDeformationGradientdFn();
 
-                dPrecedingFdFn = get_previousdPrecedingDeformationGradientdFn( );
+                dPrecedingChidChi = get_previousdPrecedingMicroDeformationdChi();
 
-                dPrecedingChidChi = get_previousdPrecedingMicroDeformationdChi( );
+                dPrecedingChidChin = get_previousdPrecedingMicroDeformationdChin();
 
-                dPrecedingChidChin = get_previousdPrecedingMicroDeformationdChin( );
+                dPrecedingGradChidFn = get_previousdPrecedingGradientMicroDeformationdFn();
 
-                dPrecedingGradChidFn       = get_previousdPrecedingGradientMicroDeformationdFn( );
+                dPrecedingGradChidChi = get_previousdPrecedingGradientMicroDeformationdChi();
 
-                dPrecedingGradChidChi      = get_previousdPrecedingGradientMicroDeformationdChi( );
+                dPrecedingGradChidChin = get_previousdPrecedingGradientMicroDeformationdChin();
 
-                dPrecedingGradChidChin     = get_previousdPrecedingGradientMicroDeformationdChin( );
+                dPrecedingGradChidGradChi = get_previousdPrecedingGradientMicroDeformationdGradChi();
 
-                dPrecedingGradChidGradChi  = get_previousdPrecedingGradientMicroDeformationdGradChi( );
+                dPrecedingGradChidGradChin = get_previousdPrecedingGradientMicroDeformationdGradChin();
 
-                dPrecedingGradChidGradChin = get_previousdPrecedingGradientMicroDeformationdGradChin( );
+                precedingDeformationGradient = get_previousPrecedingDeformationGradient();
 
-                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+                precedingMicroDeformation = get_previousPrecedingMicroDeformation();
 
-                precedingMicroDeformation = get_previousPrecedingMicroDeformation( );
+                precedingGradientMicroDeformation = get_previousPrecedingGradientMicroDeformation();
 
-                precedingGradientMicroDeformation = get_previousPrecedingGradientMicroDeformation( );
+                plasticMultipliers = get_previousPlasticMultipliers();
 
-                plasticMultipliers = get_previousPlasticMultipliers( );
+                d2MacroFlowdDrivingStressdStress = get_previousd2MacroFlowdDrivingStressdStress();
 
-                d2MacroFlowdDrivingStressdStress = get_previousd2MacroFlowdDrivingStressdStress( );
+                d2MacroFlowdDrivingStressdF = get_previousd2MacroFlowdDrivingStressdF();
 
-                d2MacroFlowdDrivingStressdF      = get_previousd2MacroFlowdDrivingStressdF( );
+                d2MacroFlowdDrivingStressdFn = get_previousd2MacroFlowdDrivingStressdFn();
 
-                d2MacroFlowdDrivingStressdFn     = get_previousd2MacroFlowdDrivingStressdFn( );
+                d2MicroFlowdDrivingStressdStress = get_previousd2MicroFlowdDrivingStressdStress();
 
-                d2MicroFlowdDrivingStressdStress = get_previousd2MicroFlowdDrivingStressdStress( );
+                d2MicroFlowdDrivingStressdF = get_previousd2MicroFlowdDrivingStressdF();
 
-                d2MicroFlowdDrivingStressdF      = get_previousd2MicroFlowdDrivingStressdF( );
+                d2MicroFlowdDrivingStressdFn = get_previousd2MicroFlowdDrivingStressdFn();
 
-                d2MicroFlowdDrivingStressdFn     = get_previousd2MicroFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdStress = get_previousd2MicroGradientFlowdDrivingStressdStress();
 
-                d2MicroGradientFlowdDrivingStressdStress = get_previousd2MicroGradientFlowdDrivingStressdStress( );
+                d2MicroGradientFlowdDrivingStressdF = get_previousd2MicroGradientFlowdDrivingStressdF();
 
-                d2MicroGradientFlowdDrivingStressdF      = get_previousd2MicroGradientFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdFn = get_previousd2MicroGradientFlowdDrivingStressdFn();
 
-                d2MicroGradientFlowdDrivingStressdFn     = get_previousd2MicroGradientFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdChi = get_previousd2MicroGradientFlowdDrivingStressdChi();
 
-                d2MicroGradientFlowdDrivingStressdChi    = get_previousd2MicroGradientFlowdDrivingStressdChi( );
+                d2MicroGradientFlowdDrivingStressdChin = get_previousd2MicroGradientFlowdDrivingStressdChin();
 
-                d2MicroGradientFlowdDrivingStressdChin   = get_previousd2MicroGradientFlowdDrivingStressdChin( );
+                dMacroFlowdDrivingStress = get_previousdMacroFlowdDrivingStress();
 
-                dMacroFlowdDrivingStress         = get_previousdMacroFlowdDrivingStress( );
+                dMicroFlowdDrivingStress = get_previousdMicroFlowdDrivingStress();
 
-                dMicroFlowdDrivingStress         = get_previousdMicroFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress();
 
-                dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress( );
+                macroVelocityGradient = get_SetDataStorage_previousPlasticMacroVelocityGradient();
 
-                macroVelocityGradient         = get_setDataStorage_previousPlasticMacroVelocityGradient( );
+                microVelocityGradient = get_SetDataStorage_previousPlasticMicroVelocityGradient();
 
-                microVelocityGradient         = get_setDataStorage_previousPlasticMicroVelocityGradient( );
+                gradientMicroVelocityGradient = get_SetDataStorage_previousPlasticGradientMicroVelocityGradient();
 
-                gradientMicroVelocityGradient = get_setDataStorage_previousPlasticGradientMicroVelocityGradient( );
+                dPlasticMacroLdMacroStress = get_SetDataStorage_previousdPlasticMacroVelocityGradientdMacroStress();
 
-                dPlasticMacroLdMacroStress    = get_setDataStorage_previousdPlasticMacroVelocityGradientdMacroStress( );
+                dPlasticMacroLdMicroStress = get_SetDataStorage_previousdPlasticMacroVelocityGradientdMicroStress();
 
-                dPlasticMacroLdMicroStress    = get_setDataStorage_previousdPlasticMacroVelocityGradientdMicroStress( );
+                dPlasticMicroLdMicroStress = get_SetDataStorage_previousdPlasticMicroVelocityGradientdMicroStress();
 
-                dPlasticMicroLdMicroStress    = get_setDataStorage_previousdPlasticMicroVelocityGradientdMicroStress( );
+                dPlasticGradientMicroLdMicroStress =
+                    get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdMicroStress();
 
-                dPlasticGradientMicroLdMicroStress = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdMicroStress( );
+                dPlasticGradientMicroLdHigherOrderStress =
+                    get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress();
 
-                dPlasticGradientMicroLdHigherOrderStress = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( );
+                dPlasticMacroLdF = get_SetDataStorage_previousdPlasticMacroVelocityGradientdF();
 
-                dPlasticMacroLdF  = get_setDataStorage_previousdPlasticMacroVelocityGradientdF( );
+                dPlasticMacroLdFn = get_SetDataStorage_previousdPlasticMacroVelocityGradientdFn();
 
-                dPlasticMacroLdFn = get_setDataStorage_previousdPlasticMacroVelocityGradientdFn( );
+                dPlasticMicroLdF = get_SetDataStorage_previousdPlasticMicroVelocityGradientdF();
 
-                dPlasticMicroLdF  = get_setDataStorage_previousdPlasticMicroVelocityGradientdF( );
+                dPlasticMicroLdFn = get_SetDataStorage_previousdPlasticMicroVelocityGradientdFn();
 
-                dPlasticMicroLdFn = get_setDataStorage_previousdPlasticMicroVelocityGradientdFn( );
+                dPlasticGradientMicroLdF = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdF();
 
-                dPlasticGradientMicroLdF  = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdF( );
+                dPlasticGradientMicroLdFn = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdFn();
 
-                dPlasticGradientMicroLdFn = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdFn( );
+                dPlasticMicroLdChi = get_SetDataStorage_previousdPlasticMicroVelocityGradientdChi();
 
-                dPlasticMicroLdChi  = get_setDataStorage_previousdPlasticMicroVelocityGradientdChi( );
+                dPlasticMicroLdChin = get_SetDataStorage_previousdPlasticMicroVelocityGradientdChin();
 
-                dPlasticMicroLdChin = get_setDataStorage_previousdPlasticMicroVelocityGradientdChin( );
+                dPlasticGradientMicroLdChi = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdChi();
 
-                dPlasticGradientMicroLdChi  = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdChi( );
+                dPlasticGradientMicroLdChin = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdChin();
 
-                dPlasticGradientMicroLdChin = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdChin( );
+                dPlasticGradientMicroLdGradChi =
+                    get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdGradChi();
 
-                dPlasticGradientMicroLdGradChi  = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdGradChi( );
+                dPlasticGradientMicroLdGradChin =
+                    get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdGradChin();
 
-                dPlasticGradientMicroLdGradChin = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdGradChin( );
+                dPlasticMacroLdISVs = get_SetDataStorage_previousdPlasticMacroVelocityGradientdStateVariables();
 
-                dPlasticMacroLdISVs = get_setDataStorage_previousdPlasticMacroVelocityGradientdStateVariables( );
+                dPlasticMicroLdISVs = get_SetDataStorage_previousdPlasticMicroVelocityGradientdStateVariables();
 
-                dPlasticMicroLdISVs = get_setDataStorage_previousdPlasticMicroVelocityGradientdStateVariables( );
+                dPlasticGradientMicroLdISVs =
+                    get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdStateVariables();
 
-                dPlasticGradientMicroLdISVs = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdStateVariables( );
+            } else {
+                dPrecedingFdF = get_dPrecedingDeformationGradientdF();
 
-            }
-            else{
+                dPrecedingFdFn = get_dPrecedingDeformationGradientdFn();
 
-                dPrecedingFdF = get_dPrecedingDeformationGradientdF( );
+                dPrecedingChidChi = get_dPrecedingMicroDeformationdChi();
 
-                dPrecedingFdFn = get_dPrecedingDeformationGradientdFn( );
+                dPrecedingChidChin = get_dPrecedingMicroDeformationdChin();
 
-                dPrecedingChidChi = get_dPrecedingMicroDeformationdChi( );
+                dPrecedingGradChidFn = get_dPrecedingGradientMicroDeformationdFn();
 
-                dPrecedingChidChin = get_dPrecedingMicroDeformationdChin( );
+                dPrecedingGradChidChi = get_dPrecedingGradientMicroDeformationdChi();
 
-                dPrecedingGradChidFn       = get_dPrecedingGradientMicroDeformationdFn( );
+                dPrecedingGradChidChin = get_dPrecedingGradientMicroDeformationdChin();
 
-                dPrecedingGradChidChi      = get_dPrecedingGradientMicroDeformationdChi( );
+                dPrecedingGradChidGradChi = get_dPrecedingGradientMicroDeformationdGradChi();
 
-                dPrecedingGradChidChin     = get_dPrecedingGradientMicroDeformationdChin( );
+                dPrecedingGradChidGradChin = get_dPrecedingGradientMicroDeformationdGradChin();
 
-                dPrecedingGradChidGradChi  = get_dPrecedingGradientMicroDeformationdGradChi( );
+                precedingDeformationGradient = get_precedingDeformationGradient();
 
-                dPrecedingGradChidGradChin = get_dPrecedingGradientMicroDeformationdGradChin( );
+                precedingMicroDeformation = get_precedingMicroDeformation();
 
-                precedingDeformationGradient = get_precedingDeformationGradient( );
+                precedingGradientMicroDeformation = get_precedingGradientMicroDeformation();
 
-                precedingMicroDeformation = get_precedingMicroDeformation( );
+                plasticMultipliers = get_plasticMultipliers();
 
-                precedingGradientMicroDeformation = get_precedingGradientMicroDeformation( );
+                d2MacroFlowdDrivingStressdStress = get_d2MacroFlowdDrivingStressdStress();
 
-                plasticMultipliers = get_plasticMultipliers( );
+                d2MacroFlowdDrivingStressdF = get_d2MacroFlowdDrivingStressdF();
 
-                d2MacroFlowdDrivingStressdStress = get_d2MacroFlowdDrivingStressdStress( );
+                d2MacroFlowdDrivingStressdFn = get_d2MacroFlowdDrivingStressdFn();
 
-                d2MacroFlowdDrivingStressdF      = get_d2MacroFlowdDrivingStressdF( );
+                d2MicroFlowdDrivingStressdStress = get_d2MicroFlowdDrivingStressdStress();
 
-                d2MacroFlowdDrivingStressdFn     = get_d2MacroFlowdDrivingStressdFn( );
+                d2MicroFlowdDrivingStressdF = get_d2MicroFlowdDrivingStressdF();
 
-                d2MicroFlowdDrivingStressdStress = get_d2MicroFlowdDrivingStressdStress( );
+                d2MicroFlowdDrivingStressdFn = get_d2MicroFlowdDrivingStressdFn();
 
-                d2MicroFlowdDrivingStressdF      = get_d2MicroFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdStress = get_d2MicroGradientFlowdDrivingStressdStress();
 
-                d2MicroFlowdDrivingStressdFn     = get_d2MicroFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdF = get_d2MicroGradientFlowdDrivingStressdF();
 
-                d2MicroGradientFlowdDrivingStressdStress = get_d2MicroGradientFlowdDrivingStressdStress( );
+                d2MicroGradientFlowdDrivingStressdFn = get_d2MicroGradientFlowdDrivingStressdFn();
 
-                d2MicroGradientFlowdDrivingStressdF      = get_d2MicroGradientFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdChi = get_d2MicroGradientFlowdDrivingStressdChi();
 
-                d2MicroGradientFlowdDrivingStressdFn     = get_d2MicroGradientFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdChin = get_d2MicroGradientFlowdDrivingStressdChin();
 
-                d2MicroGradientFlowdDrivingStressdChi    = get_d2MicroGradientFlowdDrivingStressdChi( );
+                dMacroFlowdDrivingStress = get_dMacroFlowdDrivingStress();
 
-                d2MicroGradientFlowdDrivingStressdChin   = get_d2MicroGradientFlowdDrivingStressdChin( );
+                dMicroFlowdDrivingStress = get_dMicroFlowdDrivingStress();
 
-                dMacroFlowdDrivingStress         = get_dMacroFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress();
 
-                dMicroFlowdDrivingStress         = get_dMicroFlowdDrivingStress( );
+                macroVelocityGradient = get_SetDataStorage_plasticMacroVelocityGradient();
 
-                dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress( );
+                microVelocityGradient = get_SetDataStorage_plasticMicroVelocityGradient();
 
-                macroVelocityGradient         = get_setDataStorage_plasticMacroVelocityGradient( );
+                gradientMicroVelocityGradient = get_SetDataStorage_plasticGradientMicroVelocityGradient();
 
-                microVelocityGradient         = get_setDataStorage_plasticMicroVelocityGradient( );
+                dPlasticMacroLdMacroStress = get_SetDataStorage_dPlasticMacroVelocityGradientdMacroStress();
 
-                gradientMicroVelocityGradient = get_setDataStorage_plasticGradientMicroVelocityGradient( );
+                dPlasticMacroLdMicroStress = get_SetDataStorage_dPlasticMacroVelocityGradientdMicroStress();
 
-                dPlasticMacroLdMacroStress    = get_setDataStorage_dPlasticMacroVelocityGradientdMacroStress( );
+                dPlasticMicroLdMicroStress = get_SetDataStorage_dPlasticMicroVelocityGradientdMicroStress();
 
-                dPlasticMacroLdMicroStress    = get_setDataStorage_dPlasticMacroVelocityGradientdMicroStress( );
+                dPlasticGradientMicroLdMicroStress =
+                    get_SetDataStorage_dPlasticGradientMicroVelocityGradientdMicroStress();
 
-                dPlasticMicroLdMicroStress    = get_setDataStorage_dPlasticMicroVelocityGradientdMicroStress( );
+                dPlasticGradientMicroLdHigherOrderStress =
+                    get_SetDataStorage_dPlasticGradientMicroVelocityGradientdHigherOrderStress();
 
-                dPlasticGradientMicroLdMicroStress = get_setDataStorage_dPlasticGradientMicroVelocityGradientdMicroStress( );
+                dPlasticMacroLdF = get_SetDataStorage_dPlasticMacroVelocityGradientdF();
 
-                dPlasticGradientMicroLdHigherOrderStress = get_setDataStorage_dPlasticGradientMicroVelocityGradientdHigherOrderStress( );
+                dPlasticMacroLdFn = get_SetDataStorage_dPlasticMacroVelocityGradientdFn();
 
-                dPlasticMacroLdF  = get_setDataStorage_dPlasticMacroVelocityGradientdF( );
+                dPlasticMicroLdF = get_SetDataStorage_dPlasticMicroVelocityGradientdF();
 
-                dPlasticMacroLdFn = get_setDataStorage_dPlasticMacroVelocityGradientdFn( );
+                dPlasticMicroLdFn = get_SetDataStorage_dPlasticMicroVelocityGradientdFn();
 
-                dPlasticMicroLdF  = get_setDataStorage_dPlasticMicroVelocityGradientdF( );
+                dPlasticGradientMicroLdF = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdF();
 
-                dPlasticMicroLdFn = get_setDataStorage_dPlasticMicroVelocityGradientdFn( );
+                dPlasticGradientMicroLdFn = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdFn();
 
-                dPlasticGradientMicroLdF  = get_setDataStorage_dPlasticGradientMicroVelocityGradientdF( );
+                dPlasticMicroLdChi = get_SetDataStorage_dPlasticMicroVelocityGradientdChi();
 
-                dPlasticGradientMicroLdFn = get_setDataStorage_dPlasticGradientMicroVelocityGradientdFn( );
+                dPlasticMicroLdChin = get_SetDataStorage_dPlasticMicroVelocityGradientdChin();
 
-                dPlasticMicroLdChi  = get_setDataStorage_dPlasticMicroVelocityGradientdChi( );
+                dPlasticGradientMicroLdChi = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdChi();
 
-                dPlasticMicroLdChin = get_setDataStorage_dPlasticMicroVelocityGradientdChin( );
+                dPlasticGradientMicroLdChin = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdChin();
 
-                dPlasticGradientMicroLdChi  = get_setDataStorage_dPlasticGradientMicroVelocityGradientdChi( );
+                dPlasticGradientMicroLdGradChi = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdGradChi();
 
-                dPlasticGradientMicroLdChin = get_setDataStorage_dPlasticGradientMicroVelocityGradientdChin( );
+                dPlasticGradientMicroLdGradChin = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdGradChin();
 
-                dPlasticGradientMicroLdGradChi  = get_setDataStorage_dPlasticGradientMicroVelocityGradientdGradChi( );
+                dPlasticMacroLdISVs = get_SetDataStorage_dPlasticMacroVelocityGradientdStateVariables();
 
-                dPlasticGradientMicroLdGradChin = get_setDataStorage_dPlasticGradientMicroVelocityGradientdGradChin( );
+                dPlasticMicroLdISVs = get_SetDataStorage_dPlasticMicroVelocityGradientdStateVariables();
 
-                dPlasticMacroLdISVs = get_setDataStorage_dPlasticMacroVelocityGradientdStateVariables( );
-
-                dPlasticMicroLdISVs = get_setDataStorage_dPlasticMicroVelocityGradientdStateVariables( );
-
-                dPlasticGradientMicroLdISVs = get_setDataStorage_dPlasticGradientMicroVelocityGradientdStateVariables( );
-
+                dPlasticGradientMicroLdISVs = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdStateVariables();
             }
 
             // Form the preceding RCG and its inverse
@@ -7538,80 +7405,93 @@ namespace tardigradeHydra{
 
             secondOrderTensor dRCGdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeRightCauchyGreen(
+                *precedingDeformationGradient, precedingRCG, dRCGdPrecedingF));
 
             secondOrderTensor inversePrecedingRCG = precedingRCG;
-            auto map_inversePrecedingRCG = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingRCG.data( ) );
-            map_inversePrecedingRCG = map_inversePrecedingRCG.inverse( ).eval( );
+            auto map_inversePrecedingRCG = getFixedSizeMatrixMap<floatType, dim, dim>(inversePrecedingRCG.data());
+            map_inversePrecedingRCG      = map_inversePrecedingRCG.inverse().eval();
 
-            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dRCGdPrecedingF.data( ) );
-            auto map_dPrecedingFdF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPrecedingFdF->data( ) );
-            auto map_dPrecedingFdFn = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPrecedingFdFn->data( ), ( num_configs - 1 ) * sot_dim );
+            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dRCGdPrecedingF.data());
+            auto map_dPrecedingFdF   = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPrecedingFdF->data());
+            auto map_dPrecedingFdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dPrecedingFdFn->data(), (num_configs - 1) * sot_dim);
 
-            fourthOrderTensor dRCGdF( fot_dim, 0 );
-            auto map_dRCGdF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dRCGdF.data( ) );
+            fourthOrderTensor dRCGdF(fot_dim, 0);
+            auto              map_dRCGdF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dRCGdF.data());
 
-            floatVector dRCGdFn( fot_dim * ( num_configs - 1 ), 0 );
-            auto map_dRCGdFn = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dRCGdFn.data( ), ( num_configs - 1 ) * sot_dim );
+            floatVector dRCGdFn(fot_dim * (num_configs - 1), 0);
+            auto        map_dRCGdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dRCGdFn.data(), (num_configs - 1) * sot_dim);
 
-            map_dRCGdF = ( map_dRCGdPrecedingF * map_dPrecedingFdF ).eval( );
+            map_dRCGdF = (map_dRCGdPrecedingF * map_dPrecedingFdF).eval();
 
-            map_dRCGdFn = ( map_dRCGdPrecedingF * map_dPrecedingFdFn ).eval( );
+            map_dRCGdFn = (map_dRCGdPrecedingF * map_dPrecedingFdFn).eval();
 
             // Form the precedingPsi and its inverse
             secondOrderTensor precedingPsi;
 
             fourthOrderTensor dPsidPrecedingF, dPsidPrecedingChi;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computePsi( *precedingDeformationGradient, *precedingMicroDeformation, precedingPsi, dPsidPrecedingF, dPsidPrecedingChi ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computePsi(*precedingDeformationGradient,
+                                                                                 *precedingMicroDeformation,
+                                                                                 precedingPsi, dPsidPrecedingF,
+                                                                                 dPsidPrecedingChi));
 
-            auto map_dPsidPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPsidPrecedingF.data( ) );
-            auto map_dPsidPrecedingChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPsidPrecedingChi.data( ) );
-            auto map_dPrecedingChidChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPrecedingChidChi->data( ) );
-            auto map_dPrecedingChidChin = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPrecedingChidChin->data( ), ( num_configs - 1 ) * sot_dim );
+            auto map_dPsidPrecedingF   = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPsidPrecedingF.data());
+            auto map_dPsidPrecedingChi = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPsidPrecedingChi.data());
+            auto map_dPrecedingChidChi = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPrecedingChidChi->data());
+            auto map_dPrecedingChidChin =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dPrecedingChidChin->data(),
+                                                                  (num_configs - 1) * sot_dim);
 
-            fourthOrderTensor dPsidF( fot_dim, 0 );
-            auto map_dPsidF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPsidF.data( ) );
+            fourthOrderTensor dPsidF(fot_dim, 0);
+            auto              map_dPsidF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPsidF.data());
 
-            fourthOrderTensor dPsidFn( fot_dim * ( num_configs - 1 ), 0 );
-            auto map_dPsidFn = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPsidFn.data( ), ( num_configs - 1 ) * sot_dim );
+            fourthOrderTensor dPsidFn(fot_dim * (num_configs - 1), 0);
+            auto              map_dPsidFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dPsidFn.data(), (num_configs - 1) * sot_dim);
 
-            fourthOrderTensor dPsidChi( fot_dim, 0 );
-            auto map_dPsidChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPsidChi.data( ) );
+            fourthOrderTensor dPsidChi(fot_dim, 0);
+            auto              map_dPsidChi = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPsidChi.data());
 
-            fourthOrderTensor dPsidChin( fot_dim * ( num_configs - 1 ), 0 );
-            auto map_dPsidChin = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPsidChin.data( ), ( num_configs - 1 ) * sot_dim );
+            fourthOrderTensor dPsidChin(fot_dim * (num_configs - 1), 0);
+            auto              map_dPsidChin =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dPsidChin.data(), (num_configs - 1) * sot_dim);
 
-            map_dPsidF = ( map_dPsidPrecedingF * map_dPrecedingFdF ).eval( );
+            map_dPsidF = (map_dPsidPrecedingF * map_dPrecedingFdF).eval();
 
-            map_dPsidFn = ( map_dPsidPrecedingF * map_dPrecedingFdFn ).eval( );
+            map_dPsidFn = (map_dPsidPrecedingF * map_dPrecedingFdFn).eval();
 
-            map_dPsidChi = ( map_dPsidPrecedingChi * map_dPrecedingChidChi ).eval( );
+            map_dPsidChi = (map_dPsidPrecedingChi * map_dPrecedingChidChi).eval();
 
-            map_dPsidChin = ( map_dPsidPrecedingChi * map_dPrecedingChidChin ).eval( );
+            map_dPsidChin = (map_dPsidPrecedingChi * map_dPrecedingChidChin).eval();
 
             secondOrderTensor inversePrecedingPsi = precedingPsi;
-            auto map_inversePrecedingPsi = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingPsi.data( ) );
-            map_inversePrecedingPsi = map_inversePrecedingPsi.inverse( ).eval( );
+            auto map_inversePrecedingPsi = getFixedSizeMatrixMap<floatType, dim, dim>(inversePrecedingPsi.data());
+            map_inversePrecedingPsi      = map_inversePrecedingPsi.inverse().eval();
 
             // Form the preceding micro RCG and its inverse
             secondOrderTensor precedingMicroRCG;
 
             fourthOrderTensor dMicroRCGdPrecedingChi;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG, dMicroRCGdPrecedingChi ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeRightCauchyGreen(
+                *precedingMicroDeformation, precedingMicroRCG, dMicroRCGdPrecedingChi));
 
-            auto map_dMicroRCGdPrecedingChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroRCGdPrecedingChi.data( ) );
+            auto map_dMicroRCGdPrecedingChi =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMicroRCGdPrecedingChi.data());
 
-            fourthOrderTensor dMicroRCGdChi( fot_dim, 0 );
-            auto map_dMicroRCGdChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroRCGdChi.data( ) );
+            fourthOrderTensor dMicroRCGdChi(fot_dim, 0);
+            auto map_dMicroRCGdChi = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dMicroRCGdChi.data());
 
-            fourthOrderTensor dMicroRCGdChin( fot_dim * ( num_configs - 1 ), 0 );
-            auto map_dMicroRCGdChin = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dMicroRCGdChin.data( ), ( num_configs - 1 ) * sot_dim );
+            fourthOrderTensor dMicroRCGdChin(fot_dim * (num_configs - 1), 0);
+            auto              map_dMicroRCGdChin =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dMicroRCGdChin.data(), (num_configs - 1) * sot_dim);
 
-            map_dMicroRCGdChi = ( map_dMicroRCGdPrecedingChi * map_dPrecedingChidChi ).eval( );
+            map_dMicroRCGdChi = (map_dMicroRCGdPrecedingChi * map_dPrecedingChidChi).eval();
 
-            map_dMicroRCGdChin = ( map_dMicroRCGdPrecedingChi * map_dPrecedingChidChin ).eval( );
+            map_dMicroRCGdChin = (map_dMicroRCGdPrecedingChi * map_dPrecedingChidChin).eval();
 
             // Form Gamma
             thirdOrderTensor precedingGamma;
@@ -7620,46 +7500,67 @@ namespace tardigradeHydra{
 
             sixthOrderTensor dPrecedingGammadPrecedingGradChi;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeGamma( *precedingDeformationGradient, *precedingGradientMicroDeformation, precedingGamma, dPrecedingGammadPrecedingF, dPrecedingGammadPrecedingGradChi ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeMicromorphicTools::computeGamma(
+                *precedingDeformationGradient, *precedingGradientMicroDeformation, precedingGamma,
+                dPrecedingGammadPrecedingF, dPrecedingGammadPrecedingGradChi));
 
-            auto map_dPrecedingGammadPrecedingF = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPrecedingGammadPrecedingF.data( ) );
-            auto map_dPrecedingGammadPrecedingGradChi = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dPrecedingGammadPrecedingGradChi.data( ) );
-            auto map_dPrecedingGradChidFn = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dPrecedingGradChidFn->data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_dPrecedingGradChidChi  = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPrecedingGradChidChi->data( ) );
-            auto map_dPrecedingGradChidChin = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dPrecedingGradChidChin->data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_dPrecedingGradChidGradChi  = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dPrecedingGradChidGradChi->data( ) );
-            auto map_dPrecedingGradChidGradChin = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dPrecedingGradChidGradChin->data( ), ( num_configs - 1 ) * tot_dim );
+            auto map_dPrecedingGammadPrecedingF =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPrecedingGammadPrecedingF.data());
+            auto map_dPrecedingGammadPrecedingGradChi =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(dPrecedingGammadPrecedingGradChi.data());
+            auto map_dPrecedingGradChidFn =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dPrecedingGradChidFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_dPrecedingGradChidChi =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPrecedingGradChidChi->data());
+            auto map_dPrecedingGradChidChin =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dPrecedingGradChidChin->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_dPrecedingGradChidGradChi =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(dPrecedingGradChidGradChi->data());
+            auto map_dPrecedingGradChidGradChin =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dPrecedingGradChidGradChin->data(),
+                                                                  (num_configs - 1) * tot_dim);
 
-            fifthOrderTensor dPrecedingGammadF( fiot_dim, 0 );
-            auto map_dPrecedingGammadF = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPrecedingGammadF.data( ) );
+            fifthOrderTensor dPrecedingGammadF(fiot_dim, 0);
+            auto map_dPrecedingGammadF = getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPrecedingGammadF.data());
 
-            floatVector dPrecedingGammadFn( fiot_dim * ( num_configs - 1 ), 0 );
-            auto map_dPrecedingGammadFn = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dPrecedingGammadFn.data( ), ( num_configs - 1 ) * sot_dim );
+            floatVector dPrecedingGammadFn(fiot_dim * (num_configs - 1), 0);
+            auto        map_dPrecedingGammadFn =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dPrecedingGammadFn.data(),
+                                                                  (num_configs - 1) * sot_dim);
 
-            fifthOrderTensor dPrecedingGammadChi( fiot_dim, 0 );
-            auto map_dPrecedingGammadChi = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPrecedingGammadChi.data( ) );
+            fifthOrderTensor dPrecedingGammadChi(fiot_dim, 0);
+            auto             map_dPrecedingGammadChi =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPrecedingGammadChi.data());
 
-            floatVector dPrecedingGammadChin( fiot_dim * ( num_configs - 1 ), 0 );
-            auto map_dPrecedingGammadChin = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dPrecedingGammadChin.data( ), ( num_configs - 1 ) * sot_dim );
+            floatVector dPrecedingGammadChin(fiot_dim * (num_configs - 1), 0);
+            auto        map_dPrecedingGammadChin =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dPrecedingGammadChin.data(),
+                                                                  (num_configs - 1) * sot_dim);
 
-            sixthOrderTensor dPrecedingGammadGradChi( siot_dim, 0 );
-            auto map_dPrecedingGammadGradChi = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dPrecedingGammadGradChi.data( ) );
+            sixthOrderTensor dPrecedingGammadGradChi(siot_dim, 0);
+            auto             map_dPrecedingGammadGradChi =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(dPrecedingGammadGradChi.data());
 
-            floatVector dPrecedingGammadGradChin( siot_dim * ( num_configs - 1 ), 0 );
-            auto map_dPrecedingGammadGradChin = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dPrecedingGammadGradChin.data( ), ( num_configs - 1 ) * tot_dim );
+            floatVector dPrecedingGammadGradChin(siot_dim * (num_configs - 1), 0);
+            auto        map_dPrecedingGammadGradChin =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(dPrecedingGammadGradChin.data(),
+                                                                  (num_configs - 1) * tot_dim);
 
-            map_dPrecedingGammadF = ( map_dPrecedingGammadPrecedingF * map_dPrecedingFdF ).eval( );
+            map_dPrecedingGammadF = (map_dPrecedingGammadPrecedingF * map_dPrecedingFdF).eval();
 
-            map_dPrecedingGammadFn  = ( map_dPrecedingGammadPrecedingF * map_dPrecedingFdFn ).eval( );
-            map_dPrecedingGammadFn += ( map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidFn ).eval( );
+            map_dPrecedingGammadFn = (map_dPrecedingGammadPrecedingF * map_dPrecedingFdFn).eval();
+            map_dPrecedingGammadFn += (map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidFn).eval();
 
-            map_dPrecedingGammadChi = ( map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidChi ).eval( );
+            map_dPrecedingGammadChi = (map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidChi).eval();
 
-            map_dPrecedingGammadChin = ( map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidChin ).eval( );
+            map_dPrecedingGammadChin = (map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidChin).eval();
 
-            map_dPrecedingGammadGradChi = ( map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidGradChi ).eval( );
+            map_dPrecedingGammadGradChi = (map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidGradChi).eval();
 
-            map_dPrecedingGammadGradChin = ( map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidGradChin ).eval( );
+            map_dPrecedingGammadGradChin =
+                (map_dPrecedingGammadPrecedingGradChi * map_dPrecedingGradChidGradChin).eval();
 
             secondOrderTensor dPlasticMacroLdMacroGamma;
 
@@ -7681,626 +7582,629 @@ namespace tardigradeHydra{
 
             fourthOrderTensor dPlasticGradientMicroLdMicroGradientGamma;
 
-            fifthOrderTensor  dPlasticGradientMicroLdPlasticMicroL;
+            fifthOrderTensor dPlasticGradientMicroLdPlasticMicroL;
 
-            fifthOrderTensor  dPlasticGradientMicroLdPrecedingPsi;
+            fifthOrderTensor dPlasticGradientMicroLdPrecedingPsi;
 
-            sixthOrderTensor  dPlasticGradientMicroLdPrecedingGamma;
+            sixthOrderTensor dPlasticGradientMicroLdPrecedingGamma;
 
-            sixthOrderTensor  dPlasticGradientMicroLdMicroGradientFlowDirection;
+            sixthOrderTensor dPlasticGradientMicroLdMicroGradientFlowDirection;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMacroVelocityGradient( ( *plasticMultipliers )[ 0 ], ( *plasticMultipliers )[ 1 ],
-                                                     inversePrecedingRCG, *dMacroFlowdDrivingStress, *dMicroFlowdDrivingStress,
-                                                     *macroVelocityGradient.value, dPlasticMacroLdMacroGamma, dPlasticMacroLdMicroGamma,
-                                                     dPlasticMacroLdPrecedingRCG, dPlasticMacroLdMacroFlowDirection, dPlasticMacroLdMicroFlowDirection )
-            )
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMicroVelocityGradient( ( *plasticMultipliers )[ 1 ], precedingMicroRCG, precedingPsi, inversePrecedingPsi,
-                                                     *dMicroFlowdDrivingStress, *microVelocityGradient.value, dPlasticMicroLdMicroGamma,
-                                                     dPlasticMicroLdPrecedingMicroRCG, dPlasticMicroLdPrecedingPsi, dPlasticMicroLdMicroFlowDirection );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(computePlasticMacroVelocityGradient(
+                (*plasticMultipliers)[0], (*plasticMultipliers)[1], inversePrecedingRCG, *dMacroFlowdDrivingStress,
+                *dMicroFlowdDrivingStress, *macroVelocityGradient.value, dPlasticMacroLdMacroGamma,
+                dPlasticMacroLdMicroGamma, dPlasticMacroLdPrecedingRCG, dPlasticMacroLdMacroFlowDirection,
+                dPlasticMacroLdMicroFlowDirection))
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                computePlasticMicroGradientVelocityGradient( floatVector( plasticMultipliers->begin( ) + 2, plasticMultipliers->end( ) ),
-                                                             precedingPsi, inversePrecedingPsi, precedingGamma,
-                                                             *dMicroGradientFlowdDrivingStress,
-                                                             *microVelocityGradient.value, *gradientMicroVelocityGradient.value,
-                                                             dPlasticGradientMicroLdMicroGradientGamma,
-                                                             dPlasticGradientMicroLdPlasticMicroL,
-                                                             dPlasticGradientMicroLdPrecedingPsi,
-                                                             dPlasticGradientMicroLdPrecedingGamma,
-                                                             dPlasticGradientMicroLdMicroGradientFlowDirection );
-            )
+                computePlasticMicroVelocityGradient((*plasticMultipliers)[1], precedingMicroRCG, precedingPsi,
+                                                    inversePrecedingPsi, *dMicroFlowdDrivingStress,
+                                                    *microVelocityGradient.value, dPlasticMicroLdMicroGamma,
+                                                    dPlasticMicroLdPrecedingMicroRCG, dPlasticMicroLdPrecedingPsi,
+                                                    dPlasticMicroLdMicroFlowDirection);)
 
-            auto map_dPlasticMacroLdPrecedingRCG                       = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMacroLdPrecedingRCG.data( ) );
-            auto map_dPlasticMacroLdMacroFlowDirection                 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMacroLdMacroFlowDirection.data( ) );
-            auto map_dPlasticMacroLdMicroFlowDirection                 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMacroLdMicroFlowDirection.data( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH(computePlasticMicroGradientVelocityGradient(
+                                             floatVector(plasticMultipliers->begin() + 2, plasticMultipliers->end()),
+                                             precedingPsi, inversePrecedingPsi, precedingGamma,
+                                             *dMicroGradientFlowdDrivingStress, *microVelocityGradient.value,
+                                             *gradientMicroVelocityGradient.value,
+                                             dPlasticGradientMicroLdMicroGradientGamma,
+                                             dPlasticGradientMicroLdPlasticMicroL, dPlasticGradientMicroLdPrecedingPsi,
+                                             dPlasticGradientMicroLdPrecedingGamma,
+                                             dPlasticGradientMicroLdMicroGradientFlowDirection);)
 
-            auto map_dPlasticMicroLdPrecedingMicroRCG                  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroLdPrecedingMicroRCG.data( ) );
-            auto map_dPlasticMicroLdPrecedingPsi                       = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroLdPrecedingPsi.data( ) );
-            auto map_dPlasticMicroLdMicroFlowDirection                 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroLdMicroFlowDirection.data( ) );
+            auto map_dPlasticMacroLdPrecedingRCG =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMacroLdPrecedingRCG.data());
+            auto map_dPlasticMacroLdMacroFlowDirection =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMacroLdMacroFlowDirection.data());
+            auto map_dPlasticMacroLdMicroFlowDirection =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMacroLdMicroFlowDirection.data());
 
-            auto map_dPlasticGradientMicroLdPlasticMicroL              = getFixedSizeMatrixMap< floatType, tot_dim,     sot_dim >( dPlasticGradientMicroLdPlasticMicroL.data( ) );
-            auto map_dPlasticGradientMicroLdPrecedingPsi               = getFixedSizeMatrixMap< floatType, tot_dim,     sot_dim >( dPlasticGradientMicroLdPrecedingPsi.data( ) );
-            auto map_dPlasticGradientMicroLdPrecedingGamma             = getFixedSizeMatrixMap< floatType, tot_dim,     tot_dim >( dPlasticGradientMicroLdPrecedingGamma.data( ) );
-            auto map_dPlasticGradientMicroLdMicroGradientFlowDirection = getFixedSizeMatrixMap< floatType, tot_dim, 3 * tot_dim >( dPlasticGradientMicroLdMicroGradientFlowDirection.data( ) );
+            auto map_dPlasticMicroLdPrecedingMicroRCG =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMicroLdPrecedingMicroRCG.data());
+            auto map_dPlasticMicroLdPrecedingPsi =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMicroLdPrecedingPsi.data());
+            auto map_dPlasticMicroLdMicroFlowDirection =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMicroLdMicroFlowDirection.data());
 
-            auto map_d2MacroFlowdDrivingStressdStress         = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( d2MacroFlowdDrivingStressdStress->data( ) );
-            auto map_d2MicroFlowdDrivingStressdStress         = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( d2MicroFlowdDrivingStressdStress->data( ) );
-            auto map_d2MicroGradientFlowdDrivingStressdStress = getFixedSizeMatrixMap< floatType, 3 * tot_dim, tot_dim >( d2MicroGradientFlowdDrivingStressdStress->data( ) );
-            auto map_d2MacroFlowdDrivingStressdF              = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( d2MacroFlowdDrivingStressdF->data( ) );
-            auto map_d2MicroFlowdDrivingStressdF              = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( d2MicroFlowdDrivingStressdF->data( ) );
-            auto map_d2MicroGradientFlowdDrivingStressdF      = getFixedSizeMatrixMap< floatType, 3 * tot_dim, sot_dim >( d2MicroGradientFlowdDrivingStressdF->data( ) );
-            auto map_d2MicroGradientFlowdDrivingStressdChi    = getFixedSizeMatrixMap< floatType, 3 * tot_dim, sot_dim >( d2MicroGradientFlowdDrivingStressdChi->data( ) );
-            auto map_d2MacroFlowdDrivingStressdFn             = getDynamicColumnSizeMatrixMap< floatType,     sot_dim >( d2MacroFlowdDrivingStressdFn->data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_d2MicroFlowdDrivingStressdFn             = getDynamicColumnSizeMatrixMap< floatType,     sot_dim >( d2MicroFlowdDrivingStressdFn->data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_d2MicroGradientFlowdDrivingStressdFn     = getDynamicColumnSizeMatrixMap< floatType, 3 * tot_dim >( d2MicroGradientFlowdDrivingStressdFn->data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_d2MicroGradientFlowdDrivingStressdChin   = getDynamicColumnSizeMatrixMap< floatType, 3 * tot_dim >( d2MicroGradientFlowdDrivingStressdChin->data( ), ( num_configs - 1 ) * sot_dim );
+            auto map_dPlasticGradientMicroLdPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticGradientMicroLdPlasticMicroL.data());
+            auto map_dPlasticGradientMicroLdPrecedingPsi =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(dPlasticGradientMicroLdPrecedingPsi.data());
+            auto map_dPlasticGradientMicroLdPrecedingGamma =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(dPlasticGradientMicroLdPrecedingGamma.data());
+            auto map_dPlasticGradientMicroLdMicroGradientFlowDirection =
+                getFixedSizeMatrixMap<floatType, tot_dim, 3 * tot_dim>(
+                    dPlasticGradientMicroLdMicroGradientFlowDirection.data());
 
-            auto map_dPlasticMacroLdMacroStress               = dPlasticMacroLdMacroStress.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_dPlasticMacroLdMicroStress               = dPlasticMacroLdMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_dPlasticMicroLdMicroStress               = dPlasticMicroLdMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_dPlasticGradientMicroLdMicroStress       = dPlasticGradientMicroLdMicroStress.zeroMap< floatType, tot_dim, sot_dim >( );
-            auto map_dPlasticMacroLdF                         = dPlasticMacroLdF.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_dPlasticMacroLdFn                        = dPlasticMacroLdFn.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_dPlasticMicroLdF                         = dPlasticMicroLdF.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_dPlasticMicroLdFn                        = dPlasticMicroLdFn.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_dPlasticGradientMicroLdF                 = dPlasticGradientMicroLdF.zeroMap< floatType, tot_dim, sot_dim >( );
-            auto map_dPlasticGradientMicroLdFn                = dPlasticGradientMicroLdFn.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_dPlasticMicroLdChi                       = dPlasticMicroLdChi.zeroMap< floatType, sot_dim, sot_dim >( );
-            auto map_dPlasticMicroLdChin                      = dPlasticMicroLdChin.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_dPlasticGradientMicroLdChi               = dPlasticGradientMicroLdChi.zeroMap< floatType, tot_dim, sot_dim >( );
-            auto map_dPlasticGradientMicroLdChin              = dPlasticGradientMicroLdChin.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
-            auto map_dPlasticGradientMicroLdGradChi           = dPlasticGradientMicroLdGradChi.zeroMap< floatType, tot_dim, tot_dim >( );
-            auto map_dPlasticGradientMicroLdGradChin          = dPlasticGradientMicroLdGradChin.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * tot_dim );
-            auto map_dPlasticMicroLdISVs                      = dPlasticMicroLdISVs.zeroMap< floatType, sot_dim >( num_isvs );
-            auto map_dPlasticGradientMicroLdISVs              = dPlasticGradientMicroLdISVs.zeroMap< floatType, tot_dim >( num_isvs );
-            auto map_dPlasticGradientMicroLdHigherOrderStress = dPlasticGradientMicroLdHigherOrderStress.zeroMap< floatType, tot_dim, tot_dim >( );
+            auto map_d2MacroFlowdDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2MacroFlowdDrivingStressdStress->data());
+            auto map_d2MicroFlowdDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2MicroFlowdDrivingStressdStress->data());
+            auto map_d2MicroGradientFlowdDrivingStressdStress = getFixedSizeMatrixMap<floatType, 3 * tot_dim, tot_dim>(
+                d2MicroGradientFlowdDrivingStressdStress->data());
+            auto map_d2MacroFlowdDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2MacroFlowdDrivingStressdF->data());
+            auto map_d2MicroFlowdDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(d2MicroFlowdDrivingStressdF->data());
+            auto map_d2MicroGradientFlowdDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, 3 * tot_dim, sot_dim>(d2MicroGradientFlowdDrivingStressdF->data());
+            auto map_d2MicroGradientFlowdDrivingStressdChi =
+                getFixedSizeMatrixMap<floatType, 3 * tot_dim, sot_dim>(d2MicroGradientFlowdDrivingStressdChi->data());
+            auto map_d2MacroFlowdDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(d2MacroFlowdDrivingStressdFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_d2MicroFlowdDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(d2MicroFlowdDrivingStressdFn->data(),
+                                                                  (num_configs - 1) * sot_dim);
+            auto map_d2MicroGradientFlowdDrivingStressdFn =
+                getDynamicColumnSizeMatrixMap<floatType, 3 * tot_dim>(d2MicroGradientFlowdDrivingStressdFn->data(),
+                                                                      (num_configs - 1) * sot_dim);
+            auto map_d2MicroGradientFlowdDrivingStressdChin =
+                getDynamicColumnSizeMatrixMap<floatType, 3 * tot_dim>(d2MicroGradientFlowdDrivingStressdChin->data(),
+                                                                      (num_configs - 1) * sot_dim);
+
+            auto map_dPlasticMacroLdMacroStress = dPlasticMacroLdMacroStress.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dPlasticMacroLdMicroStress = dPlasticMacroLdMicroStress.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dPlasticMicroLdMicroStress = dPlasticMicroLdMicroStress.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dPlasticGradientMicroLdMicroStress =
+                dPlasticGradientMicroLdMicroStress.zeroMap<floatType, tot_dim, sot_dim>();
+            auto map_dPlasticMacroLdF  = dPlasticMacroLdF.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dPlasticMacroLdFn = dPlasticMacroLdFn.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
+            auto map_dPlasticMicroLdF  = dPlasticMicroLdF.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dPlasticMicroLdFn = dPlasticMicroLdFn.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
+            auto map_dPlasticGradientMicroLdF = dPlasticGradientMicroLdF.zeroMap<floatType, tot_dim, sot_dim>();
+            auto map_dPlasticGradientMicroLdFn =
+                dPlasticGradientMicroLdFn.zeroMap<floatType, tot_dim>((num_configs - 1) * sot_dim);
+            auto map_dPlasticMicroLdChi  = dPlasticMicroLdChi.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dPlasticMicroLdChin = dPlasticMicroLdChin.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
+            auto map_dPlasticGradientMicroLdChi = dPlasticGradientMicroLdChi.zeroMap<floatType, tot_dim, sot_dim>();
+            auto map_dPlasticGradientMicroLdChin =
+                dPlasticGradientMicroLdChin.zeroMap<floatType, tot_dim>((num_configs - 1) * sot_dim);
+            auto map_dPlasticGradientMicroLdGradChi =
+                dPlasticGradientMicroLdGradChi.zeroMap<floatType, tot_dim, tot_dim>();
+            auto map_dPlasticGradientMicroLdGradChin =
+                dPlasticGradientMicroLdGradChin.zeroMap<floatType, tot_dim>((num_configs - 1) * tot_dim);
+            auto map_dPlasticMicroLdISVs         = dPlasticMicroLdISVs.zeroMap<floatType, sot_dim>(num_isvs);
+            auto map_dPlasticGradientMicroLdISVs = dPlasticGradientMicroLdISVs.zeroMap<floatType, tot_dim>(num_isvs);
+            auto map_dPlasticGradientMicroLdHigherOrderStress =
+                dPlasticGradientMicroLdHigherOrderStress.zeroMap<floatType, tot_dim, tot_dim>();
 
             // Assemble the Jacobians
-            map_dPlasticMacroLdMacroStress = ( map_dPlasticMacroLdMacroFlowDirection * map_d2MacroFlowdDrivingStressdStress ).eval( );
+            map_dPlasticMacroLdMacroStress =
+                (map_dPlasticMacroLdMacroFlowDirection * map_d2MacroFlowdDrivingStressdStress).eval();
 
-            map_dPlasticMacroLdMicroStress = ( map_dPlasticMacroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdStress ).eval( );
+            map_dPlasticMacroLdMicroStress =
+                (map_dPlasticMacroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdStress).eval();
 
-            map_dPlasticMicroLdMicroStress = ( map_dPlasticMicroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdStress ).eval( );
+            map_dPlasticMicroLdMicroStress =
+                (map_dPlasticMicroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdStress).eval();
 
-            map_dPlasticGradientMicroLdMicroStress = ( map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdMicroStress ).eval( );
+            map_dPlasticGradientMicroLdMicroStress =
+                (map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdMicroStress).eval();
 
-            map_dPlasticGradientMicroLdHigherOrderStress = ( map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdStress ).eval( );
+            map_dPlasticGradientMicroLdHigherOrderStress =
+                (map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdStress)
+                    .eval();
 
-            map_dPlasticMacroLdF  = ( map_dPlasticMacroLdMacroFlowDirection * map_d2MacroFlowdDrivingStressdF ).eval( );
-            map_dPlasticMacroLdF += ( map_dPlasticMacroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdF ).eval( );
-            map_dPlasticMacroLdF += ( map_dPlasticMacroLdPrecedingRCG * map_dRCGdF ).eval( );
+            map_dPlasticMacroLdF = (map_dPlasticMacroLdMacroFlowDirection * map_d2MacroFlowdDrivingStressdF).eval();
+            map_dPlasticMacroLdF += (map_dPlasticMacroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdF).eval();
+            map_dPlasticMacroLdF += (map_dPlasticMacroLdPrecedingRCG * map_dRCGdF).eval();
 
-            map_dPlasticMacroLdFn  = ( map_dPlasticMacroLdMacroFlowDirection * map_d2MacroFlowdDrivingStressdFn ).eval( );
-            map_dPlasticMacroLdFn += ( map_dPlasticMacroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdFn ).eval( );
-            map_dPlasticMacroLdFn += ( map_dPlasticMacroLdPrecedingRCG * map_dRCGdFn ).eval( );
+            map_dPlasticMacroLdFn = (map_dPlasticMacroLdMacroFlowDirection * map_d2MacroFlowdDrivingStressdFn).eval();
+            map_dPlasticMacroLdFn += (map_dPlasticMacroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdFn).eval();
+            map_dPlasticMacroLdFn += (map_dPlasticMacroLdPrecedingRCG * map_dRCGdFn).eval();
 
-            map_dPlasticMicroLdF  = ( map_dPlasticMicroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdF ).eval( );
-            map_dPlasticMicroLdF += ( map_dPlasticMicroLdPrecedingPsi * map_dPsidF ).eval( );
+            map_dPlasticMicroLdF = (map_dPlasticMicroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdF).eval();
+            map_dPlasticMicroLdF += (map_dPlasticMicroLdPrecedingPsi * map_dPsidF).eval();
 
-            map_dPlasticMicroLdFn  = ( map_dPlasticMicroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdFn ).eval( );
-            map_dPlasticMicroLdFn += ( map_dPlasticMicroLdPrecedingPsi * map_dPsidFn ).eval( );
+            map_dPlasticMicroLdFn = (map_dPlasticMicroLdMicroFlowDirection * map_d2MicroFlowdDrivingStressdFn).eval();
+            map_dPlasticMicroLdFn += (map_dPlasticMicroLdPrecedingPsi * map_dPsidFn).eval();
 
-            map_dPlasticGradientMicroLdF  = ( map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdF ).eval( );
-            map_dPlasticGradientMicroLdF += ( map_dPlasticGradientMicroLdPrecedingPsi * map_dPsidF ).eval( );
-            map_dPlasticGradientMicroLdF += ( map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadF ).eval( );
-            map_dPlasticGradientMicroLdF += ( map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdF ).eval( );
+            map_dPlasticGradientMicroLdF = (map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdF).eval();
+            map_dPlasticGradientMicroLdF += (map_dPlasticGradientMicroLdPrecedingPsi * map_dPsidF).eval();
+            map_dPlasticGradientMicroLdF += (map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadF).eval();
+            map_dPlasticGradientMicroLdF +=
+                (map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdF)
+                    .eval();
 
-            map_dPlasticGradientMicroLdFn  = ( map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdFn ).eval( );
-            map_dPlasticGradientMicroLdFn += ( map_dPlasticGradientMicroLdPrecedingPsi * map_dPsidFn ).eval( );
-            map_dPlasticGradientMicroLdFn += ( map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadFn ).eval( );
-            map_dPlasticGradientMicroLdFn += ( map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdFn ).eval( );
+            map_dPlasticGradientMicroLdFn = (map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdFn).eval();
+            map_dPlasticGradientMicroLdFn += (map_dPlasticGradientMicroLdPrecedingPsi * map_dPsidFn).eval();
+            map_dPlasticGradientMicroLdFn +=
+                (map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadFn).eval();
+            map_dPlasticGradientMicroLdFn +=
+                (map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdFn)
+                    .eval();
 
-            map_dPlasticMicroLdChi  = ( map_dPlasticMicroLdPrecedingPsi * map_dPsidChi ).eval( );
-            map_dPlasticMicroLdChi += ( map_dPlasticMicroLdPrecedingMicroRCG * map_dMicroRCGdChi ).eval( );
+            map_dPlasticMicroLdChi = (map_dPlasticMicroLdPrecedingPsi * map_dPsidChi).eval();
+            map_dPlasticMicroLdChi += (map_dPlasticMicroLdPrecedingMicroRCG * map_dMicroRCGdChi).eval();
 
-            map_dPlasticMicroLdChin  = ( map_dPlasticMicroLdPrecedingPsi * map_dPsidChin ).eval( );
-            map_dPlasticMicroLdChin += ( map_dPlasticMicroLdPrecedingMicroRCG * map_dMicroRCGdChin ).eval( );
+            map_dPlasticMicroLdChin = (map_dPlasticMicroLdPrecedingPsi * map_dPsidChin).eval();
+            map_dPlasticMicroLdChin += (map_dPlasticMicroLdPrecedingMicroRCG * map_dMicroRCGdChin).eval();
 
-            map_dPlasticGradientMicroLdChi  = ( map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdChi ).eval( );
-            map_dPlasticGradientMicroLdChi += ( map_dPlasticGradientMicroLdPrecedingPsi * map_dPsidChi ).eval( );
-            map_dPlasticGradientMicroLdChi += ( map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadChi ).eval( );
-            map_dPlasticGradientMicroLdChi += ( map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdChi ).eval( );
+            map_dPlasticGradientMicroLdChi = (map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdChi).eval();
+            map_dPlasticGradientMicroLdChi += (map_dPlasticGradientMicroLdPrecedingPsi * map_dPsidChi).eval();
+            map_dPlasticGradientMicroLdChi +=
+                (map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadChi).eval();
+            map_dPlasticGradientMicroLdChi +=
+                (map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdChi)
+                    .eval();
 
-            map_dPlasticGradientMicroLdChin  = ( map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdChin ).eval( );
-            map_dPlasticGradientMicroLdChin += ( map_dPlasticGradientMicroLdPrecedingPsi * map_dPsidChin ).eval( );
-            map_dPlasticGradientMicroLdChin += ( map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadChin ).eval( );
-            map_dPlasticGradientMicroLdChin += ( map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdChin ).eval( );
+            map_dPlasticGradientMicroLdChin =
+                (map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdChin).eval();
+            map_dPlasticGradientMicroLdChin += (map_dPlasticGradientMicroLdPrecedingPsi * map_dPsidChin).eval();
+            map_dPlasticGradientMicroLdChin +=
+                (map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadChin).eval();
+            map_dPlasticGradientMicroLdChin +=
+                (map_dPlasticGradientMicroLdMicroGradientFlowDirection * map_d2MicroGradientFlowdDrivingStressdChin)
+                    .eval();
 
-            map_dPlasticGradientMicroLdGradChi = ( map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadGradChi ).eval( );
+            map_dPlasticGradientMicroLdGradChi =
+                (map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadGradChi).eval();
 
-            map_dPlasticGradientMicroLdGradChin = ( map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadGradChin ).eval( );
+            map_dPlasticGradientMicroLdGradChin =
+                (map_dPlasticGradientMicroLdPrecedingGamma * map_dPrecedingGammadGradChin).eval();
 
-            dPlasticMacroLdISVs.zero( sot_dim * num_isvs );
+            dPlasticMacroLdISVs.zero(sot_dim * num_isvs);
 
-            dPlasticMicroLdISVs.zero( sot_dim * num_isvs );
+            dPlasticMicroLdISVs.zero(sot_dim * num_isvs);
 
-            for ( unsigned int i = 0; i < sot_dim; i++ ){
+            for (unsigned int i = 0; i < sot_dim; i++) {
+                (*dPlasticMacroLdISVs.value)[num_isvs * i + 0] = dPlasticMacroLdMacroGamma[i];
 
-                ( *dPlasticMacroLdISVs.value )[ num_isvs * i + 0 ] = dPlasticMacroLdMacroGamma[ i ];
+                (*dPlasticMacroLdISVs.value)[num_isvs * i + 1] = dPlasticMacroLdMicroGamma[i];
 
-                ( *dPlasticMacroLdISVs.value )[ num_isvs * i + 1 ] = dPlasticMacroLdMicroGamma[ i ];
-
-                ( *dPlasticMicroLdISVs.value )[ num_isvs * i + 1 ] = dPlasticMicroLdMicroGamma[ i ];
-
+                (*dPlasticMicroLdISVs.value)[num_isvs * i + 1] = dPlasticMicroLdMicroGamma[i];
             }
 
-            dPlasticGradientMicroLdISVs.zero( tot_dim * num_isvs );
+            dPlasticGradientMicroLdISVs.zero(tot_dim * num_isvs);
 
-            map_dPlasticGradientMicroLdISVs = ( map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdISVs ).eval( );
+            map_dPlasticGradientMicroLdISVs =
+                (map_dPlasticGradientMicroLdPlasticMicroL * map_dPlasticMicroLdISVs).eval();
 
-            for ( unsigned int i = 0; i < tot_dim; i++ ){
-
-                for ( unsigned int j = 0; j < dim; j++ ){
-
-                    ( *dPlasticGradientMicroLdISVs.value )[ num_isvs * i + j + 2 ] = dPlasticGradientMicroLdMicroGradientGamma[ 3 * i + j ];
-
+            for (unsigned int i = 0; i < tot_dim; i++) {
+                for (unsigned int j = 0; j < dim; j++) {
+                    (*dPlasticGradientMicroLdISVs.value)[num_isvs * i + j + 2] =
+                        dPlasticGradientMicroLdMicroGradientGamma[3 * i + j];
                 }
-
             }
-
         }
 
-        void residual::setUpdatedPlasticDeformationGradient( ){
+        void residual::setUpdatedPlasticDeformationGradient() {
             /*!
              * Set the updated plastic deformation gradient
              */
 
-            setPlasticDeformation( );
-
+            setPlasticDeformation();
         }
 
-        void residual::setUpdatedPlasticMicroDeformation( ){
+        void residual::setUpdatedPlasticMicroDeformation() {
             /*!
              * Set the updated plastic micro deformation
              */
 
-            setPlasticDeformation( );
-
+            setPlasticDeformation();
         }
 
-        void residual::setUpdatedPlasticGradientMicroDeformation( ){
+        void residual::setUpdatedPlasticGradientMicroDeformation() {
             /*!
              * Set the updated plastic gradient of the micro deformation
              */
 
-            setPlasticDeformation( );
-
+            setPlasticDeformation();
         }
 
-        void residual::setPlasticDeformation( ){
+        void residual::setPlasticDeformation() {
             /*!
              * Set all of the plastic deformations
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension();
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            auto tot_dim = hydra->getTOTDimension();
 
-            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+            auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
-            auto updatedPlasticDeformationGradient = get_setDataStorage_updatedPlasticDeformationGradient( );
+            auto updatedPlasticDeformationGradient = get_SetDataStorage_updatedPlasticDeformationGradient();
 
-            auto updatedPlasticMicroDeformation = get_setDataStorage_updatedPlasticMicroDeformation( );
+            auto updatedPlasticMicroDeformation = get_SetDataStorage_updatedPlasticMicroDeformation();
 
-            auto updatedPlasticGradientMicroDeformation = get_setDataStorage_updatedPlasticGradientMicroDeformation( );
+            auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
-            const secondOrderTensor previousPlasticDeformationGradient      = secondOrderTensor( hydra->get_previousConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
-                                                                                                 hydra->get_previousConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
+            const secondOrderTensor previousPlasticDeformationGradient =
+                secondOrderTensor(hydra->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                                  hydra->get_previousConfigurations()->begin() +
+                                      sot_dim * (plasticConfigurationIndex + 1));
 
-            const secondOrderTensor previousPlasticMicroDeformation         = secondOrderTensor( hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
-                                                                                                 hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
+            const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
+                hydra->get_previousMicroConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                hydra->get_previousMicroConfigurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
-            const thirdOrderTensor previousPlasticGradientMicroDeformation  = thirdOrderTensor( hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * plasticConfigurationIndex,
-                                                                                                hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * ( plasticConfigurationIndex + 1 ) );
+            const thirdOrderTensor previousPlasticGradientMicroDeformation = thirdOrderTensor(
+                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dim * plasticConfigurationIndex,
+                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dim * (plasticConfigurationIndex + 1));
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                evolvePlasticDeformation( *hydra->getDeltaTime( ),
-                                          *get_plasticMacroVelocityGradient( ),
-                                          *get_plasticMicroVelocityGradient( ),
-                                          *get_plasticGradientMicroVelocityGradient( ),
-                                          previousPlasticDeformationGradient,
-                                          previousPlasticMicroDeformation,
-                                          previousPlasticGradientMicroDeformation,
-                                          *get_previousPlasticMacroVelocityGradient( ),
-                                          *get_previousPlasticMicroVelocityGradient( ),
-                                          *get_previousPlasticGradientMicroVelocityGradient( ),
-                                          *updatedPlasticDeformationGradient.value,
-                                          *updatedPlasticMicroDeformation.value,
-                                          *updatedPlasticGradientMicroDeformation.value,
-                                          *getIntegrationParameter( ),
-                                          *getIntegrationParameter( ),
-                                          *getIntegrationParameter( ) );
-            )
-
+                evolvePlasticDeformation(
+                    hydra->getDeltaTime(), *get_plasticMacroVelocityGradient(), *get_plasticMicroVelocityGradient(),
+                    *get_plasticGradientMicroVelocityGradient(), previousPlasticDeformationGradient,
+                    previousPlasticMicroDeformation, previousPlasticGradientMicroDeformation,
+                    *get_previousPlasticMacroVelocityGradient(), *get_previousPlasticMicroVelocityGradient(),
+                    *get_previousPlasticGradientMicroVelocityGradient(), *updatedPlasticDeformationGradient.value,
+                    *updatedPlasticMicroDeformation.value, *updatedPlasticGradientMicroDeformation.value,
+                    getIntegrationParameter(), getIntegrationParameter(), getIntegrationParameter());)
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdMacroStress( ){
+        void residual::setdUpdatedPlasticDeformationGradientdMacroStress() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the macro stress
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdPreviousMacroStress( ){
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousMacroStress() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous macro stress
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdMicroStress( ){
+        void residual::setdUpdatedPlasticDeformationGradientdMicroStress() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the micro stress
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdPreviousMicroStress( ){
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousMicroStress() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous micro stress
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdF( ){
+        void residual::setdUpdatedPlasticDeformationGradientdF() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the deformation gradient
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdPreviousF( ){
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousF() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous deformation gradient
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdFn( ){
+        void residual::setdUpdatedPlasticDeformationGradientdFn() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the sub deformation gradients
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdPreviousFn( ){
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousFn() {
             /*!
-             * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous sub deformation gradients
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous sub deformation
+             * gradients
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdStateVariables( ){
+        void residual::setdUpdatedPlasticDeformationGradientdStateVariables() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the state variables
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticDeformationGradientdPreviousStateVariables( ){
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousStateVariables() {
             /*!
              * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous state variables
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdMicroStress( ){
+        void residual::setdUpdatedPlasticMicroDeformationdMicroStress() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the micro stress
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdPreviousMicroStress( ){
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousMicroStress() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the previous micro stress
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdF( ){
+        void residual::setdUpdatedPlasticMicroDeformationdF() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the deformation gradient
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdPreviousF( ){
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousF() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the previous deformation gradient
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdFn( ){
+        void residual::setdUpdatedPlasticMicroDeformationdFn() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the sub deformation gradients
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdPreviousFn( ){
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousFn() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the previous sub deformation gradients
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdChi( ){
+        void residual::setdUpdatedPlasticMicroDeformationdChi() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the micro deformation
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdPreviousChi( ){
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousChi() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the previous micro deformation
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdChin( ){
+        void residual::setdUpdatedPlasticMicroDeformationdChin() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the sub micro deformations
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdPreviousChin( ){
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousChin() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the previous sub micro deformations
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdStateVariables( ){
+        void residual::setdUpdatedPlasticMicroDeformationdStateVariables() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the state variables
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticMicroDeformationdPreviousStateVariables( ){
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousStateVariables() {
             /*!
              * Set the jacobian of the updated plastic micro deformation w.r.t. the previous state variables
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdMacroStress( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdMacroStress() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the macro stress
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousMacroStress() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous macro stress
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdMicroStress( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdMicroStress() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the micro stress
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousMicroStress() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous micro stress
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdHigherOrderStress( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdHigherOrderStress() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the higher order stress
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress() {
             /*!
-             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous higher order stress
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous higher order
+             * stress
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdF( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdF() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the deformation gradients
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousF( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousF() {
             /*!
-             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous deformation gradients
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous deformation
+             * gradients
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdFn( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdFn() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the sub deformation gradients
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousFn( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousFn() {
             /*!
-             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous sub deformation gradients
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous sub deformation
+             * gradients
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdChi( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdChi() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the micro deformation
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousChi( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousChi() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous micro deformation
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdChin( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdChin() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the sub micro deformations
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousChin( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousChin() {
             /*!
-             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous sub micro deformations
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous sub micro
+             * deformations
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdGradChi( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdGradChi() {
             /*!
-             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the spatial gradient of the micro deformation
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the spatial gradient of the
+             * micro deformation
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousGradChi() {
             /*!
-             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous spatial gradient of the micro deformation
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous spatial gradient
+             * of the micro deformation
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdGradChin( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdGradChin() {
             /*!
-             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the local spatial gradient of the sub micro deformations
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the local spatial gradient of
+             * the sub micro deformations
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousGradChin( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousGradChin() {
             /*!
-             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous local spatial gradient of the sub micro deformations
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous local spatial
+             * gradient of the sub micro deformations
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdStateVariables( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdStateVariables() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the state variables
              */
 
-            setPlasticDeformationJacobians( false );
-
+            setPlasticDeformationJacobians(false);
         }
 
-        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( ){
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousStateVariables() {
             /*!
              * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous state variables
              */
 
-            setPlasticDeformationJacobians( true );
-
+            setPlasticDeformationJacobians(true);
         }
 
-        void residual::setPlasticDeformationJacobians( const bool addPreviousGradients  ){
+        void residual::setPlasticDeformationJacobians(const bool addPreviousGradients) {
             /*!
              * Set all of the plastic deformations
              *
-              * \param addPreviousGradients: Flag for whether to compute the previous gradients
+             * \param addPreviousGradients: Flag for whether to compute the previous gradients
              */
 
             constexpr unsigned int dim = 3;
@@ -8309,39 +8213,42 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations();
 
-            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+            const unsigned int num_isvs = get_plasticStateVariables()->size();
 
-            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+            auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
-            auto updatedPlasticDeformationGradient = get_setDataStorage_updatedPlasticDeformationGradient( );
+            auto updatedPlasticDeformationGradient = get_SetDataStorage_updatedPlasticDeformationGradient();
 
-            auto updatedPlasticMicroDeformation = get_setDataStorage_updatedPlasticMicroDeformation( );
+            auto updatedPlasticMicroDeformation = get_SetDataStorage_updatedPlasticMicroDeformation();
 
-            auto updatedPlasticGradientMicroDeformation = get_setDataStorage_updatedPlasticGradientMicroDeformation( );
+            auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
-            const secondOrderTensor previousPlasticDeformationGradient      = secondOrderTensor( hydra->get_previousConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
-                                                                                                 hydra->get_previousConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
+            const secondOrderTensor previousPlasticDeformationGradient =
+                secondOrderTensor(hydra->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                                  hydra->get_previousConfigurations()->begin() +
+                                      sot_dim * (plasticConfigurationIndex + 1));
 
-            const secondOrderTensor previousPlasticMicroDeformation         = secondOrderTensor( hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
-                                                                                                 hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
+            const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
+                hydra->get_previousMicroConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                hydra->get_previousMicroConfigurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
-            const thirdOrderTensor  previousPlasticGradientMicroDeformation = thirdOrderTensor( hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * plasticConfigurationIndex,
-                                                                                                hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * ( plasticConfigurationIndex + 1 ) );
+            const thirdOrderTensor previousPlasticGradientMicroDeformation = thirdOrderTensor(
+                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dim * plasticConfigurationIndex,
+                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dim * (plasticConfigurationIndex + 1));
 
             fourthOrderTensor dPlasticFdPlasticMacroL;
 
             fourthOrderTensor dPlasticMicroDeformationdPlasticMicroL;
 
-            fifthOrderTensor  dPlasticGradientMicroDeformationdPlasticMacroL;
+            fifthOrderTensor dPlasticGradientMicroDeformationdPlasticMacroL;
 
-            fifthOrderTensor  dPlasticGradientMicroDeformationdPlasticMicroL;
+            fifthOrderTensor dPlasticGradientMicroDeformationdPlasticMicroL;
 
-            sixthOrderTensor  dPlasticGradientMicroDeformationdPlasticGradientMicroL;
+            sixthOrderTensor dPlasticGradientMicroDeformationdPlasticGradientMicroL;
 
-            if ( addPreviousGradients ){
-
+            if (addPreviousGradients) {
                 fourthOrderTensor dPlasticFdPreviousPlasticF;
                 fourthOrderTensor dPlasticFdPreviousPlasticMacroL;
                 fourthOrderTensor dPlasticMicroDeformationdPreviousPlasticMicroDeformation;
@@ -8354,402 +8261,663 @@ namespace tardigradeHydra{
                 sixthOrderTensor  dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL;
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    evolvePlasticDeformation( *hydra->getDeltaTime( ),
-                                              *get_plasticMacroVelocityGradient( ),
-                                              *get_plasticMicroVelocityGradient( ),
-                                              *get_plasticGradientMicroVelocityGradient( ),
-                                              previousPlasticDeformationGradient,
-                                              previousPlasticMicroDeformation,
-                                              previousPlasticGradientMicroDeformation,
-                                              *get_previousPlasticMacroVelocityGradient( ),
-                                              *get_previousPlasticMicroVelocityGradient( ),
-                                              *get_previousPlasticGradientMicroVelocityGradient( ),
-                                              *updatedPlasticDeformationGradient.value,
-                                              *updatedPlasticMicroDeformation.value,
-                                              *updatedPlasticGradientMicroDeformation.value,
-                                              dPlasticFdPlasticMacroL,
-                                              dPlasticMicroDeformationdPlasticMicroL,
-                                              dPlasticGradientMicroDeformationdPlasticMacroL,
-                                              dPlasticGradientMicroDeformationdPlasticMicroL,
-                                              dPlasticGradientMicroDeformationdPlasticGradientMicroL,
-                                              dPlasticFdPreviousPlasticF,
-                                              dPlasticFdPreviousPlasticMacroL,
-                                              dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
-                                              dPlasticMicroDeformationdPreviousPlasticMicroL,
-                                              dPlasticGradientMicroDeformationdPreviousPlasticF,
-                                              dPlasticGradientMicroDeformationdPreviousPlasticMicroDeformation,
-                                              dPlasticGradientMicroDeformationdPreviousPlasticMicroGradient,
-                                              dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
-                                              dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
-                                              dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
-                                              *getIntegrationParameter( ),
-                                              *getIntegrationParameter( ),
-                                              *getIntegrationParameter( ) );
-                )
+                    evolvePlasticDeformation(
+                        hydra->getDeltaTime(), *get_plasticMacroVelocityGradient(), *get_plasticMicroVelocityGradient(),
+                        *get_plasticGradientMicroVelocityGradient(), previousPlasticDeformationGradient,
+                        previousPlasticMicroDeformation, previousPlasticGradientMicroDeformation,
+                        *get_previousPlasticMacroVelocityGradient(), *get_previousPlasticMicroVelocityGradient(),
+                        *get_previousPlasticGradientMicroVelocityGradient(), *updatedPlasticDeformationGradient.value,
+                        *updatedPlasticMicroDeformation.value, *updatedPlasticGradientMicroDeformation.value,
+                        dPlasticFdPlasticMacroL, dPlasticMicroDeformationdPlasticMicroL,
+                        dPlasticGradientMicroDeformationdPlasticMacroL, dPlasticGradientMicroDeformationdPlasticMicroL,
+                        dPlasticGradientMicroDeformationdPlasticGradientMicroL, dPlasticFdPreviousPlasticF,
+                        dPlasticFdPreviousPlasticMacroL, dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+                        dPlasticMicroDeformationdPreviousPlasticMicroL,
+                        dPlasticGradientMicroDeformationdPreviousPlasticF,
+                        dPlasticGradientMicroDeformationdPreviousPlasticMicroDeformation,
+                        dPlasticGradientMicroDeformationdPreviousPlasticMicroGradient,
+                        dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
+                        dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
+                        dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, getIntegrationParameter(),
+                        getIntegrationParameter(), getIntegrationParameter());)
 
-                auto map_dPlasticFdPreviousPlasticMacroL                                  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPreviousPlasticMacroL.data( ) );
-                auto map_dPlasticMicroDeformationdPreviousPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPreviousPlasticMicroL.data( ) );
-                auto map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL           = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticGradientMicroDeformationdPreviousPlasticMacroL.data( ) );
-                auto map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL           = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticGradientMicroDeformationdPreviousPlasticMicroL.data( ) );
-                auto map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL   = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL.data( ) );
+                auto map_dPlasticFdPreviousPlasticMacroL =
+                    getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticFdPreviousPlasticMacroL.data());
+                auto map_dPlasticMicroDeformationdPreviousPlasticMicroL =
+                    getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                        dPlasticMicroDeformationdPreviousPlasticMicroL.data());
+                auto map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL =
+                    getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                        dPlasticGradientMicroDeformationdPreviousPlasticMacroL.data());
+                auto map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL =
+                    getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                        dPlasticGradientMicroDeformationdPreviousPlasticMicroL.data());
+                auto map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL =
+                    getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                        dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL.data());
 
-                auto map_previousdPlasticMacroVelocityGradientdMacroStress                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_previousdPlasticMacroVelocityGradientdMacroStress( )->data( ) );
-                auto map_previousdPlasticMacroVelocityGradientdMicroStress                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_previousdPlasticMacroVelocityGradientdMicroStress( )->data( ) );
-                auto map_previousdPlasticMacroVelocityGradientdF                          = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_previousdPlasticMacroVelocityGradientdF( )->data( ) );
-                auto map_previousdPlasticMacroVelocityGradientdFn                         = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_previousdPlasticMacroVelocityGradientdFn( )->data( ), sot_dim * ( num_configs - 1 ) );
-                auto map_previousdPlasticMacroVelocityGradientdStateVariables             = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_previousdPlasticMacroVelocityGradientdStateVariables( )->data( ), num_isvs );
-                auto map_previousdPlasticMicroVelocityGradientdMicroStress                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_previousdPlasticMicroVelocityGradientdMicroStress( )->data( ) );
-                auto map_previousdPlasticMicroVelocityGradientdF                          = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_previousdPlasticMicroVelocityGradientdF( )->data( ) );
-                auto map_previousdPlasticMicroVelocityGradientdFn                         = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_previousdPlasticMicroVelocityGradientdFn( )->data( ), sot_dim * ( num_configs - 1 ) );
-                auto map_previousdPlasticMicroVelocityGradientdChi                        = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_previousdPlasticMicroVelocityGradientdChi( )->data( ) );
-                auto map_previousdPlasticMicroVelocityGradientdChin                       = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_previousdPlasticMicroVelocityGradientdChin( )->data( ), sot_dim * ( num_configs - 1 ) );
-                auto map_previousdPlasticMicroVelocityGradientdStateVariables             = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_previousdPlasticMicroVelocityGradientdStateVariables( )->data( ), num_isvs );
-                auto map_previousdPlasticGradientMicroVelocityGradientdMicroStress        = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( get_previousdPlasticGradientMicroVelocityGradientdMicroStress( )->data( ) );
-                auto map_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress  = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( )->data( ) );
-                auto map_previousdPlasticGradientMicroVelocityGradientdF                  = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( get_previousdPlasticGradientMicroVelocityGradientdF( )->data( ) );
-                auto map_previousdPlasticGradientMicroVelocityGradientdFn                 = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdFn( )->data( ), sot_dim * ( num_configs - 1 ) );
-                auto map_previousdPlasticGradientMicroVelocityGradientdChi                = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( get_previousdPlasticGradientMicroVelocityGradientdChi( )->data( ) );
-                auto map_previousdPlasticGradientMicroVelocityGradientdChin               = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdChin( )->data( ), sot_dim * ( num_configs - 1 ) );
-                auto map_previousdPlasticGradientMicroVelocityGradientdGradChi            = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdGradChi( )->data( ) );
-                auto map_previousdPlasticGradientMicroVelocityGradientdGradChin           = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdGradChin( )->data( ), tot_dim * ( num_configs - 1 ) );
-                auto map_previousdPlasticGradientMicroVelocityGradientdStateVariables     = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdStateVariables( )->data( ), num_isvs );
+                auto map_previousdPlasticMacroVelocityGradientdMacroStress =
+                    getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                        get_previousdPlasticMacroVelocityGradientdMacroStress()->data());
+                auto map_previousdPlasticMacroVelocityGradientdMicroStress =
+                    getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                        get_previousdPlasticMacroVelocityGradientdMicroStress()->data());
+                auto map_previousdPlasticMacroVelocityGradientdF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                    get_previousdPlasticMacroVelocityGradientdF()->data());
+                auto map_previousdPlasticMacroVelocityGradientdFn = getDynamicColumnSizeMatrixMap<floatType, sot_dim>(
+                    get_previousdPlasticMacroVelocityGradientdFn()->data(), sot_dim * (num_configs - 1));
+                auto map_previousdPlasticMacroVelocityGradientdStateVariables =
+                    getDynamicColumnSizeMatrixMap<floatType, sot_dim>(
+                        get_previousdPlasticMacroVelocityGradientdStateVariables()->data(), num_isvs);
+                auto map_previousdPlasticMicroVelocityGradientdMicroStress =
+                    getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                        get_previousdPlasticMicroVelocityGradientdMicroStress()->data());
+                auto map_previousdPlasticMicroVelocityGradientdF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                    get_previousdPlasticMicroVelocityGradientdF()->data());
+                auto map_previousdPlasticMicroVelocityGradientdFn = getDynamicColumnSizeMatrixMap<floatType, sot_dim>(
+                    get_previousdPlasticMicroVelocityGradientdFn()->data(), sot_dim * (num_configs - 1));
+                auto map_previousdPlasticMicroVelocityGradientdChi = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                    get_previousdPlasticMicroVelocityGradientdChi()->data());
+                auto map_previousdPlasticMicroVelocityGradientdChin = getDynamicColumnSizeMatrixMap<floatType, sot_dim>(
+                    get_previousdPlasticMicroVelocityGradientdChin()->data(), sot_dim * (num_configs - 1));
+                auto map_previousdPlasticMicroVelocityGradientdStateVariables =
+                    getDynamicColumnSizeMatrixMap<floatType, sot_dim>(
+                        get_previousdPlasticMicroVelocityGradientdStateVariables()->data(), num_isvs);
+                auto map_previousdPlasticGradientMicroVelocityGradientdMicroStress =
+                    getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdMicroStress()->data());
+                auto map_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress =
+                    getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress()->data());
+                auto map_previousdPlasticGradientMicroVelocityGradientdF =
+                    getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdF()->data());
+                auto map_previousdPlasticGradientMicroVelocityGradientdFn =
+                    getDynamicColumnSizeMatrixMap<floatType, tot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdFn()->data(), sot_dim * (num_configs - 1));
+                auto map_previousdPlasticGradientMicroVelocityGradientdChi =
+                    getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdChi()->data());
+                auto map_previousdPlasticGradientMicroVelocityGradientdChin =
+                    getDynamicColumnSizeMatrixMap<floatType, tot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdChin()->data(), sot_dim * (num_configs - 1));
+                auto map_previousdPlasticGradientMicroVelocityGradientdGradChi =
+                    getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdGradChi()->data());
+                auto map_previousdPlasticGradientMicroVelocityGradientdGradChin =
+                    getDynamicColumnSizeMatrixMap<floatType, tot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdGradChin()->data(),
+                        tot_dim * (num_configs - 1));
+                auto map_previousdPlasticGradientMicroVelocityGradientdStateVariables =
+                    getDynamicColumnSizeMatrixMap<floatType, tot_dim>(
+                        get_previousdPlasticGradientMicroVelocityGradientdStateVariables()->data(), num_isvs);
 
-                auto dUpdatedPlasticDeformationGradientdPreviousMacroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousMacroStress( );
-                auto map_dUpdatedPlasticDeformationGradientdPreviousMacroStress = dUpdatedPlasticDeformationGradientdPreviousMacroStress.zeroMap< floatType, sot_dim, sot_dim >( );
+                auto dUpdatedPlasticDeformationGradientdPreviousMacroStress =
+                    get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousMacroStress();
+                auto map_dUpdatedPlasticDeformationGradientdPreviousMacroStress =
+                    dUpdatedPlasticDeformationGradientdPreviousMacroStress.zeroMap<floatType, sot_dim, sot_dim>();
 
-                auto dUpdatedPlasticDeformationGradientdPreviousMicroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousMicroStress( );
-                auto map_dUpdatedPlasticDeformationGradientdPreviousMicroStress = dUpdatedPlasticDeformationGradientdPreviousMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
+                auto dUpdatedPlasticDeformationGradientdPreviousMicroStress =
+                    get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousMicroStress();
+                auto map_dUpdatedPlasticDeformationGradientdPreviousMicroStress =
+                    dUpdatedPlasticDeformationGradientdPreviousMicroStress.zeroMap<floatType, sot_dim, sot_dim>();
 
-                auto dUpdatedPlasticDeformationGradientdPreviousF = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousF( );
-                auto map_dUpdatedPlasticDeformationGradientdPreviousF = dUpdatedPlasticDeformationGradientdPreviousF.zeroMap< floatType, sot_dim, sot_dim >( );
+                auto dUpdatedPlasticDeformationGradientdPreviousF =
+                    get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousF();
+                auto map_dUpdatedPlasticDeformationGradientdPreviousF =
+                    dUpdatedPlasticDeformationGradientdPreviousF.zeroMap<floatType, sot_dim, sot_dim>();
 
-                auto dUpdatedPlasticFdPreviousFn = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousFn( );
-                auto map_dUpdatedPlasticFdPreviousFn = dUpdatedPlasticFdPreviousFn.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
+                auto dUpdatedPlasticFdPreviousFn = get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousFn();
+                auto map_dUpdatedPlasticFdPreviousFn =
+                    dUpdatedPlasticFdPreviousFn.zeroMap<floatType, sot_dim>(sot_dim * (num_configs - 1));
 
-                auto dUpdatedPlasticDeformationGradientdPreviousStateVariables = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousStateVariables( );
-                auto map_dUpdatedPlasticDeformationGradientdPreviousStateVariables = dUpdatedPlasticDeformationGradientdPreviousStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
+                auto dUpdatedPlasticDeformationGradientdPreviousStateVariables =
+                    get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousStateVariables();
+                auto map_dUpdatedPlasticDeformationGradientdPreviousStateVariables =
+                    dUpdatedPlasticDeformationGradientdPreviousStateVariables.zeroMap<floatType, sot_dim>(num_isvs);
 
-                auto dUpdatedPlasticMicroDeformationdPreviousMicroStress = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousMicroStress( );
-                auto map_dUpdatedPlasticMicroDeformationdPreviousMicroStress = dUpdatedPlasticMicroDeformationdPreviousMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
+                auto dUpdatedPlasticMicroDeformationdPreviousMicroStress =
+                    get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousMicroStress();
+                auto map_dUpdatedPlasticMicroDeformationdPreviousMicroStress =
+                    dUpdatedPlasticMicroDeformationdPreviousMicroStress.zeroMap<floatType, sot_dim, sot_dim>();
 
-                auto dUpdatedPlasticMicroDeformationdPreviousF = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousF( );
-                auto map_dUpdatedPlasticMicroDeformationdPreviousF = dUpdatedPlasticMicroDeformationdPreviousF.zeroMap< floatType, sot_dim, sot_dim >( );
+                auto dUpdatedPlasticMicroDeformationdPreviousF =
+                    get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousF();
+                auto map_dUpdatedPlasticMicroDeformationdPreviousF =
+                    dUpdatedPlasticMicroDeformationdPreviousF.zeroMap<floatType, sot_dim, sot_dim>();
 
-                auto dUpdatedPlasticMicroDeformationdPreviousFn = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousFn( );
-                auto map_dUpdatedPlasticMicroDeformationdPreviousFn = dUpdatedPlasticMicroDeformationdPreviousFn.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
+                auto dUpdatedPlasticMicroDeformationdPreviousFn =
+                    get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousFn();
+                auto map_dUpdatedPlasticMicroDeformationdPreviousFn =
+                    dUpdatedPlasticMicroDeformationdPreviousFn.zeroMap<floatType, sot_dim>(sot_dim * (num_configs - 1));
 
-                auto dUpdatedPlasticMicroDeformationdPreviousChi = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousChi( );
-                auto map_dUpdatedPlasticMicroDeformationdPreviousChi = dUpdatedPlasticMicroDeformationdPreviousChi.zeroMap< floatType, sot_dim >( sot_dim );
+                auto dUpdatedPlasticMicroDeformationdPreviousChi =
+                    get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousChi();
+                auto map_dUpdatedPlasticMicroDeformationdPreviousChi =
+                    dUpdatedPlasticMicroDeformationdPreviousChi.zeroMap<floatType, sot_dim>(sot_dim);
 
-                auto dUpdatedPlasticMicroDeformationdPreviousChin = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousChin( );
-                auto map_dUpdatedPlasticMicroDeformationdPreviousChin = dUpdatedPlasticMicroDeformationdPreviousChin.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
+                auto dUpdatedPlasticMicroDeformationdPreviousChin =
+                    get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousChin();
+                auto map_dUpdatedPlasticMicroDeformationdPreviousChin =
+                    dUpdatedPlasticMicroDeformationdPreviousChin.zeroMap<floatType, sot_dim>(sot_dim *
+                                                                                             (num_configs - 1));
 
-                auto dUpdatedPlasticMicroDeformationdPreviousStateVariables = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousStateVariables( );
-                auto map_dUpdatedPlasticMicroDeformationdPreviousStateVariables = dUpdatedPlasticMicroDeformationdPreviousStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
+                auto dUpdatedPlasticMicroDeformationdPreviousStateVariables =
+                    get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousStateVariables();
+                auto map_dUpdatedPlasticMicroDeformationdPreviousStateVariables =
+                    dUpdatedPlasticMicroDeformationdPreviousStateVariables.zeroMap<floatType, sot_dim>(num_isvs);
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress = dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress.zeroMap< floatType, tot_dim, sot_dim >( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress.zeroMap<floatType, tot_dim, sot_dim>();
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress = dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress.zeroMap< floatType, tot_dim, sot_dim >( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress.zeroMap<floatType, tot_dim, sot_dim>();
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress.zeroMap< floatType, tot_dim, tot_dim >( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress
+                        .zeroMap<floatType, tot_dim, tot_dim>();
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousF = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousF( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousF = dUpdatedPlasticGradientMicroDeformationdPreviousF.zeroMap< floatType, tot_dim, sot_dim >( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousF =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousF();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousF =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousF.zeroMap<floatType, tot_dim, sot_dim>();
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousFn = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousFn( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousFn = dUpdatedPlasticGradientMicroDeformationdPreviousFn.zeroMap< floatType, tot_dim >( sot_dim * ( num_configs - 1 ) );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousFn =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousFn();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousFn =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousFn.zeroMap<floatType, tot_dim>(sot_dim *
+                                                                                                   (num_configs - 1));
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousChi = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChi( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousChi = dUpdatedPlasticGradientMicroDeformationdPreviousChi.zeroMap< floatType, tot_dim, sot_dim >( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousChi =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChi();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousChi =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousChi.zeroMap<floatType, tot_dim, sot_dim>();
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousChin = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChin( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousChin = dUpdatedPlasticGradientMicroDeformationdPreviousChin.zeroMap< floatType, tot_dim >( sot_dim * ( num_configs - 1 ) );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousChin =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChin();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousChin =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousChin.zeroMap<floatType, tot_dim>(sot_dim *
+                                                                                                     (num_configs - 1));
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChi = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi = dUpdatedPlasticGradientMicroDeformationdPreviousGradChi.zeroMap< floatType, tot_dim, tot_dim >( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChi =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousGradChi.zeroMap<floatType, tot_dim, tot_dim>();
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChin = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin = dUpdatedPlasticGradientMicroDeformationdPreviousGradChin.zeroMap< floatType, tot_dim >( tot_dim * ( num_configs - 1 ) );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChin =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousGradChin.zeroMap<floatType, tot_dim>(
+                        tot_dim * (num_configs - 1));
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( );
-                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables = dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables.zeroMap< floatType, tot_dim >( num_isvs );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables =
+                    get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables();
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables =
+                    dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables.zeroMap<floatType, tot_dim>(
+                        num_isvs);
 
-                map_dUpdatedPlasticDeformationGradientdPreviousMacroStress = ( map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdMacroStress ).eval( );
+                map_dUpdatedPlasticDeformationGradientdPreviousMacroStress =
+                    (map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdMacroStress)
+                        .eval();
 
-                map_dUpdatedPlasticDeformationGradientdPreviousMicroStress = ( map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdMicroStress );
+                map_dUpdatedPlasticDeformationGradientdPreviousMicroStress =
+                    (map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdMicroStress);
 
-                map_dUpdatedPlasticDeformationGradientdPreviousF = ( map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdF ).eval( );
+                map_dUpdatedPlasticDeformationGradientdPreviousF =
+                    (map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdF).eval();
 
-                map_dUpdatedPlasticFdPreviousFn = ( map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdFn ).eval( );
+                map_dUpdatedPlasticFdPreviousFn =
+                    (map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdFn).eval();
 
-                unsigned int offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * sot_dim;
+                unsigned int offset = (getPlasticConfigurationIndex() - 1) * sot_dim;
 
-                for ( unsigned int i = 0; i < sot_dim; i++ ){
-
-                    for ( unsigned int j = 0; j < sot_dim; j++ ){
-
-                        ( *dUpdatedPlasticFdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + j + offset ] += dPlasticFdPreviousPlasticF[ sot_dim * i + j ];
-
+                for (unsigned int i = 0; i < sot_dim; i++) {
+                    for (unsigned int j = 0; j < sot_dim; j++) {
+                        (*dUpdatedPlasticFdPreviousFn.value)[(num_configs - 1) * sot_dim * i + j + offset] +=
+                            dPlasticFdPreviousPlasticF[sot_dim * i + j];
                     }
-
                 }
 
-                map_dUpdatedPlasticDeformationGradientdPreviousStateVariables = ( map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdStateVariables ).eval( );
+                map_dUpdatedPlasticDeformationGradientdPreviousStateVariables =
+                    (map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdStateVariables)
+                        .eval();
 
-                map_dUpdatedPlasticMicroDeformationdPreviousMicroStress = ( map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdMicroStress ).eval( );
+                map_dUpdatedPlasticMicroDeformationdPreviousMicroStress =
+                    (map_dPlasticMicroDeformationdPreviousPlasticMicroL *
+                     map_previousdPlasticMicroVelocityGradientdMicroStress)
+                        .eval();
 
-                map_dUpdatedPlasticMicroDeformationdPreviousF = ( map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdF ).eval( );
+                map_dUpdatedPlasticMicroDeformationdPreviousF =
+                    (map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdF)
+                        .eval();
 
-                map_dUpdatedPlasticMicroDeformationdPreviousFn = ( map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdFn ).eval( );
+                map_dUpdatedPlasticMicroDeformationdPreviousFn =
+                    (map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdFn)
+                        .eval();
 
-                map_dUpdatedPlasticMicroDeformationdPreviousChi = ( map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdChi ).eval( );
+                map_dUpdatedPlasticMicroDeformationdPreviousChi =
+                    (map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdChi)
+                        .eval();
 
-                map_dUpdatedPlasticMicroDeformationdPreviousChin = ( map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdChin ).eval( );
+                map_dUpdatedPlasticMicroDeformationdPreviousChin = (map_dPlasticMicroDeformationdPreviousPlasticMicroL *
+                                                                    map_previousdPlasticMicroVelocityGradientdChin)
+                                                                       .eval();
 
-                offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * sot_dim;
+                offset = (getPlasticConfigurationIndex() - 1) * sot_dim;
 
-                for ( unsigned int i = 0; i < sot_dim; i++ ){
-
-                    for ( unsigned int j = 0; j < sot_dim; j++ ){
-
-                        ( *dUpdatedPlasticMicroDeformationdPreviousChin.value )[ ( num_configs - 1 ) * sot_dim * i + j + offset ] += dPlasticMicroDeformationdPreviousPlasticMicroDeformation[ sot_dim * i + j ];
-
+                for (unsigned int i = 0; i < sot_dim; i++) {
+                    for (unsigned int j = 0; j < sot_dim; j++) {
+                        (*dUpdatedPlasticMicroDeformationdPreviousChin
+                              .value)[(num_configs - 1) * sot_dim * i + j + offset] +=
+                            dPlasticMicroDeformationdPreviousPlasticMicroDeformation[sot_dim * i + j];
                     }
-
                 }
 
-                map_dUpdatedPlasticMicroDeformationdPreviousStateVariables = ( map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdStateVariables ).eval( );
+                map_dUpdatedPlasticMicroDeformationdPreviousStateVariables =
+                    (map_dPlasticMicroDeformationdPreviousPlasticMicroL *
+                     map_previousdPlasticMicroVelocityGradientdStateVariables)
+                        .eval();
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdMacroStress ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL *
+                     map_previousdPlasticMacroVelocityGradientdMacroStress)
+                        .eval();
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress  = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdMicroStress ).eval( );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress += ( map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdMicroStress ).eval( );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdMicroStress ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL *
+                     map_previousdPlasticMacroVelocityGradientdMicroStress)
+                        .eval();
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL *
+                     map_previousdPlasticMicroVelocityGradientdMicroStress)
+                        .eval();
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdMicroStress)
+                        .eval();
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress)
+                        .eval();
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousF  = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdF );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousF += ( map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdF );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousF += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdF );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousF =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL *
+                     map_previousdPlasticMacroVelocityGradientdF);
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousF +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL *
+                     map_previousdPlasticMicroVelocityGradientdF);
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousF +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdF);
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousFn  = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdFn ).eval( );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousFn += ( map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdFn ).eval( );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousFn += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdFn ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousFn =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL *
+                     map_previousdPlasticMacroVelocityGradientdFn)
+                        .eval();
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousFn +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL *
+                     map_previousdPlasticMicroVelocityGradientdFn)
+                        .eval();
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousFn +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdFn)
+                        .eval();
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousChi  = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdChi ).eval( );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousChi += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdChi ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousChi =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL *
+                     map_previousdPlasticMicroVelocityGradientdChi)
+                        .eval();
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousChi +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdChi)
+                        .eval();
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousChin  = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdChin ).eval( );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousChin += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdChin ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousChin =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL *
+                     map_previousdPlasticMicroVelocityGradientdChin)
+                        .eval();
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousChin +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdChin)
+                        .eval();
 
-                offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * sot_dim;
+                offset = (getPlasticConfigurationIndex() - 1) * sot_dim;
 
-                for ( unsigned int i = 0; i < tot_dim; i++ ){
-
-                    for ( unsigned int j = 0; j < sot_dim; j++ ){
-
-                        ( *dUpdatedPlasticGradientMicroDeformationdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + j + offset ] += dPlasticGradientMicroDeformationdPreviousPlasticF[ sot_dim * i + j ];
-                        ( *dUpdatedPlasticGradientMicroDeformationdPreviousChin.value )[ ( num_configs - 1 ) * sot_dim * i + j + offset ] += dPlasticGradientMicroDeformationdPreviousPlasticMicroDeformation[ sot_dim * i + j ];
-
+                for (unsigned int i = 0; i < tot_dim; i++) {
+                    for (unsigned int j = 0; j < sot_dim; j++) {
+                        (*dUpdatedPlasticGradientMicroDeformationdPreviousFn
+                              .value)[(num_configs - 1) * sot_dim * i + j + offset] +=
+                            dPlasticGradientMicroDeformationdPreviousPlasticF[sot_dim * i + j];
+                        (*dUpdatedPlasticGradientMicroDeformationdPreviousChin
+                              .value)[(num_configs - 1) * sot_dim * i + j + offset] +=
+                            dPlasticGradientMicroDeformationdPreviousPlasticMicroDeformation[sot_dim * i + j];
                     }
-
                 }
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi = ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdGradChi ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdGradChi)
+                        .eval();
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin = ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdGradChin ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdGradChin)
+                        .eval();
 
-                offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * tot_dim;
+                offset = (getPlasticConfigurationIndex() - 1) * tot_dim;
 
-                for ( unsigned int i = 0; i < tot_dim; i++ ){
-
-                    for ( unsigned int j = 0; j < tot_dim; j++ ){
-
-                        ( *dUpdatedPlasticGradientMicroDeformationdPreviousGradChin.value )[ ( num_configs - 1 ) * tot_dim * i + j + offset ] += dPlasticGradientMicroDeformationdPreviousPlasticMicroGradient[ tot_dim * i  + j ];
-
+                for (unsigned int i = 0; i < tot_dim; i++) {
+                    for (unsigned int j = 0; j < tot_dim; j++) {
+                        (*dUpdatedPlasticGradientMicroDeformationdPreviousGradChin
+                              .value)[(num_configs - 1) * tot_dim * i + j + offset] +=
+                            dPlasticGradientMicroDeformationdPreviousPlasticMicroGradient[tot_dim * i + j];
                     }
-
                 }
 
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables  = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdStateVariables ).eval( );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables += ( map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdStateVariables ).eval( );
-                map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdStateVariables ).eval( );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables =
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL *
+                     map_previousdPlasticMacroVelocityGradientdStateVariables)
+                        .eval();
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL *
+                     map_previousdPlasticMicroVelocityGradientdStateVariables)
+                        .eval();
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables +=
+                    (map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL *
+                     map_previousdPlasticGradientMicroVelocityGradientdStateVariables)
+                        .eval();
 
-            }
-            else{
+            } else {
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    evolvePlasticDeformation( *hydra->getDeltaTime( ),
-                                              *get_plasticMacroVelocityGradient( ),
-                                              *get_plasticMicroVelocityGradient( ),
-                                              *get_plasticGradientMicroVelocityGradient( ),
-                                              previousPlasticDeformationGradient,
-                                              previousPlasticMicroDeformation,
-                                              previousPlasticGradientMicroDeformation,
-                                              *get_previousPlasticMacroVelocityGradient( ),
-                                              *get_previousPlasticMicroVelocityGradient( ),
-                                              *get_previousPlasticGradientMicroVelocityGradient( ),
-                                              *updatedPlasticDeformationGradient.value,
-                                              *updatedPlasticMicroDeformation.value,
-                                              *updatedPlasticGradientMicroDeformation.value,
-                                              dPlasticFdPlasticMacroL,
-                                              dPlasticMicroDeformationdPlasticMicroL,
-                                              dPlasticGradientMicroDeformationdPlasticMacroL,
-                                              dPlasticGradientMicroDeformationdPlasticMicroL,
-                                              dPlasticGradientMicroDeformationdPlasticGradientMicroL,
-                                              *getIntegrationParameter( ),
-                                              *getIntegrationParameter( ),
-                                              *getIntegrationParameter( ) );
-                )
+                    evolvePlasticDeformation(
+                        hydra->getDeltaTime(), *get_plasticMacroVelocityGradient(), *get_plasticMicroVelocityGradient(),
+                        *get_plasticGradientMicroVelocityGradient(), previousPlasticDeformationGradient,
+                        previousPlasticMicroDeformation, previousPlasticGradientMicroDeformation,
+                        *get_previousPlasticMacroVelocityGradient(), *get_previousPlasticMicroVelocityGradient(),
+                        *get_previousPlasticGradientMicroVelocityGradient(), *updatedPlasticDeformationGradient.value,
+                        *updatedPlasticMicroDeformation.value, *updatedPlasticGradientMicroDeformation.value,
+                        dPlasticFdPlasticMacroL, dPlasticMicroDeformationdPlasticMicroL,
+                        dPlasticGradientMicroDeformationdPlasticMacroL, dPlasticGradientMicroDeformationdPlasticMicroL,
+                        dPlasticGradientMicroDeformationdPlasticGradientMicroL, getIntegrationParameter(),
+                        getIntegrationParameter(), getIntegrationParameter());)
             }
 
-            auto map_dPlasticFdPlasticMacroL                                  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPlasticMacroL.data( ) );
-            auto map_dPlasticMicroDeformationdPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPlasticMicroL.data( ) );
-            auto map_dPlasticGradientMicroDeformationdPlasticMacroL           = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticGradientMicroDeformationdPlasticMacroL.data( ) );
-            auto map_dPlasticGradientMicroDeformationdPlasticMicroL           = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticGradientMicroDeformationdPlasticMicroL.data( ) );
-            auto map_dPlasticGradientMicroDeformationdPlasticGradientMicroL   = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dPlasticGradientMicroDeformationdPlasticGradientMicroL.data( ) );
+            auto map_dPlasticFdPlasticMacroL =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticFdPlasticMacroL.data());
+            auto map_dPlasticMicroDeformationdPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dPlasticMicroDeformationdPlasticMicroL.data());
+            auto map_dPlasticGradientMicroDeformationdPlasticMacroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dPlasticGradientMicroDeformationdPlasticMacroL.data());
+            auto map_dPlasticGradientMicroDeformationdPlasticMicroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    dPlasticGradientMicroDeformationdPlasticMicroL.data());
+            auto map_dPlasticGradientMicroDeformationdPlasticGradientMicroL =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                    dPlasticGradientMicroDeformationdPlasticGradientMicroL.data());
 
-            auto map_dPlasticMacroVelocityGradientdMacroStress                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_dPlasticMacroVelocityGradientdMacroStress( )->data( ) );
-            auto map_dPlasticMacroVelocityGradientdMicroStress                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_dPlasticMacroVelocityGradientdMicroStress( )->data( ) );
-            auto map_dPlasticMacroVelocityGradientdF                          = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_dPlasticMacroVelocityGradientdF( )->data( ) );
-            auto map_dPlasticMacroVelocityGradientdFn                         = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dPlasticMacroVelocityGradientdFn( )->data( ), sot_dim * ( num_configs - 1 ) );
-            auto map_dPlasticMacroVelocityGradientdStateVariables             = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dPlasticMacroVelocityGradientdStateVariables( )->data( ), num_isvs );
-            auto map_dPlasticMicroVelocityGradientdMicroStress                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_dPlasticMicroVelocityGradientdMicroStress( )->data( ) );
-            auto map_dPlasticMicroVelocityGradientdF                          = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_dPlasticMicroVelocityGradientdF( )->data( ) );
-            auto map_dPlasticMicroVelocityGradientdFn                         = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dPlasticMicroVelocityGradientdFn( )->data( ), sot_dim * ( num_configs - 1 ) );
-            auto map_dPlasticMicroVelocityGradientdChi                        = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( get_dPlasticMicroVelocityGradientdChi( )->data( ) );
-            auto map_dPlasticMicroVelocityGradientdChin                       = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dPlasticMicroVelocityGradientdChin( )->data( ), sot_dim * ( num_configs - 1 ) );
-            auto map_dPlasticMicroVelocityGradientdStateVariables             = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dPlasticMicroVelocityGradientdStateVariables( )->data( ), num_isvs );
-            auto map_dPlasticGradientMicroVelocityGradientdMicroStress        = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( get_dPlasticGradientMicroVelocityGradientdMicroStress( )->data( ) );
-            auto map_dPlasticGradientMicroVelocityGradientdHigherOrderStress  = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( get_dPlasticGradientMicroVelocityGradientdHigherOrderStress( )->data( ) );
-            auto map_dPlasticGradientMicroVelocityGradientdF                  = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( get_dPlasticGradientMicroVelocityGradientdF( )->data( ) );
-            auto map_dPlasticGradientMicroVelocityGradientdFn                 = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_dPlasticGradientMicroVelocityGradientdFn( )->data( ), sot_dim * ( num_configs - 1 ) );
-            auto map_dPlasticGradientMicroVelocityGradientdChi                = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( get_dPlasticGradientMicroVelocityGradientdChi( )->data( ) );
-            auto map_dPlasticGradientMicroVelocityGradientdChin               = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_dPlasticGradientMicroVelocityGradientdChin( )->data( ), sot_dim * ( num_configs - 1 ) );
-            auto map_dPlasticGradientMicroVelocityGradientdGradChi            = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( get_dPlasticGradientMicroVelocityGradientdGradChi( )->data( ) );
-            auto map_dPlasticGradientMicroVelocityGradientdGradChin           = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_dPlasticGradientMicroVelocityGradientdGradChin( )->data( ), tot_dim * ( num_configs - 1 ) );
-            auto map_dPlasticGradientMicroVelocityGradientdStateVariables     = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_dPlasticGradientMicroVelocityGradientdStateVariables( )->data( ), num_isvs );
+            auto map_dPlasticMacroVelocityGradientdMacroStress = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                get_dPlasticMacroVelocityGradientdMacroStress()->data());
+            auto map_dPlasticMacroVelocityGradientdMicroStress = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                get_dPlasticMacroVelocityGradientdMicroStress()->data());
+            auto map_dPlasticMacroVelocityGradientdF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(get_dPlasticMacroVelocityGradientdF()->data());
+            auto map_dPlasticMacroVelocityGradientdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(get_dPlasticMacroVelocityGradientdFn()->data(),
+                                                                  sot_dim * (num_configs - 1));
+            auto map_dPlasticMacroVelocityGradientdStateVariables = getDynamicColumnSizeMatrixMap<floatType, sot_dim>(
+                get_dPlasticMacroVelocityGradientdStateVariables()->data(), num_isvs);
+            auto map_dPlasticMicroVelocityGradientdMicroStress = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(
+                get_dPlasticMicroVelocityGradientdMicroStress()->data());
+            auto map_dPlasticMicroVelocityGradientdF =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(get_dPlasticMicroVelocityGradientdF()->data());
+            auto map_dPlasticMicroVelocityGradientdFn =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(get_dPlasticMicroVelocityGradientdFn()->data(),
+                                                                  sot_dim * (num_configs - 1));
+            auto map_dPlasticMicroVelocityGradientdChi =
+                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(get_dPlasticMicroVelocityGradientdChi()->data());
+            auto map_dPlasticMicroVelocityGradientdChin =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(get_dPlasticMicroVelocityGradientdChin()->data(),
+                                                                  sot_dim * (num_configs - 1));
+            auto map_dPlasticMicroVelocityGradientdStateVariables = getDynamicColumnSizeMatrixMap<floatType, sot_dim>(
+                get_dPlasticMicroVelocityGradientdStateVariables()->data(), num_isvs);
+            auto map_dPlasticGradientMicroVelocityGradientdMicroStress =
+                getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                    get_dPlasticGradientMicroVelocityGradientdMicroStress()->data());
+            auto map_dPlasticGradientMicroVelocityGradientdHigherOrderStress =
+                getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                    get_dPlasticGradientMicroVelocityGradientdHigherOrderStress()->data());
+            auto map_dPlasticGradientMicroVelocityGradientdF = getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                get_dPlasticGradientMicroVelocityGradientdF()->data());
+            auto map_dPlasticGradientMicroVelocityGradientdFn = getDynamicColumnSizeMatrixMap<floatType, tot_dim>(
+                get_dPlasticGradientMicroVelocityGradientdFn()->data(), sot_dim * (num_configs - 1));
+            auto map_dPlasticGradientMicroVelocityGradientdChi = getFixedSizeMatrixMap<floatType, tot_dim, sot_dim>(
+                get_dPlasticGradientMicroVelocityGradientdChi()->data());
+            auto map_dPlasticGradientMicroVelocityGradientdChin = getDynamicColumnSizeMatrixMap<floatType, tot_dim>(
+                get_dPlasticGradientMicroVelocityGradientdChin()->data(), sot_dim * (num_configs - 1));
+            auto map_dPlasticGradientMicroVelocityGradientdGradChi = getFixedSizeMatrixMap<floatType, tot_dim, tot_dim>(
+                get_dPlasticGradientMicroVelocityGradientdGradChi()->data());
+            auto map_dPlasticGradientMicroVelocityGradientdGradChin = getDynamicColumnSizeMatrixMap<floatType, tot_dim>(
+                get_dPlasticGradientMicroVelocityGradientdGradChin()->data(), tot_dim * (num_configs - 1));
+            auto map_dPlasticGradientMicroVelocityGradientdStateVariables =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dim>(
+                    get_dPlasticGradientMicroVelocityGradientdStateVariables()->data(), num_isvs);
 
-            auto dUpdatedPlasticDeformationGradientdMacroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdMacroStress( );
-            auto map_dUpdatedPlasticDeformationGradientdMacroStress = dUpdatedPlasticDeformationGradientdMacroStress.zeroMap< floatType, sot_dim, sot_dim >( );
+            auto dUpdatedPlasticDeformationGradientdMacroStress =
+                get_SetDataStorage_dUpdatedPlasticDeformationGradientdMacroStress();
+            auto map_dUpdatedPlasticDeformationGradientdMacroStress =
+                dUpdatedPlasticDeformationGradientdMacroStress.zeroMap<floatType, sot_dim, sot_dim>();
 
-            auto dUpdatedPlasticDeformationGradientdMicroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdMicroStress( );
-            auto map_dUpdatedPlasticDeformationGradientdMicroStress = dUpdatedPlasticDeformationGradientdMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
+            auto dUpdatedPlasticDeformationGradientdMicroStress =
+                get_SetDataStorage_dUpdatedPlasticDeformationGradientdMicroStress();
+            auto map_dUpdatedPlasticDeformationGradientdMicroStress =
+                dUpdatedPlasticDeformationGradientdMicroStress.zeroMap<floatType, sot_dim, sot_dim>();
 
-            auto dUpdatedPlasticDeformationGradientdF = get_setDataStorage_dUpdatedPlasticDeformationGradientdF( );
-            auto map_dUpdatedPlasticDeformationGradientdF = dUpdatedPlasticDeformationGradientdF.zeroMap< floatType, sot_dim, sot_dim >( );
+            auto dUpdatedPlasticDeformationGradientdF = get_SetDataStorage_dUpdatedPlasticDeformationGradientdF();
+            auto map_dUpdatedPlasticDeformationGradientdF =
+                dUpdatedPlasticDeformationGradientdF.zeroMap<floatType, sot_dim, sot_dim>();
 
-            auto dUpdatedPlasticDeformationGradientdFn = get_setDataStorage_dUpdatedPlasticDeformationGradientdFn( );
-            auto map_dUpdatedPlasticDeformationGradientdFn = dUpdatedPlasticDeformationGradientdFn.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto dUpdatedPlasticDeformationGradientdFn = get_SetDataStorage_dUpdatedPlasticDeformationGradientdFn();
+            auto map_dUpdatedPlasticDeformationGradientdFn =
+                dUpdatedPlasticDeformationGradientdFn.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
 
-            auto dUpdatedPlasticDeformationGradientdStateVariables = get_setDataStorage_dUpdatedPlasticDeformationGradientdStateVariables( );
-            auto map_dUpdatedPlasticDeformationGradientdStateVariables = dUpdatedPlasticDeformationGradientdStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
+            auto dUpdatedPlasticDeformationGradientdStateVariables =
+                get_SetDataStorage_dUpdatedPlasticDeformationGradientdStateVariables();
+            auto map_dUpdatedPlasticDeformationGradientdStateVariables =
+                dUpdatedPlasticDeformationGradientdStateVariables.zeroMap<floatType, sot_dim>(num_isvs);
 
-            auto dUpdatedPlasticMicroDeformationdMicroStress = get_setDataStorage_dUpdatedPlasticMicroDeformationdMicroStress( );
-            auto map_dUpdatedPlasticMicroDeformationdMicroStress = dUpdatedPlasticMicroDeformationdMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
+            auto dUpdatedPlasticMicroDeformationdMicroStress =
+                get_SetDataStorage_dUpdatedPlasticMicroDeformationdMicroStress();
+            auto map_dUpdatedPlasticMicroDeformationdMicroStress =
+                dUpdatedPlasticMicroDeformationdMicroStress.zeroMap<floatType, sot_dim, sot_dim>();
 
-            auto dUpdatedPlasticMicroDeformationdF = get_setDataStorage_dUpdatedPlasticMicroDeformationdF( );
-            auto map_dUpdatedPlasticMicroDeformationdF = dUpdatedPlasticMicroDeformationdF.zeroMap< floatType, sot_dim, sot_dim >( );
+            auto dUpdatedPlasticMicroDeformationdF = get_SetDataStorage_dUpdatedPlasticMicroDeformationdF();
+            auto map_dUpdatedPlasticMicroDeformationdF =
+                dUpdatedPlasticMicroDeformationdF.zeroMap<floatType, sot_dim, sot_dim>();
 
-            auto dUpdatedPlasticMicroDeformationdFn = get_setDataStorage_dUpdatedPlasticMicroDeformationdFn( );
-            auto map_dUpdatedPlasticMicroDeformationdFn = dUpdatedPlasticMicroDeformationdFn.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto dUpdatedPlasticMicroDeformationdFn = get_SetDataStorage_dUpdatedPlasticMicroDeformationdFn();
+            auto map_dUpdatedPlasticMicroDeformationdFn =
+                dUpdatedPlasticMicroDeformationdFn.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
 
-            auto dUpdatedPlasticMicroDeformationdChi = get_setDataStorage_dUpdatedPlasticMicroDeformationdChi( );
-            auto map_dUpdatedPlasticMicroDeformationdChi = dUpdatedPlasticMicroDeformationdChi.zeroMap< floatType, sot_dim, sot_dim >( );
+            auto dUpdatedPlasticMicroDeformationdChi = get_SetDataStorage_dUpdatedPlasticMicroDeformationdChi();
+            auto map_dUpdatedPlasticMicroDeformationdChi =
+                dUpdatedPlasticMicroDeformationdChi.zeroMap<floatType, sot_dim, sot_dim>();
 
-            auto dUpdatedPlasticMicroDeformationdChin = get_setDataStorage_dUpdatedPlasticMicroDeformationdChin( );
-            auto map_dUpdatedPlasticMicroDeformationdChin = dUpdatedPlasticMicroDeformationdChin.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto dUpdatedPlasticMicroDeformationdChin = get_SetDataStorage_dUpdatedPlasticMicroDeformationdChin();
+            auto map_dUpdatedPlasticMicroDeformationdChin =
+                dUpdatedPlasticMicroDeformationdChin.zeroMap<floatType, sot_dim>((num_configs - 1) * sot_dim);
 
-            auto dUpdatedPlasticMicroDeformationdStateVariables = get_setDataStorage_dUpdatedPlasticMicroDeformationdStateVariables( );
-            auto map_dUpdatedPlasticMicroDeformationdStateVariables = dUpdatedPlasticMicroDeformationdStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
+            auto dUpdatedPlasticMicroDeformationdStateVariables =
+                get_SetDataStorage_dUpdatedPlasticMicroDeformationdStateVariables();
+            auto map_dUpdatedPlasticMicroDeformationdStateVariables =
+                dUpdatedPlasticMicroDeformationdStateVariables.zeroMap<floatType, sot_dim>(num_isvs);
 
-            auto dUpdatedPlasticGradientMicroDeformationdMacroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdMacroStress( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdMacroStress = dUpdatedPlasticGradientMicroDeformationdMacroStress.zeroMap< floatType, tot_dim, sot_dim >( );
+            auto dUpdatedPlasticGradientMicroDeformationdMacroStress =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdMacroStress();
+            auto map_dUpdatedPlasticGradientMicroDeformationdMacroStress =
+                dUpdatedPlasticGradientMicroDeformationdMacroStress.zeroMap<floatType, tot_dim, sot_dim>();
 
-            auto dUpdatedPlasticGradientMicroDeformationdMicroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdMicroStress( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdMicroStress = dUpdatedPlasticGradientMicroDeformationdMicroStress.zeroMap< floatType, tot_dim, sot_dim >( );
+            auto dUpdatedPlasticGradientMicroDeformationdMicroStress =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdMicroStress();
+            auto map_dUpdatedPlasticGradientMicroDeformationdMicroStress =
+                dUpdatedPlasticGradientMicroDeformationdMicroStress.zeroMap<floatType, tot_dim, sot_dim>();
 
-            auto dUpdatedPlasticGradientMicroDeformationdHigherOrderStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress = dUpdatedPlasticGradientMicroDeformationdHigherOrderStress.zeroMap< floatType, tot_dim, tot_dim >( );
+            auto dUpdatedPlasticGradientMicroDeformationdHigherOrderStress =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress();
+            auto map_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress =
+                dUpdatedPlasticGradientMicroDeformationdHigherOrderStress.zeroMap<floatType, tot_dim, tot_dim>();
 
-            auto dUpdatedPlasticGradientMicroDeformationdF = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdF( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdF = dUpdatedPlasticGradientMicroDeformationdF.zeroMap< floatType, tot_dim, sot_dim >( );
+            auto dUpdatedPlasticGradientMicroDeformationdF =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdF();
+            auto map_dUpdatedPlasticGradientMicroDeformationdF =
+                dUpdatedPlasticGradientMicroDeformationdF.zeroMap<floatType, tot_dim, sot_dim>();
 
-            auto dUpdatedPlasticGradientMicroDeformationdFn = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdFn( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdFn = dUpdatedPlasticGradientMicroDeformationdFn.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto dUpdatedPlasticGradientMicroDeformationdFn =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdFn();
+            auto map_dUpdatedPlasticGradientMicroDeformationdFn =
+                dUpdatedPlasticGradientMicroDeformationdFn.zeroMap<floatType, tot_dim>((num_configs - 1) * sot_dim);
 
-            auto dUpdatedPlasticGradientMicroDeformationdChi = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdChi( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdChi = dUpdatedPlasticGradientMicroDeformationdChi.zeroMap< floatType, tot_dim, sot_dim >( );
+            auto dUpdatedPlasticGradientMicroDeformationdChi =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdChi();
+            auto map_dUpdatedPlasticGradientMicroDeformationdChi =
+                dUpdatedPlasticGradientMicroDeformationdChi.zeroMap<floatType, tot_dim, sot_dim>();
 
-            auto dUpdatedPlasticGradientMicroDeformationdChin = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdChin( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdChin = dUpdatedPlasticGradientMicroDeformationdChin.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto dUpdatedPlasticGradientMicroDeformationdChin =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdChin();
+            auto map_dUpdatedPlasticGradientMicroDeformationdChin =
+                dUpdatedPlasticGradientMicroDeformationdChin.zeroMap<floatType, tot_dim>((num_configs - 1) * sot_dim);
 
-            auto dUpdatedPlasticGradientMicroDeformationdGradChi = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChi( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdGradChi = dUpdatedPlasticGradientMicroDeformationdGradChi.zeroMap< floatType, tot_dim, tot_dim >( );
+            auto dUpdatedPlasticGradientMicroDeformationdGradChi =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChi();
+            auto map_dUpdatedPlasticGradientMicroDeformationdGradChi =
+                dUpdatedPlasticGradientMicroDeformationdGradChi.zeroMap<floatType, tot_dim, tot_dim>();
 
-            auto dUpdatedPlasticGradientMicroDeformationdGradChin = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChin( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdGradChin = dUpdatedPlasticGradientMicroDeformationdGradChin.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * tot_dim );
+            auto dUpdatedPlasticGradientMicroDeformationdGradChin =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChin();
+            auto map_dUpdatedPlasticGradientMicroDeformationdGradChin =
+                dUpdatedPlasticGradientMicroDeformationdGradChin.zeroMap<floatType, tot_dim>((num_configs - 1) *
+                                                                                             tot_dim);
 
-            auto dUpdatedPlasticGradientMicroDeformationdStateVariables = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdStateVariables( );
-            auto map_dUpdatedPlasticGradientMicroDeformationdStateVariables = dUpdatedPlasticGradientMicroDeformationdStateVariables.zeroMap< floatType, tot_dim >( num_isvs );
+            auto dUpdatedPlasticGradientMicroDeformationdStateVariables =
+                get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdStateVariables();
+            auto map_dUpdatedPlasticGradientMicroDeformationdStateVariables =
+                dUpdatedPlasticGradientMicroDeformationdStateVariables.zeroMap<floatType, tot_dim>(num_isvs);
 
-            map_dUpdatedPlasticDeformationGradientdMacroStress = ( map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdMacroStress ).eval( );
+            map_dUpdatedPlasticDeformationGradientdMacroStress =
+                (map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdMacroStress).eval();
 
-            map_dUpdatedPlasticDeformationGradientdMicroStress = ( map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdMicroStress ).eval( );
+            map_dUpdatedPlasticDeformationGradientdMicroStress =
+                (map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdMicroStress).eval();
 
-            map_dUpdatedPlasticDeformationGradientdF = ( map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdF ).eval( );
+            map_dUpdatedPlasticDeformationGradientdF =
+                (map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdF).eval();
 
-            map_dUpdatedPlasticDeformationGradientdFn = ( map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdFn ).eval( );
+            map_dUpdatedPlasticDeformationGradientdFn =
+                (map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdFn).eval();
 
-            map_dUpdatedPlasticDeformationGradientdStateVariables = ( map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdStateVariables ).eval( );
+            map_dUpdatedPlasticDeformationGradientdStateVariables =
+                (map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdStateVariables).eval();
 
-            map_dUpdatedPlasticMicroDeformationdMicroStress = ( map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdMicroStress ).eval( );
+            map_dUpdatedPlasticMicroDeformationdMicroStress =
+                (map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdMicroStress).eval();
 
-            map_dUpdatedPlasticMicroDeformationdF = ( map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdF ).eval( );
+            map_dUpdatedPlasticMicroDeformationdF =
+                (map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdF).eval();
 
-            map_dUpdatedPlasticMicroDeformationdFn = ( map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdFn ).eval( );        
+            map_dUpdatedPlasticMicroDeformationdFn =
+                (map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdFn).eval();
 
-            map_dUpdatedPlasticMicroDeformationdChi = ( map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdChi ).eval( );
+            map_dUpdatedPlasticMicroDeformationdChi =
+                (map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdChi).eval();
 
-            map_dUpdatedPlasticMicroDeformationdChin = ( map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdChin ).eval( );
+            map_dUpdatedPlasticMicroDeformationdChin =
+                (map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdChin).eval();
 
-            map_dUpdatedPlasticMicroDeformationdStateVariables = ( map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdStateVariables ).eval( );
+            map_dUpdatedPlasticMicroDeformationdStateVariables =
+                (map_dPlasticMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdStateVariables).eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdMacroStress = ( map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdMacroStress ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdMacroStress =
+                (map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdMacroStress)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdMicroStress  = ( map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdMicroStress ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdMicroStress += ( map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdMicroStress ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdMicroStress += ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdMicroStress ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdMicroStress =
+                (map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdMicroStress)
+                    .eval();
+            map_dUpdatedPlasticGradientMicroDeformationdMicroStress +=
+                (map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdMicroStress)
+                    .eval();
+            map_dUpdatedPlasticGradientMicroDeformationdMicroStress +=
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdMicroStress)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress = ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdHigherOrderStress ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress =
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdHigherOrderStress)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdF  = ( map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdF ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdF += ( map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdF ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdF += ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdF ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdF =
+                (map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdF).eval();
+            map_dUpdatedPlasticGradientMicroDeformationdF +=
+                (map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdF).eval();
+            map_dUpdatedPlasticGradientMicroDeformationdF +=
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdF)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdFn  = ( map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdFn ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdFn += ( map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdFn ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdFn += ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdFn ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdFn =
+                (map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdFn).eval();
+            map_dUpdatedPlasticGradientMicroDeformationdFn +=
+                (map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdFn).eval();
+            map_dUpdatedPlasticGradientMicroDeformationdFn +=
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdFn)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdChi  = ( map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdChi ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdChi += ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdChi ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdChi =
+                (map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdChi).eval();
+            map_dUpdatedPlasticGradientMicroDeformationdChi +=
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdChi)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdChin  = ( map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdChin ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdChin += ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdChin ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdChin =
+                (map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdChin).eval();
+            map_dUpdatedPlasticGradientMicroDeformationdChin +=
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdChin)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdGradChi = ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdGradChi ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdGradChi =
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdGradChi)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdGradChin = ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdGradChin ).eval( );
+            map_dUpdatedPlasticGradientMicroDeformationdGradChin =
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdGradChin)
+                    .eval();
 
-            map_dUpdatedPlasticGradientMicroDeformationdStateVariables  = ( map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdStateVariables ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdStateVariables += ( map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdStateVariables ).eval( );
-            map_dUpdatedPlasticGradientMicroDeformationdStateVariables += ( map_dPlasticGradientMicroDeformationdPlasticGradientMicroL * map_dPlasticGradientMicroVelocityGradientdStateVariables ).eval( );
-
+            map_dUpdatedPlasticGradientMicroDeformationdStateVariables =
+                (map_dPlasticGradientMicroDeformationdPlasticMacroL * map_dPlasticMacroVelocityGradientdStateVariables)
+                    .eval();
+            map_dUpdatedPlasticGradientMicroDeformationdStateVariables +=
+                (map_dPlasticGradientMicroDeformationdPlasticMicroL * map_dPlasticMicroVelocityGradientdStateVariables)
+                    .eval();
+            map_dUpdatedPlasticGradientMicroDeformationdStateVariables +=
+                (map_dPlasticGradientMicroDeformationdPlasticGradientMicroL *
+                 map_dPlasticGradientMicroVelocityGradientdStateVariables)
+                    .eval();
         }
 
-        void residual::setStateVariableResiduals( ){
+        void residual::setStateVariableResiduals() {
             /*!
              * Set the state variable residuals
              *
@@ -8768,100 +8936,100 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+            const floatVector *plasticMultipliers = get_plasticMultipliers();
 
-            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs();
 
-            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
+            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs();
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers();
 
-            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size();
 
-            const floatType *macroYield = get_macroYield( );
+            const floatType *macroYield = get_macroYield();
 
-            const floatType *microYield = get_microYield( );
+            const floatType *microYield = get_microYield();
 
-            const dimVector *microGradientYield = get_microGradientYield( );
+            const dimVector *microGradientYield = get_microGradientYield();
 
-            auto residual = get_setDataStorage_stateVariableResiduals( );
-            residual.zero( get_plasticStateVariables( )->size( ) );
+            auto residual = get_SetDataStorage_stateVariableResiduals();
+            residual.zero(get_plasticStateVariables()->size());
 
-            floatType macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
-            tardigradeConstitutiveTools::mac( -( *macroYield ) );
+            floatType macroMac;
+            tardigradeConstitutiveTools::mac(-(*macroYield));
 
-            floatType microMac  = tardigradeConstitutiveTools::mac( *microYield );
-            tardigradeConstitutiveTools::mac( -( *microYield ) );
+            floatType microMac;
+            tardigradeConstitutiveTools::mac(-(*microYield));
 
-            floatVector microGradientMac( microGradientYield->size( ), 0 );
+            floatVector microGradientMac(microGradientYield->size(), 0);
 
             floatType macNegMacroGamma;
             floatType macNegMicroGamma;
 
-            floatVector macNegMicroGradientGamma( 3, 0 );
+            floatVector macNegMicroGradientGamma(3, 0);
 
-            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+            floatVector consistencyConditionModuli(5, getConsistencyConditionModulus());
 
-            if ( *useWeakenedMacaulay( ) ){
+            if (useWeakenedMacaulay()) {
+                macroMac = weakMac(*macroYield, getWeakenedMacaulayParameter());
+                weakMac(-(*macroYield), getWeakenedMacaulayParameter());
 
-                macroMac  = weakMac( *macroYield, *getWeakenedMacaulayParameter( ) );
-                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ) );
+                microMac = weakMac(*microYield, getWeakenedMacaulayParameter());
+                weakMac(-(*microYield), getWeakenedMacaulayParameter());
 
-                microMac  = weakMac( *microYield, *getWeakenedMacaulayParameter( ) );
-                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ) );
+                macNegMacroGamma = weakMac(-(*plasticMultipliers)[0], getWeakenedMacaulayParameter());
+                macNegMicroGamma = weakMac(-(*plasticMultipliers)[1], getWeakenedMacaulayParameter());
 
-                macNegMacroGamma = weakMac( -( *plasticMultipliers )[ 0 ] , *getWeakenedMacaulayParameter( ) );
-                macNegMicroGamma = weakMac( -( *plasticMultipliers )[ 1 ] , *getWeakenedMacaulayParameter( ) );
-
-                for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
-                    unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
-                    microGradientMac[ index ]  = weakMac( *y, *getWeakenedMacaulayParameter( ) );
-                    macNegMicroGradientGamma[ index ] = weakMac( -( *plasticMultipliers )[ index + 2 ], *getWeakenedMacaulayParameter( ) );
+                for (auto y = microGradientYield->begin(); y != microGradientYield->end(); y++) {
+                    unsigned int index      = (unsigned int)(y - microGradientYield->begin());
+                    microGradientMac[index] = weakMac(*y, getWeakenedMacaulayParameter());
+                    macNegMicroGradientGamma[index] =
+                        weakMac(-(*plasticMultipliers)[index + 2], getWeakenedMacaulayParameter());
                 }
-            }
-            else{
+            } else {
+                macroMac = tardigradeConstitutiveTools::mac(*macroYield);
+                tardigradeConstitutiveTools::mac(-(*macroYield));
 
-                macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
-                tardigradeConstitutiveTools::mac( -( *macroYield ) );
+                microMac = tardigradeConstitutiveTools::mac(*microYield);
+                tardigradeConstitutiveTools::mac(-(*microYield));
 
-                microMac  = tardigradeConstitutiveTools::mac( *microYield );
-                tardigradeConstitutiveTools::mac( -( *microYield ) );
+                macNegMacroGamma = tardigradeConstitutiveTools::mac(-(*plasticMultipliers)[0]);
+                macNegMicroGamma = tardigradeConstitutiveTools::mac(-(*plasticMultipliers)[1]);
 
-                macNegMacroGamma = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 0 ] );
-                macNegMicroGamma = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 1 ] );
-
-                for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
-                    unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
-                    microGradientMac[ index ] = tardigradeConstitutiveTools::mac( *y );
-                    macNegMicroGradientGamma[ index ] = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ index + 2 ] );
+                for (auto y = microGradientYield->begin(); y != microGradientYield->end(); y++) {
+                    unsigned int index      = (unsigned int)(y - microGradientYield->begin());
+                    microGradientMac[index] = tardigradeConstitutiveTools::mac(*y);
+                    macNegMicroGradientGamma[index] =
+                        tardigradeConstitutiveTools::mac(-(*plasticMultipliers)[index + 2]);
                 }
-
             }
 
             // Set the terms associated with the yield surface
-            ( *residual.value )[ 0 ] = macroMac + consistencyConditionModuli[ 0 ] * std::fabs( ( *plasticMultipliers )[ 0 ] * ( *macroYield ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMacroGamma;
+            (*residual.value)[0] = macroMac +
+                                   consistencyConditionModuli[0] * std::fabs((*plasticMultipliers)[0] * (*macroYield)) +
+                                   getPlasticMultiplierBarrierModulus() * macNegMacroGamma;
 
-            ( *residual.value )[ 1 ] = microMac + consistencyConditionModuli[ 1 ] * std::fabs( ( *plasticMultipliers )[ 1 ] * ( *microYield ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGamma;
+            (*residual.value)[1] = microMac +
+                                   consistencyConditionModuli[1] * std::fabs((*plasticMultipliers)[1] * (*microYield)) +
+                                   getPlasticMultiplierBarrierModulus() * macNegMicroGamma;
 
-            for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
+            for (auto y = microGradientYield->begin(); y != microGradientYield->end(); y++) {
+                unsigned int index = (unsigned int)(y - microGradientYield->begin());
 
-                unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
-
-                ( *residual.value )[ index + 2 ]
-                    = microGradientMac[ index ] + consistencyConditionModuli[ index + 2 ] * std::fabs( ( *plasticMultipliers )[ index + 2 ] * ( *y ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGradientGamma[ index ];
-
+                (*residual.value)[index + 2] =
+                    microGradientMac[index] +
+                    consistencyConditionModuli[index + 2] * std::fabs((*plasticMultipliers)[index + 2] * (*y)) +
+                    getPlasticMultiplierBarrierModulus() * macNegMicroGradientGamma[index];
             }
 
             // Set the terms associated with the strain-like ISV evolution
-            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
-
-                ( *residual.value )[ numPlasticMultipliers + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
-
+            for (unsigned int i = 0; i < numPlasticStrainLikeISVs; i++) {
+                (*residual.value)[numPlasticMultipliers + i] =
+                    (*updatedPlasticStrainLikeISVs)[i] - (*plasticStrainLikeISVs)[i];
             }
-
         }
 
-        void residual::setStateVariableJacobians( ){
+        void residual::setStateVariableJacobians() {
             /*!
              * Set the state variable residual jacobians
              *
@@ -8880,234 +9048,234 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            auto dim = hydra->getDimension();
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension();
 
-            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            auto numThirdOrderTensor = hydra->getTOTDimension();
 
-            unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations();
 
-            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+            const floatVector *plasticMultipliers = get_plasticMultipliers();
 
-            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs();
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers();
 
-            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size();
 
-            const unsigned int numUnknowns = hydra->getNumUnknowns( );
+            const unsigned int numUnknowns = hydra->getNumUnknowns();
 
-            const unsigned int numISVs = get_plasticStateVariables( )->size( );
+            const unsigned int numISVs = get_plasticStateVariables()->size();
 
-            const secondOrderTensor *dMacroYielddStress                 = get_dMacroYielddStress( );
+            const secondOrderTensor *dMacroYielddStress = get_dMacroYielddStress();
 
-            const floatVector *dMacroYielddFn                     = get_dMacroYielddFn( );
+            const floatVector *dMacroYielddFn = get_dMacroYielddFn();
 
-            const floatVector *dMacroYielddStateVariables         = get_dMacroYielddStateVariables( );
+            const floatVector *dMacroYielddStateVariables = get_dMacroYielddStateVariables();
 
-            const secondOrderTensor *dMicroYielddStress                 = get_dMicroYielddStress( );
+            const secondOrderTensor *dMicroYielddStress = get_dMicroYielddStress();
 
-            const floatVector *dMicroYielddFn                     = get_dMicroYielddFn( );
+            const floatVector *dMicroYielddFn = get_dMicroYielddFn();
 
-            const floatVector *dMicroYielddStateVariables         = get_dMicroYielddStateVariables( );
+            const floatVector *dMicroYielddStateVariables = get_dMicroYielddStateVariables();
 
-            const floatVector *dMicroGradientYielddStress         = get_dMicroGradientYielddStress( );
+            const floatVector *dMicroGradientYielddStress = get_dMicroGradientYielddStress();
 
-            const floatVector *dMicroGradientYielddFn             = get_dMicroGradientYielddFn( );
+            const floatVector *dMicroGradientYielddFn = get_dMicroGradientYielddFn();
 
-            const floatVector *dMicroGradientYielddChin           = get_dMicroGradientYielddChin( );
+            const floatVector *dMicroGradientYielddChin = get_dMicroGradientYielddChin();
 
-            const floatVector *dMicroGradientYielddStateVariables = get_dMicroGradientYielddStateVariables( );
+            const floatVector *dMicroGradientYielddStateVariables = get_dMicroGradientYielddStateVariables();
 
-            const floatVector *dUpdatedPlasticStrainLikeISVsdStateVariables = get_dUpdatedPlasticStrainLikeISVsdStateVariables( );
+            const floatVector *dUpdatedPlasticStrainLikeISVsdStateVariables =
+                get_dUpdatedPlasticStrainLikeISVsdStateVariables();
 
-            const floatType *macroYield = get_macroYield( );
+            const floatType *macroYield = get_macroYield();
 
-            const floatType *microYield = get_microYield( );
+            const floatType *microYield = get_microYield();
 
-            const dimVector *microGradientYield = get_microGradientYield( );
+            const dimVector *microGradientYield = get_microGradientYield();
 
-            auto jacobian = get_setDataStorage_stateVariableJacobians( );
-            jacobian.zero( numISVs * numUnknowns );
+            auto jacobian = get_SetDataStorage_stateVariableJacobians();
+            jacobian.zero(numISVs * numUnknowns);
 
-            floatVector signs( 5, 0 );
+            floatVector signs(5, 0);
 
-            signs[ 0 ] = sgn( ( *plasticMultipliers )[ 0 ] * ( *macroYield ) );
-            signs[ 1 ] = sgn( ( *plasticMultipliers )[ 1 ] * ( *microYield ) );
-            for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
-                signs[ i + 2 ] = sgn( ( *plasticMultipliers )[ i + 2 ] * ( *microGradientYield )[ i ] );
+            signs[0] = sgn((*plasticMultipliers)[0] * (*macroYield));
+            signs[1] = sgn((*plasticMultipliers)[1] * (*microYield));
+            for (unsigned int i = 0; i < (numPlasticMultipliers - 2); i++) {
+                signs[i + 2] = sgn((*plasticMultipliers)[i + 2] * (*microGradientYield)[i]);
             }
 
-            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+            floatVector consistencyConditionModuli(5, getConsistencyConditionModulus());
 
             // Stress Jacobians
             floatType dMacroMacdx, dMicroMacdx;
             floatType ndMacroMacdx, ndMicroMacdx;
 
-            floatVector microGradientMac( numPlasticMultipliers - 2 );
-            floatVector dMicroGradientMacdx( numPlasticMultipliers - 2 );
+            floatVector microGradientMac(numPlasticMultipliers - 2);
+            floatVector dMicroGradientMacdx(numPlasticMultipliers - 2);
 
-            floatVector nMicroGradientMac( numPlasticMultipliers - 2 );
-            floatVector ndMicroGradientMacdx( numPlasticMultipliers - 2 );
+            floatVector nMicroGradientMac(numPlasticMultipliers - 2);
+            floatVector ndMicroGradientMacdx(numPlasticMultipliers - 2);
 
             floatType dMacNegMacroGammadGamma;
             floatType dMacNegMicroGammadGamma;
 
-            floatVector dMacNegMicroGradientGammadGamma( 3, 0 );
+            floatVector dMacNegMicroGradientGammadGamma(3, 0);
 
-            if ( *useWeakenedMacaulay( ) ){
+            if (useWeakenedMacaulay()) {
+                weakMac(*macroYield, getWeakenedMacaulayParameter(), dMacroMacdx);
 
-                weakMac( *macroYield, *getWeakenedMacaulayParameter( ), dMacroMacdx );
+                weakMac(*microYield, getWeakenedMacaulayParameter(), dMicroMacdx);
 
-                weakMac( *microYield, *getWeakenedMacaulayParameter( ), dMicroMacdx );
+                weakMac(-(*macroYield), getWeakenedMacaulayParameter(), ndMacroMacdx);
 
-                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ), ndMacroMacdx );
+                weakMac(-(*microYield), getWeakenedMacaulayParameter(), ndMicroMacdx);
 
-                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
+                weakMac(-(*plasticMultipliers)[0], getWeakenedMacaulayParameter(), dMacNegMacroGammadGamma);
 
-                weakMac( -( *plasticMultipliers )[ 0 ], *getWeakenedMacaulayParameter( ), dMacNegMacroGammadGamma );
+                weakMac(-(*plasticMultipliers)[1], getWeakenedMacaulayParameter(), dMacNegMicroGammadGamma);
 
-                weakMac( -( *plasticMultipliers )[ 1 ], *getWeakenedMacaulayParameter( ), dMacNegMicroGammadGamma );
+                for (unsigned int i = 0; i < (numPlasticMultipliers - 2); i++) {
+                    microGradientMac[i] =
+                        weakMac((*microGradientYield)[i], getWeakenedMacaulayParameter(), dMicroGradientMacdx[i]);
 
-                for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+                    nMicroGradientMac[i] =
+                        weakMac(-(*microGradientYield)[i], getWeakenedMacaulayParameter(), ndMicroGradientMacdx[i]);
 
-                    microGradientMac[ i ]  = weakMac(  ( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
-
-                    nMicroGradientMac[ i ] = weakMac( -( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), ndMicroGradientMacdx[ i ] );
-
-                    weakMac( -( *plasticMultipliers )[ i + 2 ], *getWeakenedMacaulayParameter( ), dMacNegMicroGradientGammadGamma[ i ] );
-
+                    weakMac(-(*plasticMultipliers)[i + 2], getWeakenedMacaulayParameter(),
+                            dMacNegMicroGradientGammadGamma[i]);
                 }
 
-            }
-            else{
+            } else {
+                tardigradeConstitutiveTools::mac(*macroYield, dMacroMacdx);
 
-                tardigradeConstitutiveTools::mac( *macroYield, dMacroMacdx );
+                tardigradeConstitutiveTools::mac(*microYield, dMicroMacdx);
 
-                tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
+                tardigradeConstitutiveTools::mac(-(*macroYield), ndMacroMacdx);
 
-                tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+                tardigradeConstitutiveTools::mac(-(*microYield), ndMicroMacdx);
 
-                tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+                tardigradeConstitutiveTools::mac(-(*plasticMultipliers)[0], dMacNegMacroGammadGamma);
 
-                tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 0 ], dMacNegMacroGammadGamma );
+                tardigradeConstitutiveTools::mac(-(*plasticMultipliers)[1], dMacNegMicroGammadGamma);
 
-                tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 1 ], dMacNegMicroGammadGamma );
+                for (unsigned int i = 0; i < (numPlasticMultipliers - 2); i++) {
+                    microGradientMac[i] =
+                        tardigradeConstitutiveTools::mac((*microGradientYield)[i], dMicroGradientMacdx[i]);
 
-                for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+                    nMicroGradientMac[i] =
+                        tardigradeConstitutiveTools::mac(-(*microGradientYield)[i], ndMicroGradientMacdx[i]);
 
-                    microGradientMac[ i ]  = tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
-
-                    nMicroGradientMac[ i ] = tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
-
-                    tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ i + 2 ], dMacNegMicroGradientGammadGamma[ i ] );
-
+                    tardigradeConstitutiveTools::mac(-(*plasticMultipliers)[i + 2], dMacNegMicroGradientGammadGamma[i]);
                 }
-
             }
 
             unsigned int offset = numSecondOrderTensor;
-            for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+            for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+                (*jacobian.value)[numUnknowns * 0 + j] =
+                    (dMacroMacdx + consistencyConditionModuli[0] * signs[0] * (*plasticMultipliers)[0]) *
+                    (*dMacroYielddStress)[j];
 
-                ( *jacobian.value )[ numUnknowns * 0 + j ] = ( dMacroMacdx  + consistencyConditionModuli[ 0 ] * signs[ 0 ]  * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddStress )[ j ];
-
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = ( dMicroMacdx + consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddStress )[ j ];
-
+                (*jacobian.value)[numUnknowns * 1 + j + offset] =
+                    (dMicroMacdx + consistencyConditionModuli[1] * signs[1] * (*plasticMultipliers)[1]) *
+                    (*dMicroYielddStress)[j];
             }
 
             offset = 2 * numSecondOrderTensor;
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < numThirdOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddStress )[ numThirdOrderTensor * i + j ];
-
+            for (unsigned int i = 0; i < dim; i++) {
+                for (unsigned int j = 0; j < numThirdOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2) + j + offset] =
+                        (dMicroGradientMacdx[i] +
+                         consistencyConditionModuli[i + 2] * signs[i + 2] * (*plasticMultipliers)[i + 2]) *
+                        (*dMicroGradientYielddStress)[numThirdOrderTensor * i + j];
                 }
-
             }
 
             // Sub-Deformation gradient jacobians
             offset = 2 * numSecondOrderTensor + numThirdOrderTensor;
-            for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+            for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                (*jacobian.value)[numUnknowns * 0 + j + offset] =
+                    (dMacroMacdx + consistencyConditionModuli[0] * signs[0] * (*plasticMultipliers)[0]) *
+                    (*dMacroYielddFn)[j];
 
-                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] = ( dMacroMacdx + consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddFn )[ j ];
+                (*jacobian.value)[numUnknowns * 1 + j + offset] =
+                    (dMicroMacdx + consistencyConditionModuli[1] * signs[1] * (*plasticMultipliers)[1]) *
+                    (*dMicroYielddFn)[j];
+            }
 
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = ( dMicroMacdx + consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddFn )[ j ];
-
-            } 
-
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddFn )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
+            for (unsigned int i = 0; i < dim; i++) {
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2) + j + offset] =
+                        (dMicroGradientMacdx[i] +
+                         consistencyConditionModuli[i + 2] * signs[i + 2] * (*plasticMultipliers)[i + 2]) *
+                        (*dMicroGradientYielddFn)[(numConfigurations - 1) * numSecondOrderTensor * i + j];
                 }
-
             }
 
             // Sub-Micro deformation jacobians
-            offset = 2 * numSecondOrderTensor + numThirdOrderTensor + ( numConfigurations - 1 ) * numSecondOrderTensor;
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddChin )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
+            offset = 2 * numSecondOrderTensor + numThirdOrderTensor + (numConfigurations - 1) * numSecondOrderTensor;
+            for (unsigned int i = 0; i < dim; i++) {
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2) + j + offset] =
+                        (dMicroGradientMacdx[i] +
+                         consistencyConditionModuli[i + 2] * signs[i + 2] * (*plasticMultipliers)[i + 2]) *
+                        (*dMicroGradientYielddChin)[(numConfigurations - 1) * numSecondOrderTensor * i + j];
                 }
-
             }
-
 
             // State Variable Jacobians
-            offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
+            offset = numConfigurations * (2 * numSecondOrderTensor + numThirdOrderTensor);
 
-            ( *jacobian.value )[ numUnknowns * 0 + offset + 0 ] += consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *macroYield ) - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMacroGammadGamma;
+            (*jacobian.value)[numUnknowns * 0 + offset + 0] +=
+                consistencyConditionModuli[0] * signs[0] * (*macroYield) -
+                getPlasticMultiplierBarrierModulus() * dMacNegMacroGammadGamma;
 
-            ( *jacobian.value )[ numUnknowns * 1 + offset + 1 ] += consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *microYield ) - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGammadGamma;
+            (*jacobian.value)[numUnknowns * 1 + offset + 1] +=
+                consistencyConditionModuli[1] * signs[1] * (*microYield) -
+                getPlasticMultiplierBarrierModulus() * dMacNegMicroGammadGamma;
 
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                ( *jacobian.value )[ numUnknowns * ( i + 2 ) + offset + i + 2 ] += consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *microGradientYield )[ i ] - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGradientGammadGamma[ i ];
-
+            for (unsigned int i = 0; i < dim; i++) {
+                (*jacobian.value)[numUnknowns * (i + 2) + offset + i + 2] +=
+                    consistencyConditionModuli[i + 2] * signs[i + 2] * (*microGradientYield)[i] -
+                    getPlasticMultiplierBarrierModulus() * dMacNegMicroGradientGammadGamma[i];
             }
 
-            for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
+            for (unsigned int j = 0; j < (numPlasticMultipliers + numPlasticStrainLikeISVs); j++) {
+                (*jacobian.value)[numUnknowns * 0 + j + offset] +=
+                    (dMacroMacdx + consistencyConditionModuli[0] * signs[0] * (*plasticMultipliers)[0]) *
+                    (*dMacroYielddStateVariables)[j];
 
-                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] += ( dMacroMacdx + consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddStateVariables )[ j ];
-
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] += ( dMicroMacdx + consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddStateVariables )[ j ];
-
+                (*jacobian.value)[numUnknowns * 1 + j + offset] +=
+                    (dMicroMacdx + consistencyConditionModuli[1] * signs[1] * (*plasticMultipliers)[1]) *
+                    (*dMicroYielddStateVariables)[j];
             }
 
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] += ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddStateVariables )[ numISVs * i + j ];
-
+            for (unsigned int i = 0; i < dim; i++) {
+                for (unsigned int j = 0; j < (numPlasticMultipliers + numPlasticStrainLikeISVs); j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2) + j + offset] +=
+                        (dMicroGradientMacdx[i] +
+                         consistencyConditionModuli[i + 2] * signs[i + 2] * (*plasticMultipliers)[i + 2]) *
+                        (*dMicroGradientYielddStateVariables)[numISVs * i + j];
                 }
-
             }
-            
+
             unsigned int row0 = numPlasticMultipliers;
-            offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
-            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
+            offset            = numConfigurations * (2 * numSecondOrderTensor + numThirdOrderTensor);
+            for (unsigned int i = 0; i < numPlasticStrainLikeISVs; i++) {
+                (*jacobian.value)[numUnknowns * (i + row0) + i + offset + numPlasticMultipliers] -= 1;
 
-                ( *jacobian.value )[ numUnknowns * ( i + row0 ) + i + offset + numPlasticMultipliers ] -= 1;
-
-                for ( auto j = getStateVariableIndices( )->begin( ); j != getStateVariableIndices( )->end( ); j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + row0 ) + ( *j ) + offset ] += ( *dUpdatedPlasticStrainLikeISVsdStateVariables )[ numISVs * i + ( unsigned int )( j - getStateVariableIndices( )->begin( ) ) ];
-
+                for (auto j = getStateVariableIndices()->begin(); j != getStateVariableIndices()->end(); j++) {
+                    (*jacobian.value)[numUnknowns * (i + row0) + (*j) + offset] +=
+                        (*dUpdatedPlasticStrainLikeISVsdStateVariables)
+                            [numISVs * i + (unsigned int)(j - getStateVariableIndices()->begin())];
                 }
-
             }
-
         }
 
-        void residual::setdStateVariableResidualsdD( ){
+        void residual::setdStateVariableResidualsdD() {
             /*!
              * Set the state variable residuals derivatives w.r.t. the deformation measures
              *
@@ -9126,124 +9294,115 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            const unsigned int dim = hydra->getDimension( );
+            auto dim = hydra->getDimension();
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension();
 
-            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+            const floatVector *plasticMultipliers = get_plasticMultipliers();
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers();
 
-            const secondOrderTensor *dMacroYielddF                      = get_dMacroYielddF( );
+            const secondOrderTensor *dMacroYielddF = get_dMacroYielddF();
 
-            const secondOrderTensor *dMicroYielddF                      = get_dMicroYielddF( );
+            const secondOrderTensor *dMicroYielddF = get_dMicroYielddF();
 
-            const thirdOrderTensor  *dMicroGradientYielddF              = get_dMicroGradientYielddF( );
+            const thirdOrderTensor *dMicroGradientYielddF = get_dMicroGradientYielddF();
 
-            const thirdOrderTensor  *dMicroGradientYielddChi            = get_dMicroGradientYielddChi( );
+            const thirdOrderTensor *dMicroGradientYielddChi = get_dMicroGradientYielddChi();
 
-            const floatType *macroYield = get_macroYield( );
+            const floatType *macroYield = get_macroYield();
 
-            const floatType *microYield = get_microYield( );
+            const floatType *microYield = get_microYield();
 
-            const dimVector *microGradientYield = get_microGradientYield( );
+            const dimVector *microGradientYield = get_microGradientYield();
 
-            auto dRdD = get_setDataStorage_dStateVariableResidualsdD( );
-            dRdD.zero( get_plasticStateVariables( )->size( ) * numConfigurationUnknowns );
+            auto dRdD = get_SetDataStorage_dStateVariableResidualsdD();
+            dRdD.zero(get_plasticStateVariables()->size() * numConfigurationUnknowns);
 
-            floatVector signs( 5, 0 );
+            floatVector signs(5, 0);
 
-            signs[ 0 ] = sgn( ( *plasticMultipliers )[ 0 ] * ( *macroYield ) );
-            signs[ 1 ] = sgn( ( *plasticMultipliers )[ 1 ] * ( *microYield ) );
-            for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
-                signs[ i + 2 ] = sgn( ( *plasticMultipliers )[ i + 2 ] * ( *microGradientYield )[ i ] );
+            signs[0] = sgn((*plasticMultipliers)[0] * (*macroYield));
+            signs[1] = sgn((*plasticMultipliers)[1] * (*microYield));
+            for (unsigned int i = 0; i < (numPlasticMultipliers - 2); i++) {
+                signs[i + 2] = sgn((*plasticMultipliers)[i + 2] * (*microGradientYield)[i]);
             }
 
-            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+            floatVector consistencyConditionModuli(5, getConsistencyConditionModulus());
 
             // Deformation gradient jacobians
             floatType dMacroMacdx, dMicroMacdx;
             floatType ndMacroMacdx, ndMicroMacdx;
 
-            floatVector dMicroGradientMacdx( numPlasticMultipliers - 2 );
+            floatVector dMicroGradientMacdx(numPlasticMultipliers - 2);
 
-            floatVector ndMicroGradientMacdx( numPlasticMultipliers - 2 );
+            floatVector ndMicroGradientMacdx(numPlasticMultipliers - 2);
 
-            if ( *useWeakenedMacaulay( ) ){
+            if (useWeakenedMacaulay()) {
+                weakMac(*macroYield, getWeakenedMacaulayParameter(), dMacroMacdx);
 
-                weakMac( *macroYield, *getWeakenedMacaulayParameter( ), dMacroMacdx );
+                weakMac(*microYield, getWeakenedMacaulayParameter(), dMicroMacdx);
 
-                weakMac( *microYield, *getWeakenedMacaulayParameter( ), dMicroMacdx );
+                weakMac(-(*macroYield), getWeakenedMacaulayParameter(), ndMacroMacdx);
 
-                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ), ndMacroMacdx );
+                weakMac(-(*microYield), getWeakenedMacaulayParameter(), ndMicroMacdx);
 
-                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
+                for (unsigned int i = 0; i < (numPlasticMultipliers - 2); i++) {
+                    weakMac((*microGradientYield)[i], getWeakenedMacaulayParameter(), dMicroGradientMacdx[i]);
 
-                for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
-
-                    weakMac(  ( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
-
-                    weakMac( -( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ),ndMicroGradientMacdx[ i ] );
-
+                    weakMac(-(*microGradientYield)[i], getWeakenedMacaulayParameter(), ndMicroGradientMacdx[i]);
                 }
 
-            }
-            else{
+            } else {
+                tardigradeConstitutiveTools::mac(*macroYield, dMacroMacdx);
 
-                tardigradeConstitutiveTools::mac( *macroYield, dMacroMacdx );
+                tardigradeConstitutiveTools::mac(*microYield, dMicroMacdx);
 
-                tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
+                tardigradeConstitutiveTools::mac(-(*macroYield), ndMacroMacdx);
 
-                tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+                tardigradeConstitutiveTools::mac(-(*microYield), ndMicroMacdx);
 
-                tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+                for (unsigned int i = 0; i < (numPlasticMultipliers - 2); i++) {
+                    tardigradeConstitutiveTools::mac((*microGradientYield)[i], dMicroGradientMacdx[i]);
 
-                for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
-
-                    tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
-
-                    tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
-
+                    tardigradeConstitutiveTools::mac(-(*microGradientYield)[i], ndMicroGradientMacdx[i]);
                 }
-
             }
 
             unsigned int offset = 0;
-            for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+            for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+                (*dRdD.value)[numConfigurationUnknowns * 0 + j + offset] =
+                    (dMacroMacdx + consistencyConditionModuli[0] * signs[0] * (*plasticMultipliers)[0]) *
+                    (*dMacroYielddF)[j];
 
-                ( *dRdD.value )[ numConfigurationUnknowns * 0 + j + offset ] = ( dMacroMacdx + consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddF )[ j ];
+                (*dRdD.value)[numConfigurationUnknowns * 1 + j + offset] =
+                    (dMicroMacdx + consistencyConditionModuli[1] * signs[1] * (*plasticMultipliers)[1]) *
+                    (*dMicroYielddF)[j];
+            }
 
-                ( *dRdD.value )[ numConfigurationUnknowns * 1 + j + offset ] = ( dMicroMacdx + consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddF )[ j ];
-
-            } 
-
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
-
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddF )[ numSecondOrderTensor * i + j ];
-
+            for (unsigned int i = 0; i < dim; i++) {
+                for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+                    (*dRdD.value)[numConfigurationUnknowns * (i + 2) + j + offset] =
+                        (dMicroGradientMacdx[i] +
+                         consistencyConditionModuli[i + 2] * signs[i + 2] * (*plasticMultipliers)[i + 2]) *
+                        (*dMicroGradientYielddF)[numSecondOrderTensor * i + j];
                 }
-
             }
 
             // Micro deformation jacobians
             offset = numSecondOrderTensor;
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
-
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddChi )[ numSecondOrderTensor * i + j ];
-
+            for (unsigned int i = 0; i < dim; i++) {
+                for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+                    (*dRdD.value)[numConfigurationUnknowns * (i + 2) + j + offset] =
+                        (dMicroGradientMacdx[i] +
+                         consistencyConditionModuli[i + 2] * signs[i + 2] * (*plasticMultipliers)[i + 2]) *
+                        (*dMicroGradientYielddChi)[numSecondOrderTensor * i + j];
                 }
-
             }
-
         }
 
-        void residual::setdStateVariableResidualsdPreviousISVs( ){
+        void residual::setdStateVariableResidualsdPreviousISVs() {
             /*!
              * Set the derivatives of the state variable residuals with respect to the previous ISV vector
              *
@@ -9262,121 +9421,117 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension();
 
-            unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            auto numThirdOrderTensor = hydra->getTOTDimension();
 
-            unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations();
 
-            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs();
 
-            const floatVector *dUpdatedPlasticStrainLikeISVsdStateVariables = get_dUpdatedPlasticStrainLikeISVsdStateVariables( );
+            const floatVector *dUpdatedPlasticStrainLikeISVsdStateVariables =
+                get_dUpdatedPlasticStrainLikeISVsdStateVariables();
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers();
 
-            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size();
 
-            const unsigned int numPlasticISVs = get_plasticStateVariables( )->size( );
+            const unsigned int numPlasticISVs = get_plasticStateVariables()->size();
 
-            const unsigned int numISVs = hydra->getPreviousStateVariables( )->size( );
+            const unsigned int numISVs = hydra->getPreviousStateVariables()->size();
 
-            auto dRdPreviousISVs = get_setDataStorage_dStateVariableResidualsdPreviousISVs( );
-            dRdPreviousISVs.zero( numPlasticISVs * numISVs );
+            auto dRdPreviousISVs = get_SetDataStorage_dStateVariableResidualsdPreviousISVs();
+            dRdPreviousISVs.zero(numPlasticISVs * numISVs);
 
             // Stress Jacobians
-            unsigned int row0 = numPlasticMultipliers;
-            unsigned int offset = ( numConfigurations - 1 ) * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
-            std::vector< unsigned int > stateVariableIndices = *getStateVariableIndices( );
+            unsigned int row0   = numPlasticMultipliers;
+            unsigned int offset = (numConfigurations - 1) * (2 * numSecondOrderTensor + numThirdOrderTensor);
+            std::vector<unsigned int> stateVariableIndices = *getStateVariableIndices();
 
-            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
+            for (unsigned int i = 0; i < numPlasticStrainLikeISVs; i++) {
+                (*dRdPreviousISVs
+                      .value)[numISVs * (i + row0) + stateVariableIndices[i] + offset + numPlasticMultipliers] += 1;
 
-                ( *dRdPreviousISVs.value )[ numISVs * ( i + row0 ) + stateVariableIndices[ i ] + offset + numPlasticMultipliers ] += 1;
-
-                for ( auto j = stateVariableIndices.begin( ); j != stateVariableIndices.end( ); j++ ){
-
-                    ( *dRdPreviousISVs.value )[ numISVs * ( i + row0 ) + ( *j ) + offset ] += ( *dUpdatedPlasticStrainLikeISVsdStateVariables )[ numPlasticISVs * i + ( unsigned int )( j - stateVariableIndices.begin( ) ) ];
-
+                for (auto j = stateVariableIndices.begin(); j != stateVariableIndices.end(); j++) {
+                    (*dRdPreviousISVs.value)[numISVs * (i + row0) + (*j) + offset] +=
+                        (*dUpdatedPlasticStrainLikeISVsdStateVariables)[numPlasticISVs * i +
+                                                                        (unsigned int)(j -
+                                                                                       stateVariableIndices.begin())];
                 }
-
             }
-
         }
 
-        void residual::setResidual( ){
+        void residual::setResidual() {
             /*!
              * Set the residual equation
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
- 
-            const unsigned int tot_dim = hydra->getTOTDimension( ); 
+            auto sot_dim = hydra->getSOTDimension();
+
+            auto tot_dim = hydra->getTOTDimension();
 
             const secondOrderTensor *updatedPlasticDeformationGradient;
 
             const secondOrderTensor *updatedPlasticMicroDeformation;
 
-            const thirdOrderTensor  *updatedPlasticGradientMicroDeformation;
+            const thirdOrderTensor *updatedPlasticGradientMicroDeformation;
 
             const floatVector *stateVariableResiduals;
 
             // Get the trial plastic deformation measures
-            unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+            auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
-            const secondOrderTensor plasticDeformationGradient      = secondOrderTensor( hydra->get_configurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
-                                                                                         hydra->get_configurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
+            const secondOrderTensor plasticDeformationGradient =
+                secondOrderTensor(hydra->get_configurations()->begin() + sot_dim * plasticConfigurationIndex,
+                                  hydra->get_configurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
-            const secondOrderTensor plasticMicroDeformation         = secondOrderTensor( hydra->get_microConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
-                                                                                         hydra->get_microConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
+            const secondOrderTensor plasticMicroDeformation =
+                secondOrderTensor(hydra->get_microConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                                  hydra->get_microConfigurations()->begin() +
+                                      sot_dim * (plasticConfigurationIndex + 1));
 
-            const thirdOrderTensor plasticGradientMicroDeformation  = thirdOrderTensor( hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim * plasticConfigurationIndex,
-                                                                                        hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim * ( plasticConfigurationIndex + 1 ) );
+            const thirdOrderTensor plasticGradientMicroDeformation = thirdOrderTensor(
+                hydra->get_gradientMicroConfigurations()->begin() + tot_dim * plasticConfigurationIndex,
+                hydra->get_gradientMicroConfigurations()->begin() + tot_dim * (plasticConfigurationIndex + 1));
 
             // Get the updated plastic deformation measures
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                updatedPlasticDeformationGradient = get_updatedPlasticDeformationGradient( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(updatedPlasticDeformationGradient = get_updatedPlasticDeformationGradient();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                updatedPlasticMicroDeformation = get_updatedPlasticMicroDeformation( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(updatedPlasticMicroDeformation = get_updatedPlasticMicroDeformation();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                updatedPlasticGradientMicroDeformation = get_updatedPlasticGradientMicroDeformation( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(updatedPlasticGradientMicroDeformation =
+                                             get_updatedPlasticGradientMicroDeformation();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                stateVariableResiduals = get_stateVariableResiduals( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(stateVariableResiduals = get_stateVariableResiduals();)
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual();
 
-            *residual.value = tardigradeVectorTools::appendVectors( { *updatedPlasticDeformationGradient      - plasticDeformationGradient,
-                                                                      *updatedPlasticMicroDeformation         - plasticMicroDeformation,
-                                                                      *updatedPlasticGradientMicroDeformation - plasticGradientMicroDeformation,
-                                                                      *stateVariableResiduals } );
-
+            *residual.value = tardigradeVectorTools::appendVectors(
+                {*updatedPlasticDeformationGradient - plasticDeformationGradient,
+                 *updatedPlasticMicroDeformation - plasticMicroDeformation,
+                 *updatedPlasticGradientMicroDeformation - plasticGradientMicroDeformation, *stateVariableResiduals});
         }
 
-        void residual::setJacobian( ){
+        void residual::setJacobian() {
             /*!
              * Set the Jacobian
              */
 
-            const unsigned int numEquations = *getNumEquations( );
+            auto numEquations = getNumEquations();
 
-            const unsigned int numUnknowns  = hydra->getNumUnknowns( );
+            auto numUnknowns = hydra->getNumUnknowns();
 
-            const unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations();
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            const unsigned int numSecondOrderTensor = hydra->getSOTDimension();
 
-            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            const unsigned int numThirdOrderTensor = hydra->getTOTDimension();
 
-            const std::vector< unsigned int > stateVariableIndices = *getStateVariableIndices( );
+            const std::vector<unsigned int> stateVariableIndices = *getStateVariableIndices();
 
-            const unsigned int numISVs = stateVariableIndices.size( );
+            const unsigned int numISVs = stateVariableIndices.size();
 
             const fourthOrderTensor *dUpdatedPlasticDeformationGradientdMacroStress;
 
@@ -9410,194 +9565,183 @@ namespace tardigradeHydra{
 
             const floatVector *stateVariableJacobians;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticDeformationGradientdMacroStress = get_dUpdatedPlasticDeformationGradientdMacroStress( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticDeformationGradientdMacroStress =
+                                             get_dUpdatedPlasticDeformationGradientdMacroStress();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticDeformationGradientdMicroStress = get_dUpdatedPlasticDeformationGradientdMicroStress( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticDeformationGradientdMicroStress =
+                                             get_dUpdatedPlasticDeformationGradientdMicroStress();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticDeformationGradientdFn = get_dUpdatedPlasticDeformationGradientdFn( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticDeformationGradientdFn =
+                                             get_dUpdatedPlasticDeformationGradientdFn();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticDeformationGradientdStateVariables = get_dUpdatedPlasticDeformationGradientdStateVariables( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticDeformationGradientdStateVariables =
+                                             get_dUpdatedPlasticDeformationGradientdStateVariables();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticMicroDeformationdMicroStress = get_dUpdatedPlasticMicroDeformationdMicroStress( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticMicroDeformationdMicroStress =
+                                             get_dUpdatedPlasticMicroDeformationdMicroStress();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticMicroDeformationdFn = get_dUpdatedPlasticMicroDeformationdFn( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticMicroDeformationdFn = get_dUpdatedPlasticMicroDeformationdFn();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticMicroDeformationdChin = get_dUpdatedPlasticMicroDeformationdChin( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticMicroDeformationdChin =
+                                             get_dUpdatedPlasticMicroDeformationdChin();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticMicroDeformationdStateVariables = get_dUpdatedPlasticMicroDeformationdStateVariables( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticMicroDeformationdStateVariables =
+                                             get_dUpdatedPlasticMicroDeformationdStateVariables();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdMacroStress = get_dUpdatedPlasticGradientMicroDeformationdMacroStress( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdMacroStress =
+                                             get_dUpdatedPlasticGradientMicroDeformationdMacroStress();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdMicroStress = get_dUpdatedPlasticGradientMicroDeformationdMicroStress( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdMicroStress =
+                                             get_dUpdatedPlasticGradientMicroDeformationdMicroStress();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdHigherOrderStress = get_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdHigherOrderStress =
+                                             get_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdFn = get_dUpdatedPlasticGradientMicroDeformationdFn( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdFn =
+                                             get_dUpdatedPlasticGradientMicroDeformationdFn();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdChin = get_dUpdatedPlasticGradientMicroDeformationdChin( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdChin =
+                                             get_dUpdatedPlasticGradientMicroDeformationdChin();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdGradChin = get_dUpdatedPlasticGradientMicroDeformationdGradChin( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdGradChin =
+                                             get_dUpdatedPlasticGradientMicroDeformationdGradChin();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdStateVariables = get_dUpdatedPlasticGradientMicroDeformationdStateVariables( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdStateVariables =
+                                             get_dUpdatedPlasticGradientMicroDeformationdStateVariables();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                stateVariableJacobians = get_stateVariableJacobians( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(stateVariableJacobians = get_stateVariableJacobians();)
 
-            auto jacobian = get_setDataStorage_jacobian( );
-            jacobian.zero( numEquations * numUnknowns );
+            auto jacobian = get_SetDataStorage_jacobian();
+            jacobian.zero(numEquations * numUnknowns);
 
             // Set the Jacobians of the second order plastic deformation measures
-            for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
-
+            for (unsigned int i = 0; i < numSecondOrderTensor; i++) {
                 // Jacobians with respect to the trial stresses
-                for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+                for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i) + j] +=
+                        (*dUpdatedPlasticDeformationGradientdMacroStress)[numSecondOrderTensor * i + j];
 
-                    ( *jacobian.value )[ numUnknowns * ( i                        ) + j                        ] += ( *dUpdatedPlasticDeformationGradientdMacroStress )[ numSecondOrderTensor * i + j ];
+                    (*jacobian.value)[numUnknowns * (i) + j + numSecondOrderTensor] +=
+                        (*dUpdatedPlasticDeformationGradientdMicroStress)[numSecondOrderTensor * i + j];
 
-                    ( *jacobian.value )[ numUnknowns * ( i                        ) + j + numSecondOrderTensor ] += ( *dUpdatedPlasticDeformationGradientdMicroStress )[ numSecondOrderTensor * i + j ];
-
-                    ( *jacobian.value )[ numUnknowns * ( i + numSecondOrderTensor ) + j + numSecondOrderTensor ] += ( *dUpdatedPlasticMicroDeformationdMicroStress )[ numSecondOrderTensor * i + j ];
-
+                    (*jacobian.value)[numUnknowns * (i + numSecondOrderTensor) + j + numSecondOrderTensor] +=
+                        (*dUpdatedPlasticMicroDeformationdMicroStress)[numSecondOrderTensor * i + j];
                 }
 
                 // Jacobians with respect to the trial sub-deformation gradients
-                ( *jacobian.value )[ numUnknowns * ( i                        ) + i + 2 * numSecondOrderTensor + numThirdOrderTensor ] -= 1;
+                (*jacobian.value)[numUnknowns * (i) + i + 2 * numSecondOrderTensor + numThirdOrderTensor] -= 1;
 
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i) + j + 2 * numSecondOrderTensor + numThirdOrderTensor] +=
+                        (*dUpdatedPlasticDeformationGradientdFn)[(numConfigurations - 1) * numSecondOrderTensor * i +
+                                                                 j];
 
-                    ( *jacobian.value )[ numUnknowns * ( i                        ) + j + 2 * numSecondOrderTensor + numThirdOrderTensor ] += ( *dUpdatedPlasticDeformationGradientdFn )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
-                    ( *jacobian.value )[ numUnknowns * ( i + numSecondOrderTensor ) + j + 2 * numSecondOrderTensor + numThirdOrderTensor ] += ( *dUpdatedPlasticMicroDeformationdFn )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
+                    (*jacobian.value)[numUnknowns * (i + numSecondOrderTensor) + j + 2 * numSecondOrderTensor +
+                                      numThirdOrderTensor] +=
+                        (*dUpdatedPlasticMicroDeformationdFn)[(numConfigurations - 1) * numSecondOrderTensor * i + j];
                 }
 
                 // Jacobians with respect to the trial sub-micro deformation
 
-                ( *jacobian.value )[ numUnknowns * ( i + numSecondOrderTensor ) + i + numConfigurationUnknowns + numSecondOrderTensor ] -= 1;
+                (*jacobian.value)[numUnknowns * (i + numSecondOrderTensor) + i + numConfigurationUnknowns +
+                                  numSecondOrderTensor] -= 1;
 
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + numSecondOrderTensor ) + j + numConfigurationUnknowns + numSecondOrderTensor ] += ( *dUpdatedPlasticMicroDeformationdChin )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + numSecondOrderTensor) + j + numConfigurationUnknowns +
+                                      numSecondOrderTensor] +=
+                        (*dUpdatedPlasticMicroDeformationdChin)[(numConfigurations - 1) * numSecondOrderTensor * i + j];
                 }
 
                 // Jacobians with respect to the state variables
-                for ( auto j = stateVariableIndices.begin( ); j != stateVariableIndices.end( ); j++ ){
+                for (auto j = stateVariableIndices.begin(); j != stateVariableIndices.end(); j++) {
+                    unsigned int col = (unsigned int)(j - stateVariableIndices.begin());
 
-                    unsigned int col = ( unsigned int )( j - stateVariableIndices.begin( ) );
+                    (*jacobian.value)[numUnknowns * (i) + *j + numConfigurations * numConfigurationUnknowns] +=
+                        (*dUpdatedPlasticDeformationGradientdStateVariables)[numISVs * i + col];
 
-                    ( *jacobian.value )[ numUnknowns * ( i                        ) + *j + numConfigurations * numConfigurationUnknowns ] += ( *dUpdatedPlasticDeformationGradientdStateVariables )[ numISVs * i + col ];
-
-                    ( *jacobian.value )[ numUnknowns * ( i + numSecondOrderTensor ) + *j + numConfigurations * numConfigurationUnknowns ] += ( *dUpdatedPlasticMicroDeformationdStateVariables )[ numISVs * i + col ];
-
+                    (*jacobian.value)[numUnknowns * (i + numSecondOrderTensor) + *j +
+                                      numConfigurations * numConfigurationUnknowns] +=
+                        (*dUpdatedPlasticMicroDeformationdStateVariables)[numISVs * i + col];
                 }
-
             }
 
             // Set the Jacobians of the third order plastic deformation measures
-            for ( unsigned int i = 0; i < numThirdOrderTensor; i++ ){
-
+            for (unsigned int i = 0; i < numThirdOrderTensor; i++) {
                 // Set the Jacobians with respect to the trial stresses
-                for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+                for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2 * numSecondOrderTensor) + j] =
+                        (*dUpdatedPlasticGradientMicroDeformationdMacroStress)[numSecondOrderTensor * i + j];
 
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 * numSecondOrderTensor ) + j                        ] = ( *dUpdatedPlasticGradientMicroDeformationdMacroStress )[ numSecondOrderTensor * i + j ];
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 * numSecondOrderTensor ) + j + numSecondOrderTensor ] = ( *dUpdatedPlasticGradientMicroDeformationdMicroStress )[ numSecondOrderTensor * i + j ];
-
+                    (*jacobian.value)[numUnknowns * (i + 2 * numSecondOrderTensor) + j + numSecondOrderTensor] =
+                        (*dUpdatedPlasticGradientMicroDeformationdMicroStress)[numSecondOrderTensor * i + j];
                 }
 
-                for ( unsigned int j = 0; j < numThirdOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 * numSecondOrderTensor ) + j + 2 * numSecondOrderTensor ] = ( *dUpdatedPlasticGradientMicroDeformationdHigherOrderStress )[ numThirdOrderTensor * i + j ];
-
+                for (unsigned int j = 0; j < numThirdOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2 * numSecondOrderTensor) + j + 2 * numSecondOrderTensor] =
+                        (*dUpdatedPlasticGradientMicroDeformationdHigherOrderStress)[numThirdOrderTensor * i + j];
                 }
 
                 // Set the Jacobians with respect to the trial sub-deformation gradients
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 * numSecondOrderTensor ) + j + 2 * numSecondOrderTensor + numThirdOrderTensor ] += ( *dUpdatedPlasticGradientMicroDeformationdFn )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2 * numSecondOrderTensor) + j + 2 * numSecondOrderTensor +
+                                      numThirdOrderTensor] +=
+                        (*dUpdatedPlasticGradientMicroDeformationdFn)[(numConfigurations - 1) * numSecondOrderTensor *
+                                                                          i +
+                                                                      j];
                 }
 
                 // Set the Jacobians with respect to the trial sub-micro deformations
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 * numSecondOrderTensor ) + j + numConfigurationUnknowns + numSecondOrderTensor ] += ( *dUpdatedPlasticGradientMicroDeformationdChin )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2 * numSecondOrderTensor) + j + numConfigurationUnknowns +
+                                      numSecondOrderTensor] +=
+                        (*dUpdatedPlasticGradientMicroDeformationdChin)[(numConfigurations - 1) * numSecondOrderTensor *
+                                                                            i +
+                                                                        j];
                 }
 
                 // Set the jacobians with respect to the local spatial gradients of the sub-micro deformation
-                ( *jacobian.value )[ numUnknowns * ( i + 2 * numSecondOrderTensor ) + i + numConfigurationUnknowns + 2 * numSecondOrderTensor ] -= 1;
+                (*jacobian.value)[numUnknowns * (i + 2 * numSecondOrderTensor) + i + numConfigurationUnknowns +
+                                  2 * numSecondOrderTensor] -= 1;
 
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numThirdOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 * numSecondOrderTensor ) + j + numConfigurationUnknowns + 2 * numSecondOrderTensor ] += ( *dUpdatedPlasticGradientMicroDeformationdGradChin )[ ( numConfigurations - 1 ) * numThirdOrderTensor * i + j ];
-
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numThirdOrderTensor; j++) {
+                    (*jacobian.value)[numUnknowns * (i + 2 * numSecondOrderTensor) + j + numConfigurationUnknowns +
+                                      2 * numSecondOrderTensor] +=
+                        (*dUpdatedPlasticGradientMicroDeformationdGradChin)[(numConfigurations - 1) *
+                                                                                numThirdOrderTensor * i +
+                                                                            j];
                 }
 
                 // Jacobians with respect to the state variables
-                for ( auto j = stateVariableIndices.begin( ); j != stateVariableIndices.end( ); j++ ){
+                for (auto j = stateVariableIndices.begin(); j != stateVariableIndices.end(); j++) {
+                    unsigned int col = (unsigned int)(j - stateVariableIndices.begin());
 
-                    unsigned int col = ( unsigned int )( j - stateVariableIndices.begin( ) );
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 * numSecondOrderTensor ) + *j + numConfigurations * numConfigurationUnknowns ] += ( *dUpdatedPlasticGradientMicroDeformationdStateVariables )[ numISVs * i + col ];
-
+                    (*jacobian.value)[numUnknowns * (i + 2 * numSecondOrderTensor) + *j +
+                                      numConfigurations * numConfigurationUnknowns] +=
+                        (*dUpdatedPlasticGradientMicroDeformationdStateVariables)[numISVs * i + col];
                 }
-
             }
 
             // Set the Jacobians of the state variables
-            std::copy( stateVariableJacobians->begin( ), stateVariableJacobians->end( ), std::begin( *jacobian.value ) + numUnknowns * numConfigurationUnknowns );
-
+            std::copy(stateVariableJacobians->begin(), stateVariableJacobians->end(),
+                      std::begin(*jacobian.value) + numUnknowns * numConfigurationUnknowns);
         }
 
-        void residual::setdRdD( ){
+        void residual::setdRdD() {
             /*!
              * Set the derivative of the residual w.r.t. the deformation
              */
 
-            const unsigned int numEquations = *getNumEquations( );
+            auto numEquations = getNumEquations();
 
-            const unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations();
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            const unsigned int numSecondOrderTensor = hydra->getSOTDimension();
 
-            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            const unsigned int numThirdOrderTensor = hydra->getTOTDimension();
 
-            const std::vector< unsigned int > stateVariableIndices = *getStateVariableIndices( );
+            const std::vector<unsigned int> stateVariableIndices = *getStateVariableIndices();
 
             const fourthOrderTensor *dUpdatedPlasticDeformationGradientdF;
 
@@ -9613,101 +9757,84 @@ namespace tardigradeHydra{
 
             const floatVector *dStateVariableResidualsdD;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticDeformationGradientdF = get_dUpdatedPlasticDeformationGradientdF( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticDeformationGradientdF =
+                                             get_dUpdatedPlasticDeformationGradientdF();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticMicroDeformationdF = get_dUpdatedPlasticMicroDeformationdF( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticMicroDeformationdF = get_dUpdatedPlasticMicroDeformationdF();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticMicroDeformationdChi = get_dUpdatedPlasticMicroDeformationdChi( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticMicroDeformationdChi =
+                                             get_dUpdatedPlasticMicroDeformationdChi();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdF = get_dUpdatedPlasticGradientMicroDeformationdF( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdF =
+                                             get_dUpdatedPlasticGradientMicroDeformationdF();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdChi = get_dUpdatedPlasticGradientMicroDeformationdChi( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdChi =
+                                             get_dUpdatedPlasticGradientMicroDeformationdChi();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dUpdatedPlasticGradientMicroDeformationdGradChi = get_dUpdatedPlasticGradientMicroDeformationdGradChi( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dUpdatedPlasticGradientMicroDeformationdGradChi =
+                                             get_dUpdatedPlasticGradientMicroDeformationdGradChi();)
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                dStateVariableResidualsdD = get_dStateVariableResidualsdD( );
-            )
+            TARDIGRADE_ERROR_TOOLS_CATCH(dStateVariableResidualsdD = get_dStateVariableResidualsdD();)
 
-            auto dRdD = get_setDataStorage_dRdD( );
-            dRdD.zero( numEquations * numConfigurationUnknowns );
+            auto dRdD = get_SetDataStorage_dRdD();
+            dRdD.zero(numEquations * numConfigurationUnknowns);
 
             // Set the Jacobians of the second order plastic deformation measures
-            for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
-
+            for (unsigned int i = 0; i < numSecondOrderTensor; i++) {
                 // Jacobians with respect to the trial sub-deformation gradients
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*dRdD.value)[numConfigurationUnknowns * (i) + j] +=
+                        (*dUpdatedPlasticDeformationGradientdF)[numSecondOrderTensor * i + j];
 
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i                        ) + j ] += ( *dUpdatedPlasticDeformationGradientdF )[ numSecondOrderTensor * i + j ];
-
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + numSecondOrderTensor ) + j ] += ( *dUpdatedPlasticMicroDeformationdF )[ numSecondOrderTensor * i + j ];
-
+                    (*dRdD.value)[numConfigurationUnknowns * (i + numSecondOrderTensor) + j] +=
+                        (*dUpdatedPlasticMicroDeformationdF)[numSecondOrderTensor * i + j];
                 }
 
                 // Jacobians with respect to the trial sub-micro deformation
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + numSecondOrderTensor ) + j + numSecondOrderTensor ] += ( *dUpdatedPlasticMicroDeformationdChi )[ numSecondOrderTensor * i + j ];
- 
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*dRdD.value)[numConfigurationUnknowns * (i + numSecondOrderTensor) + j + numSecondOrderTensor] +=
+                        (*dUpdatedPlasticMicroDeformationdChi)[numSecondOrderTensor * i + j];
                 }
-
             }
 
             // Set the Jacobians of the third order plastic deformation measures
-            for ( unsigned int i = 0; i < numThirdOrderTensor; i++ ){
-
+            for (unsigned int i = 0; i < numThirdOrderTensor; i++) {
                 // Set the Jacobians with respect to the trial sub-deformation gradients
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 * numSecondOrderTensor ) + j ] += ( *dUpdatedPlasticGradientMicroDeformationdF )[ numSecondOrderTensor * i + j ];
-
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*dRdD.value)[numConfigurationUnknowns * (i + 2 * numSecondOrderTensor) + j] +=
+                        (*dUpdatedPlasticGradientMicroDeformationdF)[numSecondOrderTensor * i + j];
                 }
 
                 // Set the Jacobians with respect to the trial sub-micro deformations
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 * numSecondOrderTensor ) + j + numSecondOrderTensor ] += ( *dUpdatedPlasticGradientMicroDeformationdChi )[ numSecondOrderTensor * i + j ];
-
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                    (*dRdD.value)[numConfigurationUnknowns * (i + 2 * numSecondOrderTensor) + j +
+                                  numSecondOrderTensor] +=
+                        (*dUpdatedPlasticGradientMicroDeformationdChi)[numSecondOrderTensor * i + j];
                 }
 
                 // Set the jacobians with respect to the local spatial gradients of the sub-micro deformation
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numThirdOrderTensor; j++ ){
-
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 * numSecondOrderTensor ) + j + 2 * numSecondOrderTensor ] += ( *dUpdatedPlasticGradientMicroDeformationdGradChi )[ numThirdOrderTensor * i + j ];
-
+                for (unsigned int j = 0; j < (numConfigurations - 1) * numThirdOrderTensor; j++) {
+                    (*dRdD.value)[numConfigurationUnknowns * (i + 2 * numSecondOrderTensor) + j +
+                                  2 * numSecondOrderTensor] +=
+                        (*dUpdatedPlasticGradientMicroDeformationdGradChi)[numThirdOrderTensor * i + j];
                 }
-
             }
 
             // Set the Jacobians of the state variables
-            std::copy( dStateVariableResidualsdD->begin( ), dStateVariableResidualsdD->end( ), std::begin( *dRdD.value ) + numConfigurationUnknowns * numConfigurationUnknowns );
-
+            std::copy(dStateVariableResidualsdD->begin(), dStateVariableResidualsdD->end(),
+                      std::begin(*dRdD.value) + numConfigurationUnknowns * numConfigurationUnknowns);
         }
 
-        void residual::setdRdT( ){
+        void residual::setdRdT() {
             /*!
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            auto dRdT = get_setDataStorage_dRdT( );
-            dRdT.zero( *getNumEquations( ) );
-
+            auto dRdT = get_SetDataStorage_dRdT();
+            dRdT.zero(getNumEquations());
         }
 
-        void residual::projectSuggestedX( std::vector< floatType > &trialX,
-                                          const std::vector< floatType > &Xp ){
+        void residual::projectSuggestedX(std::vector<floatType> &trialX, const std::vector<floatType> &Xp) {
             /*!
              * Project the suggested unknown vector to the allowable space
              *
@@ -9719,83 +9846,76 @@ namespace tardigradeHydra{
              * \param &Xp: The previously accepted value of X
              */
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension();
 
-            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            auto numThirdOrderTensor = hydra->getTOTDimension();
 
-            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+            auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
-            const unsigned int numConfigurations         = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations();
 
-            const unsigned int numConfigurationUnknowns  = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            const std::vector< unsigned int > *stateVariableIndices = getStateVariableIndices( );
+            const std::vector<unsigned int> *stateVariableIndices = getStateVariableIndices();
 
             const floatVector dx = trialX - Xp;
 
             const unsigned int plasticDeformationStart = numConfigurationUnknowns * plasticConfigurationIndex;
 
-            const unsigned int plasticDeformationStop  = numConfigurationUnknowns * ( plasticConfigurationIndex + 1 );
+            const unsigned int plasticDeformationStop = numConfigurationUnknowns * (plasticConfigurationIndex + 1);
 
-            floatVector deltaPlasticDeformations( dx.begin( ) + plasticDeformationStart,
-                                                  dx.begin( ) + plasticDeformationStop );
+            floatVector deltaPlasticDeformations(dx.begin() + plasticDeformationStart,
+                                                 dx.begin() + plasticDeformationStop);
 
             // Check the macro plastic deformation
-            floatType norm = tardigradeVectorTools::l2norm( secondOrderTensor( deltaPlasticDeformations.begin( ),
-                                                                               deltaPlasticDeformations.begin( ) + numSecondOrderTensor ) );
+            floatType norm = tardigradeVectorTools::l2norm(secondOrderTensor(deltaPlasticDeformations.begin(),
+                                                                             deltaPlasticDeformations.begin() +
+                                                                                 numSecondOrderTensor));
 
-            if ( norm > *getMaxMacroPlasticDeltaNorm( ) ){
-
-                for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
-
-                    trialX[ plasticDeformationStart + i ] = Xp[ i + plasticDeformationStart ] + dx[ i + plasticDeformationStart ] / norm;
-
+            if (norm > getMaxMacroPlasticDeltaNorm()) {
+                for (unsigned int i = 0; i < numSecondOrderTensor; i++) {
+                    trialX[plasticDeformationStart + i] =
+                        Xp[i + plasticDeformationStart] + dx[i + plasticDeformationStart] / norm;
                 }
-
             }
 
             // Check the micro plastic deformation
-            norm = tardigradeVectorTools::l2norm( secondOrderTensor( deltaPlasticDeformations.begin( ) + numSecondOrderTensor,
-                                                                     deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor ) );
+            norm =
+                tardigradeVectorTools::l2norm(secondOrderTensor(deltaPlasticDeformations.begin() + numSecondOrderTensor,
+                                                                deltaPlasticDeformations.begin() +
+                                                                    2 * numSecondOrderTensor));
 
-            if ( norm > *getMaxMicroPlasticDeltaNorm( ) ){
-
-                for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
-
-                    trialX[ plasticDeformationStart + i + numSecondOrderTensor ] = Xp[ plasticDeformationStart + i + numSecondOrderTensor ] + dx[ plasticDeformationStart + i + numSecondOrderTensor ] / norm;
-
+            if (norm > getMaxMicroPlasticDeltaNorm()) {
+                for (unsigned int i = 0; i < numSecondOrderTensor; i++) {
+                    trialX[plasticDeformationStart + i + numSecondOrderTensor] =
+                        Xp[plasticDeformationStart + i + numSecondOrderTensor] +
+                        dx[plasticDeformationStart + i + numSecondOrderTensor] / norm;
                 }
-
             }
 
             // Check the micro gradient plastic deformation
-            norm = tardigradeVectorTools::l2norm( thirdOrderTensor( deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor,
-                                                                    deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor + numThirdOrderTensor ) );
+            norm = tardigradeVectorTools::l2norm(
+                thirdOrderTensor(deltaPlasticDeformations.begin() + 2 * numSecondOrderTensor,
+                                 deltaPlasticDeformations.begin() + 2 * numSecondOrderTensor + numThirdOrderTensor));
 
-            if ( norm > *getMaxMicroGradientPlasticDeltaNorm( ) ){
-
-                for ( unsigned int i = 0; i < numThirdOrderTensor; i++ ){
-
-                    trialX[ plasticDeformationStart + i + 2 * numSecondOrderTensor ] = Xp[ plasticDeformationStart + i + 2 * numSecondOrderTensor ] + dx[ plasticDeformationStart + i + 2 * numSecondOrderTensor ] / norm;
-
+            if (norm > getMaxMicroGradientPlasticDeltaNorm()) {
+                for (unsigned int i = 0; i < numThirdOrderTensor; i++) {
+                    trialX[plasticDeformationStart + i + 2 * numSecondOrderTensor] =
+                        Xp[plasticDeformationStart + i + 2 * numSecondOrderTensor] +
+                        dx[plasticDeformationStart + i + 2 * numSecondOrderTensor] / norm;
                 }
-
             }
 
             // Check the plastic multipliers and state variables to ensure positive values
-            for ( auto v = stateVariableIndices->begin( ); v != stateVariableIndices->end( ); v++ ){
-
-                if ( trialX[ numConfigurations * numConfigurationUnknowns + ( *v ) ] < 0 ){
-
-                    trialX[ numConfigurations * numConfigurationUnknowns + ( *v ) ] = 0;
-
+            for (auto v = stateVariableIndices->begin(); v != stateVariableIndices->end(); v++) {
+                if (trialX[numConfigurations * numConfigurationUnknowns + (*v)] < 0) {
+                    trialX[numConfigurations * numConfigurationUnknowns + (*v)] = 0;
                 }
-
             }
-
         }
 
-        double residual::smoothLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf ){
+        double residual::smoothLinearCohesion(const floatType &Z, const floatType &A, const floatType &c0,
+                                              const floatType &rc, const floatType &cf) {
             /*!
              * Soften a linear cohesion function with an exponential function
              *
@@ -9810,35 +9930,30 @@ namespace tardigradeHydra{
 
             floatType a = rc * c0 - c;
 
-            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( c ) + ( *hydra->getAbsoluteTolerance( ) );
+            floatType tol = hydra->getRelativeTolerance() * std::fabs(c) + hydra->getAbsoluteTolerance();
 
             floatType b;
-            if ( a < tol ){
+            if (a < tol) {
                 a = 0;
                 b = 0;
-            }
-            else{
+            } else {
                 b = A / a;
             }
 
-            floatType Z0 = c0 * ( rc - 1 ) / A;
+            floatType Z0 = c0 * (rc - 1) / A;
 
-            if ( Z < 0 ){
-
+            if (Z < 0) {
                 return c0;
 
-            }
-            else if ( ( A < 0 ) && ( Z > Z0 ) ){
-
-                return a * std::exp( b * ( Z - Z0 ) ) + c;
-
+            } else if ((A < 0) && (Z > Z0)) {
+                return a * std::exp(b * (Z - Z0)) + c;
             }
 
             return c0 + A * Z;
-
         }
 
-        double residual::smoothLinearCohesionDerivative( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf ){
+        double residual::smoothLinearCohesionDerivative(const floatType &Z, const floatType &A, const floatType &c0,
+                                                        const floatType &rc, const floatType &cf) {
             /*!
              * Compute the derivative of a smoothed linear cohesion function with an exponential function
              *
@@ -9853,179 +9968,170 @@ namespace tardigradeHydra{
 
             floatType a = rc * c0 - c;
 
-            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( c ) + ( *hydra->getAbsoluteTolerance( ) );
+            floatType tol = hydra->getRelativeTolerance() * std::fabs(c) + hydra->getAbsoluteTolerance();
 
             floatType b;
-            if ( a < tol ){
+            if (a < tol) {
                 a = 0;
                 b = 0;
-            }
-            else{
+            } else {
                 b = A / a;
             }
 
-            floatType Z0 = c0 * ( rc - 1 ) / A;
+            floatType Z0 = c0 * (rc - 1) / A;
 
-            if ( Z < 0 ){
-
+            if (Z < 0) {
                 return 0;
 
-            }
-            else if ( ( A < 0 ) && ( Z > Z0 ) ){
-
-                return a * b * std::exp( b * ( Z - Z0 ) );
-
+            } else if ((A < 0) && (Z > Z0)) {
+                return a * b * std::exp(b * (Z - Z0));
             }
 
             return A;
-
         }
 
-        bool residual::checkRelaxedConvergence( ){
+        bool residual::checkRelaxedConvergence() {
             /*!
              * Check if the relaxation is converged
              */
 
-            constexpr unsigned int dim = 3;
-            bool isConverged = true;
+            constexpr unsigned int dim         = 3;
+            bool                   isConverged = true;
 
-            floatType baseMacroCohesion, baseMicroCohesion;
+            floatType   baseMacroCohesion, baseMicroCohesion;
             floatVector baseMicroGradientCohesion;
 
-            computeBaseCohesion( baseMacroCohesion, baseMicroCohesion, baseMicroGradientCohesion ); 
+            computeBaseCohesion(baseMacroCohesion, baseMicroCohesion, baseMicroGradientCohesion);
 
-            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMacroCohesion ) + ( *hydra->getAbsoluteTolerance( ) );
+            floatType tol =
+                hydra->getRelativeTolerance() * std::fabs(baseMacroCohesion) + hydra->getAbsoluteTolerance();
 
-            isConverged = ( isConverged ) && ( std::fabs( baseMacroCohesion - *get_macroCohesion( ) ) <= tol );
+            isConverged = (isConverged) && (std::fabs(baseMacroCohesion - *get_macroCohesion()) <= tol);
 
-            tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMicroCohesion ) + ( *hydra->getAbsoluteTolerance( ) );
+            tol = hydra->getRelativeTolerance() * std::fabs(baseMicroCohesion) + hydra->getAbsoluteTolerance();
 
-            isConverged = ( isConverged ) && ( std::fabs( baseMicroCohesion - *get_microCohesion( ) ) <= tol );
+            isConverged = (isConverged) && (std::fabs(baseMicroCohesion - *get_microCohesion()) <= tol);
 
-            for ( unsigned int i = 0; i < dim; i++ ){
+            for (unsigned int i = 0; i < dim; i++) {
+                tol = hydra->getRelativeTolerance() * std::fabs(baseMicroGradientCohesion[i]) +
+                      hydra->getAbsoluteTolerance();
 
-                tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMicroGradientCohesion[ i ] ) + ( *hydra->getAbsoluteTolerance( ) );
-
-                isConverged = ( isConverged ) && ( std::fabs( baseMicroGradientCohesion[ i ] - ( *get_microGradientCohesion( ) )[ i ] ) <= tol );
-
+                isConverged = (isConverged) &&
+                              (std::fabs(baseMicroGradientCohesion[i] - (*get_microGradientCohesion())[i]) <= tol);
             }
 
-            if ( isConverged ){
+            if (isConverged) {
+                setMacroSmoothingRatio(getBaseMacroSmoothingRatio());
 
-                setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
+                setMicroSmoothingRatio(getBaseMicroSmoothingRatio());
 
-                setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
+                setMicroGradientSmoothingRatio(getBaseMicroGradientSmoothingRatio());
 
-                setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+                setMacroC0((*get_macroHardeningParameters())[0]);
 
-                setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
+                setMicroC0((*get_microHardeningParameters())[0]);
 
-                setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
+                setMicroGradientC0(floatVector(3, (*get_microGradientHardeningParameters())[0]));
 
-                setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
+                setMacroA((*get_macroHardeningParameters())[1]);
 
-                setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
+                setMicroA((*get_microHardeningParameters())[1]);
 
-                setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
-
-                setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
-
+                setMicroGradientA(floatVector(3, (*get_microGradientHardeningParameters())[1]));
             }
 
             return isConverged;
-
         }
 
-        void residual::setupRelaxedStep( const unsigned int &relaxedStep ){
+        void residual::setupRelaxedStep(const unsigned int &relaxedStep) {
             /*!
              * Setup a relaxed step. It's assumed that the reason why it's failing is because of the hardening function.
-             * 
+             *
              * \param &relaxedStep: The current relaxed step
              */
 
             constexpr unsigned int dim = 3;
 
             // Save the base smoothing ratios
-            if ( relaxedStep == 0 ){
+            if (relaxedStep == 0) {
+                setMacroSmoothingRatio(getBaseMacroSmoothingRatio());
 
-                setMacroSmoothingRatio(                 *getBaseMacroSmoothingRatio( ) );
+                setMicroSmoothingRatio(getBaseMicroSmoothingRatio());
 
-                setMicroSmoothingRatio(                 *getBaseMicroSmoothingRatio( ) );
-
-                setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
-
+                setMicroGradientSmoothingRatio(getBaseMicroGradientSmoothingRatio());
             }
 
             // Update the smoothing parameters
-            floatType trial_r;
-            std::array< floatType, 5 > trial_rs;
+            floatType                trial_r;
+            std::array<floatType, 5> trial_rs;
 
-            trial_r = ( *get_macroCohesion( ) ) / ( *get_macroHardeningParameters( ) )[ 0 ];
+            trial_r = (*get_macroCohesion()) / (*get_macroHardeningParameters())[0];
 
-            setMacroSmoothingRatio( std::fmax( std::fmax( trial_r, ( *getMinMacroCohesion( ) ) / ( *get_macroHardeningParameters( ) )[ 0 ] ), *getBaseMacroSmoothingRatio( ) ) );
-            trial_rs[ 0 ] = *getMacroSmoothingRatio( );
+            setMacroSmoothingRatio(std::fmax(std::fmax(trial_r,
+                                                       getMinMacroCohesion() / (*get_macroHardeningParameters())[0]),
+                                             getBaseMacroSmoothingRatio()));
+            trial_rs[0] = getMacroSmoothingRatio();
 
-            trial_r = ( *get_microCohesion( ) ) / ( *get_microHardeningParameters( ) )[ 0 ];
+            trial_r = (*get_microCohesion()) / (*get_microHardeningParameters())[0];
 
-            setMicroSmoothingRatio( std::fmax( std::fmax( trial_r, ( *getMinMicroCohesion( ) ) / ( *get_microHardeningParameters( ) )[ 0 ] ), *getBaseMicroSmoothingRatio( ) ) );
-            trial_rs[ 1 ] = *getMicroSmoothingRatio( );
+            setMicroSmoothingRatio(std::fmax(std::fmax(trial_r,
+                                                       getMinMicroCohesion() / (*get_microHardeningParameters())[0]),
+                                             getBaseMicroSmoothingRatio()));
+            trial_rs[1] = getMicroSmoothingRatio();
 
-            floatVector microGradientSmoothingRatio( dim, ( *getMinMicroGradientCohesion( ) ) );
-            for ( unsigned int i = 0; i < dim; i++ ){
+            floatVector microGradientSmoothingRatio(dim, getMinMicroGradientCohesion());
+            for (unsigned int i = 0; i < dim; i++) {
+                trial_r = (*get_microGradientCohesion())[i] / (*get_microGradientHardeningParameters())[0];
 
-                trial_r = ( *get_microGradientCohesion( ) )[ i ] / ( *get_microGradientHardeningParameters( ) )[ 0 ];
-
-                microGradientSmoothingRatio[ i ] = std::fmax( std::fmax( trial_r, ( *getMinMicroGradientCohesion( ) ) / ( *get_microGradientHardeningParameters( ) )[ 0 ] ), ( *getBaseMicroGradientSmoothingRatio( ) )[ i ] );
-                trial_rs[ i + 2 ] = microGradientSmoothingRatio[ i ];
-
+                microGradientSmoothingRatio[i] =
+                    std::fmax(std::fmax(trial_r,
+                                        getMinMicroGradientCohesion() / (*get_microGradientHardeningParameters())[0]),
+                              getBaseMicroGradientSmoothingRatio()[i]);
+                trial_rs[i + 2] = microGradientSmoothingRatio[i];
             }
 
-            setMicroGradientSmoothingRatio( microGradientSmoothingRatio );
+            setMicroGradientSmoothingRatio(microGradientSmoothingRatio);
 
-            // If it's the first relaxed step and all of the trial ratios are close to 1 try setting the minimum cohesion for each to the current cohesion level (perfect plasticity)
-            if ( relaxedStep == 0 ){
-
+            // If it's the first relaxed step and all of the trial ratios are close to 1 try setting the minimum
+            // cohesion for each to the current cohesion level (perfect plasticity)
+            if (relaxedStep == 0) {
                 bool all_one = true;
 
-                for ( auto v = std::begin( trial_rs ); v != std::end( trial_rs ); ++v ){
-
-                    if ( ( *v ) < 0.999 ){
-
+                for (auto v = std::begin(trial_rs); v != std::end(trial_rs); ++v) {
+                    if ((*v) < 0.999) {
                         all_one = false;
                         break;
-
                     }
-
                 }
 
-                if ( all_one ){
-                    setMacroC0( std::fmin( ( *get_macroCohesion( ) ), ( *get_macroHardeningParameters( ) )[ 0 ] ) );
-                    setMacroA( std::fmax( 0, ( *get_macroHardeningParameters( ) )[ 1 ] ) );
-                    setMicroC0( std::fmin( ( *get_microCohesion( ) ), ( *get_microHardeningParameters( ) )[ 0 ] ) );
-                    setMicroA( std::fmax( 0, ( *get_microHardeningParameters( ) )[ 1 ] ) );
-                    floatVector microGradientC0( 3, 0 );
-                    floatVector microGradientA( 3, 0 );
-                    for ( unsigned int i = 0; i < dim; ++i ){
-                        microGradientC0[ i ] = std::fmin( ( *get_microGradientCohesion( ) )[ i ], ( *get_microGradientHardeningParameters( ) )[ 0 ] );
-                        microGradientA[ i ] =  std::fmax( 0, ( *get_microGradientHardeningParameters( ) )[ 1 ] );
+                if (all_one) {
+                    setMacroC0(std::fmin((*get_macroCohesion()), (*get_macroHardeningParameters())[0]));
+                    setMacroA(std::fmax(0, (*get_macroHardeningParameters())[1]));
+                    setMicroC0(std::fmin((*get_microCohesion()), (*get_microHardeningParameters())[0]));
+                    setMicroA(std::fmax(0, (*get_microHardeningParameters())[1]));
+                    floatVector microGradientC0(3, 0);
+                    floatVector microGradientA(3, 0);
+                    for (unsigned int i = 0; i < dim; ++i) {
+                        microGradientC0[i] =
+                            std::fmin((*get_microGradientCohesion())[i], (*get_microGradientHardeningParameters())[0]);
+                        microGradientA[i] = std::fmax(0, (*get_microGradientHardeningParameters())[1]);
                     }
-                    setMicroGradientC0( microGradientC0 );
-                    setMicroGradientA( microGradientA );
+                    setMicroGradientC0(microGradientC0);
+                    setMicroGradientA(microGradientA);
                 }
 
+            } else {
+                setMacroC0((*get_macroHardeningParameters())[0]);
+                setMicroC0((*get_microHardeningParameters())[0]);
+                setMicroGradientC0(floatVector(3, (*get_microGradientHardeningParameters())[0]));
+                setMacroA((*get_macroHardeningParameters())[1]);
+                setMicroA((*get_microHardeningParameters())[1]);
+                setMicroGradientA(floatVector(3, (*get_microGradientHardeningParameters())[1]));
             }
-            else{
-                setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
-                setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
-                setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
-                setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
-                setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
-                setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
-            }
-
         }
 
-        void residual::computeBaseCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion ){
+        void residual::computeBaseCohesion(floatType &macroCohesion, floatType &microCohesion,
+                                           floatVector &microGradientCohesion) {
             /*!
              * Compute the base cohesions
              *
@@ -10034,11 +10140,12 @@ namespace tardigradeHydra{
              * \param &microGradientCohesion: The micro-gradient cohesion
              */
 
-            computeCohesion( macroCohesion, microCohesion, microGradientCohesion, *getBaseMacroSmoothingRatio( ), *getBaseMicroSmoothingRatio( ), *getBaseMicroGradientSmoothingRatio( ) );
-
+            computeCohesion(macroCohesion, microCohesion, microGradientCohesion, getBaseMacroSmoothingRatio(),
+                            getBaseMicroSmoothingRatio(), getBaseMicroGradientSmoothingRatio());
         }
 
-        void residual::computeCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion ){
+        void residual::computeCohesion(floatType &macroCohesion, floatType &microCohesion,
+                                       floatVector &microGradientCohesion) {
             /*!
              * Compute the base cohesions
              *
@@ -10047,12 +10154,14 @@ namespace tardigradeHydra{
              * \param &microGradientCohesion: The micro-gradient cohesion
              */
 
-            computeCohesion( macroCohesion, microCohesion, microGradientCohesion, *getMacroSmoothingRatio( ), *getMicroSmoothingRatio( ), *getMicroGradientSmoothingRatio( ) );
-
+            computeCohesion(macroCohesion, microCohesion, microGradientCohesion, getMacroSmoothingRatio(),
+                            getMicroSmoothingRatio(), getMicroGradientSmoothingRatio());
         }
 
-        void residual::computeCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion,
-                                        const floatType &macroSmoothingRatio, const floatType &microSmoothingRatio, const floatVector &microGradientSmoothingRatio ){
+        void residual::computeCohesion(floatType &macroCohesion, floatType &microCohesion,
+                                       floatVector &microGradientCohesion, const floatType &macroSmoothingRatio,
+                                       const floatType   &microSmoothingRatio,
+                                       const floatVector &microGradientSmoothingRatio) {
             /*!
              * Compute the base cohesions
              *
@@ -10066,74 +10175,76 @@ namespace tardigradeHydra{
 
             constexpr unsigned int dim = 3;
 
-            macroCohesion = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], macroSmoothingRatio, *getMinMacroCohesion( ) );
+            macroCohesion =
+                smoothLinearCohesion((*get_plasticStrainLikeISVs())[0], (*get_macroHardeningParameters())[1],
+                                     (*get_macroHardeningParameters())[0], macroSmoothingRatio, getMinMacroCohesion());
 
-            microCohesion = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], microSmoothingRatio, *getMinMicroCohesion( ) );
-                
-            microGradientCohesion = dimVector( dim, 0 );
+            microCohesion =
+                smoothLinearCohesion((*get_plasticStrainLikeISVs())[1], (*get_microHardeningParameters())[1],
+                                     (*get_microHardeningParameters())[0], microSmoothingRatio, getMinMicroCohesion());
 
-            for ( unsigned int i = 0; i < dim; i++ ){
+            microGradientCohesion = dimVector(dim, 0);
 
-                microGradientCohesion[ i ] = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ i + 2 ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
-                                                                   ( *get_microGradientHardeningParameters( ) )[ 0 ], microGradientSmoothingRatio[ i ], *getMinMicroGradientCohesion( ) );
-
+            for (unsigned int i = 0; i < dim; i++) {
+                microGradientCohesion[i] =
+                    smoothLinearCohesion((*get_plasticStrainLikeISVs())[i + 2],
+                                         (*get_microGradientHardeningParameters())[1],
+                                         (*get_microGradientHardeningParameters())[0], microGradientSmoothingRatio[i],
+                                         getMinMicroGradientCohesion());
             }
-
         }
 
-        void residual::preSubcycler( ){
+        void residual::preSubcycler() {
             /*!
              * Function that gets called prior to the subcycler
              */
 
-            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
-            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
-            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+            setMacroSmoothingRatio(getBaseMacroSmoothingRatio());
+            setMicroSmoothingRatio(getBaseMicroSmoothingRatio());
+            setMicroGradientSmoothingRatio(getBaseMicroGradientSmoothingRatio());
 
-            setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
-            setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
-            setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
-            setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
-            setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
-            setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
+            setMacroC0((*get_macroHardeningParameters())[0]);
+            setMicroC0((*get_microHardeningParameters())[0]);
+            setMicroGradientC0(floatVector(3, (*get_microGradientHardeningParameters())[0]));
+            setMacroA((*get_macroHardeningParameters())[1]);
+            setMicroA((*get_microHardeningParameters())[1]);
+            setMicroGradientA(floatVector(3, (*get_microGradientHardeningParameters())[1]));
         }
 
-        void residual::postSubcyclerSuccess( ){
+        void residual::postSubcyclerSuccess() {
             /*!
              * Function that gets called when the subcycler succeeds
              */
 
-            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
-            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
-            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+            setMacroSmoothingRatio(getBaseMacroSmoothingRatio());
+            setMicroSmoothingRatio(getBaseMicroSmoothingRatio());
+            setMicroGradientSmoothingRatio(getBaseMicroGradientSmoothingRatio());
 
-            setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
-            setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
-            setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
-            setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
-            setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
-            setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
-
+            setMacroC0((*get_macroHardeningParameters())[0]);
+            setMicroC0((*get_microHardeningParameters())[0]);
+            setMicroGradientC0(floatVector(3, (*get_microGradientHardeningParameters())[0]));
+            setMacroA((*get_macroHardeningParameters())[1]);
+            setMicroA((*get_microHardeningParameters())[1]);
+            setMicroGradientA(floatVector(3, (*get_microGradientHardeningParameters())[1]));
         }
 
-        void residual::postSubcyclerFailure( ){
+        void residual::postSubcyclerFailure() {
             /*!
              * Function that gets called when the subcycler fails
              */
 
-            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
-            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
-            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+            setMacroSmoothingRatio(getBaseMacroSmoothingRatio());
+            setMicroSmoothingRatio(getBaseMicroSmoothingRatio());
+            setMicroGradientSmoothingRatio(getBaseMicroGradientSmoothingRatio());
 
-            setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
-            setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
-            setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
-            setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
-            setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
-            setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
-
+            setMacroC0((*get_macroHardeningParameters())[0]);
+            setMicroC0((*get_microHardeningParameters())[0]);
+            setMicroGradientC0(floatVector(3, (*get_microGradientHardeningParameters())[0]));
+            setMacroA((*get_macroHardeningParameters())[1]);
+            setMicroA((*get_microHardeningParameters())[1]);
+            setMicroGradientA(floatVector(3, (*get_microGradientHardeningParameters())[1]));
         }
 
-    }
+    }  // namespace micromorphicDruckerPragerPlasticity
 
-}
+}  // namespace tardigradeHydra

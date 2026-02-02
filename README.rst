@@ -18,6 +18,9 @@
 .. _upstream repository: https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra
 .. _Material Models: https://re-git.lanl.gov/aea/material-models
 .. _UNIX group: https://ddw-confluence.lanl.gov/pages/viewpage.action?pageId=150929410
+.. _`gersemi`: https://github.com/BlankSpruce/gersemi
+.. _`clang-tidy`: https://clang.llvm.org/extra/clang-tidy/
+.. _`clang-format`: https://clang.llvm.org/docs/ClangFormat.html
 
 .. targets-end-do-not-remove
 
@@ -87,7 +90,6 @@ during the Gitlab-CI ``conda-build`` job to limit the test phase to the as-insta
 The build type can be set with the ``-DCMAKE_BUILD_TYPE=<build type string>`` during project configuration. Both build
 types will require the upstream dependent libraries
 
-* ``abaqus_tools``: https://github.com/UCBoulder/tardigrade_abaqus_tools
 * ``error_tools``: https://github.com/UCBoulder/tardigrade_error_tools
 * ``vector_tools``: https://github.com/UCBoulder/tardigrade_vector_tools
 * ``constitutive_tools``: https://github.com/UCBoulder/tardigrade_constitutive_tools
@@ -154,7 +156,7 @@ Build on sstelmo
       $ cmake --build . --target all
 
       # Build the c++ primary libraries by target name(s)
-      $ cmake --build . --target tardigrade-hydra tardigrade-hydra_umat
+      $ cmake --build . --target tardigrade-hydra
 
       # Build the c++ primary libraries by sub-directory
       $ cmake --build src/cpp
@@ -174,21 +176,6 @@ Build on sstelmo
 
 6) Clean build directory to force a re-build
 
-       **HEALTH WARNING**
-
-       The abaqus input files and bash scripts used for integration testing are
-       built with the `CMake add_custom_target`_ feature. Consequently, the integration
-       test target is *always considered out of date*. The integration test target
-       copies all registered input files and the integration test bash script from
-       source to build directory. This means the file copy operation is always
-       performed when the integration test target is requested in the cmake build
-       command, e.g. ``cmake --build .`` or ``cmake --build src/abaqus/tests``. This
-       operation is computationally inexpensive with respect to building the
-       ``tardigrade-hydra`` source code.
-
-       Input files are registered in the ``src/abaqus/tests/CMakeLists.txt`` file
-       under the ``ABAQUS_INPUT_FILES`` CMake variable.
-
    .. code-block:: bash
 
       $ pwd
@@ -206,12 +193,11 @@ Test on sstelmo
       $ pwd
       /path/to/tardigrade-hydra/build
 
-      # Build c++ and abaqus tests by target name(s)
-      $ cmake --build . --target test_tardigrade-hydra test_abaqus_integration
+      # Build c++ tests by target name(s)
+      $ cmake --build . --target test_tardigrade-hydra
 
-      # Build c++ and abaqus tests by sub-directories
+      # Build c++ tests by sub-directories
       $ cmake --build src/cpp/tests
-      $ cmake --build src/abaqus/tests
 
 5) Run the tests
 
@@ -357,46 +343,58 @@ styles in this `Sphinx style guide
 Style Guide
 ===========
 
-This project does not yet have a full style guide. Generally, wherever a style
-can't be inferred from surrounding code this project falls back to `PEP-8`_-like
-styles. There are two notable exceptions to the notional PEP-8 fall back:
+This project uses the `gersemi`_ CMake linter. The CI style guide check runs the following command
+
+.. code-block:
+
+   $ gersemi CMakeLists.txt src/ docs/ --check
+
+and any automatic fixes may be reviewed and then applied by developers with the following commands
+
+.. code-block:
+
+   $ gersemi CMakeLists.txt src/ docs/ --diff
+   $ gersemi CMakeLists.txt src/ docs/ --in-place
+
+This project enforces its style using `clang-tidy`_ and `clang-format`_ as configured with the
+`.clang-format` and `.clang-tidy` files in the root directory. The formatting of the project can be
+checked using `clang-tidy`_ by first configuring the project using
+
+.. code-block:
+
+   $ cmake -S . -B build ... -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+where `...` are the other configuration flags specified. After this clang-tidy can be run on the
+full project from the source directory via
+
+.. CAUTION::
+    Commit all changes prior to running the clang tidy command. This will edit all source files.
+
+.. code-block:
+
+   $ run-clang-tidy -config-file=.clang-tidy -p build -extra-arg="-mno-sse2"
+
+The formatting can be checked using `clang-format`_ by running
+
+.. code-block:
+
+   $ cmake -S . -B build ...
+   $ cmake --build build --target cpp-format-check
+
+which will indicate if the formatting is correct. The c++ files can be re-formatted to match the
+style guidance by running
+
+.. CAUTION::
+    Commit all changes prior to running the format command. This will edit all source files.
+
+.. code-block
+
+   $ cmake --build build --target cpp-format
+
+If the style is not constrained by the above, it should be inferred by the surrounding code.
+Wherever a style can't be inferred from surrounding code this project falls back to `PEP-8`_-like
+styles the exceptions to the notional PEP-8 fall back:
 
 1. `Doxygen`_ style docstrings are required for automated, API from source documentation.
-2. This project prefers expansive whitespace surrounding parentheses, braces, and
-   brackets.
-
-   * No leading space between a function and the argument list.
-   * One space following an open paranthesis ``(``, brace ``{``, or bracket
-     ``[``
-   * One space leading a close paranthesis ``)``, brace ``}``, or bracket ``]``
-
-An example of the whitespace style:
-
-.. code-block:: bash
-
-   my_function( arg1, { arg2, arg3 }, arg4 );
-
-The following ``sed`` commands may be useful for updating white space, but must
-be used with care. The developer is recommended to use a unique git commit
-between each command with a corresponding review of the changes and a unit test
-run.
-
-* Trailing space for open paren/brace/bracket
-
-  .. code-block:: bash
-
-     sed -i 's/\([({[]\)\([^ ]\)/\1 \2/g' <list of files to update>
-
-* Leading space for close paren/brace/bracket
-
-  .. code-block:: bash
-
-     sed -i 's/\([^ ]\)\([)}\]]\)/\1 \2/g' <list of files to update>
-
-* White space between adjacent paren/brace/bracket
-
-  .. code-block:: bash
-
-     sed -i 's/\([)}\]]\)\([)}\]]\)/\1 \2/g' <list of files to update>
 
 .. contribution-end-do-not-remove
