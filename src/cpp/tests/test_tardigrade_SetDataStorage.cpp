@@ -14,9 +14,9 @@
 #define CHECK_PER_ELEMENT boost::test_tools::per_element()
 
 typedef tardigradeErrorTools::Node errorNode;  //!< Redefinition for the error node
-typedef errorNode*                 errorOut;   //!< Redefinition for a pointer to the error node
+typedef errorNode                 *errorOut;   //!< Redefinition for a pointer to the error node
 
-bool tolerantCheck(const std::vector<double>& v1, const std::vector<double>& v2, double eps = 1e-6, double tol = 1e-9) {
+bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2, double eps = 1e-6, double tol = 1e-9) {
     if (v1.size() != v2.size()) {
         return false;
     }
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(test_SetDataStorageIteration, *boost::unit_test::tolerance(
 
         tardigradeHydra::DataStorage<std::vector<double> > myVectorData;
 
-        std::vector<tardigradeHydra::dataBase*> iteration_data;
+        std::vector<tardigradeHydra::dataBase *> iteration_data;
 
         void resetIterationData() {
             for (auto v = std::begin(iteration_data); v != std::end(iteration_data); ++v) {
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(test_SetDataStorageIteration, *boost::unit_test::tolerance(
             iteration_data.clear();
         }
 
-        void addIterationData(tardigradeHydra::dataBase* v) { iteration_data.push_back(v); }
+        void addIterationData(tardigradeHydra::dataBase *v) { iteration_data.push_back(v); }
     };
 
     ResidualMock residual;
@@ -210,7 +210,7 @@ namespace tardigradeHydra {
             TARDIGRADE_HYDRA_DECLARE_CONTROLLED_SETDATASTORAGE_GETTER(myVectorData, SetDataStorageIteration,
                                                                       std::vector<double>, this);
 
-            std::vector<tardigradeHydra::dataBase*> iteration_data = {};
+            std::vector<tardigradeHydra::dataBase *> iteration_data = {};
 
             void resetIterationData() {
                 for (auto v = std::begin(iteration_data); v != std::end(iteration_data); ++v) {
@@ -220,7 +220,7 @@ namespace tardigradeHydra {
                 iteration_data.clear();
             }
 
-            void addIterationData(tardigradeHydra::dataBase* v) { iteration_data.push_back(v); }
+            void addIterationData(tardigradeHydra::dataBase *v) { iteration_data.push_back(v); }
         };
 
     }  // namespace test_SetDataStorageIteration2

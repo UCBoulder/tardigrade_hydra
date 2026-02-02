@@ -16,7 +16,7 @@
 #define CHECK_PER_ELEMENT boost::test_tools::per_element()
 
 typedef tardigradeErrorTools::Node               errorNode;    //!< Redefinition for the error node
-typedef errorNode*                               errorOut;     //!< Redefinition for a pointer to the error node
+typedef errorNode                               *errorOut;     //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::massChange::floatType   floatType;    //!< Redefinition of the floating point type
 typedef tardigradeHydra::massChange::floatVector floatVector;  //!< Redefinition of the vector of floating points type
 typedef tardigradeHydra::massChange::floatMatrix floatMatrix;  //!< Redefinition of the matrix of floating points type
@@ -27,7 +27,7 @@ namespace tardigradeHydra {
 
         class hydraBaseTester {
            public:
-            static void updateUnknownVector(tardigradeHydra::hydraBase& hydra, const floatVector& value) {
+            static void updateUnknownVector(tardigradeHydra::hydraBase &hydra, const floatVector &value) {
                 BOOST_CHECK_NO_THROW(hydra.updateUnknownVector(value));
             }
         };
@@ -40,7 +40,7 @@ namespace tardigradeHydra {
 
             class residualTester {
                public:
-                static void runBasicGetTests(tardigradeHydra::massChange::residual& R) {
+                static void runBasicGetTests(tardigradeHydra::massChange::residual &R) {
                     BOOST_CHECK(R._massChangeConfigurationIndex == R.getMassChangeConfigurationIndex());
 
                     BOOST_CHECK(R._integrationParameter == R.getIntegrationParameter());
@@ -65,7 +65,7 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-void adaptive_tolerance_test(const floatVector& result, const floatVector& answer, floatType atol = 1e-9) {
+void adaptive_tolerance_test(const floatVector &result, const floatVector &answer, floatType atol = 1e-9) {
     /*!
      * Test which allows for very small values to be compared absolutely while larger values are compared relatively
      */
@@ -100,13 +100,13 @@ BOOST_AUTO_TEST_CASE(test_residual_basicGetTests, *boost::unit_test::tolerance(D
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -199,13 +199,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradientTrace,
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -453,13 +453,13 @@ BOOST_AUTO_TEST_CASE(test_residual_unitDirectionVector, *boost::unit_test::toler
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -639,13 +639,13 @@ BOOST_AUTO_TEST_CASE(test_residual_unitDirectionVector2, *boost::unit_test::tole
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -759,7 +759,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_1, *boost::unit_te
 
         using tardigradeHydra::massChange::residual::setMassChangeVelocityGradientTrace;
 
-        virtual void setMassChangeVelocityGradientTrace(const bool& isPrevious) override {
+        virtual void setMassChangeVelocityGradientTrace(const bool &isPrevious) override {
             if (isPrevious) {
                 set_previousMassChangeVelocityGradientTrace(previousMassChangeVelocityGradientTrace);
 
@@ -768,7 +768,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_1, *boost::unit_te
             }
         }
 
-        virtual void setUnitDirectionVector(const bool& isPrevious) override {
+        virtual void setUnitDirectionVector(const bool &isPrevious) override {
             if (isPrevious) {
                 set_previousUnitDirectionVector(previousUnitDirectionVector);
 
@@ -777,7 +777,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_1, *boost::unit_te
             }
         }
 
-        virtual void setUnitDirectionVectorDerivatives(const bool& isPrevious) override {
+        virtual void setUnitDirectionVectorDerivatives(const bool &isPrevious) override {
             if (isPrevious) {
                 set_dPreviousUnitDirectionVectordPreviousDirectionVector(previousdDdGradC);
 
@@ -786,7 +786,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_1, *boost::unit_te
             }
         }
 
-        virtual void setMassChangeVelocityGradientTraceDerivatives(const bool& isPrevious) override {
+        virtual void setMassChangeVelocityGradientTraceDerivatives(const bool &isPrevious) override {
             if (isPrevious) {
                 set_dPreviousMassChangeVelocityGradientTracedPreviousDensity(previousdtrLdRho);
 
@@ -814,13 +814,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_1, *boost::unit_te
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -923,7 +923,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_2, *boost::unit_te
 
         using tardigradeHydra::massChange::residual::setMassChangeVelocityGradientTrace;
 
-        virtual void setMassChangeVelocityGradientTrace(const bool& isPrevious) override {
+        virtual void setMassChangeVelocityGradientTrace(const bool &isPrevious) override {
             if (isPrevious) {
                 set_previousMassChangeVelocityGradientTrace(previousMassChangeVelocityGradientTrace);
 
@@ -932,7 +932,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_2, *boost::unit_te
             }
         }
 
-        virtual void setUnitDirectionVector(const bool& isPrevious) override {
+        virtual void setUnitDirectionVector(const bool &isPrevious) override {
             if (isPrevious) {
                 set_previousUnitDirectionVector(previousUnitDirectionVector);
 
@@ -941,7 +941,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_2, *boost::unit_te
             }
         }
 
-        virtual void setUnitDirectionVectorDerivatives(const bool& isPrevious) override {
+        virtual void setUnitDirectionVectorDerivatives(const bool &isPrevious) override {
             if (isPrevious) {
                 set_dPreviousUnitDirectionVectordPreviousDirectionVector(previousdDdGradC);
 
@@ -950,7 +950,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_2, *boost::unit_te
             }
         }
 
-        virtual void setMassChangeVelocityGradientTraceDerivatives(const bool& isPrevious) override {
+        virtual void setMassChangeVelocityGradientTraceDerivatives(const bool &isPrevious) override {
             if (isPrevious) {
                 set_dPreviousMassChangeVelocityGradientTracedPreviousDensity(previousdtrLdRho);
 
@@ -978,13 +978,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_2, *boost::unit_te
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -1097,7 +1097,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_3, *boost::unit_te
 
         using tardigradeHydra::massChange::residual::setMassChangeVelocityGradientTrace;
 
-        virtual void setMassChangeVelocityGradientTrace(const bool& isPrevious) override {
+        virtual void setMassChangeVelocityGradientTrace(const bool &isPrevious) override {
             if (isPrevious) {
                 set_previousMassChangeVelocityGradientTrace(previousMassChangeVelocityGradientTrace);
 
@@ -1106,7 +1106,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_3, *boost::unit_te
             }
         }
 
-        virtual void setUnitDirectionVector(const bool& isPrevious) override {
+        virtual void setUnitDirectionVector(const bool &isPrevious) override {
             if (isPrevious) {
                 set_previousUnitDirectionVector(previousUnitDirectionVector);
 
@@ -1115,7 +1115,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_3, *boost::unit_te
             }
         }
 
-        virtual void setUnitDirectionVectorDerivatives(const bool& isPrevious) override {
+        virtual void setUnitDirectionVectorDerivatives(const bool &isPrevious) override {
             if (isPrevious) {
                 set_dPreviousUnitDirectionVectordPreviousDirectionVector(previousdDdGradC);
 
@@ -1124,7 +1124,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_3, *boost::unit_te
             }
         }
 
-        virtual void setMassChangeVelocityGradientTraceDerivatives(const bool& isPrevious) override {
+        virtual void setMassChangeVelocityGradientTraceDerivatives(const bool &isPrevious) override {
             if (isPrevious) {
                 set_dPreviousMassChangeVelocityGradientTracedPreviousDensity(previousdtrLdRho);
 
@@ -1152,13 +1152,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_3, *boost::unit_te
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -1263,13 +1263,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_4, *boost::unit_te
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -1592,13 +1592,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_5, *boost::unit_te
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -1921,13 +1921,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeVelocityGradient_6, *boost::unit_te
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -2251,13 +2251,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangePrecedingDeformationGradient_1,
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -2361,13 +2361,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangePrecedingDeformationGradient_2,
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(4);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(4);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -2641,7 +2641,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeIntermediateVelocityGradient_1,
        protected:
         using tardigradeHydra::massChange::residual::setMassChangeVelocityGradient;
 
-        virtual void setMassChangeVelocityGradient(const bool& isPrevious) override {
+        virtual void setMassChangeVelocityGradient(const bool &isPrevious) override {
             if (isPrevious) {
                 set_previousMassChangeVelocityGradient(previousMassChangeVelocityGradient);
 
@@ -2650,7 +2650,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeIntermediateVelocityGradient_1,
             }
         }
 
-        virtual void setMassChangeVelocityGradientDerivatives(const bool& isPrevious) override {
+        virtual void setMassChangeVelocityGradientDerivatives(const bool &isPrevious) override {
             if (isPrevious) {
                 set_dPreviousMassChangeVelocityGradientdPreviousDensity(
                     dPreviousMassChangeVelocityGradientdPreviousDensity);
@@ -2685,13 +2685,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeIntermediateVelocityGradient_1,
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -2794,13 +2794,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeIntermediateVelocityGradient_2,
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(4);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(4);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -3362,7 +3362,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeDeformationGradient_1,
        protected:
         using tardigradeHydra::massChange::residual::setMassChangeIntermediateVelocityGradient;
 
-        virtual void setMassChangeIntermediateVelocityGradient(const bool& isPrevious) override {
+        virtual void setMassChangeIntermediateVelocityGradient(const bool &isPrevious) override {
             if (isPrevious) {
                 set_previousMassChangeIntermediateVelocityGradient(previousMassChangeVelocityGradient);
 
@@ -3371,7 +3371,7 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeDeformationGradient_1,
             }
         }
 
-        virtual void setMassChangeIntermediateVelocityGradientDerivatives(const bool& isPrevious) override {
+        virtual void setMassChangeIntermediateVelocityGradientDerivatives(const bool &isPrevious) override {
             if (isPrevious) {
                 set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity(
                     dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity);
@@ -3420,13 +3420,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeDeformationGradient_1,
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(3);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(3);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -3521,13 +3521,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeDeformationGradient_2,
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(4);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(4);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -4082,13 +4082,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeResidual, *boost::unit_test::tolera
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(4);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(4);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -4182,13 +4182,13 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeResidual_2, *boost::unit_test::tole
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(4);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(4);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -4451,13 +4451,13 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
 
         residualMock massChange;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -4502,7 +4502,7 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
                         parameters, numConfigurations, numNonLinearSolveStateVariables, dimension);
 
     tardigradeHydra::PreconditionerBase preconditioner;
-    auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydra.solver->step->trial_step);
+    auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase *>(hydra.solver->step->trial_step);
     TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_step != nullptr, "The trial_step is not a NonlinearStepBase object");
 
     local_trial_step->preconditioner = &preconditioner;
@@ -4540,14 +4540,14 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
                              numConfigurations, numNonLinearSolveStateVariables, dimension);
 
         tardigradeHydra::PreconditionerBase preconditionerp;
-        auto local_trial_stepp = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydrap.solver->step->trial_step);
+        auto local_trial_stepp = dynamic_cast<tardigradeHydra::NonlinearStepBase *>(hydrap.solver->step->trial_step);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_stepp != nullptr, "The trial_step is not a NonlinearStepBase object");
 
         local_trial_stepp->preconditioner = &preconditionerp;
         preconditionerp.trial_step        = local_trial_stepp;
 
         tardigradeHydra::PreconditionerBase preconditionerm;
-        auto local_trial_stepm = dynamic_cast<tardigradeHydra::NonlinearStepBase*>(hydram.solver->step->trial_step);
+        auto local_trial_stepm = dynamic_cast<tardigradeHydra::NonlinearStepBase *>(hydram.solver->step->trial_step);
         TARDIGRADE_ERROR_TOOLS_CHECK(local_trial_stepm != nullptr, "The trial_step is not a NonlinearStepBase object");
 
         local_trial_stepm->preconditioner = &preconditionerm;
@@ -4681,13 +4681,13 @@ BOOST_AUTO_TEST_CASE(test_residual_suggestInitialIterateValues, *boost::unit_tes
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() override {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(4);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(4);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -4781,13 +4781,13 @@ BOOST_AUTO_TEST_CASE(test_residual_expectedDeformation, *boost::unit_test::toler
 
         residualMock massChange;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -4976,13 +4976,13 @@ BOOST_AUTO_TEST_CASE(test_residual_expectedDeformation2, *boost::unit_test::tole
 
         residualMock massChange;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 
@@ -5171,13 +5171,13 @@ BOOST_AUTO_TEST_CASE(test_residual_expectedDeformation3, *boost::unit_test::tole
 
         residualMock massChange;
 
-        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*>& residuals) {
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
             tardigradeHydra::hydraBase::setResidualClasses(residuals);
         }
 
        private:
         virtual void setResidualClasses() {
-            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
 
             elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
 

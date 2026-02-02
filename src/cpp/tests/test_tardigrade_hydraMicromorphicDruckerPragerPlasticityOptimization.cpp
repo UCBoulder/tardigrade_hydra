@@ -19,7 +19,7 @@
 #define CHECK_PER_ELEMENT boost::test_tools::per_element()
 
 typedef tardigradeErrorTools::Node errorNode;  //!< Redefinition for the error node
-typedef errorNode*                 errorOut;   //!< Redefinition for a pointer to the error node
+typedef errorNode                 *errorOut;   //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::micromorphicDruckerPragerPlasticityOptimization::floatType
     floatType;  //!< Redefinition of the floating point type
 typedef tardigradeHydra::micromorphicDruckerPragerPlasticityOptimization::floatVector
@@ -47,12 +47,12 @@ typedef tardigradeHydra::micromorphicDruckerPragerPlasticityOptimization::consta
     constantMatrix;  //!< Redefinition of the matrix of constants
 
 struct cout_redirect {
-    cout_redirect(std::streambuf* new_buffer) : old(std::cout.rdbuf(new_buffer)) {}
+    cout_redirect(std::streambuf *new_buffer) : old(std::cout.rdbuf(new_buffer)) {}
 
     ~cout_redirect() { std::cout.rdbuf(old); }
 
    private:
-    std::streambuf* old;
+    std::streambuf *old;
 };
 
 namespace tardigradeHydra {
@@ -61,7 +61,7 @@ namespace tardigradeHydra {
 
         class hydraBaseTester {
            public:
-            static void updateUnknownVector(tardigradeHydra::hydraBase& hydra, const floatVector& value) {
+            static void updateUnknownVector(tardigradeHydra::hydraBase &hydra, const floatVector &value) {
                 BOOST_CHECK_NO_THROW(hydra.updateUnknownVector(value));
             }
         };
@@ -70,7 +70,7 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-bool tolerantCheck(const std::vector<double>& v1, const std::vector<double>& v2, double eps = 1e-6, double tol = 1e-9) {
+bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2, double eps = 1e-6, double tol = 1e-9) {
     if (v1.size() != v2.size()) {
         return false;
     }
@@ -96,7 +96,7 @@ bool tolerantCheck(const std::vector<double>& v1, const std::vector<double>& v2,
     return true;
 }
 
-bool tolerantCheck(const double& v1, const double& v2, double eps = 1e-6, double tol = 1e-9) {
+bool tolerantCheck(const double &v1, const double &v2, double eps = 1e-6, double tol = 1e-9) {
     std::vector<double> _v1 = {v1};
 
     std::vector<double> _v2 = {v2};
@@ -350,7 +350,7 @@ BOOST_AUTO_TEST_CASE(test_computeStateVariableResidual, *boost::unit_test::toler
         using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
 
         virtual void setResidualClasses() override {
-            std::vector<tardigradeHydra::ResidualBase<>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<> *> residuals(2);
 
             elasticity = stressMock(this, 45);
 
@@ -675,7 +675,7 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians, *boost::unit_test::toleranc
         using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
 
         virtual void setResidualClasses() override {
-            std::vector<tardigradeHydra::ResidualBase<>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<> *> residuals(2);
 
             elasticity = stressMock(this, 45);
 
@@ -997,7 +997,7 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
         using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
 
         virtual void setResidualClasses() override {
-            std::vector<tardigradeHydra::ResidualBase<>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<> *> residuals(2);
 
             elasticity = stressMock(this, 45);
 
@@ -1334,7 +1334,7 @@ BOOST_AUTO_TEST_CASE(test_computeConstraints, *boost::unit_test::tolerance(DEFAU
         using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
 
         virtual void setResidualClasses() override {
-            std::vector<tardigradeHydra::ResidualBase<>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<> *> residuals(2);
 
             elasticity = stressMock(this, 45);
 
@@ -1619,7 +1619,7 @@ BOOST_AUTO_TEST_CASE(test_setConstraintJacobians, *boost::unit_test::tolerance(D
         using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
 
         virtual void setResidualClasses() override {
-            std::vector<tardigradeHydra::ResidualBase<>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<> *> residuals(2);
 
             elasticity = stressMock(this, 45);
 
@@ -1945,7 +1945,7 @@ BOOST_AUTO_TEST_CASE(test_suggestInitialIterates, *boost::unit_test::tolerance(D
         using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
 
         virtual void setResidualClasses() override {
-            std::vector<tardigradeHydra::ResidualBase<>*> residuals(2);
+            std::vector<tardigradeHydra::ResidualBase<> *> residuals(2);
 
             elasticity = stressMock(this, 45);
 

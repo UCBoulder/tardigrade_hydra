@@ -23,28 +23,28 @@ namespace tardigradeHydra {
             class residualTester;
         }
 
-        constexpr const char* str_end(const char* str) {
+        constexpr const char *str_end(const char *str) {
             /*! Recursively search string for last character
              * \param *str: pointer to string START of UNIX path like string
              * \return *str: pointer to last character in string
              */
             return *str ? str_end(str + 1) : str;
         }
-        constexpr bool str_slant(const char* str) {
+        constexpr bool str_slant(const char *str) {
             /*! Recursively search string for leftmost UNIX path separator from the left
              * \param *str: pointer to string START of UNIX path like string
              * \return bool: True if string contains UNIX path separator. Else false.
              */
             return *str == '/' ? true : (*str ? str_slant(str + 1) : false);
         }
-        constexpr const char* r_slant(const char* str) {
+        constexpr const char *r_slant(const char *str) {
             /*! Recursively search string for rightmost UNIX path separator from the right
              * \param *str: pointer to string END of UNIX path like string
              * \return *str: pointer to start of base name
              */
             return *str == '/' ? (str + 1) : r_slant(str - 1);
         }
-        constexpr const char* file_name(const char* str) {
+        constexpr const char *file_name(const char *str) {
             /*! Return the current file name with extension at compile time
              * \param *str: pointer to string START of UNIX path like string
              * \return str: file base name
@@ -58,7 +58,7 @@ namespace tardigradeHydra {
             __BASENAME__.substr(0, __BASENAME__.find_last_of("."));  //!< The parsed filename for error handling
 
         typedef tardigradeErrorTools::Node           errorNode;    //!< Redefinition for the error node
-        typedef errorNode*                           errorOut;     //!< Redefinition for a pointer to the error node
+        typedef errorNode                           *errorOut;     //!< Redefinition for a pointer to the error node
         typedef double                               floatType;    //!< Define the float values type.
         typedef std::vector<floatType>               floatVector;  //!< Define a vector of floats
         typedef std::vector<std::vector<floatType> > floatMatrix;  //!< Define a matrix of floats
@@ -76,7 +76,7 @@ namespace tardigradeHydra {
              * \param &numEquations: The number of equations the residual defines
              * \param &parameters: The parameter vector
              */
-            residual(tardigradeHydra::hydraBase* hydra, const unsigned int& numEquations, const floatVector& parameters)
+            residual(tardigradeHydra::hydraBase *hydra, const unsigned int &numEquations, const floatVector &parameters)
                 : tardigradeHydra::ResidualBase<>(hydra, numEquations) {
                 TARDIGRADE_ERROR_TOOLS_CATCH(
                     tardigradeHydra::linearTestMaterial::residual::decomposeParameterVector(parameters));
@@ -99,7 +99,7 @@ namespace tardigradeHydra {
 
             virtual void setdRdAdditionalDOF() override;
 
-            virtual void decomposeParameterVector(const floatVector& parameters);
+            virtual void decomposeParameterVector(const floatVector &parameters);
 
            private:
             // Friend classes

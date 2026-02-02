@@ -37,11 +37,11 @@ namespace tardigradeHydra {
              * \param isPrevious: Flag for whether this is the previous timestep
              */
 
-            const floatVector* drivingStress;
+            const floatVector *drivingStress;
 
-            const floatVector* stateVariables;
+            const floatVector *stateVariables;
 
-            const floatVector* yieldParameters;
+            const floatVector *yieldParameters;
 
             SetDataStorageBase<floatType> yieldFunction;
 
@@ -93,17 +93,17 @@ namespace tardigradeHydra {
 
             auto num_configs = hydra->getNumConfigurations();
 
-            const floatVector* drivingStress;
+            const floatVector *drivingStress;
 
-            const floatVector* dDrivingStressdCauchyStress;
+            const floatVector *dDrivingStressdCauchyStress;
 
-            const floatVector* dDrivingStressdF;
+            const floatVector *dDrivingStressdF;
 
-            const floatVector* dDrivingStressdSubFs;
+            const floatVector *dDrivingStressdSubFs;
 
-            const floatVector* stateVariables;
+            const floatVector *stateVariables;
 
-            const floatVector* yieldParameters;
+            const floatVector *yieldParameters;
 
             SetDataStorageBase<floatType> yieldFunction;
 
@@ -252,11 +252,11 @@ namespace tardigradeHydra {
              *     previous timestep
              */
 
-            const floatVector* stateVariables;
+            const floatVector *stateVariables;
 
-            const floatVector* hardeningParameters;
+            const floatVector *hardeningParameters;
 
-            const floatType* sign_term;
+            const floatType *sign_term;
 
             SetDataStorageBase<floatVector> hardeningFunction;
 
@@ -290,11 +290,11 @@ namespace tardigradeHydra {
              *     previous timestep
              */
 
-            const floatVector* stateVariables;
+            const floatVector *stateVariables;
 
-            const floatVector* hardeningParameters;
+            const floatVector *hardeningParameters;
 
-            const floatType* sign_term;
+            const floatType *sign_term;
 
             SetDataStorageBase<floatVector> hardeningFunction;
 
@@ -332,7 +332,7 @@ namespace tardigradeHydra {
                                                         (*hardeningParameters)[3] * (*sign_term), 0};
         }
 
-        void residual::decomposeParameters(const floatVector& parameters) {
+        void residual::decomposeParameters(const floatVector &parameters) {
             /*!
              * Decompose the incoming parameter vector
              *
@@ -369,7 +369,7 @@ namespace tardigradeHydra {
             set_hardeningParameters({parameters[8], parameters[9], parameters[10], parameters[11]});
         }
 
-        void residual::addParameterizationInfo(std::string& parameterization_info) {
+        void residual::addParameterizationInfo(std::string &parameterization_info) {
             /*!
              * Add the information about the parameterization to the incoming string
              *
