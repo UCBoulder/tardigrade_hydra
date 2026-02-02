@@ -28,7 +28,7 @@ namespace tardigradeHydra {
         /*!
          * Initialize the preconditioner object
          */
-        PreconditionerBase() {}
+        PreconditionerBase() { trial_step = nullptr; }
 
         /*!
          * Constructor for the preconditioner object

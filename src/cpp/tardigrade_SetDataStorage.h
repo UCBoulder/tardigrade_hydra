@@ -293,7 +293,7 @@ namespace tardigradeHydra {
        public:
         bool first = false;  //!< The flag for whether the data has been stored
 
-        T second;  //!< The stored data
+        T second = T();  //!< The stored data
 
         DataStorage() {};
 
