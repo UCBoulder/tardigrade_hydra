@@ -85,7 +85,9 @@ namespace tardigradeHydra {
     void SubcyclerSolver::initializeSubcycler() {
         addSubcyclerHeader();
 
-        auto local_internal_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase *>(internal_solver);
+        TARDIGRADE_ERROR_TOOLS_EVAL(
+            auto local_internal_solver = dynamic_cast<tardigradeHydra::IterativeSolverBase *>(internal_solver);
+        )
         TARDIGRADE_ERROR_TOOLS_CHECK(local_internal_solver != nullptr,
                                      "The local internal solver is not of type IterativeSolverBase");
 

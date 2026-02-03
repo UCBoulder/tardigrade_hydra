@@ -349,7 +349,9 @@ namespace tardigradeHydra {
              *     modulus for the kinematic hardening.
              */
 
-            constexpr unsigned int expectedSize = 12;
+            TARDIGRADE_ERROR_TOOLS_EVAL(
+                constexpr unsigned int expectedSize = 12;
+            )
 
             TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == expectedSize,
                                          "The parameters vector is not the correct length.\n  parameters: " +
