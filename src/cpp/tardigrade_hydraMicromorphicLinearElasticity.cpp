@@ -160,7 +160,7 @@ namespace tardigradeHydra {
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> >
                 dReferenceHigherOrderStressdF_map(dReferenceHigherOrderStressdF.data(), tot_dim, sot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> >
-                dReferenceHigherOrderStressdGradChi_map(dReferenceHigherOrderStressdGradChi.data(), tot_dim, sot_dim);
+                dReferenceHigherOrderStressdGradChi_map(dReferenceHigherOrderStressdGradChi.data(), tot_dim, tot_dim);
 
             // Assemble the jacobians of the Cauchy stress
             dCauchyStressdF_map       = (dCauchyStressdF_map + dCauchyStressdPK2Stress_map * dPK2StressdF_map).eval();
@@ -2639,7 +2639,7 @@ namespace tardigradeHydra {
                 dGammadChin->data(), tot_dim, sot_dim * (num_configs - 1));
 
             Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dGammadGradChi(
-                dGammadGradChi->data(), tot_dim, sot_dim);
+                dGammadGradChi->data(), tot_dim, tot_dim);
 
             Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGammadGradChin(
                 dGammadGradChin->data(), tot_dim, tot_dim * (num_configs - 1));
