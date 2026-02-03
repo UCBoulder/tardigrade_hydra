@@ -2154,7 +2154,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_setResidualClasses2, *boost::unit_test::tole
 #else
     BOOST_CHECK_THROW(hydra.initialize(), std::nested_exception);
 #endif
-
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_formNonLinearProblem, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
