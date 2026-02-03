@@ -102,6 +102,15 @@ BOOST_AUTO_TEST_CASE(test_ResidualBase_checkDefaults, *boost::unit_test::toleran
 
     tardigradeHydra::ResidualBase<HydraMock> residual(&hydra, numEquations);
 
+#ifdef TARDIGRADE_ERROR_TOOLS_OPT
+    BOOST_CHECK_THROW(residual.setResidual(), std::logic_error);
+
+    BOOST_CHECK_THROW(residual.setJacobian(), std::logic_error);
+
+    BOOST_CHECK_THROW(residual.setdRdF(), std::logic_error);
+
+    BOOST_CHECK_THROW(residual.setdRdT(), std::logic_error);
+#else
     BOOST_CHECK_THROW(residual.setResidual(), std::nested_exception);
 
     BOOST_CHECK_THROW(residual.setJacobian(), std::nested_exception);
@@ -109,6 +118,7 @@ BOOST_AUTO_TEST_CASE(test_ResidualBase_checkDefaults, *boost::unit_test::toleran
     BOOST_CHECK_THROW(residual.setdRdF(), std::nested_exception);
 
     BOOST_CHECK_THROW(residual.setdRdT(), std::nested_exception);
+#endif
 
     BOOST_CHECK_NO_THROW(residual.setAdditionalDerivatives());
 

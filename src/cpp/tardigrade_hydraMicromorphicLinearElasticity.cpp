@@ -153,14 +153,14 @@ namespace tardigradeHydra {
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > dHigherOrderStressdF_map(
                 dHigherOrderStressdF.data(), tot_dim, sot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > dHigherOrderStressdGradChi_map(
-                dHigherOrderStressdGradChi.data(), tot_dim, sot_dim);
+                dHigherOrderStressdGradChi.data(), tot_dim, tot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> >
                 dHigherOrderStressdReferenceHigherOrderStress_map(dHigherOrderStressdReferenceHigherOrderStress.data(),
-                                                                  tot_dim, sot_dim);
+                                                                  tot_dim, tot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> >
                 dReferenceHigherOrderStressdF_map(dReferenceHigherOrderStressdF.data(), tot_dim, sot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> >
-                dReferenceHigherOrderStressdGradChi_map(dReferenceHigherOrderStressdGradChi.data(), tot_dim, sot_dim);
+                dReferenceHigherOrderStressdGradChi_map(dReferenceHigherOrderStressdGradChi.data(), tot_dim, tot_dim);
 
             // Assemble the jacobians of the Cauchy stress
             dCauchyStressdF_map       = (dCauchyStressdF_map + dCauchyStressdPK2Stress_map * dPK2StressdF_map).eval();
@@ -791,8 +791,8 @@ namespace tardigradeHydra {
             // Assume 3D
             constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
-            constexpr unsigned int fot_dim = tot_dim * dim;
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dim = sot_dim * dim;
+                                        constexpr unsigned int fot_dim = tot_dim * dim;)
 
             TARDIGRADE_ERROR_TOOLS_CHECK(greenLagrangeStrain.size() == sot_dim,
                                          "The green lagrange strain must have a length of 9");
@@ -1056,7 +1056,7 @@ namespace tardigradeHydra {
             // Assume 3D
             constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dim = sot_dim * dim;)
 
             TARDIGRADE_ERROR_TOOLS_CHECK(invCGamma.size() == tot_dim, "invCGamma must have a size of 27");
 
@@ -2639,7 +2639,7 @@ namespace tardigradeHydra {
                 dGammadChin->data(), tot_dim, sot_dim * (num_configs - 1));
 
             Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dGammadGradChi(
-                dGammadGradChi->data(), tot_dim, sot_dim);
+                dGammadGradChi->data(), tot_dim, tot_dim);
 
             Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGammadGradChin(
                 dGammadGradChin->data(), tot_dim, tot_dim * (num_configs - 1));
