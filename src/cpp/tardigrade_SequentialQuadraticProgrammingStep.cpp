@@ -32,8 +32,7 @@ namespace tardigradeHydra {
 
         Eigen::Map<const Eigen::Vector<floatType, -1> > _dx(dx.data(), numUnknowns);
 
-        Eigen::Map<Eigen::Vector<floatType, -1> > RHS(KKTRHSVector.data(), (numUnknowns + numConstraints),
-                                                      (numUnknowns + numConstraints));
+        Eigen::Map<Eigen::Vector<floatType, -1> > RHS(KKTRHSVector.data(), (numUnknowns + numConstraints));
 
         Eigen::Map<const Eigen::Vector<floatType, -1> > R(getResidual()->data(), numUnknowns);
 
