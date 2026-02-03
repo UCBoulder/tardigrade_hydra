@@ -267,8 +267,7 @@ namespace tardigradeHydra {
         //! Get the verbosity level for failure outputs
         const unsigned int getFailureVerbosityLevel() { return _failure_verbosity_level; }
 
-        //! Add a string to the failure output string
-        void addToFailureOutput(const std::string &additional) { _failure_output << additional; }
+        void addToFailureOutput(const std::string &value, bool add_endline = false);
 
         void addToFailureOutput(const floatVector &value, bool add_endline = true);
 
@@ -276,7 +275,27 @@ namespace tardigradeHydra {
 
         void addToFailureOutput(const floatType &value, bool add_endline = true);
 
-        //! Add a general iterable object to the output string
+        /*!
+         * Add a general non-iterable object to the output string
+         *
+         * \param &v: The value to add
+         * \param add_endline: Whether to append a newline character after the value
+         */
+        template <class v_type>
+        void addToFailureOutput(const v_type &v, bool add_endline = true){
+            _failure_output << v;
+            if (add_endline) {
+                _failure_output << "\n";
+            }
+        }
+
+        /*!
+         * Add a general iterable object to the output string
+         *
+         * \param &v_begin: The starting iterator of the value vector
+         * \param &v_end: The stopping iterator of the value vector
+         * \param add_endline: Whether to append a newline character after the value
+         */
         template <class v_iterator>
         void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true) {
             for (auto v = v_begin; v != v_end; ++v) {
@@ -317,85 +336,15 @@ namespace tardigradeHydra {
             return &_scaled_additionalDOF;
         }
 
-        floatVector *getMutableResidual() {
-            /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobalResidual methods.
-             *
-             * Be careful!
-             */
+        floatVector *getMutableResidual();
 
-            if (_allow_modify_global_residual) {
-                return &_residual.second;
-            }
+        floatVector *getMutableJacobian();
 
-            return NULL;
-        }
+        floatVector *getMutabledRdT();
 
-        floatVector *getMutableJacobian() {
-            /*! Get a reference to the full jacobian that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobalJacobian methods.
-             *
-             * Be careful!
-             */
+        floatVector *getMutabledRdF();
 
-            if (_allow_modify_global_jacobian) {
-                return &_jacobian.second;
-            }
-
-            return NULL;
-        }
-
-        floatVector *getMutabledRdT() {
-            /*! Get a reference to the full dRdT that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobaldRdT methods.
-             *
-             * Be careful!
-             */
-
-            if (_allow_modify_global_dRdT) {
-                return &_dRdT.second;
-            }
-
-            return NULL;
-        }
-
-        floatVector *getMutabledRdF() {
-            /*! Get a reference to the full dRdF that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobaldRdF methods.
-             *
-             * Be careful!
-             */
-
-            if (_allow_modify_global_dRdF) {
-                return &_dRdF.second;
-            }
-
-            return NULL;
-        }
-
-        floatVector *getMutabledRdAdditionalDOF() {
-            /*! Get a reference to the full dRdAdditionalDOF that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobaldRdAdditionalDOF methods.
-             *
-             * Be careful!
-             */
-
-            if (_allow_modify_global_dRdAdditionalDOF) {
-                return &_dRdAdditionalDOF.second;
-            }
-
-            return NULL;
-        }
+        floatVector *getMutabledRdAdditionalDOF();
 
         const bool currentResidualIndexMeaningful() {
             /*!

@@ -102,18 +102,23 @@ namespace tardigradeHydra {
     void hydraBase::setFailureVerbosityLevel(const unsigned int &value) {_failure_verbosity_level = value;}
 
     /*!
+     * Add a string to the failure output string
+     *
+     * \param &value: The string to append to the output
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const std::string &value, bool add_endline) {
+        addToFailureOutput<std::string>(value, add_endline);
+    }
+
+    /*!
      * Add a floatVector to the output string
      *
      * \param &value: The vector to add to the output string
      * \param add_endline: A boolean for if the endline character should be added after the value
      */
     void hydraBase::addToFailureOutput(const floatVector &value, bool add_endline) {
-        for (auto v = value.begin(); v != value.end(); v++) {
-            _failure_output << *v << ", ";
-        }
-        if (add_endline) {
-            _failure_output << "\n";
-        }
+        addToFailureOutput(std::begin(value), std::end(value), add_endline);
     }
 
     /*!
@@ -123,12 +128,7 @@ namespace tardigradeHydra {
      * \param add_endline: A boolean for if the endline character should be added after the value
      */
     void hydraBase::addToFailureOutput(const std::vector<bool> &value, bool add_endline) {
-        for (auto v = value.begin(); v != value.end(); v++) {
-            _failure_output << *v << ", ";
-        }
-        if (add_endline) {
-            _failure_output << "\n";
-        }
+        addToFailureOutput(std::begin(value), std::end(value), add_endline);
     }
 
     /*!
@@ -138,10 +138,87 @@ namespace tardigradeHydra {
      * \param add_endline: A boolean for if the endline character should be added after the value
      */
     void hydraBase::addToFailureOutput(const floatType &value, bool add_endline) {
-        _failure_output << value;
-        if (add_endline) {
-            _failure_output << "\n";
+        addToFailureOutput<floatType>(value, add_endline);
+    }
+
+    /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobalResidual methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutableResidual() {
+
+        if (_allow_modify_global_residual) {
+            return &_residual.second;
         }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full jacobian that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobalJacobian methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutableJacobian() {
+
+        if (_allow_modify_global_jacobian) {
+            return &_jacobian.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdT that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdT methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdT() {
+
+        if (_allow_modify_global_dRdT) {
+            return &_dRdT.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdF that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdF methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdF() {
+
+        if (_allow_modify_global_dRdF) {
+            return &_dRdF.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdAdditionalDOF that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdAdditionalDOF methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdAdditionalDOF() {
+
+        if (_allow_modify_global_dRdAdditionalDOF) {
+            return &_dRdAdditionalDOF.second;
+        }
+
+        return NULL;
     }
 
     /*!
