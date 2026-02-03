@@ -6,7 +6,23 @@ Changelog
 #########
 
 ******************
-0.7.0 (unreleased)
+0.8.0 (unreleased)
+******************
+
+******************
+0.7.1 (unreleased)
+******************
+
+Internal Changes
+================
+- Enabled macos and conda recipe builds (:pull:`244`).
+
+Release
+=======
+- Released version 0.7.1 (:pull:`245`). By `Nathan Miller`_.
+
+******************
+0.7.0 (02-02-2026)
 ******************
 
 New Features
@@ -22,7 +38,11 @@ Breaking Changes
 - Changed scalar return pointers to return values instead for consistency and to prepare
   for refactor with constexpr where possible (:pull:`237`). By `Nathan Miller`_.
 - Major refactor to untangle the non-linear solve steps (:pull:`240`). By `Nathan Miller`_.
-- Major refactor to untangle the sub-cycle solver (:pull:`241`). By `Nathan Miller`_.
+- Major refactor to untangle the sub-cycle solver (:pull:`242`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.7.0 (:pull:`243`). By `Nathan Miller`_.
 
 ******************
 0.6.0 (11-06-2025)
