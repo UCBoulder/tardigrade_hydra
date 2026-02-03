@@ -2149,7 +2149,12 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_setResidualClasses2, *boost::unit_test::tole
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
+#ifdef TARDIGRADE_ERROR_TOOLS_OPT
+    BOOST_CHECK_THROW(hydra.initialize(), std::runtime_error);
+#else
     BOOST_CHECK_THROW(hydra.initialize(), std::nested_exception);
+#endif
+
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_formNonLinearProblem, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
