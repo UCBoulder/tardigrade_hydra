@@ -134,23 +134,15 @@ namespace tardigradeHydra {
         //! Get a reference to the number of state variables involved in the non-linear solve
         constexpr unsigned int getNumNonLinearSolveStateVariables() { return _numNonLinearSolveStateVariables; }
 
-        //! Get the number of terms in the unknown vector
-        virtual const unsigned int getNumUnknowns() {
-            return getNumConfigurations() * getConfigurationUnknownCount() + getNumNonLinearSolveStateVariables();
-        }
+        virtual const unsigned int getNumUnknowns();
 
-        //! Get the number of additional degrees of freedom
-        virtual const unsigned int getNumAdditionalDOF() { return getAdditionalDOF()->size(); }
+        virtual const unsigned int getNumAdditionalDOF();
 
         //! Get the value of the number of constraint equations
         virtual const unsigned int getNumConstraints();
 
         //! Get the current residual index
-        const unsigned int getCurrentResidualIndex() {
-            TARDIGRADE_ERROR_TOOLS_CHECK(currentResidualIndexMeaningful(),
-                                         "The current residual index isn't meaningful");
-            return _current_residual_index;
-        }
+        const unsigned int getCurrentResidualIndex();
 
         const unsigned int getCurrentResidualOffset();
 
@@ -244,9 +236,8 @@ namespace tardigradeHydra {
 
         void clearViscoplasticDamping();
 
-        const floatType getViscoplasticDamping() { /*! Get the value of the viscoplastic damping */
-            return _viscoplastic_damping_factor;
-        }
+        //! Get the value of the viscoplastic damping
+        const floatType getViscoplasticDamping() {return _viscoplastic_damping_factor;}
 
         const bool getViscoplasticDampingSet();
 
@@ -268,15 +259,7 @@ namespace tardigradeHydra {
         //! Add data to the vector of values which will be cleared after each non-linear step
         virtual void addNLStepData(dataBase *data) override { _nlStepData.push_back(data); }
 
-        void setFailureVerbosityLevel(const unsigned int &value) {
-            /*!
-             * Set the verbosity level for failures
-             *
-             * \param &value: The verbosity level of the failure (defaults to zero)
-             */
-
-            _failure_verbosity_level = value;
-        }
+        void setFailureVerbosityLevel(const unsigned int &value);
 
         //! Set the failure output string to use scientific notation
         void setFailureOutputScientific() { _failure_output << std::scientific; }
@@ -287,33 +270,11 @@ namespace tardigradeHydra {
         //! Add a string to the failure output string
         void addToFailureOutput(const std::string &additional) { _failure_output << additional; }
 
-        //! Add a floating point vector to the output string
-        void addToFailureOutput(const floatVector &value, bool add_endline = true) {
-            for (auto v = value.begin(); v != value.end(); v++) {
-                _failure_output << *v << ", ";
-            }
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
+        void addToFailureOutput(const floatVector &value, bool add_endline = true);
 
-        //! Add a boolean vector to the output string
-        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true) {
-            for (auto v = value.begin(); v != value.end(); v++) {
-                _failure_output << *v << ", ";
-            }
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
+        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
 
-        //! Add a floating point value to the output string
-        void addToFailureOutput(const floatType &value, bool add_endline = true) {
-            _failure_output << value;
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
+        void addToFailureOutput(const floatType &value, bool add_endline = true);
 
         //! Add a general iterable object to the output string
         template <class v_iterator>
@@ -332,25 +293,27 @@ namespace tardigradeHydra {
         //! Get a scale factor for the deformation
         const floatType getScaleFactor() { return _scale_factor; }
 
-        //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
         virtual void setScaleFactor(const floatType &value);
 
-        const floatType getScaledTime() { /*! Get the value of the scaled current time */ return _scaled_time; }
+        //! Get the value of the current scaled time
+        const floatType getScaledTime() { return _scaled_time; }
 
-        const floatType getScaledDeltaTime() { /*! Get the value of the scaled changed in time */
+        //! Get the vlaue of the scaled change in time
+        const floatType getScaledDeltaTime() {
             return _scaled_deltaTime;
         }
 
-        const floatType getScaledTemperature() { /*! Get the value of the scaled current temperature */
-            return _scaled_temperature;
-        }
+        //! Get the value of the scaled current temperature
+        const floatType getScaledTemperature() {return _scaled_temperature;}
 
+        //! Get the value of the scaled current deformation gradient
         const floatVector *
-        getScaledDeformationGradient() { /*! Get the value of the scaled current deformation gradient */
+        getScaledDeformationGradient() {
             return &_scaled_deformationGradient;
         }
 
-        const floatVector *getScaledAdditionalDOF() { /*! Get the value of the scaled current additional DOF */
+        //! Get the value of the scaled current additional DOF
+        const floatVector *getScaledAdditionalDOF() {
             return &_scaled_additionalDOF;
         }
 

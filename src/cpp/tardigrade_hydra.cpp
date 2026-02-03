@@ -71,12 +71,77 @@ namespace tardigradeHydra {
      */
     void hydraBase::setStress(const floatVector &stress) { setIterationData(stress, _stress); }
 
+    /*!
+     * Get a SetDataStorage object for the stress
+     */
     hydraBase::SetDataStorageIteration<secondOrderTensor> hydraBase::get_SetDataStorage_stress() {
-        /*!
-         * Get a SetDataStorage object for the stress
-         */
 
         return hydraBase::SetDataStorageIteration<secondOrderTensor>(&_stress, this);
+    }
+
+    //! Get the number of terms in the unknown vector
+    const unsigned int hydraBase::getNumUnknowns() {
+        return getNumConfigurations() * getConfigurationUnknownCount() + getNumNonLinearSolveStateVariables();
+    }
+
+    //! Get the number of additional degrees of freedom
+    const unsigned int hydraBase::getNumAdditionalDOF() { return getAdditionalDOF()->size(); }
+
+    //! Get the current residual index
+    const unsigned int hydraBase::getCurrentResidualIndex() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(currentResidualIndexMeaningful(),
+                                     "The current residual index isn't meaningful");
+        return _current_residual_index;
+    }
+
+    /*!
+     * Set the verbosity level for failures
+     *
+     * \param &value: The verbosity level of the failure (defaults to zero)
+     */
+    void hydraBase::setFailureVerbosityLevel(const unsigned int &value) {_failure_verbosity_level = value;}
+
+    /*!
+     * Add a floatVector to the output string
+     *
+     * \param &value: The vector to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const floatVector &value, bool add_endline) {
+        for (auto v = value.begin(); v != value.end(); v++) {
+            _failure_output << *v << ", ";
+        }
+        if (add_endline) {
+            _failure_output << "\n";
+        }
+    }
+
+    /*!
+     * Add a vector of booleans to the output string
+     *
+     * \param &value: The vector to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const std::vector<bool> &value, bool add_endline) {
+        for (auto v = value.begin(); v != value.end(); v++) {
+            _failure_output << *v << ", ";
+        }
+        if (add_endline) {
+            _failure_output << "\n";
+        }
+    }
+
+    /*!
+     * Add a floating point value to the output string
+     *
+     * \param &value: The value to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const floatType &value, bool add_endline) {
+        _failure_output << value;
+        if (add_endline) {
+            _failure_output << "\n";
+        }
     }
 
     /*!
