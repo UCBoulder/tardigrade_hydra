@@ -222,6 +222,36 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Return if the current residual index is meaningful or not
+     */
+    const bool hydraBase::currentResidualIndexMeaningful() {
+        return _current_residual_index_set;
+    }
+
+    /*!
+     * Loosen the convergence tolerance for the next iteration
+     * Useful if a Residual's form is changing in a non-smooth way
+     *
+     * \param factor: The scale factor to be applied to the current tolerance
+     */
+    void hydraBase::setToleranceScaleFactor(floatType factor) {
+
+        if (factor > _residual_scale_factor) {
+            _residual_scale_factor = factor;
+        }
+    }
+
+    /*!
+     * Update the additional state variable vector
+     */
+    void hydraBase::updateAdditionalStateVariables() {
+
+        for (auto v = std::begin(*getResidualClasses()); v != std::end(*getResidualClasses()); ++v) {
+            (*v)->updateAdditionalStateVariables(_additionalStateVariables.second);
+        }
+    }
+
+    /*!
      * Extract the stresses out of the unknown vector
      */
     void hydraBase::extractStress() {
@@ -1735,4 +1765,80 @@ namespace tardigradeHydra {
         return parameterization_info;
     }
 
+    /*!
+     * Function to throw for an unexpected error. A user should never get here!
+     */
+    void hydraBase::unexpectedError() {
+
+        TARDIGRADE_ERROR_TOOLS_CATCH(
+            throw std::runtime_error("You shouldn't have gotten here. If you aren't developing the code then "
+                                     "contact a developer with the stack trace."))
+    }
+
+    /*!
+     * Set the value of the unknown vector
+     *
+     * \param &X: The unknown vector
+     */
+    void hydraBase::setX(const floatVector &X) {
+
+        _X.second = X;
+
+        _X.first = true;
+    }
+
+    /*!
+     * Set a flag for if the global residual can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobalResidual(const bool value) {
+        _allow_modify_global_residual = value;
+    }
+
+    /*!
+     * Set a flag for if the global jacobian can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobalJacobian(const bool value) {
+        _allow_modify_global_jacobian = value;
+    }
+
+    /*!
+     * Set a flag for if the global dRdT can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdT(const bool value) {
+        _allow_modify_global_dRdT = value;
+    }
+
+    /*!
+     * Set a flag for if the global dRdF can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdF(const bool value) {
+        _allow_modify_global_dRdF = value;
+    }
+
+    /*!
+     * Set a flag for if the global dRdAdditionalDOF can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdAdditionalDOF(const bool value) {
+        _allow_modify_global_dRdAdditionalDOF = value;
+    }
+
+    /*!
+     * Set the value of the previously converged stress.
+     *
+     * \param &value: The incoming value
+     */
+    void hydraBase::setPreviouslyConvergedStress(const floatVector &value) {
+        _previouslyConvergedStress.second = value;
+        _previouslyConvergedStress.first  = true;
+    }
 }  // namespace tardigradeHydra
