@@ -2469,14 +2469,14 @@ namespace tardigradeHydra {
          * the leading configuration gradient with respect to the configuration gradients output
          */
 
-        TARDIGRADE_ERROR_TOOLS_EVAL(
-            const unsigned int num_configs = (configurations_end - configurations_begin) / (size * size);
+        TARDIGRADE_ERROR_TOOLS_EVAL(const unsigned int num_configs =
+                                        (configurations_end - configurations_begin) / (size * size);
 
-            constexpr unsigned int leading_configuration_size          = leading_rows * size;
-            constexpr unsigned int leading_configuration_gradient_size = leading_rows * size * dim;
-            constexpr unsigned int configuration_size                  = size * size;
-            constexpr unsigned int configuration_gradient_size         = size * size * dim;
-        )
+                                    constexpr unsigned int leading_configuration_size = leading_rows * size;
+                                    constexpr unsigned int leading_configuration_gradient_size =
+                                        leading_rows * size * dim;
+                                    constexpr unsigned int configuration_size          = size * size;
+                                    constexpr unsigned int configuration_gradient_size = size * size * dim;)
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             (unsigned int)(total_configuration_end - total_configuration_begin) == leading_configuration_size,

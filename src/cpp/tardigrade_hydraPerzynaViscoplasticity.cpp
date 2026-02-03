@@ -3168,9 +3168,7 @@ namespace tardigradeHydra {
              *     modulus.
              */
 
-            TARDIGRADE_ERROR_TOOLS_EVAL(
-                constexpr unsigned int expectedSize = 11;
-            )
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int expectedSize = 11;)
 
             TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == expectedSize,
                                          "The parameters vector is not the correct length.\n  parameters: " +

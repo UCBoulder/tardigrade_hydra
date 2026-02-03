@@ -329,12 +329,10 @@ namespace tardigradeHydra {
      */
     floatVector hydraBase::getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
                                                const unsigned int &upperIndex) {
-        const unsigned int dim                      = getDimension();
-        const unsigned int sot_dim                  = getSOTDimension();
+        const unsigned int dim     = getDimension();
+        const unsigned int sot_dim = getSOTDimension();
 
-        TARDIGRADE_ERROR_TOOLS_EVAL(
-            const unsigned int local_num_configurations = configurations.size() / sot_dim;
-        )
+        TARDIGRADE_ERROR_TOOLS_EVAL(const unsigned int local_num_configurations = configurations.size() / sot_dim;)
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             configurations.size() % sot_dim == 0,

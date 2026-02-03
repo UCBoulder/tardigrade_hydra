@@ -791,10 +791,8 @@ namespace tardigradeHydra {
             // Assume 3D
             constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
-            TARDIGRADE_ERROR_TOOLS_EVAL(
-                constexpr unsigned int tot_dim = sot_dim * dim;
-                constexpr unsigned int fot_dim = tot_dim * dim;
-            )
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dim = sot_dim * dim;
+                                        constexpr unsigned int fot_dim = tot_dim * dim;)
 
             TARDIGRADE_ERROR_TOOLS_CHECK(greenLagrangeStrain.size() == sot_dim,
                                          "The green lagrange strain must have a length of 9");
@@ -1058,9 +1056,7 @@ namespace tardigradeHydra {
             // Assume 3D
             constexpr unsigned int dim     = 3;
             constexpr unsigned int sot_dim = dim * dim;
-            TARDIGRADE_ERROR_TOOLS_EVAL(
-                constexpr unsigned int tot_dim = sot_dim * dim;
-            )
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dim = sot_dim * dim;)
 
             TARDIGRADE_ERROR_TOOLS_CHECK(invCGamma.size() == tot_dim, "invCGamma must have a size of 27");
 
