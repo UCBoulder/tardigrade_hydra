@@ -237,7 +237,7 @@ namespace tardigradeHydra {
         void clearViscoplasticDamping();
 
         //! Get the value of the viscoplastic damping
-        const floatType getViscoplasticDamping() {return _viscoplastic_damping_factor;}
+        const floatType getViscoplasticDamping() { return _viscoplastic_damping_factor; }
 
         const bool getViscoplasticDampingSet();
 
@@ -282,7 +282,7 @@ namespace tardigradeHydra {
          * \param add_endline: Whether to append a newline character after the value
          */
         template <class v_type>
-        void addToFailureOutput(const v_type &v, bool add_endline = true){
+        void addToFailureOutput(const v_type &v, bool add_endline = true) {
             _failure_output << v;
             if (add_endline) {
                 _failure_output << "\n";
@@ -318,23 +318,16 @@ namespace tardigradeHydra {
         const floatType getScaledTime() { return _scaled_time; }
 
         //! Get the vlaue of the scaled change in time
-        const floatType getScaledDeltaTime() {
-            return _scaled_deltaTime;
-        }
+        const floatType getScaledDeltaTime() { return _scaled_deltaTime; }
 
         //! Get the value of the scaled current temperature
-        const floatType getScaledTemperature() {return _scaled_temperature;}
+        const floatType getScaledTemperature() { return _scaled_temperature; }
 
         //! Get the value of the scaled current deformation gradient
-        const floatVector *
-        getScaledDeformationGradient() {
-            return &_scaled_deformationGradient;
-        }
+        const floatVector *getScaledDeformationGradient() { return &_scaled_deformationGradient; }
 
         //! Get the value of the scaled current additional DOF
-        const floatVector *getScaledAdditionalDOF() {
-            return &_scaled_additionalDOF;
-        }
+        const floatVector *getScaledAdditionalDOF() { return &_scaled_additionalDOF; }
 
         floatVector *getMutableResidual();
 
@@ -355,9 +348,7 @@ namespace tardigradeHydra {
         void setToleranceScaleFactor(floatType factor);
 
         //! Get the scale factor for the tolerance
-        const floatType getToleranceScaleFactor() {
-            return _residual_scale_factor;
-        }
+        const floatType getToleranceScaleFactor() { return _residual_scale_factor; }
 
         SolverBase *solver =
             &_solver;  //!< The class which performs the material point solve TODO: Make this an incoming pointer
@@ -368,9 +359,7 @@ namespace tardigradeHydra {
         // Setters that the user may need to access but not override
 
         //! Reset the tolerance scale factor to 1
-        const void resetToleranceScaleFactor() {
-            _residual_scale_factor = 1.0;
-        }
+        const void resetToleranceScaleFactor() { _residual_scale_factor = 1.0; }
 
         void setStress(const floatVector &stress);
 
@@ -491,7 +480,7 @@ namespace tardigradeHydra {
         //! The current deformation gradient scaled by the scaling factor
         secondOrderTensor _scaled_deformationGradient;
 
-        //! The current additional degrees of freedom scaled by the scaling factor 
+        //! The current additional degrees of freedom scaled by the scaling factor
         floatVector _scaled_additionalDOF;
 
         //! The number of configurations

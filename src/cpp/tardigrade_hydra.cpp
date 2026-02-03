@@ -75,7 +75,6 @@ namespace tardigradeHydra {
      * Get a SetDataStorage object for the stress
      */
     hydraBase::SetDataStorageIteration<secondOrderTensor> hydraBase::get_SetDataStorage_stress() {
-
         return hydraBase::SetDataStorageIteration<secondOrderTensor>(&_stress, this);
     }
 
@@ -89,8 +88,7 @@ namespace tardigradeHydra {
 
     //! Get the current residual index
     const unsigned int hydraBase::getCurrentResidualIndex() {
-        TARDIGRADE_ERROR_TOOLS_CHECK(currentResidualIndexMeaningful(),
-                                     "The current residual index isn't meaningful");
+        TARDIGRADE_ERROR_TOOLS_CHECK(currentResidualIndexMeaningful(), "The current residual index isn't meaningful");
         return _current_residual_index;
     }
 
@@ -99,7 +97,7 @@ namespace tardigradeHydra {
      *
      * \param &value: The verbosity level of the failure (defaults to zero)
      */
-    void hydraBase::setFailureVerbosityLevel(const unsigned int &value) {_failure_verbosity_level = value;}
+    void hydraBase::setFailureVerbosityLevel(const unsigned int &value) { _failure_verbosity_level = value; }
 
     /*!
      * Add a string to the failure output string
@@ -149,7 +147,6 @@ namespace tardigradeHydra {
      * Be careful!
      */
     floatVector *hydraBase::getMutableResidual() {
-
         if (_allow_modify_global_residual) {
             return &_residual.second;
         }
@@ -165,7 +162,6 @@ namespace tardigradeHydra {
      * Be careful!
      */
     floatVector *hydraBase::getMutableJacobian() {
-
         if (_allow_modify_global_jacobian) {
             return &_jacobian.second;
         }
@@ -181,7 +177,6 @@ namespace tardigradeHydra {
      * Be careful!
      */
     floatVector *hydraBase::getMutabledRdT() {
-
         if (_allow_modify_global_dRdT) {
             return &_dRdT.second;
         }
@@ -197,7 +192,6 @@ namespace tardigradeHydra {
      * Be careful!
      */
     floatVector *hydraBase::getMutabledRdF() {
-
         if (_allow_modify_global_dRdF) {
             return &_dRdF.second;
         }
@@ -213,7 +207,6 @@ namespace tardigradeHydra {
      * Be careful!
      */
     floatVector *hydraBase::getMutabledRdAdditionalDOF() {
-
         if (_allow_modify_global_dRdAdditionalDOF) {
             return &_dRdAdditionalDOF.second;
         }
@@ -224,9 +217,7 @@ namespace tardigradeHydra {
     /*!
      * Return if the current residual index is meaningful or not
      */
-    const bool hydraBase::currentResidualIndexMeaningful() {
-        return _current_residual_index_set;
-    }
+    const bool hydraBase::currentResidualIndexMeaningful() { return _current_residual_index_set; }
 
     /*!
      * Loosen the convergence tolerance for the next iteration
@@ -235,7 +226,6 @@ namespace tardigradeHydra {
      * \param factor: The scale factor to be applied to the current tolerance
      */
     void hydraBase::setToleranceScaleFactor(floatType factor) {
-
         if (factor > _residual_scale_factor) {
             _residual_scale_factor = factor;
         }
@@ -245,7 +235,6 @@ namespace tardigradeHydra {
      * Update the additional state variable vector
      */
     void hydraBase::updateAdditionalStateVariables() {
-
         for (auto v = std::begin(*getResidualClasses()); v != std::end(*getResidualClasses()); ++v) {
             (*v)->updateAdditionalStateVariables(_additionalStateVariables.second);
         }
@@ -1769,7 +1758,6 @@ namespace tardigradeHydra {
      * Function to throw for an unexpected error. A user should never get here!
      */
     void hydraBase::unexpectedError() {
-
         TARDIGRADE_ERROR_TOOLS_CATCH(
             throw std::runtime_error("You shouldn't have gotten here. If you aren't developing the code then "
                                      "contact a developer with the stack trace."))
@@ -1781,7 +1769,6 @@ namespace tardigradeHydra {
      * \param &X: The unknown vector
      */
     void hydraBase::setX(const floatVector &X) {
-
         _X.second = X;
 
         _X.first = true;
@@ -1792,36 +1779,28 @@ namespace tardigradeHydra {
      *
      * \param value: The updated value
      */
-    void hydraBase::setAllowModifyGlobalResidual(const bool value) {
-        _allow_modify_global_residual = value;
-    }
+    void hydraBase::setAllowModifyGlobalResidual(const bool value) { _allow_modify_global_residual = value; }
 
     /*!
      * Set a flag for if the global jacobian can be modified
      *
      * \param value: The updated value
      */
-    void hydraBase::setAllowModifyGlobalJacobian(const bool value) {
-        _allow_modify_global_jacobian = value;
-    }
+    void hydraBase::setAllowModifyGlobalJacobian(const bool value) { _allow_modify_global_jacobian = value; }
 
     /*!
      * Set a flag for if the global dRdT can be modified
      *
      * \param value: The updated value
      */
-    void hydraBase::setAllowModifyGlobaldRdT(const bool value) {
-        _allow_modify_global_dRdT = value;
-    }
+    void hydraBase::setAllowModifyGlobaldRdT(const bool value) { _allow_modify_global_dRdT = value; }
 
     /*!
      * Set a flag for if the global dRdF can be modified
      *
      * \param value: The updated value
      */
-    void hydraBase::setAllowModifyGlobaldRdF(const bool value) {
-        _allow_modify_global_dRdF = value;
-    }
+    void hydraBase::setAllowModifyGlobaldRdF(const bool value) { _allow_modify_global_dRdF = value; }
 
     /*!
      * Set a flag for if the global dRdAdditionalDOF can be modified
