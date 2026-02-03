@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFA
 
     RelaxedSolverMock solver;
     SolverBaseMock    internal_solver;
-    solver.setInternalSolver(&internal_solver);
+    solver.internal_solver = &internal_solver;
     internal_solver.hydra = &hydra;
 
     hydra.solver = &solver;
@@ -442,7 +442,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve, *boost::unit_test::
     // Form the relaxed solver
     SolverBaseMock    internal_solver;
     RelaxedSolverMock solver;
-    solver.setInternalSolver(&internal_solver);
+    solver.internal_solver = &internal_solver;
     internal_solver.hydra = &hydra;
 
     hydra.solver = &solver;
@@ -638,7 +638,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve2, *boost::unit_test:
     // Form the relaxed solver
     SolverBaseMock    internal_solver;
     RelaxedSolverMock solver;
-    solver.setInternalSolver(&internal_solver);
+    solver.internal_solver = &internal_solver;
     internal_solver.hydra = &hydra;
 
     hydra.solver = &solver;

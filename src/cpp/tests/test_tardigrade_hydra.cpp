@@ -3803,8 +3803,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
         virtual void callResidualPostSubcyclerFailure() override { num_callResidualPostSubcyclerFailureCalls++; }
 
-        void setInternalSolver(tardigradeHydra::SolverBase *_solver) { internal_solver = _solver; }
-
         void reset() override { num_callReset++; }
     };
 
@@ -3883,7 +3881,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
 
     SubcyclerSolverMock solver;
     SolverBaseMock      internal_solver;
-    solver.setInternalSolver(&internal_solver);
+    solver.internal_solver = &internal_solver;
     internal_solver.hydra = &hydra;
     solver.hydra          = &hydra;
     hydra.solver          = &solver;

@@ -48,8 +48,6 @@ namespace tardigradeHydra {
 
         bool checkRelaxedConvergence();
 
-        void setInternalSolver(SolverBase *_solver);
-
         virtual void performRelaxedSolve();
 
         SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
