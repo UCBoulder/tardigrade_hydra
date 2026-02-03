@@ -1,13 +1,13 @@
 /**
  ******************************************************************************
- * \file tardigrade_DeformationBase.h
+ * \file tardigrade_DeformationDecompositionBase.h
  ******************************************************************************
  * The base class for defining multiplicatively decomposed deformation
  ******************************************************************************
  */
 
-#ifndef TARDIGRADE_DEFORMATIONBASE_H
-#define TARDIGRADE_DEFORMATIONBASE_H
+#ifndef TARDIGRADE_DEFORMATIONDECOMPOSITIONBASE_H
+#define TARDIGRADE_DEFORMATIONDECOMPOSITIONBASE_H
 
 namespace tardigradeHydra {
 
@@ -15,7 +15,7 @@ namespace tardigradeHydra {
      * Base class for the decomposition of deformation
      */
     template <unsigned int _leading_rows, unsigned int _size, unsigned int _dim>
-    class DeformationBase {
+    class DeformationDecompositionBase {
        public:
         static constexpr unsigned int leading_rows =
             _leading_rows;                           //!< The number of rows in the leading configuration
@@ -23,7 +23,7 @@ namespace tardigradeHydra {
                                                      //!< and columns for trailing configurations
         static constexpr unsigned int dim  = _dim;   //!< The dimension of the gradient
 
-        DeformationBase() {
+        DeformationDecompositionBase() {
             /*!
              * The base class for multiplicative deformation decomposition
              *
@@ -649,6 +649,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-#include "tardigrade_DeformationBase.cpp"
+#include "tardigrade_DeformationDecompositionBase.cpp"
 
 #endif

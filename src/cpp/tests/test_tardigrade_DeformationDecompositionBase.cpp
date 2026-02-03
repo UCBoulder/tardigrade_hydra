@@ -1,12 +1,12 @@
 /**
- * \file test_tardigrade_DeformationBase.cpp
+ * \file test_tardigrade_DeformationDecompositionBase.cpp
  *
- * Tests for tardigrade_DeformationBase
+ * Tests for tardigrade_DeformationDecompositionBase
  */
 
-#include <tardigrade_DeformationBase.h>
+#include <tardigrade_DeformationDecompositionBase.h>
 
-#define BOOST_TEST_MODULE test_tardigrade_DeformationBase
+#define BOOST_TEST_MODULE test_tardigrade_DeformationDecompositionBase
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -47,9 +47,9 @@ bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2,
 }
 
 BOOST_AUTO_TEST_CASE(test_denseMatrixMultiply, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    class DeformationBase_mock : public tardigradeHydra::DeformationBase<1, 2, 3> {
+    class DeformationDecompositionBase_mock : public tardigradeHydra::DeformationDecompositionBase<1, 2, 3> {
        public:
-        DeformationBase_mock() {}
+        DeformationDecompositionBase_mock() {}
 
         void public_denseMatrixMultiply(const std::vector<double> &A, const std::vector<double> &B,
                                         std::vector<double> &C) {
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(test_denseMatrixMultiply, *boost::unit_test::tolerance(DEFA
 
     std::vector<double> result(8, -1);
 
-    DeformationBase_mock deformation;
+    DeformationDecompositionBase_mock deformation;
 
     deformation.public_denseMatrixMultiply(A, B, result);
 
@@ -74,9 +74,9 @@ BOOST_AUTO_TEST_CASE(test_denseMatrixMultiply, *boost::unit_test::tolerance(DEFA
 }
 
 BOOST_AUTO_TEST_CASE(test_denseMatrixMultiply_2, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    class DeformationBase_mock : public tardigradeHydra::DeformationBase<1, 2, 3> {
+    class DeformationDecompositionBase_mock : public tardigradeHydra::DeformationDecompositionBase<1, 2, 3> {
        public:
-        DeformationBase_mock() {}
+        DeformationDecompositionBase_mock() {}
 
         void public_denseMatrixMultiply(const std::vector<double> &A, const std::vector<double> &B,
                                         std::vector<double> &C) {
@@ -95,16 +95,16 @@ BOOST_AUTO_TEST_CASE(test_denseMatrixMultiply_2, *boost::unit_test::tolerance(DE
 
     std::vector<double> result(30, -1);
 
-    DeformationBase_mock deformation;
+    DeformationDecompositionBase_mock deformation;
     deformation.public_denseMatrixMultiply(A, B, result);
 
     BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
 }
 
 BOOST_AUTO_TEST_CASE(test_assembledInverseAdA, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    class DeformationBase_mock : public tardigradeHydra::DeformationBase<2, 3, 4> {
+    class DeformationDecompositionBase_mock : public tardigradeHydra::DeformationDecompositionBase<2, 3, 4> {
        public:
-        DeformationBase_mock() {}
+        DeformationDecompositionBase_mock() {}
 
         void public_assembledAinversedA(const std::vector<double> &A_inverse, std::vector<double> &B) {
             _assembledAinversedA(std::begin(A_inverse), std::end(A_inverse), std::begin(B), std::end(B));
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(test_assembledInverseAdA, *boost::unit_test::tolerance(DEFA
 
     std::vector<double> result(81, 0);
 
-    DeformationBase_mock deformation;
+    DeformationDecompositionBase_mock deformation;
     deformation.public_assembledAinversedA(A_inverse, result);
 
     {
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(test_getNetConfiguration, *boost::unit_test::tolerance(DEFA
 
     std::vector<double> result(16, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.getNetConfiguration(std::begin(configurations), std::end(configurations), std::begin(result),
                                     std::end(result));
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(test_getLeadingNetConfigurationJacobian, *boost::unit_test:
     std::vector<double> jacobian(256, 0);
     std::vector<double> answer(256, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.getLeadingNetConfigurationJacobian(std::begin(configurations), std::end(configurations),
                                                    std::begin(jacobian), std::end(jacobian));
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(test_getTrailingNetConfigurationJacobian, *boost::unit_test
 
     std::vector<double> jacobian(256, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
     std::vector<double>                       answer(256, 0);
 
     deformation.getTrailingNetConfigurationJacobian(std::begin(configurations), std::end(configurations),
@@ -394,7 +394,7 @@ BOOST_AUTO_TEST_CASE(test_getNetConfigurationJacobian, *boost::unit_test::tolera
     for (unsigned int c = 0; c < 5; ++c) {
         std::vector<double> jacobian(256, 0);
 
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+        tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
         deformation.getNetConfigurationJacobian(std::begin(configurations), std::end(configurations), c,
                                                 std::begin(jacobian), std::end(jacobian));
@@ -531,7 +531,7 @@ BOOST_AUTO_TEST_CASE(test_getNetConfigurationGradient, *boost::unit_test::tolera
 
     std::vector<double> result(80, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.getNetConfigurationGradient(std::begin(configurations), std::end(configurations),
                                             std::begin(configuration_gradients), std::end(configuration_gradients),
@@ -628,7 +628,7 @@ BOOST_AUTO_TEST_CASE(test_getLeadingNetConfigurationGradientConfigurationJacobia
 
     std::vector<double> jacobian(1280, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.getLeadingNetConfigurationGradientConfigurationJacobian(std::begin(configurations),
                                                                         std::end(configurations),
@@ -758,7 +758,7 @@ BOOST_AUTO_TEST_CASE(test_getTrailingNetConfigurationGradientConfigurationJacobi
 
     std::vector<double> jacobian(1280, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.getTrailingNetConfigurationGradientConfigurationJacobian(std::begin(configurations),
                                                                          std::end(configurations),
@@ -891,7 +891,7 @@ BOOST_AUTO_TEST_CASE(test_getNetConfigurationGradientConfigurationJacobian, *boo
 
     for (unsigned int c = 0; c < 5; ++c) {
         {
-            tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+            tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
             deformation.getNetConfigurationGradientConfigurationJacobian(std::begin(configurations),
                                                                          std::end(configurations),
@@ -1022,7 +1022,7 @@ BOOST_AUTO_TEST_CASE(test_getLeadingNetConfigurationGradientConfigurationGradien
 
     std::vector<double> jacobian(6400, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.getLeadingNetConfigurationGradientConfigurationGradientJacobian(
         std::begin(configurations), std::end(configurations), std::begin(configuration_gradients),
@@ -1150,7 +1150,7 @@ BOOST_AUTO_TEST_CASE(test_getTrailingNetConfigurationGradientConfigurationGradie
 
     std::vector<double> jacobian(6400, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.getTrailingNetConfigurationGradientConfigurationGradientJacobian(
         std::begin(configurations), std::end(configurations), std::begin(configuration_gradients),
@@ -1280,7 +1280,7 @@ BOOST_AUTO_TEST_CASE(test_getNetConfigurationGradientConfigurationGradientJacobi
 
     double eps = 1e-6;
     for (unsigned int c = 0; c < 5; ++c) {
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+        tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
         deformation.getNetConfigurationGradientConfigurationGradientJacobian(std::begin(configurations),
                                                                              std::end(configurations),
@@ -1346,7 +1346,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfiguration, *boost::unit_test::toler
 
     std::vector<double> result(12, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.solveForLeadingConfiguration(std::begin(total_configuration), std::end(total_configuration),
                                              std::begin(configurations), std::end(configurations), std::begin(result),
@@ -1377,7 +1377,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationTotalConfigurationJacobian
         -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
         +1.863538331e-01, +1.383403597e+00};
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
     std::vector<double>                       jacobian(144, 0);
     deformation.solveForLeadingConfigurationTotalConfigurationJacobian(std::begin(total_configuration),
                                                                        std::end(total_configuration),
@@ -1439,7 +1439,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationConfigurationJacobian, *bo
     double eps = 1e-5;
 
     for (unsigned int c = 0; c < 5; ++c) {
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+        tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
         std::vector<double>                       jacobian(192, 0);
         deformation.solveForLeadingConfigurationConfigurationJacobian(std::begin(total_configuration),
                                                                       std::end(total_configuration),
@@ -1592,7 +1592,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradient, *boost::unit_tes
 
     std::vector<double> result(60, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.solveForLeadingConfigurationGradient(std::begin(total_configuration_gradient),
                                                      std::end(total_configuration_gradient),
@@ -1710,7 +1710,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradientTotalConfiguration
 
     std::vector<double> jacobian(3600, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
         std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
@@ -1860,7 +1860,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradientLeadingConfigurati
 
     std::vector<double> jacobian(720, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
         std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
@@ -2008,7 +2008,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradientConfigurationJacob
     std::vector<double> jacobian(960, 0);
 
     for (unsigned int c = 0; c < 5; ++c) {
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+        tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
         deformation.solveForLeadingConfigurationGradientConfigurationJacobian(
             std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
@@ -2163,7 +2163,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradientConfigurationGradi
     std::vector<double> jacobian(4800, 0);
 
     for (unsigned int c = 0; c < 5; ++c) {
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+        tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
         deformation.solveForLeadingConfigurationGradientConfigurationGradientJacobian(
             std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
@@ -2327,7 +2327,7 @@ BOOST_AUTO_TEST_CASE(test_solveForAllLeading, *boost::unit_test::tolerance(DEFAU
     std::vector<double> leading_configuration_result(12, 0);
     std::vector<double> leading_configuration_gradient_result(60, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.solveForAllLeading(std::begin(total_configuration), std::end(total_configuration),
                                    std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
@@ -2468,7 +2468,7 @@ BOOST_AUTO_TEST_CASE(test_solveForAllLeadingJacobians, *boost::unit_test::tolera
     std::vector<double> leading_configuration_gradient_configurations_J_result(60 * 5 * 4 * 4, 0);
     std::vector<double> leading_configuration_gradient_configuration_gradients_J_result(60 * 5 * 4 * 4 * 5, 0);
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
     deformation.solveForAllLeadingJacobians(std::begin(total_configuration), std::end(total_configuration),
                                             std::begin(total_configuration_gradient),
