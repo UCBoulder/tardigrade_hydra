@@ -153,10 +153,10 @@ namespace tardigradeHydra {
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > dHigherOrderStressdF_map(
                 dHigherOrderStressdF.data(), tot_dim, sot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > dHigherOrderStressdGradChi_map(
-                dHigherOrderStressdGradChi.data(), tot_dim, sot_dim);
+                dHigherOrderStressdGradChi.data(), tot_dim, tot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> >
                 dHigherOrderStressdReferenceHigherOrderStress_map(dHigherOrderStressdReferenceHigherOrderStress.data(),
-                                                                  tot_dim, sot_dim);
+                                                                  tot_dim, tot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> >
                 dReferenceHigherOrderStressdF_map(dReferenceHigherOrderStressdF.data(), tot_dim, sot_dim);
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> >
