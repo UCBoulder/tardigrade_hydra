@@ -29,8 +29,6 @@
 #include "tardigrade_SetDataStorage.h"
 #include "tardigrade_SolverBase.h"
 #include "tardigrade_SubcyclerSolver.h"
-// #include"tardigrade_PreconditionerBase.h"
-// #include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra {
 
