@@ -3882,9 +3882,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_evaluate3, *boost::unit_test::tolerance(DEFA
     SubcyclerSolverMock solver;
     SolverBaseMock      internal_solver;
     solver.internal_solver = &internal_solver;
-    internal_solver.hydra = &hydra;
-    solver.hydra          = &hydra;
-    hydra.solver          = &solver;
+    internal_solver.hydra  = &hydra;
+    solver.hydra           = &hydra;
+    hydra.solver           = &solver;
 
     hydra.evaluate();
 

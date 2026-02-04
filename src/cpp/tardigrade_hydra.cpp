@@ -9,7 +9,7 @@
 
 #include "tardigrade_hydra.h"
 
-#include "tardigrade_SolverStepBase.h"
+#include "tardigrade_DeformationDecompositionBase.h"  //TEMP
 
 namespace tardigradeHydra {
 
@@ -482,6 +482,9 @@ namespace tardigradeHydra {
     /*!
      * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
      *
+     * TODO: Determine if returning identity for an equal lower and upper configuration is desirable
+     * TODO: Generalize for a differently shaped leading configuration
+     *
      * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
      * F^{\text{upperIndex-1}}_{\bar{I}I} \f$ \param &configurations: The configurations to operate on \param
      * &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1) \param
@@ -490,45 +493,21 @@ namespace tardigradeHydra {
      */
     floatVector hydraBase::getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
                                                const unsigned int &upperIndex) {
-        const unsigned int dim     = getDimension();
-        const unsigned int sot_dim = getSOTDimension();
+        constexpr unsigned int dim     = 3;
+        constexpr unsigned int sot_dim = dim * dim;
 
-        TARDIGRADE_ERROR_TOOLS_EVAL(const unsigned int local_num_configurations = configurations.size() / sot_dim;)
+        secondOrderTensor Fsc(dim * dim, 0);
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            configurations.size() % sot_dim == 0,
-            "The configurations vector must be a multiple of the size of a second order tensor")
+        if (lowerIndex == upperIndex) {
+            for (unsigned int i = 0; i < dim; ++i) {
+                Fsc[dim * i + i] = 1;
+            }
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(upperIndex <= local_num_configurations,
-                                     build_upper_index_out_of_range_error_string(upperIndex, local_num_configurations))
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(lowerIndex <= upperIndex,
-                                     build_lower_index_out_of_range_error_string(lowerIndex, upperIndex))
-
-        secondOrderTensor Fsc(sot_dim, 0);
-        for (unsigned int i = 0; i < 3; i++) {
-            Fsc[dim * i + i] = 1.;
-        }
-
-#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-        floatVector temp;
-        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0);
-#else
-        auto Fsc_mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(Fsc.data());
-        auto mat     = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(configurations.data());
-#endif
-
-        for (unsigned int i = lowerIndex; i < upperIndex; i++) {
-#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-            temp = Fsc;
-
-            kernel(&configurations[sot_dim * i], &temp[0], &Fsc[0]);
-#else
-            new (&mat)
-                Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(configurations.data() + sot_dim * i,
-                                                                                   3, 3);
-            Fsc_mat *= mat;
-#endif
+        } else {
+            DeformationDecompositionBase<dim, dim, dim> decomposition;
+            decomposition.getNetConfiguration(std::begin(configurations) + sot_dim * lowerIndex,
+                                              std::begin(configurations) + sot_dim * upperIndex, std::begin(Fsc),
+                                              std::end(Fsc));
         }
 
         return Fsc;

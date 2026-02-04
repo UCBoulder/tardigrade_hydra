@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE(test_getTrailingNetConfigurationJacobian, *boost::unit_test
     std::vector<double> jacobian(256, 0);
 
     tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
-    std::vector<double>                       answer(256, 0);
+    std::vector<double>                                    answer(256, 0);
 
     deformation.getTrailingNetConfigurationJacobian(std::begin(configurations), std::end(configurations),
                                                     std::begin(jacobian), std::end(jacobian));
@@ -1378,7 +1378,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationTotalConfigurationJacobian
         +1.863538331e-01, +1.383403597e+00};
 
     tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
-    std::vector<double>                       jacobian(144, 0);
+    std::vector<double>                                    jacobian(144, 0);
     deformation.solveForLeadingConfigurationTotalConfigurationJacobian(std::begin(total_configuration),
                                                                        std::end(total_configuration),
                                                                        std::begin(configurations),
@@ -1440,7 +1440,7 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationConfigurationJacobian, *bo
 
     for (unsigned int c = 0; c < 5; ++c) {
         tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
-        std::vector<double>                       jacobian(192, 0);
+        std::vector<double>                                    jacobian(192, 0);
         deformation.solveForLeadingConfigurationConfigurationJacobian(std::begin(total_configuration),
                                                                       std::end(total_configuration),
                                                                       std::begin(configurations),
