@@ -17,37 +17,37 @@ namespace tardigradeHydra {
     template <unsigned int _leading_rows, unsigned int _size, unsigned int _dim>
     class DeformationDecompositionBase {
        public:
-        static constexpr unsigned int leading_rows =
-            _leading_rows;                           //!< The number of rows in the leading configuration
-        static constexpr unsigned int size = _size;  //!< The number of columns in the leading configuration and rows
-                                                     //!< and columns for trailing configurations
-        static constexpr unsigned int dim  = _dim;   //!< The dimension of the gradient
+        //! The number of rows in the leading configuration
+        static constexpr unsigned int leading_rows = _leading_rows;
+        //! The number of columns in the leading configuration and rows and columns for trailing configurations
+        static constexpr unsigned int size = _size;
+        //! The dimension of the gradient
+        static constexpr unsigned int dim  = _dim;
 
-        DeformationDecompositionBase() {
-            /*!
-             * The base class for multiplicative deformation decomposition
-             *
-             * Provides utilities for decomposition which can then be used
-             * to create specific approaches (e.g., classical continuum,
-             * micromorphic continuum, etc.)
-             *
-             * The template parameters define the fundamental dimensions of
-             * the deformation. If the deformation can be written as
-             *
-             * \f$ A_{ij} = B_{ik} C_{kj} \f$
-             *
-             * If the total configuration \f$ A \f$ has a dimension of
-             * leading_rows x size then \f$ B \f$ will have a dimension
-             * of leading_size x size and \f$ C \f$ will have a dimension
-             * of size x size.
-             *
-             * The gradient can be written as
-             *
-             * \f$ A_{ij,a} = B_{ik,a} C_{kj} + B_{ik} C_{kj,a} \f$
-             *
-             * where the index \f$ a \f$ will have a dimension of dim.
-             */
-        }
+        /*!
+         * The base class for multiplicative deformation decomposition
+         *
+         * Provides utilities for decomposition which can then be used
+         * to create specific approaches (e.g., classical continuum,
+         * micromorphic continuum, etc.)
+         *
+         * The template parameters define the fundamental dimensions of
+         * the deformation. If the deformation can be written as
+         *
+         * \f$ A_{ij} = B_{ik} C_{kj} \f$
+         *
+         * If the total configuration \f$ A \f$ has a dimension of
+         * leading_rows x size then \f$ B \f$ will have a dimension
+         * of leading_size x size and \f$ C \f$ will have a dimension
+         * of size x size.
+         *
+         * The gradient can be written as
+         *
+         * \f$ A_{ij,a} = B_{ik,a} C_{kj} + B_{ik} C_{kj,a} \f$
+         *
+         * where the index \f$ a \f$ will have a dimension of dim.
+         */
+        DeformationDecompositionBase() { }
 
         template <class configuration_iterator, class output_iterator>
         void getNetConfiguration(const configuration_iterator &configurations_begin,
@@ -81,6 +81,12 @@ namespace tardigradeHydra {
                                          const configuration_iterator &configurations_end,
                                          const unsigned int &configuration_index, output_iterator output_begin,
                                          output_iterator output_end);
+
+        template <class configuration_iterator, class output_iterator>
+        void accumulateNetConfigurationJacobian(const configuration_iterator &configurations_begin,
+                                                const configuration_iterator &configurations_end,
+                                                const unsigned int &configuration_index, output_iterator output_begin,
+                                                output_iterator output_end,const unsigned int output_offset=0);
 
         template <class configuration_iterator, class configuration_gradient_iterator, class Aminus_iterator,
                   class dAminusdX_iterator, class output_iterator>
@@ -482,11 +488,13 @@ namespace tardigradeHydra {
                                                                          const unsigned int    output_offset=0);
 
         template <class Aplus_iterator, class Aminus_iterator, class output_iterator>
-        void _assemble_output_getNetConfigurationJacobian(const Aplus_iterator  &Aplus_begin,
-                                                          const Aplus_iterator  &Aplus_end,
-                                                          const Aminus_iterator &Aminus_begin,
-                                                          const Aminus_iterator &Aminus_end,
-                                                          output_iterator output_begin, output_iterator output_end);
+        void _assemble_output_accumulateNetConfigurationJacobian(const Aplus_iterator  &Aplus_begin,
+                                                                 const Aplus_iterator  &Aplus_end,
+                                                                 const Aminus_iterator &Aminus_begin,
+                                                                 const Aminus_iterator &Aminus_end,
+                                                                 output_iterator        output_begin,
+                                                                 output_iterator        output_end,
+                                                                 const unsigned int     output_offset=0);
 
         template <class dAminusdX_iterator, class output_iterator>
         void _assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian(
