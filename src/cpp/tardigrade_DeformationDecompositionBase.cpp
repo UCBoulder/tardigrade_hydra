@@ -258,22 +258,22 @@ namespace tardigradeHydra {
         }
     }
 
+    /*!
+     * Assemble the jacobian of getLeadingNetConfigurationJacobian
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
+     *
+     * \param &Aminus_begin: The starting iterator of the trailing configuration
+     * \param &Aminus_end: The stopping iterator of the trailing configuration
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset in the output matrix
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_getLeadingNetConfigurationJacobian(
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end, output_iterator output_begin,
-        output_iterator output_end) {
-        /*!
-         * Assemble the jacobian of getLeadingNetConfigurationJacobian
-         *
-         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
-         *
-         * \param &Aminus_begin: The starting iterator of the trailing configuration
-         * \param &Aminus_end: The stopping iterator of the trailing configuration
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
+        output_iterator output_end, const unsigned int output_offset) {
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         std::fill(output_begin, output_end, output_type());
@@ -281,7 +281,7 @@ namespace tardigradeHydra {
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
-                    *(output_begin + size * size * size * i + size * size * j + size * i + k) +=
+                    *(output_begin + size * size * size * i + size * size * j + size * i + k + output_offset) +=
                         (*(Aminus_begin + size * k + j));
                 }
             }

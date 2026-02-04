@@ -459,7 +459,8 @@ namespace tardigradeHydra {
         void _assemble_output_getLeadingNetConfigurationJacobian(const Aminus_iterator &Aminus_begin,
                                                                  const Aminus_iterator &Aminus_end,
                                                                  output_iterator        output_begin,
-                                                                 output_iterator        output_end);
+                                                                 output_iterator        output_end,
+                                                                 const unsigned int     output_offset = 0);
 
         template <class Aplus_iterator, class output_iterator>
         void _assemble_output_getTrailingNetConfigurationJacobian(const Aplus_iterator &Aplus_begin,
