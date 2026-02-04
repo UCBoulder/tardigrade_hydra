@@ -354,30 +354,27 @@ namespace tardigradeHydra {
                                                                    output_end, output_offset);
     }
 
+    /*!
+     * Assemble the output for accumulateTrailingNetConfigurationJacobian
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [D] \f$
+     *
+     * \param &Aplus_begin: The starting iterator of the leading configurations
+     * \param &Aplus_end: The stopping iterator of the leading configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset to shift the rows in the output where the result is accumulated
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aplus_iterator, class output_iterator>
-    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_getTrailingNetConfigurationJacobian(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateTrailingNetConfigurationJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, output_iterator output_begin,
-        output_iterator output_end) {
-        /*!
-         * Assemble the output for getTrailingNetConfigurationJacobian
-         *
-         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [D] \f$
-         *
-         * \param &Aplus_begin: The starting iterator of the leading configurations
-         * \param &Aplus_end: The stopping iterator of the leading configurations
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
-        using output_type = typename std::iterator_traits<output_iterator>::value_type;
-
-        std::fill(output_begin, output_end, output_type());
+        output_iterator output_end, const unsigned int output_offset) {
 
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
-                    *(output_begin + size * size * size * i + size * size * j + size * k + j) +=
+                    *(output_begin + size * size * size * i + size * size * j + size * k + j + output_offset) +=
                         (*(Aplus_begin + size * i + k));
                 }
             }
@@ -411,11 +408,36 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(configurations_end != configurations_begin,
                                      "The configurations vector has no size");
 
+        std::fill(output_begin, output_end, output_type());
+
+        accumulateTrailingNetConfigurationJacobian(configurations_begin,configurations_end,output_begin,output_end);
+
+    }
+
+    /*!
+     * Compute the Jacobian of a net configuration with respect to the first configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [D] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The shift in the output index which will change the column the output is stored in
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class configuration_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::accumulateTrailingNetConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset) {
+
+        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
         // Handle the case where the configuration array only contains one configuration
         if (configurations_end == (configurations_begin + size * size)) {
-            std::fill(output_begin, output_end, output_type());
             for (unsigned int i = 0; i < size * size; ++i) {
-                *(output_begin + size * size * i + i) += 1;
+                *(output_begin + size * size * i + i + output_offset) += 1;
             }
             return;
         }
@@ -424,8 +446,8 @@ namespace tardigradeHydra {
 
         getNetConfiguration(configurations_begin, configurations_end - size * size, std::begin(Aplus), std::end(Aplus));
 
-        _assemble_output_getTrailingNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), output_begin,
-                                                             output_end);
+        _assemble_output_accumulateTrailingNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), output_begin,
+                                                             output_end,output_offset);
     }
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
