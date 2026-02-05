@@ -529,22 +529,22 @@ namespace tardigradeHydra {
         }
     }
 
+    /*!
+     * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param &configuration_index: The index of the configuration to compute the Jacobian for
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end) {
-        /*!
-         * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
-         *
-         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
-         *
-         * \param &configurations_begin: The starting iterator of the configurations
-         * \param &configurations_end: The stopping iterator of the configurations
-         * \param &configuration_index: The index of the configuration to compute the Jacobian for
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
 
         using output_type        = typename std::iterator_traits<output_iterator>::value_type;
 
@@ -583,16 +583,43 @@ namespace tardigradeHydra {
                                      const configuration_iterator &configurations_end,
                                      output_iterator output_begin,
                                      output_iterator output_end){
+        const unsigned int num_configurations =
+            (unsigned int)(configurations_end - configurations_begin) / (size * size);
+
+        getNetConfigurationJacobian(configurations_begin, configurations_end,
+                                    output_begin, output_end, 0, num_configurations * size * size);
+    }
+
+    /*!
+     * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class configuration_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(const configuration_iterator &configurations_begin,
+                                     const configuration_iterator &configurations_end,
+                                     output_iterator output_begin,
+                                     output_iterator output_end,
+                                     const unsigned int output_offset,
+                                     const unsigned int output_stride){
 
         using output_type        = typename std::iterator_traits<output_iterator>::value_type;
 
         const unsigned int num_configurations =
             (unsigned int)(configurations_end - configurations_begin) / (size * size);
 
-        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size * num_configurations),
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) >= (size * size * size * size * num_configurations),
                                      "The output has a size of " +
                                          std::to_string((unsigned int)(output_end - output_begin)) +
-                                         " but should have a size of " + std::to_string(size * size * size * size * num_configurations));
+                                         " but must have a size greater than or equal to " + std::to_string(size * size * size * size * num_configurations));
 
         TARDIGRADE_ERROR_TOOLS_CHECK(configurations_end != configurations_begin,
                                      "The configurations vector has no size");
@@ -606,7 +633,7 @@ namespace tardigradeHydra {
 
         for(unsigned int c = 0; c < num_configurations; ++c){
 
-            accumulateNetConfigurationJacobian(configurations_begin, configurations_end, c, output_begin, output_end, size * size * c, size * size * num_configurations);
+            accumulateNetConfigurationJacobian(configurations_begin, configurations_end, c, output_begin, output_end, output_offset + size * size * c, output_stride);
 
         }
 
