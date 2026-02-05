@@ -268,16 +268,17 @@ namespace tardigradeHydra {
      * \param output_begin: The starting iterator of the output
      * \param output_end: The stopping iterator of the output
      * \param output_offset: The offset in the output matrix
+     * \param output_stride: The stride parameter which indicates how many columns the output has
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateLeadingNetConfigurationJacobian(
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end, output_iterator output_begin,
-        output_iterator output_end, const unsigned int output_offset) {
+        output_iterator output_end, const unsigned int output_offset, const unsigned int output_stride) {
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
-                    *(output_begin + size * size * size * i + size * size * j + size * i + k + output_offset) +=
+                    *(output_begin + output_stride * (size * i + j) + size * i + k + output_offset) +=
                         (*(Aminus_begin + size * k + j));
                 }
             }
@@ -294,19 +295,21 @@ namespace tardigradeHydra {
      * \param output_begin: The starting iterator of the output
      * \param output_end: The stopping iterator of the output
      * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::accumulateLeadingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset) {
+        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+        const unsigned int output_stride) {
 
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         // Handle the case where the configuration array only contains one configuration
         if (configurations_end == (configurations_begin + size * size)) {
             for (unsigned int i = 0; i < size * size; ++i) {
-                *(output_begin + size * size * i + i + output_offset) += 1;
+                *(output_begin + output_stride * i + i + output_offset) += 1;
             }
             return;
         }
@@ -317,7 +320,7 @@ namespace tardigradeHydra {
                             std::end(Aminus));
 
         _assemble_output_accumulateLeadingNetConfigurationJacobian(std::begin(Aminus), std::end(Aminus), output_begin,
-                                                                   output_end,output_offset);
+                                                                   output_end,output_offset,output_stride);
     }
 
     /*!
@@ -363,16 +366,17 @@ namespace tardigradeHydra {
      * \param output_begin: The starting iterator of the output
      * \param output_end: The stopping iterator of the output
      * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aplus_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateTrailingNetConfigurationJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, output_iterator output_begin,
-        output_iterator output_end,const unsigned int output_offset) {
+        output_iterator output_end,const unsigned int output_offset,const unsigned int output_stride) {
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
-                    *(output_begin + size * size * size * i + size * size * j + size * k + j + output_offset) +=
+                    *(output_begin + output_stride * (size * i + j) + size * k + j + output_offset) +=
                         (*(Aplus_begin + size * i + k));
                 }
             }
@@ -389,19 +393,21 @@ namespace tardigradeHydra {
      * \param output_begin: The starting iterator of the output
      * \param output_end: The stopping iterator of the output
      * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::accumulateTrailingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset) {
+        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+        const unsigned int output_stride) {
 
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         // Handle the case where the configuration array only contains one configuration
         if (configurations_end == (configurations_begin + size * size)) {
             for (unsigned int i = 0; i < size * size; ++i) {
-                *(output_begin + size * size * i + i + output_offset) += 1;
+                *(output_begin + output_stride * i + i + output_offset) += 1;
             }
             return;
         }
@@ -411,7 +417,7 @@ namespace tardigradeHydra {
         getNetConfiguration(configurations_begin, configurations_end - size * size, std::begin(Aplus), std::end(Aplus));
 
         _assemble_output_accumulateTrailingNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), output_begin,
-                                                             output_end,output_offset);
+                                                             output_end,output_offset,output_stride);
     }
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
@@ -455,18 +461,20 @@ namespace tardigradeHydra {
      * \param output_begin: The starting iterator of the output
      * \param output_end: The stopping iterator of the output
      * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aplus_iterator, class Aminus_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateNetConfigurationJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, const Aminus_iterator &Aminus_begin,
-        const Aminus_iterator &Aminus_end, output_iterator output_begin, output_iterator output_end, const unsigned int output_offset) {
+        const Aminus_iterator &Aminus_end, output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+        const unsigned int output_stride) {
         // Assemble the Jacobian
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
                     for (unsigned int l = 0; l < size; ++l) {
-                        *(output_begin + size * size * size * i + size * size * j + size * k + l + output_offset) +=
+                        *(output_begin + output_stride * (size * i + j) + size * k + l + output_offset) +=
                             (*(Aplus_begin + size * i + k)) * (*(Aminus_begin + size * l + j));
                     }
                 }
@@ -485,13 +493,14 @@ namespace tardigradeHydra {
      * \param output_begin: The starting iterator of the output
      * \param output_end: The stopping iterator of the output
      * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::accumulateNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end,
-        const unsigned int output_offset) {
+        const unsigned int output_offset, const unsigned int output_stride) {
 
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
@@ -499,10 +508,10 @@ namespace tardigradeHydra {
             (unsigned int)(configurations_end - configurations_begin) / (size * size);
 
         if (configuration_index == 0) {
-            accumulateLeadingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end, output_offset);
+            accumulateLeadingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end, output_offset, output_stride);
 
         } else if ((configuration_index + 1) == num_configurations) {
-            accumulateTrailingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end, output_offset);
+            accumulateTrailingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end, output_offset, output_stride);
 
         } else if ((0 < configuration_index) && (configuration_index < (num_configurations - 1))) {
             // Get the prior and previous configurations
@@ -515,7 +524,7 @@ namespace tardigradeHydra {
                                 std::begin(Aminus), std::end(Aminus));
 
             _assemble_output_accumulateNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), std::begin(Aminus),
-                                                                std::end(Aminus), output_begin, output_end, output_offset);
+                                                                std::end(Aminus), output_begin, output_end, output_offset, output_stride);
 
         }
     }
@@ -597,7 +606,7 @@ namespace tardigradeHydra {
 
         for(unsigned int c = 0; c < num_configurations; ++c){
 
-            accumulateNetConfigurationJacobian(configurations_begin, configurations_end, c, output_begin, output_end, size * size * c);
+            accumulateNetConfigurationJacobian(configurations_begin, configurations_end, c, output_begin, output_end, size * size * c, size * size * num_configurations);
 
         }
 

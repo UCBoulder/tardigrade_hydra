@@ -58,19 +58,22 @@ namespace tardigradeHydra {
         void accumulateLeadingNetConfigurationJacobian(const configuration_iterator &configurations_begin,
                                                        const configuration_iterator &configurations_end,
                                                        output_iterator output_begin, output_iterator output_end,
-                                                       const unsigned int output_offset=0);
+                                                       const unsigned int output_offset=0,
+                                                       const unsigned int output_stride=size*size);
 
         template <class configuration_iterator, class output_iterator>
         void accumulateTrailingNetConfigurationJacobian(const configuration_iterator &configurations_begin,
                                                         const configuration_iterator &configurations_end,
                                                         output_iterator output_begin, output_iterator output_end,
-                                                        const unsigned int output_offset=0);
+                                                        const unsigned int output_offset=0,
+                                                        const unsigned int output_stride=size*size);
 
         template <class configuration_iterator, class output_iterator>
         void accumulateNetConfigurationJacobian(const configuration_iterator &configurations_begin,
                                                 const configuration_iterator &configurations_end,
                                                 const unsigned int &configuration_index, output_iterator output_begin,
-                                                output_iterator output_end, const unsigned int output_offset=0);
+                                                output_iterator output_end, const unsigned int output_offset=0,
+                                                const unsigned int output_stride = size * size);
 
         template <class configuration_iterator, class output_iterator>
         void getLeadingNetConfigurationJacobian(const configuration_iterator &configurations_begin,
@@ -484,14 +487,16 @@ namespace tardigradeHydra {
                                                                         const Aminus_iterator &Aminus_end,
                                                                         output_iterator        output_begin,
                                                                         output_iterator        output_end,
-                                                                        const unsigned int     output_offset = 0);
+                                                                        const unsigned int     output_offset = 0,
+                                                                        const unsigned int     output_stride = size * size);
 
         template <class Aplus_iterator, class output_iterator>
         void _assemble_output_accumulateTrailingNetConfigurationJacobian(const Aplus_iterator &Aplus_begin,
                                                                          const Aplus_iterator &Aplus_end,
                                                                          output_iterator       output_begin,
                                                                          output_iterator       output_end,
-                                                                         const unsigned int    output_offset = 0);
+                                                                         const unsigned int    output_offset = 0,
+                                                                         const unsigned int    output_stride = size * size);
 
         template <class Aplus_iterator, class Aminus_iterator, class output_iterator>
         void _assemble_output_accumulateNetConfigurationJacobian(const Aplus_iterator  &Aplus_begin,
@@ -499,7 +504,8 @@ namespace tardigradeHydra {
                                                                  const Aminus_iterator &Aminus_begin,
                                                                  const Aminus_iterator &Aminus_end,
                                                                  output_iterator output_begin, output_iterator output_end,
-                                                                 const unsigned int     output_offset = 0);
+                                                                 const unsigned int     output_offset = 0,
+                                                                 const unsigned int     output_stride = size * size);
 
         template <class dAminusdX_iterator, class output_iterator>
         void _assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian(
