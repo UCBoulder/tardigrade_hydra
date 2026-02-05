@@ -715,11 +715,18 @@ namespace tardigradeHydra {
         constexpr unsigned int sot_dim     = dim * dim;
         auto                   num_configs = getNumConfigurations();
 
+        secondOrderTensor fullConfiguration = getSubConfiguration(configurations, 0, num_configs);
+
         dC1dC = secondOrderTensor(sot_dim * sot_dim, 0);
 
-        dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
+        DeformationDecompositionBase<dim,dim,dim> decomposition;
+        decomposition.solveForLeadingConfigurationTotalConfigurationJacobian(
+            std::begin(fullConfiguration), std::end(fullConfiguration),
+            std::begin(configurations), std::end(configurations)
+            std::begin(dC1dC), std::end(dC1dC)
+        );
 
-        secondOrderTensor fullConfiguration = getSubConfiguration(configurations, 0, num_configs);
+        dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
 
         secondOrderTensor invCsc = getSubConfiguration(configurations, 1, num_configs);
         auto              mat    = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(invCsc.data());
@@ -738,13 +745,6 @@ namespace tardigradeHydra {
         map_dInvCscdCs = (map_dInvCscdCsc * map_dCscdCs).eval();
 
         // Compute the gradients
-        for (unsigned int i = 0; i < dim; i++) {
-            for (unsigned int barI = 0; barI < dim; barI++) {
-                for (unsigned int A = 0; A < dim; A++) {
-                    dC1dC[dim * sot_dim * i + sot_dim * barI + dim * i + A] += invCsc[dim * A + barI];
-                }
-            }
-        }
         for (unsigned int i = 0; i < dim; i++) {
             for (unsigned int J = 0; J < dim; J++) {
                 for (unsigned int barI = 0; barI < dim; barI++) {
