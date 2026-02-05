@@ -796,7 +796,7 @@ namespace tardigradeHydra {
          *
          * compute
          *
-         * \f$ \frac{\partial^2 [A]}{\partial X \partial [B]} = \mathbbold{I} \left( \frac{\partial [C]}{\partial X} [D]
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial [B]} = \mathbb{I} \left( \frac{\partial [C]}{\partial X} [D]
          * + [C] \frac{\partial [D]}{\partial X}\right) \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
@@ -888,7 +888,7 @@ namespace tardigradeHydra {
          * compute
          *
          * \f$ \frac{\partial^2 [A]}{\partial X \partial [D]} = \left( \frac{\partial [B]}{\partial X} [C] + [B]
-         * \frac{\partial [C]}{\partial X}\right) \mathbbold{I} \f$
+         * \frac{\partial [C]}{\partial X}\right) \mathbb{I} \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -1000,7 +1000,7 @@ namespace tardigradeHydra {
          * compute
          *
          * \f$ \frac{\partial^2 [A]}{\partial X \partial [D]} = \left( \frac{\partial [B]}{\partial X} [C] + [B]
-         * \frac{\partial [C]}{\partial X}\right) \mathbbold{I} \f$
+         * \frac{\partial [C]}{\partial X}\right) \mathbb{I} \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -1121,7 +1121,7 @@ namespace tardigradeHydra {
          *
          * compute
          *
-         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [B]}{\partial X} } = \mathbbold{I} [C] [D] \f$
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [B]}{\partial X} } = \mathbb{I} [C] [D] \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -1208,7 +1208,7 @@ namespace tardigradeHydra {
          *
          * compute
          *
-         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [D]}{\partial X} } = [B][C]\mathbbold{I} \f$
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [D]}{\partial X} } = [B][C]\mathbb{I} \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -1303,7 +1303,7 @@ namespace tardigradeHydra {
          *
          * compute
          *
-         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [C]}{\partial X} } = [b] \mathbbold{I} [D] \f$
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [C]}{\partial X} } = [b] \mathbb{I} [D] \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations

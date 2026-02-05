@@ -74,9 +74,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
-             * \f$ F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * \f$ F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0 \f$
              *
-             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             * \f$ || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
              *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
              * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
              * elasticRightCauchyGreen_{IJ}^{-1} \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ}
@@ -124,23 +124,22 @@ namespace tardigradeHydra {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
-             * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * \f$ F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0 \f$
              *
-             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             * \f$ || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
              *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
              * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
              * elasticRightCauchyGreen_{IJ}^{-1}\f$
              *
              *  Also compute the Jacobians
-             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev (
-             * stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ \partial ||dev ( stressMeasure )|| }{\partial dev ( stressMeasure )_{AB} } \frac{ \partial dev( stressMeasure )_{AB} }{
              * \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} } \frac{
-             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev (
-             * stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{
+             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ \partial ||dev ( stressMeasure )||}{\partial dev (
+             * stressMeasure )_{AB} } \frac{
              * \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial
-             * C_{IJ} }
+             * C_{IJ} }\f$
              *
-             *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
+             *  \f$ \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
              *  A^{angle} = \beta^{angle} \cos( frictionAngle )
              *  B^{angle} = \beta^{angle} \sin( frictionAngle )
              *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
@@ -231,9 +230,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
-             * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0\f$
              *
-             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             * \f$|| dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
              *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
              * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
              * elasticRightCauchyGreen_{IJ}^{-1} \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ}
@@ -241,14 +240,14 @@ namespace tardigradeHydra {
              * \sin( frictionAngle ) \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
              *
              *  Also compute the Jacobians
-             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev (
-             * stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ \partial ||dev ( stressMeasure )|| }{\partial dev ( stressMeasure )_{AB} } \frac{ \partial dev( stressMeasure )_{AB} }{
              * \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} } \frac{
-             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev (
-             * stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure )_{AB} }{
-             * \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial C_{IJ} }\f$
+             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ \partial ||dev ( stressMeasure )||}{\partial dev (
+             * stressMeasure )_{AB} } \frac{
+             * \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial
+             * C_{IJ} }\f$
              *
-             *  The second deriatives of \f$\frac{ \partial F }{ \partial \stressMeasure_{IJ}  }\f$ are
+             *  The second deriatives of \f$\frac{ \partial F }{ \partial stressMeasure_{IJ}  }\f$ are
              *  \f$\frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} } = \frac{ \partial^2
              * || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} }
              * \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev(
@@ -404,9 +403,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
-             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
+             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0\f$
              *
-             * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
+             * \f$|| dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              *  \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
              *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} M_{IJK}
@@ -455,9 +454,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
-             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
+             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0\f$
              *
-             * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
+             * \f$|| dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              *  \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
              *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} M_{IJK}
@@ -567,9 +566,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
-             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
+             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0\f$
              *
-             * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
+             * \f$|| dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              * \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
              *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} M_{IJK}
@@ -768,8 +767,8 @@ namespace tardigradeHydra {
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
              * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -816,8 +815,8 @@ namespace tardigradeHydra {
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
              * \f$ \bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right] \f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right] \f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -866,8 +865,8 @@ namespace tardigradeHydra {
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
              * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -929,8 +928,8 @@ namespace tardigradeHydra {
              * Compute the plastic micro velocity gradient
              *
              *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
              * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
@@ -1008,8 +1007,8 @@ namespace tardigradeHydra {
              * Compute the plastic micro velocity gradient
              *
              *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
              * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
@@ -1089,8 +1088,8 @@ namespace tardigradeHydra {
              * Compute the plastic micro velocity gradient
              *
              *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
              * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
@@ -1189,7 +1188,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \dot{
              * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
              * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -1222,7 +1221,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \dot{
              * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
              * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -1336,7 +1335,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$ \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[
+             * \f$ \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1}
              * \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{
              * M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -1377,7 +1376,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \dot{
              * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
              * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -1453,7 +1452,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \dot{
              * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
              * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
