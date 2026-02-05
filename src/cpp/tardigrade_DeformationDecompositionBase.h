@@ -88,6 +88,12 @@ namespace tardigradeHydra {
                                          const unsigned int &configuration_index, output_iterator output_begin,
                                          output_iterator output_end);
 
+        template <class configuration_iterator, class output_iterator>
+        void getNetConfigurationJacobian(const configuration_iterator &configurations_begin,
+                                         const configuration_iterator &configurations_end,
+                                         output_iterator output_begin,
+                                         output_iterator output_end);
+
         template <class configuration_iterator, class configuration_gradient_iterator, class Aminus_iterator,
                   class dAminusdX_iterator, class output_iterator>
         void _assemble_dAdX_getNetConfigurationGradient(
