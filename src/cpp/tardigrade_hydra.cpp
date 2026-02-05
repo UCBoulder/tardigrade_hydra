@@ -529,37 +529,18 @@ namespace tardigradeHydra {
      */
     floatVector hydraBase::getSubConfigurationJacobian(const floatVector  &configurations,
                                                        const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        const unsigned int dim                  = getDimension();
-        const unsigned int sot_dim              = getSOTDimension();
+        constexpr unsigned int dim                  = 3;
+        constexpr unsigned int sot_dim              = dim * dim;
         const unsigned int num_incoming_configs = configurations.size() / sot_dim;
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            configurations.size() % sot_dim == 0,
-            "The configurations vector must be a scalar multiple of the second order tensor size (9 for 3D)")
 
         floatVector gradient(sot_dim * sot_dim * num_incoming_configs, 0);
 
-        secondOrderTensor Fm, FpT;
-
-        auto map = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(FpT.data());
-
-        for (unsigned int index = lowerIndex; index < upperIndex; index++) {
-            TARDIGRADE_ERROR_TOOLS_CATCH(Fm = getSubConfiguration(configurations, lowerIndex, index));
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(FpT = getSubConfiguration(configurations, index + 1, upperIndex));
-            new (&map) Eigen::Map<Eigen::Matrix<floatType, 3, 3> >(FpT.data(), 3, 3);
-            map = map.transpose().eval();
-
-            for (unsigned int i = 0; i < dim; i++) {
-                for (unsigned int I = 0; I < dim; I++) {
-                    for (unsigned int a = 0; a < dim; a++) {
-                        for (unsigned int A = 0; A < dim; A++) {
-                            gradient[dim * num_incoming_configs * sot_dim * i + num_incoming_configs * sot_dim * I +
-                                     sot_dim * index + dim * a + A] = Fm[dim * i + a] * FpT[dim * I + A];
-                        }
-                    }
-                }
-            }
+        if (lowerIndex != upperIndex){
+            DeformationDecompositionBase<dim,dim,dim> decomposition;
+            decomposition.getNetConfigurationJacobian(std::begin(configurations) + sot_dim * lowerIndex,
+                                                      std::begin(configurations) + sot_dim * upperIndex,
+                                                      std::begin(gradient), std::end(gradient),
+                                                      lowerIndex * sot_dim, num_incoming_configs * sot_dim);
         }
 
         return gradient;
