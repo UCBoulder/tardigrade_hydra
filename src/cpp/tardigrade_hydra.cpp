@@ -718,6 +718,7 @@ namespace tardigradeHydra {
         secondOrderTensor fullConfiguration = getSubConfiguration(configurations, 0, num_configs);
 
         dC1dC = secondOrderTensor(sot_dim * sot_dim, 0);
+        dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
 
         DeformationDecompositionBase<dim,dim,dim> decomposition;
         decomposition.solveForLeadingConfigurationTotalConfigurationJacobian(
@@ -725,38 +726,11 @@ namespace tardigradeHydra {
             std::begin(configurations) + sot_dim, std::end(configurations),
             std::begin(dC1dC), std::end(dC1dC)
         );
-
-        dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
-
-        secondOrderTensor invCsc = getSubConfiguration(configurations, 1, num_configs);
-        auto              mat    = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(invCsc.data());
-        mat                      = mat.inverse().eval();
-
-        fourthOrderTensor dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA(invCsc, dim, dim);
-        auto map_dInvCscdCsc = tardigradeHydra::getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dInvCscdCsc.data());
-
-        floatVector dCscdCs = getSubConfigurationJacobian(configurations, 1, num_configs);
-        auto map_dCscdCs    = tardigradeHydra::getDynamicSizeMatrixMap(dCscdCs.data(), sot_dim, num_configs * sot_dim);
-
-        floatVector dInvCscdCs(sot_dim * num_configs * sot_dim, 0);
-        auto        map_dInvCscdCs =
-            tardigradeHydra::getDynamicSizeMatrixMap(dInvCscdCs.data(), sot_dim, num_configs * sot_dim);
-
-        map_dInvCscdCs = (map_dInvCscdCsc * map_dCscdCs).eval();
-
-        // Compute the gradients
-        for (unsigned int i = 0; i < dim; i++) {
-            for (unsigned int J = 0; J < dim; J++) {
-                for (unsigned int barI = 0; barI < dim; barI++) {
-                    for (unsigned int indexaA = 0; indexaA < (num_configs - 1) * sot_dim; indexaA++) {
-                        dC1dCn[dim * (num_configs - 1) * sot_dim * i + (num_configs - 1) * sot_dim * barI + indexaA] +=
-                            fullConfiguration[dim * i + J] *
-                            dInvCscdCs[dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + indexaA +
-                                       sot_dim];
-                    }
-                }
-            }
-        }
+        decomposition.solveForLeadingConfigurationConfigurationJacobian(
+            std::begin(fullConfiguration), std::end(fullConfiguration),
+            std::begin(configurations) + sot_dim, std::end(configurations),
+            std::begin(dC1dCn), std::end(dC1dCn)
+        );
     }
 
     /*!
