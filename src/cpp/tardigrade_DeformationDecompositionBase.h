@@ -686,6 +686,19 @@ namespace tardigradeHydra {
             output_intermediate_term3_iterator output_intermediate_term3_end,
             output_intermediate_term4_iterator output_intermediate_term4_begin,
             output_intermediate_term4_iterator output_intermediate_term4_end);
+
+        template <class leadingConfiguration_iterator, class Aminus_inverse_iterator,
+                  class Aminus_jacobian_iterator,class output_iterator>
+        void _assemble_output_solveForLeadingConfigurationConfigurationJacobian(
+            const leadingConfiguration_iterator &leadingConfiguration_begin,
+            const leadingConfiguration_iterator &leadingConfiguration_end,
+            const Aminus_inverse_iterator &Aminus_inverse_begin,
+            const Aminus_inverse_iterator &Aminus_inverse_end,
+            const Aminus_jacobian_iterator &Aminus_jacobian_begin,
+            const Aminus_jacobian_iterator &Aminus_jacobian_end,
+            output_iterator output_begin, output_iterator output_end,
+            const unsigned int output_offset=0, const unsigned int output_stride=size*size);
+
     };
 
 }  // namespace tardigradeHydra
