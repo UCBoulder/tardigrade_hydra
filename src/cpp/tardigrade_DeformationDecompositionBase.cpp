@@ -1,12 +1,12 @@
 /**
  ******************************************************************************
- * \file tardigrade_DeformationBase.cpp
+ * \file tardigrade_DeformationDecompositionBase.cpp
  ******************************************************************************
  * The base class for defining multiplicatively decomposed deformation
  ******************************************************************************
  */
 
-#include "tardigrade_DeformationBase.h"
+#include "tardigrade_DeformationDecompositionBase.h"
 
 #include "Eigen/Dense"
 #include "tardigrade_error_tools.h"
@@ -16,7 +16,7 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <unsigned int rows, unsigned int inner, unsigned int columns, class A_iterator, class B_iterator,
               class C_iterator>
-    void DeformationBase<leading_rows, size, dim>::_denseMatrixMultiply(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_denseMatrixMultiply(
         const A_iterator &A_begin, const A_iterator &A_end, const B_iterator &B_begin, const B_iterator &B_end,
         C_iterator C_begin, C_iterator C_end, const unsigned int A_offset, const unsigned int A_stride,
         const unsigned int B_offset, const unsigned int B_stride, const unsigned int output_offset,
@@ -52,7 +52,7 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <unsigned int rows, unsigned int inner, unsigned int columns, class A_iterator, class B_iterator,
               class C_iterator>
-    void DeformationBase<leading_rows, size, dim>::_denseMatrixMultiplyAccumulate(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_denseMatrixMultiplyAccumulate(
         const A_iterator &A_begin, const A_iterator &A_end, const B_iterator &B_begin, const B_iterator &B_end,
         C_iterator C_begin, C_iterator C_end, const unsigned int A_offset, const unsigned int A_stride,
         const unsigned int B_offset, const unsigned int B_stride, const unsigned int output_offset,
@@ -106,7 +106,7 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <unsigned int rows, unsigned int inner, unsigned int columns, unsigned int output_rows,
               unsigned int output_columns, class A_iterator, class B_iterator, class C_iterator>
-    void DeformationBase<leading_rows, size, dim>::_denseMatrixMultiplyAccumulateReshape(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_denseMatrixMultiplyAccumulateReshape(
         const A_iterator &A_begin, const A_iterator &A_end, const B_iterator &B_begin, const B_iterator &B_end,
         C_iterator C_begin, C_iterator C_end, const unsigned int A_offset, const unsigned int A_stride,
         const unsigned int B_offset, const unsigned int B_stride, const unsigned int output_offset,
@@ -158,10 +158,9 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class A_inverse_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assembledAinversedA(const A_inverse_iterator &A_inverse_begin,
-                                                                        const A_inverse_iterator &A_inverse_end,
-                                                                        output_iterator           output_begin,
-                                                                        output_iterator           output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::_assembledAinversedA(
+        const A_inverse_iterator &A_inverse_begin, const A_inverse_iterator &A_inverse_end,
+        output_iterator output_begin, output_iterator output_end) {
         /*!
          * Construct the derivative of the inverse of a matrix w.r.t. the matrix
          *
@@ -195,10 +194,10 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <unsigned int matrix_size, class A_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_compute_matrix_inverse(const A_iterator &A_begin,
-                                                                           const A_iterator &A_end,
-                                                                           output_iterator   output_begin,
-                                                                           output_iterator   output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::_compute_matrix_inverse(const A_iterator &A_begin,
+                                                                                        const A_iterator &A_end,
+                                                                                        output_iterator   output_begin,
+                                                                                        output_iterator   output_end) {
         /*!
          * Compute the inverse of a matrix
          *
@@ -217,7 +216,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getNetConfiguration(
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfiguration(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end) {
         /*!
@@ -246,7 +245,7 @@ namespace tardigradeHydra {
 
         if (configurations_end != (configurations_begin + size * size)) {
             // Get preceeding net configuration
-            std::array<output_type, size * size> Aminus;
+            std::array<output_type, size * size> Aminus = {};
             getNetConfiguration(configurations_begin + size * size, configurations_end, std::begin(Aminus),
                                 std::end(Aminus));
 
@@ -259,69 +258,58 @@ namespace tardigradeHydra {
         }
     }
 
+    /*!
+     * Assemble the jacobian of accumulateLeadingNetConfigurationJacobian
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
+     *
+     * \param &Aminus_begin: The starting iterator of the trailing configuration
+     * \param &Aminus_end: The stopping iterator of the trailing configuration
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset in the output matrix
+     * \param output_stride: The stride parameter which indicates how many columns the output has
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_output_getLeadingNetConfigurationJacobian(
+    void
+    DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateLeadingNetConfigurationJacobian(
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end, output_iterator output_begin,
-        output_iterator output_end) {
-        /*!
-         * Assemble the jacobian of getLeadingNetConfigurationJacobian
-         *
-         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
-         *
-         * \param &Aminus_begin: The starting iterator of the trailing configuration
-         * \param &Aminus_end: The stopping iterator of the trailing configuration
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
-        using output_type = typename std::iterator_traits<output_iterator>::value_type;
-
-        std::fill(output_begin, output_end, output_type());
-
+        output_iterator output_end, const unsigned int output_offset, const unsigned int output_stride) {
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
-                    *(output_begin + size * size * size * i + size * size * j + size * i + k) +=
+                    *(output_begin + output_stride * (size * i + j) + size * i + k + output_offset) +=
                         (*(Aminus_begin + size * k + j));
                 }
             }
         }
     }
 
+    /*!
+     * Compute the Jacobian of a net configuration with respect to the first configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getLeadingNetConfigurationJacobian(
+    void DeformationDecompositionBase<leading_rows, size, dim>::accumulateLeadingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        output_iterator output_begin, output_iterator output_end) {
-        /*!
-         * Compute the Jacobian of a net configuration with respect to the first configuration e.g.,
-         *
-         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
-         *
-         * \param &configurations_begin: The starting iterator of the configurations
-         * \param &configurations_end: The stopping iterator of the configurations
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
-        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+        const unsigned int output_stride) {
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
-        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size),
-                                     "The output has a size of " +
-                                         std::to_string((unsigned int)(output_end - output_begin)) +
-                                         " but should have a size of " + std::to_string(size * size * size * size));
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(configurations_end != configurations_begin,
-                                     "The configurations vector has no size");
-
         // Handle the case where the configuration array only contains one configuration
-
         if (configurations_end == (configurations_begin + size * size)) {
-            std::fill(output_begin, output_end, output_type());
             for (unsigned int i = 0; i < size * size; ++i) {
-                *(output_begin + size * size * i + i) += 1;
+                *(output_begin + output_stride * i + i + output_offset) += 1;
             }
             return;
         }
@@ -331,43 +319,108 @@ namespace tardigradeHydra {
         getNetConfiguration(configurations_begin + size * size, configurations_end, std::begin(Aminus),
                             std::end(Aminus));
 
-        _assemble_output_getLeadingNetConfigurationJacobian(std::begin(Aminus), std::end(Aminus), output_begin,
-                                                            output_end);
+        _assemble_output_accumulateLeadingNetConfigurationJacobian(std::begin(Aminus), std::end(Aminus), output_begin,
+                                                                   output_end, output_offset, output_stride);
     }
 
+    /*!
+     * Compute the Jacobian of a net configuration with respect to the first configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
-    template <class Aplus_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_output_getTrailingNetConfigurationJacobian(
-        const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, output_iterator output_begin,
-        output_iterator output_end) {
-        /*!
-         * Assemble the output for getTrailingNetConfigurationJacobian
-         *
-         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [D] \f$
-         *
-         * \param &Aplus_begin: The starting iterator of the leading configurations
-         * \param &Aplus_end: The stopping iterator of the leading configurations
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
+    template <class configuration_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::getLeadingNetConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end) {
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size),
+                                     "The output has a size of " +
+                                         std::to_string((unsigned int)(output_end - output_begin)) +
+                                         " but should have a size of " + std::to_string(size * size * size * size));
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(configurations_end != configurations_begin,
+                                     "The configurations vector has no size");
+
+        // Handle the case where the configuration array only contains one configuration
         std::fill(output_begin, output_end, output_type());
 
+        accumulateLeadingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end);
+    }
+
+    /*!
+     * Assemble the output for getTrailingNetConfigurationJacobian
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [D] \f$
+     *
+     * \param &Aplus_begin: The starting iterator of the leading configurations
+     * \param &Aplus_end: The stopping iterator of the leading configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class Aplus_iterator, class output_iterator>
+    void
+    DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateTrailingNetConfigurationJacobian(
+        const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, output_iterator output_begin,
+        output_iterator output_end, const unsigned int output_offset, const unsigned int output_stride) {
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
-                    *(output_begin + size * size * size * i + size * size * j + size * k + j) +=
+                    *(output_begin + output_stride * (size * i + j) + size * k + j + output_offset) +=
                         (*(Aplus_begin + size * i + k));
                 }
             }
         }
     }
 
+    /*!
+     * Compute the Jacobian of a net configuration with respect to the first configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [D] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getTrailingNetConfigurationJacobian(
+    void DeformationDecompositionBase<leading_rows, size, dim>::accumulateTrailingNetConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+        const unsigned int output_stride) {
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        // Handle the case where the configuration array only contains one configuration
+        if (configurations_end == (configurations_begin + size * size)) {
+            for (unsigned int i = 0; i < size * size; ++i) {
+                *(output_begin + output_stride * i + i + output_offset) += 1;
+            }
+            return;
+        }
+
+        std::array<configuration_type, size * size> Aplus;
+
+        getNetConfiguration(configurations_begin, configurations_end - size * size, std::begin(Aplus), std::end(Aplus));
+
+        _assemble_output_accumulateTrailingNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), output_begin,
+                                                                    output_end, output_offset, output_stride);
+    }
+
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class configuration_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::getTrailingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end) {
         /*!
@@ -381,8 +434,7 @@ namespace tardigradeHydra {
          * \param output_end: The stopping iterator of the output
          */
 
-        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
-        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size),
                                      "The output has a size of " +
@@ -392,54 +444,35 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK(configurations_end != configurations_begin,
                                      "The configurations vector has no size");
 
-        // Handle the case where the configuration array only contains one configuration
-        if (configurations_end == (configurations_begin + size * size)) {
-            std::fill(output_begin, output_end, output_type());
-            for (unsigned int i = 0; i < size * size; ++i) {
-                *(output_begin + size * size * i + i) += 1;
-            }
-            return;
-        }
-
-        std::array<configuration_type, size * size> Aplus;
-
-        getNetConfiguration(configurations_begin, configurations_end - size * size, std::begin(Aplus), std::end(Aplus));
-
-        _assemble_output_getTrailingNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), output_begin,
-                                                             output_end);
-    }
-
-    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
-    template <class Aplus_iterator, class Aminus_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_output_getNetConfigurationJacobian(
-        const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, const Aminus_iterator &Aminus_begin,
-        const Aminus_iterator &Aminus_end, output_iterator output_begin, output_iterator output_end) {
-        /*!
-         * Assemble the Jacobian for an arbitrarily located configuration
-         *
-         * \param Aplus_begin: The starting iterator of the leading configuration
-         * \param Aplus_end: The stopping iterator of the leading configuration
-         * \param Aminus_begin: The starting iterator of the trailing configuration
-         * \param Aminus_end: The stopping iterator of the trailing configuration
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
-        using output_type = typename std::iterator_traits<output_iterator>::value_type;
-
-        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size),
-                                     "The output has a size of " +
-                                         std::to_string((unsigned int)(output_end - output_begin)) +
-                                         " but should have a size of " + std::to_string(size * size * size * size));
-
         std::fill(output_begin, output_end, output_type());
 
+        accumulateTrailingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end);
+    }
+
+    /*!
+     * Assemble the Jacobian for an arbitrarily located configuration
+     *
+     * \param Aplus_begin: The starting iterator of the leading configuration
+     * \param Aplus_end: The stopping iterator of the leading configuration
+     * \param Aminus_begin: The starting iterator of the trailing configuration
+     * \param Aminus_end: The stopping iterator of the trailing configuration
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class Aplus_iterator, class Aminus_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateNetConfigurationJacobian(
+        const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, const Aminus_iterator &Aminus_begin,
+        const Aminus_iterator &Aminus_end, output_iterator output_begin, output_iterator output_end,
+        const unsigned int output_offset, const unsigned int output_stride) {
         // Assemble the Jacobian
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
                     for (unsigned int l = 0; l < size; ++l) {
-                        *(output_begin + size * size * size * i + size * size * j + size * k + l) +=
+                        *(output_begin + output_stride * (size * i + j) + size * k + l + output_offset) +=
                             (*(Aplus_begin + size * i + k)) * (*(Aminus_begin + size * l + j));
                     }
                 }
@@ -447,25 +480,71 @@ namespace tardigradeHydra {
         }
     }
 
+    /*!
+     * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param &configuration_index: The index of the configuration to compute the Jacobian for
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getNetConfigurationJacobian(
+    void DeformationDecompositionBase<leading_rows, size, dim>::accumulateNetConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end,
+        const unsigned int output_offset, const unsigned int output_stride) {
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        const unsigned int num_configurations =
+            (unsigned int)(configurations_end - configurations_begin) / (size * size);
+
+        if (configuration_index == 0) {
+            accumulateLeadingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin,
+                                                      output_end, output_offset, output_stride);
+
+        } else if ((configuration_index + 1) == num_configurations) {
+            accumulateTrailingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin,
+                                                       output_end, output_offset, output_stride);
+
+        } else if ((0 < configuration_index) && (configuration_index < (num_configurations - 1))) {
+            // Get the prior and previous configurations
+            std::array<configuration_type, size * size> Aplus, Aminus;
+
+            getNetConfiguration(configurations_begin, configurations_begin + size * size * configuration_index,
+                                std::begin(Aplus), std::end(Aplus));
+
+            getNetConfiguration(configurations_begin + size * size * (configuration_index + 1), configurations_end,
+                                std::begin(Aminus), std::end(Aminus));
+
+            _assemble_output_accumulateNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), std::begin(Aminus),
+                                                                std::end(Aminus), output_begin, output_end,
+                                                                output_offset, output_stride);
+        }
+    }
+
+    /*!
+     * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param &configuration_index: The index of the configuration to compute the Jacobian for
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class configuration_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end) {
-        /*!
-         * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
-         *
-         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
-         *
-         * \param &configurations_begin: The starting iterator of the configurations
-         * \param &configurations_end: The stopping iterator of the configurations
-         * \param &configuration_index: The index of the configuration to compute the Jacobian for
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
-        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
-        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size),
                                      "The output has a size of " +
@@ -480,39 +559,84 @@ namespace tardigradeHydra {
                                          std::to_string((unsigned int)(configurations_end - configurations_begin)) +
                                          " which is not a multiple of " + std::to_string(size * size))
 
+        std::fill(output_begin, output_end, output_type());
+
+        accumulateNetConfigurationJacobian(configurations_begin, configurations_end, configuration_index, output_begin,
+                                           output_end);
+    }
+
+    /*!
+     * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class configuration_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end) {
         const unsigned int num_configurations =
             (unsigned int)(configurations_end - configurations_begin) / (size * size);
 
-        if (configuration_index == 0) {
-            getLeadingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end);
+        getNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end, 0,
+                                    num_configurations * size * size);
+    }
 
-        } else if ((configuration_index + 1) == num_configurations) {
-            getTrailingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end);
+    /*!
+     * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
+     *
+     * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
+     *
+     * \param &configurations_begin: The starting iterator of the configurations
+     * \param &configurations_end: The stopping iterator of the configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The offset parameter which selects the starting column in the output
+     * \param output_stride: The stride parameter which indicates how many columns the output has
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class configuration_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+        const unsigned int output_stride) {
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
-        } else if ((0 < configuration_index) && (configuration_index < (num_configurations - 1))) {
-            std::fill(output_begin, output_end, output_type());
+        const unsigned int num_configurations =
+            (unsigned int)(configurations_end - configurations_begin) / (size * size);
 
-            // Get the prior and previous configurations
-            std::array<configuration_type, size * size> Aplus, Aminus;
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) >=
+                                         (size * size * size * size * num_configurations),
+                                     "The output has a size of " +
+                                         std::to_string((unsigned int)(output_end - output_begin)) +
+                                         " but must have a size greater than or equal to " +
+                                         std::to_string(size * size * size * size * num_configurations));
 
-            getNetConfiguration(configurations_begin, configurations_begin + size * size * configuration_index,
-                                std::begin(Aplus), std::end(Aplus));
+        TARDIGRADE_ERROR_TOOLS_CHECK(configurations_end != configurations_begin,
+                                     "The configurations vector has no size");
 
-            getNetConfiguration(configurations_begin + size * size * (configuration_index + 1), configurations_end,
-                                std::begin(Aminus), std::end(Aminus));
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(configurations_end - configurations_begin) % (size * size) == 0,
+                                     "The configurations iterator has a size of " +
+                                         std::to_string((unsigned int)(configurations_end - configurations_begin)) +
+                                         " which is not a multiple of " + std::to_string(size * size))
 
-            _assemble_output_getNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), std::begin(Aminus),
-                                                         std::end(Aminus), output_begin, output_end);
+        std::fill(output_begin, output_end, output_type());
 
-        } else {
-            std::fill(output_begin, output_end, output_type());
+        for (unsigned int c = 0; c < num_configurations; ++c) {
+            accumulateNetConfigurationJacobian(configurations_begin, configurations_end, c, output_begin, output_end,
+                                               output_offset + size * size * c, output_stride);
         }
     }
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class configuration_gradient_iterator, class Aminus_iterator,
               class dAminusdX_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_dAdX_getNetConfigurationGradient(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_dAdX_getNetConfigurationGradient(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin,
         const configuration_gradient_iterator &configuration_gradients_end, const Aminus_iterator &Aminus_begin,
@@ -558,7 +682,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getNetConfigurationGradient(
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationGradient(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin,
         const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
@@ -617,10 +741,10 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class dAminusdX_iterator, class output_iterator>
-    void
-    DeformationBase<leading_rows, size, dim>::_assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian(
-        const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
-        output_iterator output_begin, output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        _assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian(
+            const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
+            output_iterator output_begin, output_iterator output_end) {
         /*!
          * Assemble the output of getLeadingNetConfigurationGradientConfigurationJacobian
          *
@@ -653,7 +777,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getLeadingNetConfigurationGradientConfigurationJacobian(
+    void DeformationDecompositionBase<leading_rows, size, dim>::getLeadingNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin,
         const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
@@ -666,7 +790,7 @@ namespace tardigradeHydra {
          *
          * compute
          *
-         * \f$ \frac{\partial^2 [A]}{\partial X \partial [B]} = \mathbbold{I} \left( \frac{\partial [C]}{\partial X} [D]
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial [B]} = \mathbb{I} \left( \frac{\partial [C]}{\partial X} [D]
          * + [C] \frac{\partial [D]}{\partial X}\right) \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
@@ -712,10 +836,10 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class dAplusdX_iterator, class output_iterator>
-    void
-    DeformationBase<leading_rows, size, dim>::_assemble_output_getTrailingNetConfigurationGradientConfigurationJacobian(
-        const dAplusdX_iterator &dAplusdX_begin, const dAplusdX_iterator &dAplusdX_end, output_iterator output_begin,
-        output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        _assemble_output_getTrailingNetConfigurationGradientConfigurationJacobian(
+            const dAplusdX_iterator &dAplusdX_begin, const dAplusdX_iterator &dAplusdX_end,
+            output_iterator output_begin, output_iterator output_end) {
         /*!
          * Assemble the output for getTrailingNetConfigurationGradientConfigurationJacobian
          *
@@ -743,7 +867,8 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getTrailingNetConfigurationGradientConfigurationJacobian(
+    void
+    DeformationDecompositionBase<leading_rows, size, dim>::getTrailingNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin,
         const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
@@ -757,7 +882,7 @@ namespace tardigradeHydra {
          * compute
          *
          * \f$ \frac{\partial^2 [A]}{\partial X \partial [D]} = \left( \frac{\partial [B]}{\partial X} [C] + [B]
-         * \frac{\partial [C]}{\partial X}\right) \mathbbold{I} \f$
+         * \frac{\partial [C]}{\partial X}\right) \mathbb{I} \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -803,13 +928,14 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aplus_iterator, class dAplusdX_iterator, class Aminus_jacobian_iterator,
               class dAminusdX_jacobian_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_output_getNetConfigurationGradientConfigurationJacobian(
-        const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, const dAplusdX_iterator &dAplusdX_begin,
-        const dAplusdX_iterator &dAplusdX_end, const Aminus_jacobian_iterator &Aminus_jacobian_begin,
-        const Aminus_jacobian_iterator    &Aminus_jacobian_end,
-        const dAminusdX_jacobian_iterator &dAminusdX_jacobian_begin,
-        const dAminusdX_jacobian_iterator &dAminusdX_jacobian_end, output_iterator output_begin,
-        output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        _assemble_output_getNetConfigurationGradientConfigurationJacobian(
+            const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, const dAplusdX_iterator &dAplusdX_begin,
+            const dAplusdX_iterator &dAplusdX_end, const Aminus_jacobian_iterator &Aminus_jacobian_begin,
+            const Aminus_jacobian_iterator    &Aminus_jacobian_end,
+            const dAminusdX_jacobian_iterator &dAminusdX_jacobian_begin,
+            const dAminusdX_jacobian_iterator &dAminusdX_jacobian_end, output_iterator output_begin,
+            output_iterator output_end) {
         /*!
          * Assemble the output for getNetConfigurationGradientConfigurationJacobian
          *
@@ -854,7 +980,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getNetConfigurationGradientConfigurationJacobian(
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin,
         const configuration_gradient_iterator &configuration_gradients_end, const unsigned int &configuration_index,
@@ -868,7 +994,7 @@ namespace tardigradeHydra {
          * compute
          *
          * \f$ \frac{\partial^2 [A]}{\partial X \partial [D]} = \left( \frac{\partial [B]}{\partial X} [C] + [B]
-         * \frac{\partial [C]}{\partial X}\right) \mathbbold{I} \f$
+         * \frac{\partial [C]}{\partial X}\right) \mathbb{I} \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -945,7 +1071,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _assemble_output_getLeadingNetConfigurationGradientConfigurationGradientJacobian(
             const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end, output_iterator output_begin,
             output_iterator output_end) {
@@ -975,11 +1101,12 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getLeadingNetConfigurationGradientConfigurationGradientJacobian(
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        const configuration_gradient_iterator &configuration_gradients_begin,
-        const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
-        output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        getLeadingNetConfigurationGradientConfigurationGradientJacobian(
+            const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+            const configuration_gradient_iterator &configuration_gradients_begin,
+            const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
+            output_iterator output_end) {
         /*!
          * Compute the Jacobian gradient of a net configuration with respect to the leading configuration's gradient
          * e.g., given a configuration
@@ -988,7 +1115,7 @@ namespace tardigradeHydra {
          *
          * compute
          *
-         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [B]}{\partial X} } = \mathbbold{I} [C] [D] \f$
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [B]}{\partial X} } = \mathbb{I} [C] [D] \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -1032,7 +1159,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aplus_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _assemble_output_getTrailingNetConfigurationGradientConfigurationGradientJacobian(
             const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, output_iterator output_begin,
             output_iterator output_end) {
@@ -1061,11 +1188,12 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getTrailingNetConfigurationGradientConfigurationGradientJacobian(
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        const configuration_gradient_iterator &configuration_gradients_begin,
-        const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
-        output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        getTrailingNetConfigurationGradientConfigurationGradientJacobian(
+            const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+            const configuration_gradient_iterator &configuration_gradients_begin,
+            const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
+            output_iterator output_end) {
         /*!
          * Compute the Jacobian gradient of a net configuration with respect to the trailing configuration's gradient
          * e.g., given a configuration
@@ -1074,7 +1202,7 @@ namespace tardigradeHydra {
          *
          * compute
          *
-         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [D]}{\partial X} } = [B][C]\mathbbold{I} \f$
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [D]}{\partial X} } = [B][C]\mathbb{I} \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -1118,10 +1246,10 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aplus_iterator, class Aminus_iterator, class output_iterator>
-    void
-    DeformationBase<leading_rows, size, dim>::_assemble_output_getNetConfigurationGradientConfigurationGradientJacobian(
-        const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, const Aminus_iterator &Aminus_begin,
-        const Aminus_iterator &Aminus_end, output_iterator output_begin, output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        _assemble_output_getNetConfigurationGradientConfigurationGradientJacobian(
+            const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, const Aminus_iterator &Aminus_begin,
+            const Aminus_iterator &Aminus_end, output_iterator output_begin, output_iterator output_end) {
         /*!
          * Assemble the output for getNetConfigurationGradientConfigurationGradientJacobian
          *
@@ -1155,7 +1283,8 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::getNetConfigurationGradientConfigurationGradientJacobian(
+    void
+    DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationGradientConfigurationGradientJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin,
         const configuration_gradient_iterator &configuration_gradients_end, const unsigned int &configuration_index,
@@ -1168,7 +1297,7 @@ namespace tardigradeHydra {
          *
          * compute
          *
-         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [C]}{\partial X} } = [b] \mathbbold{I} [D] \f$
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [C]}{\partial X} } = [b] \mathbb{I} [D] \f$
          *
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
@@ -1231,7 +1360,8 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_iterator, class Aminus_inverse_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_leading_configuration_solveForLeadingConfiguration(
+    void
+    DeformationDecompositionBase<leading_rows, size, dim>::_assemble_leading_configuration_solveForLeadingConfiguration(
         const total_configuration_iterator &total_configuration_begin,
         const total_configuration_iterator &total_configuration_end, Aminus_inverse_iterator Aminus_inverse_begin,
         Aminus_inverse_iterator Aminus_inverse_end, output_iterator output_begin, output_iterator output_end) {
@@ -1263,7 +1393,7 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_iterator, class configuration_iterator, class Aminus_inverse_iterator,
               class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfiguration(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfiguration(
         const total_configuration_iterator &total_configuration_begin,
         const total_configuration_iterator &total_configuration_end, const configuration_iterator &configurations_begin,
         const configuration_iterator &configurations_end, Aminus_inverse_iterator Aminus_inverse_begin,
@@ -1322,7 +1452,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_iterator, class configuration_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfiguration(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfiguration(
         const total_configuration_iterator &total_configuration_begin,
         const total_configuration_iterator &total_configuration_end, const configuration_iterator &configurations_begin,
         const configuration_iterator &configurations_end, output_iterator output_begin, output_iterator output_end) {
@@ -1352,10 +1482,10 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_inverse_iterator, class output_iterator>
-    void
-    DeformationBase<leading_rows, size, dim>::_assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian(
-        const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
-        output_iterator output_begin, output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        _assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian(
+            const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+            output_iterator output_begin, output_iterator output_end) {
         /*!
          * Assemble the output for solveForLeadingConfigurationTotalConfigurationJacobian
          *
@@ -1381,7 +1511,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_iterator, class configuration_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfigurationTotalConfigurationJacobian(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfigurationTotalConfigurationJacobian(
         const total_configuration_iterator &total_configuration_begin,
         const total_configuration_iterator &total_configuration_end, const configuration_iterator &configurations_begin,
         const configuration_iterator &configurations_end, output_iterator output_begin, output_iterator output_end) {
@@ -1394,8 +1524,8 @@ namespace tardigradeHydra {
          *
          * \param &total_configuration_begin: The starting iterator of the total deformation
          * \param &total_configuration_end: The stopping iterator of the total deformation
-         * \param &configurations_begin: The starting iterator of the configurations
-         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configurations_begin: The starting iterator of the trailing configurations
+         * \param &configurations_end: The stopping iterator of the trailing configurations
          * \param output_begin: The starting iterator of the output
          * \param output_end: The stopping iterator of the output
          */
@@ -1416,7 +1546,7 @@ namespace tardigradeHydra {
             "The output has a size of " + std::to_string((unsigned int)(output_end - output_begin)) +
                 " but it needs a size of at least " + std::to_string(leading_rows * size * leading_rows * size));
 
-        if (configurations_end == (configurations_begin + size * size)) {
+        if (configurations_end == configurations_begin) {
             std::fill(output_begin, output_end, output_type());
 
             for (unsigned int i = 0; i < leading_rows * size; ++i) {
@@ -1438,25 +1568,24 @@ namespace tardigradeHydra {
         }
     }
 
+    /*!
+     * Compute intermediate term 1 for solveForLeadingConfigurationGradientConfigurationJacobian
+     *
+     * \param &leading_configuration_begin: The starting iterator of the leading configuration
+     * \param &leading_configuration_end: The stopping iterator of the leading configuration
+     * \param Aminus_inverse_begin: The starting iterator of the inverse of the total trailing configuration
+     * \param Aminus_inverse_end: The stopping iterator of the inverse of the total trailing configuration
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class leading_configuration_iterator, class Aminus_inverse_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
             const leading_configuration_iterator &leading_configuration_begin,
             const leading_configuration_iterator &leading_configuration_end,
             const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
             output_iterator output_begin, output_iterator output_end) {
-        /*!
-         * Compute intermediate term 1 for solveForLeadingConfigurationGradientConfigurationJacobian
-         *
-         * \param &leading_configuration_begin: The starting iterator of the leading configuration
-         * \param &leading_configuration_end: The stopping iterator of the leading configuration
-         * \param Aminus_inverse_begin: The starting iterator of the inverse of the total trailing configuration
-         * \param Aminus_inverse_end: The stopping iterator of the inverse of the total trailing configuration
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
         std::fill(output_begin, output_end, output_type());
 
@@ -1472,45 +1601,83 @@ namespace tardigradeHydra {
         }
     }
 
+    /*!
+     * Solve for the Jacobian of the leading configuration with respect to the specified configuration i.e., if
+     * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
+     * in the form of the configurations, then
+     *
+     * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
+     *
+     * \param &leadingConfiguration_begin: The starting iterator of the leading configuration
+     * \param &leadingConfiguration_end: The stopping iterator of the leading configuration
+     * \param &Aminus_inverse_begin: The starting iterator of the inverse of the net trailing configuration
+     * \param &Aminus_inverse_end: The stopping iterator of the inverse of the net trailing configuration
+     * \param &Aminus_jacobian_begin: The starting iterator of the jacobian of the net trailing configuration
+     * \param &Aminus_jacobian_end: The stopping iterator of the jacobian of the net trailing configuration
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     * \param output_offset: The column shift offset to apply to the output assembly
+     * \param output_stride: The number of columns in the row-major output array
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class leadingConfiguration_iterator, class Aminus_inverse_iterator, class Aminus_jacobian_iterator,
+              class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        _assemble_output_solveForLeadingConfigurationConfigurationJacobian(
+            const leadingConfiguration_iterator &leadingConfiguration_begin,
+            const leadingConfiguration_iterator &leadingConfiguration_end,
+            const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+            const Aminus_jacobian_iterator &Aminus_jacobian_begin, const Aminus_jacobian_iterator &Aminus_jacobian_end,
+            output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+            const unsigned int output_stride) {
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        std::array<output_type, leading_rows * size * size * size> intermediate_term = {output_type()};
+        _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
+            leadingConfiguration_begin, leadingConfiguration_end, Aminus_inverse_begin, Aminus_inverse_end,
+            std::begin(intermediate_term), std::end(intermediate_term));
+
+        _denseMatrixMultiplyAccumulate<leading_rows * size, size * size, size * size>(
+            std::begin(intermediate_term), std::end(intermediate_term), Aminus_jacobian_begin, Aminus_jacobian_end,
+            output_begin, output_end, 0, size * size, 0, size * size, output_offset, output_stride);
+    }
+
+    /*!
+     * Solve for the Jacobian of the leading configuration with respect to the specified configuration i.e., if
+     * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
+     * in the form of the configurations, then
+     *
+     * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
+     *
+     * \param &total_configuration_begin: The starting iterator of the total deformation
+     * \param &total_configuration_end: The stopping iterator of the total deformation
+     * \param &configurations_begin: The starting iterator of the trailing configurations
+     * \param &configurations_end: The stopping iterator of the trailing configurations
+     * \param &configuration_index: The index of the configuration in the configuration iterator to
+     *     compute the Jacobian with respect to
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_iterator, class configuration_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfigurationConfigurationJacobian(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfigurationConfigurationJacobian(
         const total_configuration_iterator &total_configuration_begin,
         const total_configuration_iterator &total_configuration_end, const configuration_iterator &configurations_begin,
         const configuration_iterator &configurations_end, const unsigned int &configuration_index,
         output_iterator output_begin, output_iterator output_end) {
-        /*!
-         * Solve for the Jacobian of the leading configuration with respect to the specified configuration i.e., if
-         * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
-         * in the form of the configurations, then
-         *
-         * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
-         *
-         * \param &total_configuration_begin: The starting iterator of the total deformation
-         * \param &total_configuration_end: The stopping iterator of the total deformation
-         * \param &configurations_begin: The starting iterator of the configurations
-         * \param &configurations_end: The stopping iterator of the configurations
-         * \param &configuration_index: The index of the configuration in the configuration iterator to
-         *     compute the Jacobian with respect to
-         * \param output_begin: The starting iterator of the output
-         * \param output_end: The stopping iterator of the output
-         */
-
-        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == leading_rows * size * size * size,
                                      "The output has a size of " +
                                          std::to_string((unsigned int)(output_end - output_begin)) +
                                          " but it needs a size of at least " + std::to_string(size * size));
 
-        if (configurations_end == configurations_begin) {
-            std::fill(output_begin, output_end, output_type());
-
-        } else {
-            std::array<output_type, leading_rows * size>               leadingConfiguration;
-            std::array<output_type, size * size>                       Aminus_inverse;
-            std::array<output_type, leading_rows * size * size * size> intermediate_term = {output_type()};
-            std::array<output_type, size * size * size * size>         Aminus_jacobian;
+        std::fill(output_begin, output_end, output_type());
+        if (configurations_end != configurations_begin) {
+            std::array<output_type, leading_rows * size>              leadingConfiguration;
+            std::array<configuration_type, size * size>               Aminus_inverse;
+            std::array<configuration_type, size * size * size * size> Aminus_jacobian;
 
             solveForLeadingConfiguration(total_configuration_begin, total_configuration_end, configurations_begin,
                                          configurations_end, std::begin(Aminus_inverse), std::end(Aminus_inverse),
@@ -1519,22 +1686,69 @@ namespace tardigradeHydra {
             getNetConfigurationJacobian(configurations_begin, configurations_end, configuration_index,
                                         std::begin(Aminus_jacobian), std::end(Aminus_jacobian));
 
-            _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
+            _assemble_output_solveForLeadingConfigurationConfigurationJacobian(
                 std::begin(leadingConfiguration), std::end(leadingConfiguration), std::begin(Aminus_inverse),
-                std::end(Aminus_inverse), std::begin(intermediate_term), std::end(intermediate_term));
+                std::end(Aminus_inverse), std::begin(Aminus_jacobian), std::end(Aminus_jacobian), output_begin,
+                output_end);
+        }
+    }
 
-            _denseMatrixMultiply<leading_rows * size, size * size, size * size>(std::begin(intermediate_term),
-                                                                                std::end(intermediate_term),
-                                                                                std::begin(Aminus_jacobian),
-                                                                                std::end(Aminus_jacobian), output_begin,
-                                                                                output_end);
+    /*!
+     * Solve for the Jacobian of the leading configuration with respect to all of the configurations i.e., if
+     * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
+     * in the form of the configurations, then
+     *
+     * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
+     *
+     * \param &total_configuration_begin: The starting iterator of the total deformation
+     * \param &total_configuration_end: The stopping iterator of the total deformation
+     * \param &configurations_begin: The starting iterator of the trailing configurations
+     * \param &configurations_end: The stopping iterator of the trailing configurations
+     * \param output_begin: The starting iterator of the output
+     * \param output_end: The stopping iterator of the output
+     */
+    template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+    template <class total_configuration_iterator, class configuration_iterator, class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfigurationConfigurationJacobian(
+        const total_configuration_iterator &total_configuration_begin,
+        const total_configuration_iterator &total_configuration_end, const configuration_iterator &configurations_begin,
+        const configuration_iterator &configurations_end, output_iterator output_begin, output_iterator output_end) {
+        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        const unsigned int num_configurations = ((configurations_end - configurations_begin) / (size * size));
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            (unsigned int)(output_end - output_begin) == leading_rows * size * num_configurations * size * size,
+            "The output has a size of " + std::to_string((unsigned int)(output_end - output_begin)) +
+                " but it needs a size of " + std::to_string(leading_rows * size * num_configurations * size * size));
+
+        std::fill(output_begin, output_end, output_type());
+        if (configurations_end != configurations_begin) {
+            std::array<output_type, leading_rows * size>              leadingConfiguration;
+            std::array<configuration_type, size * size>               Aminus_inverse;
+            std::array<configuration_type, size * size * size * size> Aminus_jacobian;
+
+            solveForLeadingConfiguration(total_configuration_begin, total_configuration_end, configurations_begin,
+                                         configurations_end, std::begin(Aminus_inverse), std::end(Aminus_inverse),
+                                         std::begin(leadingConfiguration), std::end(leadingConfiguration));
+
+            for (unsigned int c = 0; c < num_configurations; ++c) {
+                getNetConfigurationJacobian(configurations_begin, configurations_end, c, std::begin(Aminus_jacobian),
+                                            std::end(Aminus_jacobian));
+
+                _assemble_output_solveForLeadingConfigurationConfigurationJacobian(
+                    std::begin(leadingConfiguration), std::end(leadingConfiguration), std::begin(Aminus_inverse),
+                    std::end(Aminus_inverse), std::begin(Aminus_jacobian), std::end(Aminus_jacobian), output_begin,
+                    output_end, c * size * size, num_configurations * size * size);
+            }
         }
     }
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_gradient_iterator, class leading_configuration_iterator,
               class Aminus_inverse_iterator, class dAminusdX_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_output_solveForLeadingConfigurationGradient(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_solveForLeadingConfigurationGradient(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
         const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator        &leading_configuration_begin,
@@ -1591,7 +1805,7 @@ namespace tardigradeHydra {
     template <class total_configuration_gradient_iterator, class leading_configuration_iterator,
               class configuration_iterator, class configuration_gradient_iterator, class Aminus_inverse_iterator,
               class dAminusdX_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfigurationGradient(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfigurationGradient(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
         const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator        &leading_configuration_begin,
@@ -1665,7 +1879,7 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_gradient_iterator, class leading_configuration_iterator,
               class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfigurationGradient(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfigurationGradient(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
         const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator        &leading_configuration_begin,
@@ -1717,7 +1931,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_inverse_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
             const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
             output_iterator output_begin, output_iterator output_end) {
@@ -1750,16 +1964,16 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_gradient_iterator, class leading_configuration_iterator,
               class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void
-    DeformationBase<leading_rows, size, dim>::solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
-        const total_configuration_gradient_iterator &total_configuration_gradient_begin,
-        const total_configuration_gradient_iterator &total_configuration_gradient_end,
-        const leading_configuration_iterator        &leading_configuration_begin,
-        const leading_configuration_iterator        &leading_configuration_end,
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        const configuration_gradient_iterator &configuration_gradients_begin,
-        const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
-        output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
+            const total_configuration_gradient_iterator &total_configuration_gradient_begin,
+            const total_configuration_gradient_iterator &total_configuration_gradient_end,
+            const leading_configuration_iterator        &leading_configuration_begin,
+            const leading_configuration_iterator        &leading_configuration_end,
+            const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+            const configuration_gradient_iterator &configuration_gradients_begin,
+            const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
+            output_iterator output_end) {
         /*!
          * Solve for the jacobian with respect to the total deformation gradient of the leading configuration gradient
          * which would be required to achieve the total configuration gradient i.e., if the total deformation is
@@ -1820,7 +2034,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_inverse_iterator, class dAminusdX_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
             const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
             const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
@@ -1859,15 +2073,16 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_gradient_iterator, class leading_configuration_iterator,
               class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
-        const total_configuration_gradient_iterator &total_configuration_gradient_begin,
-        const total_configuration_gradient_iterator &total_configuration_gradient_end,
-        const leading_configuration_iterator        &leading_configuration_begin,
-        const leading_configuration_iterator        &leading_configuration_end,
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        const configuration_gradient_iterator &configuration_gradients_begin,
-        const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
-        output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
+            const total_configuration_gradient_iterator &total_configuration_gradient_begin,
+            const total_configuration_gradient_iterator &total_configuration_gradient_end,
+            const leading_configuration_iterator        &leading_configuration_begin,
+            const leading_configuration_iterator        &leading_configuration_end,
+            const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+            const configuration_gradient_iterator &configuration_gradients_begin,
+            const configuration_gradient_iterator &configuration_gradients_end, output_iterator output_begin,
+            output_iterator output_end) {
         /*!
          * Solve for the Jacobian with respect to the leading configuration of the leading configuration gradient
          * which would be required to achieve the total configuration gradient i.e., if the total deformation is
@@ -1936,7 +2151,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class leading_configuration_gradient_iterator, class Aminus_inverse_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian(
             const leading_configuration_gradient_iterator &leading_configuration_gradient_begin,
             const leading_configuration_gradient_iterator &leading_configuration_gradient_end,
@@ -1975,7 +2190,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class leading_configuration_iterator, class Aminus_inverse_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian(
             const leading_configuration_iterator &leading_configuration_begin,
             const leading_configuration_iterator &leading_configuration_end,
@@ -2011,7 +2226,8 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_gradient_iterator, class leading_configuration_iterator,
               class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfigurationGradientConfigurationJacobian(
+    void
+    DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfigurationGradientConfigurationJacobian(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
         const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator        &leading_configuration_begin,
@@ -2119,15 +2335,16 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class total_configuration_gradient_iterator, class leading_configuration_iterator,
               class configuration_iterator, class configuration_gradient_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForLeadingConfigurationGradientConfigurationGradientJacobian(
-        const total_configuration_gradient_iterator &total_configuration_gradient_begin,
-        const total_configuration_gradient_iterator &total_configuration_gradient_end,
-        const leading_configuration_iterator        &leading_configuration_begin,
-        const leading_configuration_iterator        &leading_configuration_end,
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        const configuration_gradient_iterator &configuration_gradients_begin,
-        const configuration_gradient_iterator &configuration_gradients_end, const unsigned int &configuration_index,
-        output_iterator output_begin, output_iterator output_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        solveForLeadingConfigurationGradientConfigurationGradientJacobian(
+            const total_configuration_gradient_iterator &total_configuration_gradient_begin,
+            const total_configuration_gradient_iterator &total_configuration_gradient_end,
+            const leading_configuration_iterator        &leading_configuration_begin,
+            const leading_configuration_iterator        &leading_configuration_end,
+            const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+            const configuration_gradient_iterator &configuration_gradients_begin,
+            const configuration_gradient_iterator &configuration_gradients_end, const unsigned int &configuration_index,
+            output_iterator output_begin, output_iterator output_end) {
         /*!
          * Solve for the Jacobian with respect to a configuration gradient of the leading configuration gradient
          * which would be required to achieve the total configuration gradient i.e., if the total deformation is
@@ -2207,7 +2424,7 @@ namespace tardigradeHydra {
     template <class total_configuration_iterator, class total_configuration_gradient_iterator,
               class configuration_iterator, class configuration_gradient_iterator,
               class output_leading_configuration_iterator, class output_leading_configuration_gradient_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForAllLeading(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForAllLeading(
         const total_configuration_iterator          &total_configuration_begin,
         const total_configuration_iterator          &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
@@ -2259,7 +2476,7 @@ namespace tardigradeHydra {
     template <class total_configuration_iterator, class total_configuration_gradient_iterator,
               class Aminus_inverse_iterator, class dAminusdX_iterator, class output_leading_configuration_iterator,
               class output_leading_configuration_gradient_iterator>
-    void DeformationBase<leading_rows, size, dim>::_sizeCheck_solveForAllLeading(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_sizeCheck_solveForAllLeading(
         const total_configuration_iterator          &total_configuration_begin,
         const total_configuration_iterator          &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
@@ -2333,7 +2550,7 @@ namespace tardigradeHydra {
               class configuration_iterator, class configuration_gradient_iterator, class Aminus_inverse_iterator,
               class dAminusdX_iterator, class output_leading_configuration_iterator,
               class output_leading_configuration_gradient_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForAllLeading(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForAllLeading(
         const total_configuration_iterator          &total_configuration_begin,
         const total_configuration_iterator          &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
@@ -2407,7 +2624,7 @@ namespace tardigradeHydra {
               class output_leading_configuration_gradient_total_gradient_J_iterator,
               class output_leading_configuration_gradient_configurations_J_iterator,
               class output_leading_configuration_gradient_configuration_gradients_J_iterator>
-    void DeformationBase<leading_rows, size, dim>::_sizeCheck_solveForAllLeadingJacobians(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_sizeCheck_solveForAllLeadingJacobians(
         const total_configuration_iterator          &total_configuration_begin,
         const total_configuration_iterator          &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
@@ -2562,7 +2779,7 @@ namespace tardigradeHydra {
               class output_leading_configuration_gradient_total_gradient_J_iterator,
               class output_leading_configuration_gradient_configurations_J_iterator,
               class output_leading_configuration_gradient_configuration_gradients_J_iterator>
-    void DeformationBase<leading_rows, size, dim>::_zeroOutputs_solveForAllLeadingJacobians(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_zeroOutputs_solveForAllLeadingJacobians(
         output_leading_configuration_total_J_iterator          output_leading_configuration_total_J_begin,
         output_leading_configuration_total_J_iterator          output_leading_configuration_total_J_end,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
@@ -2628,7 +2845,7 @@ namespace tardigradeHydra {
     template <class output_leading_configuration_configurations_J_iterator,
               class output_leading_configuration_gradient_configurations_J_iterator,
               class output_leading_configuration_gradient_configuration_gradients_J_iterator>
-    void DeformationBase<leading_rows, size, dim>::_zeroConfigurationOutputs_solveForAllLeadingJacobians(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_zeroConfigurationOutputs_solveForAllLeadingJacobians(
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
         output_leading_configuration_gradient_configurations_J_iterator
@@ -2678,7 +2895,7 @@ namespace tardigradeHydra {
     template <class output_leading_configuration_total_J_iterator,
               class output_leading_configuration_gradient_total_J_iterator,
               class output_leading_configuration_gradient_total_gradient_J_iterator>
-    void DeformationBase<leading_rows, size, dim>::_zeroTotalOutputs_solveForAllLeadingJacobians(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_zeroTotalOutputs_solveForAllLeadingJacobians(
         output_leading_configuration_total_J_iterator          output_leading_configuration_total_J_begin,
         output_leading_configuration_total_J_iterator          output_leading_configuration_total_J_end,
         output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin,
@@ -2722,7 +2939,7 @@ namespace tardigradeHydra {
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_inverse_iterator, class dAminusdX_iterator, class output_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _assemble_leading_configuration_gradient_total_configuration_jacobian_solveforAllLeadingJacobians(
             const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
             const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
@@ -2766,7 +2983,7 @@ namespace tardigradeHydra {
               class output_leading_configuration_total_J_iterator,
               class output_leading_configuration_gradient_total_J_iterator,
               class output_leading_configuration_gradient_total_gradient_J_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_total_jacobians_solveForAllLeadingJacobians(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_total_jacobians_solveForAllLeadingJacobians(
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
         output_leading_configuration_total_J_iterator          output_leading_configuration_total_J_begin,
@@ -2822,7 +3039,7 @@ namespace tardigradeHydra {
               class leading_configuration_configurations_jacobian_iterator,
               class Aminus_configuration_jacobian_iterator, class dAminusdX_configuration_jacobian_iterator,
               class output_leading_configuration_gradient_configurations_jacobian_iterator>
-    void DeformationBase<leading_rows, size, dim>::
+    void DeformationDecompositionBase<leading_rows, size, dim>::
         _accumulate_output_leading_configuration_gradient_configurations_J_solveForAllLeadingJacobians(
             const unsigned int configuration_index, const unsigned int num_configs,
             const intermediate_term2_iterator &intermediate_term2_begin,
@@ -2900,28 +3117,29 @@ namespace tardigradeHydra {
               class output_leading_configuration_configurations_J_iterator,
               class output_leading_configuration_gradient_configurations_J_iterator,
               class output_leading_configuration_gradient_configuration_gradients_J_iterator>
-    void DeformationBase<leading_rows, size, dim>::_assemble_configuration_jacobians_solveForAllLeadingJacobians(
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        const configuration_gradient_iterator                 &configuration_gradients_begin,
-        const configuration_gradient_iterator                 &configuration_gradients_end,
-        const intermediate_term1_iterator                     &intermediate_term1_begin,
-        const intermediate_term1_iterator                     &intermediate_term1_end,
-        const intermediate_term2_iterator                     &intermediate_term2_begin,
-        const intermediate_term2_iterator                     &intermediate_term2_end,
-        const intermediate_term3_iterator                     &intermediate_term3_begin,
-        const intermediate_term3_iterator                     &intermediate_term3_end,
-        const intermediate_term4_iterator                     &intermediate_term4_begin,
-        const intermediate_term4_iterator                     &intermediate_term4_end,
-        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
-        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
-        output_leading_configuration_gradient_configurations_J_iterator
-            output_leading_configuration_gradient_configurations_J_begin,
-        output_leading_configuration_gradient_configurations_J_iterator
-            output_leading_configuration_gradient_configurations_J_end,
-        output_leading_configuration_gradient_configuration_gradients_J_iterator
-            output_leading_configuration_gradient_configuration_gradients_J_begin,
-        output_leading_configuration_gradient_configuration_gradients_J_iterator
-            output_leading_configuration_gradient_configuration_gradients_J_end) {
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        _assemble_configuration_jacobians_solveForAllLeadingJacobians(
+            const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+            const configuration_gradient_iterator                 &configuration_gradients_begin,
+            const configuration_gradient_iterator                 &configuration_gradients_end,
+            const intermediate_term1_iterator                     &intermediate_term1_begin,
+            const intermediate_term1_iterator                     &intermediate_term1_end,
+            const intermediate_term2_iterator                     &intermediate_term2_begin,
+            const intermediate_term2_iterator                     &intermediate_term2_end,
+            const intermediate_term3_iterator                     &intermediate_term3_begin,
+            const intermediate_term3_iterator                     &intermediate_term3_end,
+            const intermediate_term4_iterator                     &intermediate_term4_begin,
+            const intermediate_term4_iterator                     &intermediate_term4_end,
+            output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
+            output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
+            output_leading_configuration_gradient_configurations_J_iterator
+                output_leading_configuration_gradient_configurations_J_begin,
+            output_leading_configuration_gradient_configurations_J_iterator
+                output_leading_configuration_gradient_configurations_J_end,
+            output_leading_configuration_gradient_configuration_gradients_J_iterator
+                output_leading_configuration_gradient_configuration_gradients_J_begin,
+            output_leading_configuration_gradient_configuration_gradients_J_iterator
+                output_leading_configuration_gradient_configuration_gradients_J_end) {
         /*!
          * Incorporate the contribution of the configurations to the Jacobians of solveForAllLeadingJacobians
          *
@@ -3018,7 +3236,7 @@ namespace tardigradeHydra {
               class Aminus_inverse_iterator, class dAminusdX_iterator, class output_intermediate_term1_iterator,
               class output_intermediate_term2_iterator, class output_intermediate_term3_iterator,
               class output_intermediate_term4_iterator>
-    void DeformationBase<leading_rows, size, dim>::_compute_intermediate_terms_solveForAllLeadingJacobians(
+    void DeformationDecompositionBase<leading_rows, size, dim>::_compute_intermediate_terms_solveForAllLeadingJacobians(
         const leading_configuration_iterator          &leading_configuration_begin,
         const leading_configuration_iterator          &leading_configuration_end,
         const leading_configuration_gradient_iterator &leading_configuration_gradient_begin,
@@ -3079,7 +3297,7 @@ namespace tardigradeHydra {
               class output_leading_configuration_gradient_total_gradient_J_iterator,
               class output_leading_configuration_gradient_configurations_J_iterator,
               class output_leading_configuration_gradient_configuration_gradients_J_iterator>
-    void DeformationBase<leading_rows, size, dim>::solveForAllLeadingJacobians(
+    void DeformationDecompositionBase<leading_rows, size, dim>::solveForAllLeadingJacobians(
         const total_configuration_iterator          &total_configuration_begin,
         const total_configuration_iterator          &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,

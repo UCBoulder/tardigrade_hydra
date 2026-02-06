@@ -48,14 +48,12 @@ namespace tardigradeHydra {
 
         bool checkRelaxedConvergence();
 
-        void setInternalSolver(SolverBase *_solver);
-
         virtual void performRelaxedSolve();
+
+        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
 
        protected:
         IterativeSolverBase _internal_solver;  //!< The default internal solver
-
-        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
 
         void setRelaxedIteration(const unsigned int &value);
 
@@ -72,7 +70,6 @@ namespace tardigradeHydra {
         void setupNextRelaxedStep();
 
        private:
-        friend class tardigradeHydra::hydraBase;                       //!< The base class for hydra TEMP
         friend class tardigradeHydra::unit_test::RelaxedSolverTester;  //!< The unit tester for the class
 
         unsigned int _relaxedIteration = 0;  //!< The current relaxed iteration of the non-linear problem

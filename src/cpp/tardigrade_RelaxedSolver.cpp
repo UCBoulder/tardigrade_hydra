@@ -163,13 +163,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Set the internal solver which will attempt to solve the relaxed problem
-     *
-     * \param *_solver: The solver to relax
-     */
-    void RelaxedSolver::setInternalSolver(SolverBase *_solver) { internal_solver = _solver; }
-
-    /*!
      * Attempt to perform a solve of the non-linear problem
      */
     bool RelaxedSolver::attemptInternalSolve() {

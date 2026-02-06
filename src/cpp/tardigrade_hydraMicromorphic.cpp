@@ -84,7 +84,7 @@ namespace tardigradeHydra {
          * Initialize the unknown vector for the non-linear solve.
          *
          * \f$X = \left\{ \bf{\sigma}, \bf{F}^2, \bf{F}^3, ..., \bf{F}n, \bf{\chi}^2, \bf{\chi}^3, ...,
-         * \frac{\partial}{\partial \bm{X}^2} \bf{\chi}^2, \frac{\partial}{\partial \bm{X}^3} \bf{\chi}^3, ..., \xi^1,
+         * \frac{\partial}{\partial \bf{X}^2} \bf{\chi}^2, \frac{\partial}{\partial \bf{X}^3} \bf{\chi}^3, ..., \xi^1,
          * \xi^2, ..., \xi^m \right\} \f$
          *
          * It is assumed that the first residual calculation also has a method `void getStress( )`

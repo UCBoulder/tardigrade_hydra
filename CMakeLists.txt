@@ -68,7 +68,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_LevenbergMarquardtStep"
 )
 set(ADDITIONAL_HEADER_ONLY_LIBRARIES
-    "tardigrade_DeformationBase"
+    "tardigrade_DeformationDecompositionBase"
     "tardigrade_SetDataStorage"
     "tardigrade_MatrixMap"
     "tardigrade_CoreDefinitions"

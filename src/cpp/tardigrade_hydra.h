@@ -29,8 +29,6 @@
 #include "tardigrade_SetDataStorage.h"
 #include "tardigrade_SolverBase.h"
 #include "tardigrade_SubcyclerSolver.h"
-// #include"tardigrade_PreconditionerBase.h"
-// #include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra {
 
@@ -55,6 +53,24 @@ namespace tardigradeHydra {
     namespace unit_test {
         class hydraBaseTester;  //!< Friend class for hydraBase for unit testing
     }  // namespace unit_test
+
+    /*!
+     * HydraConfigurationBase: A base class which defines the hydra configuration
+     */
+    class HydraConfigurationBase {
+       public:
+        //! The default constructor for HydraConfigurationBase
+        HydraConfigurationBase() {}
+        //! The number of unknowns in each configuration
+        floatType configuration_unknown_count = 9;
+        //! The relative tolerance
+        floatType tolr                        = 1e-9;
+        //! The absolute tolerance
+        floatType tola                        = 1e-9;
+
+       private:
+        friend class hydraBase;
+    };
 
     /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
@@ -134,23 +150,15 @@ namespace tardigradeHydra {
         //! Get a reference to the number of state variables involved in the non-linear solve
         constexpr unsigned int getNumNonLinearSolveStateVariables() { return _numNonLinearSolveStateVariables; }
 
-        //! Get the number of terms in the unknown vector
-        virtual const unsigned int getNumUnknowns() {
-            return getNumConfigurations() * getConfigurationUnknownCount() + getNumNonLinearSolveStateVariables();
-        }
+        virtual const unsigned int getNumUnknowns();
 
-        //! Get the number of additional degrees of freedom
-        virtual const unsigned int getNumAdditionalDOF() { return getAdditionalDOF()->size(); }
+        virtual const unsigned int getNumAdditionalDOF();
 
         //! Get the value of the number of constraint equations
         virtual const unsigned int getNumConstraints();
 
         //! Get the current residual index
-        const unsigned int getCurrentResidualIndex() {
-            TARDIGRADE_ERROR_TOOLS_CHECK(currentResidualIndexMeaningful(),
-                                         "The current residual index isn't meaningful");
-            return _current_residual_index;
-        }
+        const unsigned int getCurrentResidualIndex();
 
         const unsigned int getCurrentResidualOffset();
 
@@ -244,9 +252,8 @@ namespace tardigradeHydra {
 
         void clearViscoplasticDamping();
 
-        const floatType getViscoplasticDamping() { /*! Get the value of the viscoplastic damping */
-            return _viscoplastic_damping_factor;
-        }
+        //! Get the value of the viscoplastic damping
+        const floatType getViscoplasticDamping() { return _viscoplastic_damping_factor; }
 
         const bool getViscoplasticDampingSet();
 
@@ -268,15 +275,7 @@ namespace tardigradeHydra {
         //! Add data to the vector of values which will be cleared after each non-linear step
         virtual void addNLStepData(dataBase *data) override { _nlStepData.push_back(data); }
 
-        void setFailureVerbosityLevel(const unsigned int &value) {
-            /*!
-             * Set the verbosity level for failures
-             *
-             * \param &value: The verbosity level of the failure (defaults to zero)
-             */
-
-            _failure_verbosity_level = value;
-        }
+        void setFailureVerbosityLevel(const unsigned int &value);
 
         //! Set the failure output string to use scientific notation
         void setFailureOutputScientific() { _failure_output << std::scientific; }
@@ -284,38 +283,35 @@ namespace tardigradeHydra {
         //! Get the verbosity level for failure outputs
         const unsigned int getFailureVerbosityLevel() { return _failure_verbosity_level; }
 
-        //! Add a string to the failure output string
-        void addToFailureOutput(const std::string &additional) { _failure_output << additional; }
+        void addToFailureOutput(const std::string &value, bool add_endline = false);
 
-        //! Add a floating point vector to the output string
-        void addToFailureOutput(const floatVector &value, bool add_endline = true) {
-            for (auto v = value.begin(); v != value.end(); v++) {
-                _failure_output << *v << ", ";
-            }
+        void addToFailureOutput(const floatVector &value, bool add_endline = true);
+
+        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
+
+        void addToFailureOutput(const floatType &value, bool add_endline = true);
+
+        /*!
+         * Add a general non-iterable object to the output string
+         *
+         * \param &v: The value to add
+         * \param add_endline: Whether to append a newline character after the value
+         */
+        template <class v_type>
+        void addToFailureOutput(const v_type &v, bool add_endline = true) {
+            _failure_output << v;
             if (add_endline) {
                 _failure_output << "\n";
             }
         }
 
-        //! Add a boolean vector to the output string
-        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true) {
-            for (auto v = value.begin(); v != value.end(); v++) {
-                _failure_output << *v << ", ";
-            }
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
-
-        //! Add a floating point value to the output string
-        void addToFailureOutput(const floatType &value, bool add_endline = true) {
-            _failure_output << value;
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
-
-        //! Add a general iterable object to the output string
+        /*!
+         * Add a general iterable object to the output string
+         *
+         * \param &v_begin: The starting iterator of the value vector
+         * \param &v_end: The stopping iterator of the value vector
+         * \param add_endline: Whether to append a newline character after the value
+         */
         template <class v_iterator>
         void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true) {
             for (auto v = v_begin; v != v_end; ++v) {
@@ -332,163 +328,61 @@ namespace tardigradeHydra {
         //! Get a scale factor for the deformation
         const floatType getScaleFactor() { return _scale_factor; }
 
-        //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
         virtual void setScaleFactor(const floatType &value);
 
-        const floatType getScaledTime() { /*! Get the value of the scaled current time */ return _scaled_time; }
+        //! Get the value of the current scaled time
+        const floatType getScaledTime() { return _scaled_time; }
 
-        const floatType getScaledDeltaTime() { /*! Get the value of the scaled changed in time */
-            return _scaled_deltaTime;
-        }
+        //! Get the vlaue of the scaled change in time
+        const floatType getScaledDeltaTime() { return _scaled_deltaTime; }
 
-        const floatType getScaledTemperature() { /*! Get the value of the scaled current temperature */
-            return _scaled_temperature;
-        }
+        //! Get the value of the scaled current temperature
+        const floatType getScaledTemperature() { return _scaled_temperature; }
 
-        const floatVector *
-        getScaledDeformationGradient() { /*! Get the value of the scaled current deformation gradient */
-            return &_scaled_deformationGradient;
-        }
+        //! Get the value of the scaled current deformation gradient
+        const floatVector *getScaledDeformationGradient() { return &_scaled_deformationGradient; }
 
-        const floatVector *getScaledAdditionalDOF() { /*! Get the value of the scaled current additional DOF */
-            return &_scaled_additionalDOF;
-        }
+        //! Get the value of the scaled current additional DOF
+        const floatVector *getScaledAdditionalDOF() { return &_scaled_additionalDOF; }
 
-        floatVector *getMutableResidual() {
-            /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobalResidual methods.
-             *
-             * Be careful!
-             */
+        floatVector *getMutableResidual();
 
-            if (_allow_modify_global_residual) {
-                return &_residual.second;
-            }
+        floatVector *getMutableJacobian();
 
-            return NULL;
-        }
+        floatVector *getMutabledRdT();
 
-        floatVector *getMutableJacobian() {
-            /*! Get a reference to the full jacobian that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobalJacobian methods.
-             *
-             * Be careful!
-             */
+        floatVector *getMutabledRdF();
 
-            if (_allow_modify_global_jacobian) {
-                return &_jacobian.second;
-            }
+        floatVector *getMutabledRdAdditionalDOF();
 
-            return NULL;
-        }
-
-        floatVector *getMutabledRdT() {
-            /*! Get a reference to the full dRdT that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobaldRdT methods.
-             *
-             * Be careful!
-             */
-
-            if (_allow_modify_global_dRdT) {
-                return &_dRdT.second;
-            }
-
-            return NULL;
-        }
-
-        floatVector *getMutabledRdF() {
-            /*! Get a reference to the full dRdF that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobaldRdF methods.
-             *
-             * Be careful!
-             */
-
-            if (_allow_modify_global_dRdF) {
-                return &_dRdF.second;
-            }
-
-            return NULL;
-        }
-
-        floatVector *getMutabledRdAdditionalDOF() {
-            /*! Get a reference to the full dRdAdditionalDOF that is mutable. Returns NULL if it's not allowed.
-             *
-             * This should only be called in residual classes that need to modify the full residual in their
-             * modifyGlobaldRdAdditionalDOF methods.
-             *
-             * Be careful!
-             */
-
-            if (_allow_modify_global_dRdAdditionalDOF) {
-                return &_dRdAdditionalDOF.second;
-            }
-
-            return NULL;
-        }
-
-        const bool currentResidualIndexMeaningful() {
-            /*!
-             * Return if the current residual index is meaningful or not
-             */
-            return _current_residual_index_set;
-        }
+        const bool currentResidualIndexMeaningful();
 
         std::string getResidualParameterizationInfo();
 
-        void updateAdditionalStateVariables() {
-            /*!
-             * Update the additional state variable vector
-             */
+        void updateAdditionalStateVariables();
 
-            for (auto v = std::begin(*getResidualClasses()); v != std::end(*getResidualClasses()); ++v) {
-                (*v)->updateAdditionalStateVariables(_additionalStateVariables.second);
-            }
-        }
+        void setToleranceScaleFactor(floatType factor);
 
-        void setToleranceScaleFactor(floatType factor) {
-            /*!
-             * Loosen the convergence tolerance for the next iteration
-             * Useful if a Residual's form is changing in a non-smooth way
-             *
-             * \param factor: The scale factor to be applied to the current tolerance
-             */
+        //! Get the scale factor for the tolerance
+        const floatType getToleranceScaleFactor() { return _residual_scale_factor; }
 
-            if (factor > _residual_scale_factor) {
-                _residual_scale_factor = factor;
-            }
-        }
+        //! The class which performs the material point solve TODO: Make this an incoming pointer
+        SolverBase *solver = &_solver;
 
-        const floatType getToleranceScaleFactor() {
-            /*!
-             * Get the scale factor for the tolerance
-             */
-
-            return _residual_scale_factor;
-        }
-
-        SolverBase *solver =
-            &_solver;  //!< The class which performs the material point solve TODO: Make this an incoming pointer
+        //        //! The class which contains the deformation
+        //        DeformationBase *deformation = &_deformation;
 
        protected:
-        SubcyclerSolver _solver;  //!< Default solver
+        //! Default solver
+        SubcyclerSolver _solver;
+
+        //        //! Default deformation class
+        //        DeformationBase _deformation;
 
         // Setters that the user may need to access but not override
 
-        const void resetToleranceScaleFactor() {
-            /*!
-             * Reset the tolerance scale factor to 1
-             */
-
-            _residual_scale_factor = 1.0;
-        }
+        //! Reset the tolerance scale factor to 1
+        const void resetToleranceScaleFactor() { _residual_scale_factor = 1.0; }
 
         void setStress(const floatVector &stress);
 
@@ -516,36 +410,18 @@ namespace tardigradeHydra {
         virtual void calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
                                                           floatVector &dC1dCn);
 
-        //! Update the scaled quantities
         virtual void setScaledQuantities();
 
-        void unexpectedError() {
-            /*!
-             * Function to throw for an unexpected error. A user should never get here!
-             */
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                throw std::runtime_error("You shouldn't have gotten here. If you aren't developing the code then "
-                                         "contact a developer with the stack trace."))
-        }
+        void unexpectedError();
 
         //! A pass through function that does nothing
         void passThrough() {}
 
-        void setX(const floatVector &X) {
-            /*!
-             * Set the value of the unknown vector
-             *
-             * \param &X: The unknown vector
-             */
-
-            _X.second = X;
-
-            _X.first = true;
-        }
+        void setX(const floatVector &X);
 
         std::string build_upper_index_out_of_range_error_string(const unsigned int upperIndex,
                                                                 const unsigned int num_configurations);
+
         std::string build_lower_index_out_of_range_error_string(const unsigned int lowerIndex,
                                                                 const unsigned int upperIndex);
 
@@ -557,165 +433,143 @@ namespace tardigradeHydra {
 
         virtual void resetProblem();
 
-        void setAllowModifyGlobalResidual(const bool value) {
-            /*!
-             * Set a flag for if the global residual can be modified
-             *
-             * \param value: The updated value
-             */
-            _allow_modify_global_residual = value;
-        }
+        void setAllowModifyGlobalResidual(const bool value);
 
-        void setAllowModifyGlobalJacobian(const bool value) {
-            /*!
-             * Set a flag for if the global jacobian can be modified
-             *
-             * \param value: The updated value
-             */
-            _allow_modify_global_jacobian = value;
-        }
+        void setAllowModifyGlobalJacobian(const bool value);
 
-        void setAllowModifyGlobaldRdT(const bool value) {
-            /*!
-             * Set a flag for if the global dRdT can be modified
-             *
-             * \param value: The updated value
-             */
-            _allow_modify_global_dRdT = value;
-        }
+        void setAllowModifyGlobaldRdT(const bool value);
 
-        void setAllowModifyGlobaldRdF(const bool value) {
-            /*!
-             * Set a flag for if the global dRdF can be modified
-             *
-             * \param value: The updated value
-             */
-            _allow_modify_global_dRdF = value;
-        }
+        void setAllowModifyGlobaldRdF(const bool value);
 
-        void setAllowModifyGlobaldRdAdditionalDOF(const bool value) {
-            /*!
-             * Set a flag for if the global dRdAdditionalDOF can be modified
-             *
-             * \param value: The updated value
-             */
-            _allow_modify_global_dRdAdditionalDOF = value;
-        }
+        void setAllowModifyGlobaldRdAdditionalDOF(const bool value);
 
-        void setPreviouslyConvergedStress(const floatVector &value) {
-            /*!
-             * Set the value of the previously converged stress.
-             *
-             * \param &value: The incoming value
-             */
-
-            _previouslyConvergedStress.second = value;
-            _previouslyConvergedStress.first  = true;
-        }
+        void setPreviouslyConvergedStress(const floatVector &value);
 
        private:
         // Friend classes
-        friend class tardigradeHydra::SolverStepBase;  //!< The base class for the solver steps
-        friend class tardigradeHydra::SolverBase;      //!< The base class for the solver
+        friend class tardigradeHydra::SolverBase;  //!< The base class for the solver
         friend class unit_test::hydraBaseTester;  //!< Friend class which allows modification of private variables. ONLY
                                                   //!< TO BE USED FOR TESTING!
 
-        unsigned int _dimension;  //!< The spatial dimension of the problem
+        //! The spatial dimension of the problem
+        unsigned int _dimension;
 
-        unsigned int
-            _configuration_unknown_count;  //!< The number of unknowns required for a configuration. Used to ensure that
-                                           //!< the unknown and state variable vectors are the right size. Must be set
-                                           //!< by all inheriting classes. For 3D classical continuum this will be 9,
-                                           //!< for higher order theories this will change.
+        //! The number of unknowns required for a configuration
+        unsigned int _configuration_unknown_count;
 
-        unsigned int _stress_size;  //!< The number of terms in the stress measures. For 3D classical continuum this
-                                    //!< will be 9, for higher order theories this will change.
+        //! The number of terms in the stress measures
+        unsigned int _stress_size;
 
-        floatType _time;  //!< The current time
+        //! The current time
+        floatType _time;
 
-        floatType _deltaTime;  //!< The change in time
+        //! The change in time
+        floatType _deltaTime;
 
-        floatType _temperature;  //!< The current temperature
+        //! The current temperature
+        floatType _temperature;
 
-        floatType _previousTemperature;  //!< The previous temperature
+        //! The previous temperature
+        floatType _previousTemperature;
 
-        secondOrderTensor _deformationGradient;  //!< The current deformation gradient
+        //! The current deformation gradient
+        secondOrderTensor _deformationGradient;
 
-        secondOrderTensor _previousDeformationGradient;  //!< The previous deformation gradient
+        //! The previous deformation gradient
+        secondOrderTensor _previousDeformationGradient;
 
-        floatVector _additionalDOF;  //!< The current additional degrees of freedom
+        //! The current additional degrees of freedom
+        floatVector _additionalDOF;
 
-        floatVector _previousAdditionalDOF;  //!< The previous additional degrees of freedom
+        //! The previous additional degrees of freedom
+        floatVector _previousAdditionalDOF;
 
-        floatVector _previousStateVariables;  //!< The previous state variables
+        //! The previous state variables
+        floatVector _previousStateVariables;
 
-        floatVector _parameters;  //!< The model parameters
+        //! The model parameters
+        floatVector _parameters;
 
-        floatType _scaled_time;  //!< The current time scaled by the scaling factor
+        //! The current time scaled by the scaling factor
+        floatType _scaled_time;
 
-        floatType _scaled_deltaTime;  //!< The change in time scaled by the scaling factor
+        //! The change in time scaled by the scaling factor
+        floatType _scaled_deltaTime;
 
-        floatType _scaled_temperature;  //!< The current temperature scaled by the scaling factor
+        //! The current temperature scaled by the scaling factor
+        floatType _scaled_temperature;
 
-        secondOrderTensor
-            _scaled_deformationGradient;  //!< The current deformation gradient scaled by the scaling factor
+        //! The current deformation gradient scaled by the scaling factor
+        secondOrderTensor _scaled_deformationGradient;
 
-        floatVector _scaled_additionalDOF;  //!< The current additional degrees of freedom scaled by the scaling factor
+        //! The current additional degrees of freedom scaled by the scaling factor
+        floatVector _scaled_additionalDOF;
 
-        unsigned int _numConfigurations;  //!< The number of configurations
+        //! The number of configurations
+        unsigned int _numConfigurations;
 
-        unsigned int _numNonLinearSolveStateVariables;  //!< The number of state variables which will be solved in the
-                                                        //!< Newton-Raphson loop
+        //! The number of state variables which will be solved in the Newton-Raphson loop
+        unsigned int _numNonLinearSolveStateVariables;
 
-        floatType _residual_scale_factor =
-            1;  //!< A scale factor for the residual which can be used to loosen the tolerance by a Residual
+        //! A scale factor for the residual which can be used to loosen the tolerance
+        floatType _residual_scale_factor = 1;
 
-        floatType _tolr;  //!< The relative tolerance
+        //! The relative tolerance
+        floatType _tolr;
 
-        floatType _tola;  //!< The absolute tolerance
+        //! The absolute tolerance
+        floatType _tola;
 
-        bool _rank_deficient_error = true;  //!< Flag for whether a rank-deficient LHS will throw a convergence error
+        //! A flag for whether a rank-deficient LHS will through a convergence error
+        bool _rank_deficient_error = true;
 
-        std::vector<dataBase *>
-            _iterationData;  //!< A vector of pointers to data which should be cleared at each iteration
+        //! A vector of pointers to data which should be cleared at each iteration
+        std::vector<dataBase *> _iterationData;
 
-        std::vector<dataBase *>
-            _nlStepData;  //!< A vector of pointers to data which should be cleared after each nonlinear step
+        //! A vector of pointers to data which should be cleared after each nonlinear step
+        std::vector<dataBase *> _nlStepData;
 
-        DataStorage<std::vector<ResidualBase<hydraBase> *> >
-            _residualClasses;  //!< A vector of classes which compute the terms in the residual equation
+        //! A vector of classes which compute the terms in the residual equation
+        DataStorage<std::vector<ResidualBase<hydraBase> *> > _residualClasses;
 
-        DataStorage<floatVector> _residual;  //!< The residual vector for the global solve
+        //! The residual vector for the global solve
+        DataStorage<floatVector> _residual;
 
-        DataStorage<floatVector> _jacobian;  //!< The jacobian matrix in row-major form for the global solve
+        //! The jacobian matrix in row-major form for the global solve
+        DataStorage<floatVector> _jacobian;
 
-        DataStorage<floatVector> _previouslyConvergedStress;  //!< The previously converged stress
+        //! The previously converged stress
+        DataStorage<floatVector> _previouslyConvergedStress;
 
-        DataStorage<floatVector> _dRdF;  //!< The gradient of the residual w.r.t. the deformation gradient in row-major
-                                         //!< form for the global solve
+        //! The gradient of the residual w.r.t. the deformation gradient in row-major form
+        DataStorage<floatVector> _dRdF;
 
-        DataStorage<floatVector> _dRdT;  //!< The gradient of the residual w.r.t. the temperature for the global solve
+        //! The gradient of the residual w.r.t. the temperature for the global solve
+        DataStorage<floatVector> _dRdT;
 
-        DataStorage<floatVector>
-            _dRdAdditionalDOF;  //!< The derivatives of the residual w.r.t. the additional degrees of freedom
+        //! The derivatives of the residual w.r.t. the additional degrees of freedom
+        DataStorage<floatVector> _dRdAdditionalDOF;
 
-        DataStorage<floatVector> _additionalDerivatives;  //!< Additional derivatives of the residual
+        //! Additional derivatives of the residual
+        DataStorage<floatVector> _additionalDerivatives;
 
-        DataStorage<floatVector> _X;  //!< The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
+        //! The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
+        DataStorage<floatVector> _X;
 
-        DataStorage<floatVector>
-            _stress;  //!< The stress in the current configuration as determined from the current state
+        //! The stress in the current configuration as determined from the current state
+        DataStorage<floatVector> _stress;
 
-        DataStorage<floatVector> _previousStress;  //!< The previous value of the stress in the current configuration as
-                                                   //!< determined from the previous state
+        //! The previous value of the stress in the current configuration as determined from the previous state
+        DataStorage<floatVector> _previousStress;
 
-        DataStorage<floatVector>
-            _flatdXdF;  //!< The total derivative of the unknown vector w.r.t. the deformation in row-major form
+        //! The total derivative of the unknown vector w.r.t. the deformation in row-major form
+        DataStorage<floatVector> _flatdXdF;
 
-        DataStorage<floatVector> _flatdXdT;  //!< The total derivative of the unknown vector w.r.t. the temperature
+        //! The total derivative of the unknown vector w.r.t. the temperature
+        DataStorage<floatVector> _flatdXdT;
 
-        DataStorage<floatVector>
-            _flatdXdAdditionalDOF;  //!< The total derivative of the unknown vector w.r.t. the additional DOF
+        //! The total derivative of the unknown vector w.r.t. the additional dof
+        DataStorage<floatVector> _flatdXdAdditionalDOF;
 
         void setFirstConfigurationJacobians();
 
@@ -725,32 +579,41 @@ namespace tardigradeHydra {
 
         void resetNLStepData();
 
-        unsigned int _failure_verbosity_level = 0;  //!< The verbosity level for failure.
+        //! The verbosity level for failure
+        unsigned int _failure_verbosity_level = 0;
 
-        std::stringstream _failure_output;  //!< Additional failure output information
+        //! Additional failure output information
+        std::stringstream _failure_output;
 
-        floatType _scale_factor =
-            1.0;  //!< A scale factor applied to the incoming loading (deformation, temperature, etc.)
+        //! A scale factor applied to the incoming loading (deformation, temperature, etc.)
+        floatType _scale_factor = 1.0;
 
-        bool _allow_modify_global_residual = false;  //!< Flag for if the global residual can be modified
+        //! Flag for if the global residual can be modified
+        bool _allow_modify_global_residual = false;
 
-        bool _allow_modify_global_jacobian = false;  //!< Flag for if the global jacobian can be modified
+        //! Flag for if the global jacobian can be modified
+        bool _allow_modify_global_jacobian = false;
 
-        bool _allow_modify_global_dRdT = false;  //!< Flag for if the global dRdT can be modified
+        //! Flag for if the global dRdT can be modified
+        bool _allow_modify_global_dRdT = false;
 
-        bool _allow_modify_global_dRdF = false;  //!< Flag for if the global dRdF can be modified
+        //! Flag for if the global dRdF can be modified
+        bool _allow_modify_global_dRdF = false;
 
-        bool _allow_modify_global_dRdAdditionalDOF =
-            false;  //!< Flag for if the global dRdAdditionalDOF can be modified
+        //! Flag for if the global dRdAdditionalDOF can be modified
+        bool _allow_modify_global_dRdAdditionalDOF = false;
 
-        bool _current_residual_index_set = false;  //!< Flag for whether the current residual index has been set
+        //! Flag for whether the current residual index has been set
+        bool _current_residual_index_set = false;
 
-        int _current_residual_index = 0;  //!< The current residual index
+        //! The current residual index
+        int _current_residual_index = 0;
 
-        floatType _viscoplastic_damping_factor = 0;  //!< The fraction of the difference between the trial stress and
-                                                     //!< the stress that will be suppressed to assist in convergence
+        //! The fraction of the difference between the trial and calculated stress that will be suppressed
+        floatType _viscoplastic_damping_factor = 0;
 
-        bool _viscoplastic_damping_set = false;  //!< Flag for whether the viscoplastic damping factor has been set
+        //! Flag for whether the viscoplastic damping factor has been set
+        bool _viscoplastic_damping_set = false;
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, configurations, floatVector, passThrough)
 

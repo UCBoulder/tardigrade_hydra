@@ -9,7 +9,7 @@
 
 #include "tardigrade_hydra.h"
 
-#include "tardigrade_SolverStepBase.h"
+#include "tardigrade_DeformationDecompositionBase.h"  //TEMP
 
 namespace tardigradeHydra {
 
@@ -71,12 +71,173 @@ namespace tardigradeHydra {
      */
     void hydraBase::setStress(const floatVector &stress) { setIterationData(stress, _stress); }
 
+    /*!
+     * Get a SetDataStorage object for the stress
+     */
     hydraBase::SetDataStorageIteration<secondOrderTensor> hydraBase::get_SetDataStorage_stress() {
-        /*!
-         * Get a SetDataStorage object for the stress
-         */
-
         return hydraBase::SetDataStorageIteration<secondOrderTensor>(&_stress, this);
+    }
+
+    //! Get the number of terms in the unknown vector
+    const unsigned int hydraBase::getNumUnknowns() {
+        return getNumConfigurations() * getConfigurationUnknownCount() + getNumNonLinearSolveStateVariables();
+    }
+
+    //! Get the number of additional degrees of freedom
+    const unsigned int hydraBase::getNumAdditionalDOF() { return getAdditionalDOF()->size(); }
+
+    //! Get the current residual index
+    const unsigned int hydraBase::getCurrentResidualIndex() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(currentResidualIndexMeaningful(), "The current residual index isn't meaningful");
+        return _current_residual_index;
+    }
+
+    /*!
+     * Set the verbosity level for failures
+     *
+     * \param &value: The verbosity level of the failure (defaults to zero)
+     */
+    void hydraBase::setFailureVerbosityLevel(const unsigned int &value) { _failure_verbosity_level = value; }
+
+    /*!
+     * Add a string to the failure output string
+     *
+     * \param &value: The string to append to the output
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const std::string &value, bool add_endline) {
+        addToFailureOutput<std::string>(value, add_endline);
+    }
+
+    /*!
+     * Add a floatVector to the output string
+     *
+     * \param &value: The vector to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const floatVector &value, bool add_endline) {
+        addToFailureOutput(std::begin(value), std::end(value), add_endline);
+    }
+
+    /*!
+     * Add a vector of booleans to the output string
+     *
+     * \param &value: The vector to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const std::vector<bool> &value, bool add_endline) {
+        addToFailureOutput(std::begin(value), std::end(value), add_endline);
+    }
+
+    /*!
+     * Add a floating point value to the output string
+     *
+     * \param &value: The value to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const floatType &value, bool add_endline) {
+        addToFailureOutput<floatType>(value, add_endline);
+    }
+
+    /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobalResidual methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutableResidual() {
+        if (_allow_modify_global_residual) {
+            return &_residual.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full jacobian that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobalJacobian methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutableJacobian() {
+        if (_allow_modify_global_jacobian) {
+            return &_jacobian.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdT that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdT methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdT() {
+        if (_allow_modify_global_dRdT) {
+            return &_dRdT.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdF that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdF methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdF() {
+        if (_allow_modify_global_dRdF) {
+            return &_dRdF.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdAdditionalDOF that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdAdditionalDOF methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdAdditionalDOF() {
+        if (_allow_modify_global_dRdAdditionalDOF) {
+            return &_dRdAdditionalDOF.second;
+        }
+
+        return NULL;
+    }
+
+    /*!
+     * Return if the current residual index is meaningful or not
+     */
+    const bool hydraBase::currentResidualIndexMeaningful() { return _current_residual_index_set; }
+
+    /*!
+     * Loosen the convergence tolerance for the next iteration
+     * Useful if a Residual's form is changing in a non-smooth way
+     *
+     * \param factor: The scale factor to be applied to the current tolerance
+     */
+    void hydraBase::setToleranceScaleFactor(floatType factor) {
+        if (factor > _residual_scale_factor) {
+            _residual_scale_factor = factor;
+        }
+    }
+
+    /*!
+     * Update the additional state variable vector
+     */
+    void hydraBase::updateAdditionalStateVariables() {
+        for (auto v = std::begin(*getResidualClasses()); v != std::end(*getResidualClasses()); ++v) {
+            (*v)->updateAdditionalStateVariables(_additionalStateVariables.second);
+        }
     }
 
     /*!
@@ -321,6 +482,9 @@ namespace tardigradeHydra {
     /*!
      * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
      *
+     * TODO: Determine if returning identity for an equal lower and upper configuration is desirable
+     * TODO: Generalize for a differently shaped leading configuration
+     *
      * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
      * F^{\text{upperIndex-1}}_{\bar{I}I} \f$ \param &configurations: The configurations to operate on \param
      * &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1) \param
@@ -329,45 +493,21 @@ namespace tardigradeHydra {
      */
     floatVector hydraBase::getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
                                                const unsigned int &upperIndex) {
-        const unsigned int dim     = getDimension();
-        const unsigned int sot_dim = getSOTDimension();
+        constexpr unsigned int dim     = 3;
+        constexpr unsigned int sot_dim = dim * dim;
 
-        TARDIGRADE_ERROR_TOOLS_EVAL(const unsigned int local_num_configurations = configurations.size() / sot_dim;)
+        secondOrderTensor Fsc(dim * dim, 0);
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            configurations.size() % sot_dim == 0,
-            "The configurations vector must be a multiple of the size of a second order tensor")
+        if (lowerIndex == upperIndex) {
+            for (unsigned int i = 0; i < dim; ++i) {
+                Fsc[dim * i + i] = 1;
+            }
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(upperIndex <= local_num_configurations,
-                                     build_upper_index_out_of_range_error_string(upperIndex, local_num_configurations))
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(lowerIndex <= upperIndex,
-                                     build_lower_index_out_of_range_error_string(lowerIndex, upperIndex))
-
-        secondOrderTensor Fsc(sot_dim, 0);
-        for (unsigned int i = 0; i < 3; i++) {
-            Fsc[dim * i + i] = 1.;
-        }
-
-#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-        floatVector temp;
-        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0);
-#else
-        auto Fsc_mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(Fsc.data());
-        auto mat     = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(configurations.data());
-#endif
-
-        for (unsigned int i = lowerIndex; i < upperIndex; i++) {
-#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-            temp = Fsc;
-
-            kernel(&configurations[sot_dim * i], &temp[0], &Fsc[0]);
-#else
-            new (&mat)
-                Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(configurations.data() + sot_dim * i,
-                                                                                   3, 3);
-            Fsc_mat *= mat;
-#endif
+        } else {
+            DeformationDecompositionBase<dim, dim, dim> decomposition;
+            decomposition.getNetConfiguration(std::begin(configurations) + sot_dim * lowerIndex,
+                                              std::begin(configurations) + sot_dim * upperIndex, std::begin(Fsc),
+                                              std::end(Fsc));
         }
 
         return Fsc;
@@ -389,37 +529,18 @@ namespace tardigradeHydra {
      */
     floatVector hydraBase::getSubConfigurationJacobian(const floatVector  &configurations,
                                                        const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        const unsigned int dim                  = getDimension();
-        const unsigned int sot_dim              = getSOTDimension();
-        const unsigned int num_incoming_configs = configurations.size() / sot_dim;
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            configurations.size() % sot_dim == 0,
-            "The configurations vector must be a scalar multiple of the second order tensor size (9 for 3D)")
+        constexpr unsigned int dim                  = 3;
+        constexpr unsigned int sot_dim              = dim * dim;
+        const unsigned int     num_incoming_configs = configurations.size() / sot_dim;
 
         floatVector gradient(sot_dim * sot_dim * num_incoming_configs, 0);
 
-        secondOrderTensor Fm, FpT;
-
-        auto map = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(FpT.data());
-
-        for (unsigned int index = lowerIndex; index < upperIndex; index++) {
-            TARDIGRADE_ERROR_TOOLS_CATCH(Fm = getSubConfiguration(configurations, lowerIndex, index));
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(FpT = getSubConfiguration(configurations, index + 1, upperIndex));
-            new (&map) Eigen::Map<Eigen::Matrix<floatType, 3, 3> >(FpT.data(), 3, 3);
-            map = map.transpose().eval();
-
-            for (unsigned int i = 0; i < dim; i++) {
-                for (unsigned int I = 0; I < dim; I++) {
-                    for (unsigned int a = 0; a < dim; a++) {
-                        for (unsigned int A = 0; A < dim; A++) {
-                            gradient[dim * num_incoming_configs * sot_dim * i + num_incoming_configs * sot_dim * I +
-                                     sot_dim * index + dim * a + A] = Fm[dim * i + a] * FpT[dim * I + A];
-                        }
-                    }
-                }
-            }
+        if (lowerIndex != upperIndex) {
+            DeformationDecompositionBase<dim, dim, dim> decomposition;
+            decomposition.getNetConfigurationJacobian(std::begin(configurations) + sot_dim * lowerIndex,
+                                                      std::begin(configurations) + sot_dim * upperIndex,
+                                                      std::begin(gradient), std::end(gradient), lowerIndex * sot_dim,
+                                                      num_incoming_configs * sot_dim);
         }
 
         return gradient;
@@ -594,48 +715,22 @@ namespace tardigradeHydra {
         constexpr unsigned int sot_dim     = dim * dim;
         auto                   num_configs = getNumConfigurations();
 
-        dC1dC = secondOrderTensor(sot_dim * sot_dim, 0);
-
-        dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
-
         secondOrderTensor fullConfiguration = getSubConfiguration(configurations, 0, num_configs);
 
-        secondOrderTensor invCsc = getSubConfiguration(configurations, 1, num_configs);
-        auto              mat    = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(invCsc.data());
-        mat                      = mat.inverse().eval();
+        dC1dC  = secondOrderTensor(sot_dim * sot_dim, 0);
+        dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
 
-        fourthOrderTensor dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA(invCsc, dim, dim);
-        auto map_dInvCscdCsc = tardigradeHydra::getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dInvCscdCsc.data());
-
-        floatVector dCscdCs = getSubConfigurationJacobian(configurations, 1, num_configs);
-        auto map_dCscdCs    = tardigradeHydra::getDynamicSizeMatrixMap(dCscdCs.data(), sot_dim, num_configs * sot_dim);
-
-        floatVector dInvCscdCs(sot_dim * num_configs * sot_dim, 0);
-        auto        map_dInvCscdCs =
-            tardigradeHydra::getDynamicSizeMatrixMap(dInvCscdCs.data(), sot_dim, num_configs * sot_dim);
-
-        map_dInvCscdCs = (map_dInvCscdCsc * map_dCscdCs).eval();
-
-        // Compute the gradients
-        for (unsigned int i = 0; i < dim; i++) {
-            for (unsigned int barI = 0; barI < dim; barI++) {
-                for (unsigned int A = 0; A < dim; A++) {
-                    dC1dC[dim * sot_dim * i + sot_dim * barI + dim * i + A] += invCsc[dim * A + barI];
-                }
-            }
-        }
-        for (unsigned int i = 0; i < dim; i++) {
-            for (unsigned int J = 0; J < dim; J++) {
-                for (unsigned int barI = 0; barI < dim; barI++) {
-                    for (unsigned int indexaA = 0; indexaA < (num_configs - 1) * sot_dim; indexaA++) {
-                        dC1dCn[dim * (num_configs - 1) * sot_dim * i + (num_configs - 1) * sot_dim * barI + indexaA] +=
-                            fullConfiguration[dim * i + J] *
-                            dInvCscdCs[dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + indexaA +
-                                       sot_dim];
-                    }
-                }
-            }
-        }
+        DeformationDecompositionBase<dim, dim, dim> decomposition;
+        decomposition.solveForLeadingConfigurationTotalConfigurationJacobian(std::begin(fullConfiguration),
+                                                                             std::end(fullConfiguration),
+                                                                             std::begin(configurations) + sot_dim,
+                                                                             std::end(configurations),
+                                                                             std::begin(dC1dC), std::end(dC1dC));
+        decomposition.solveForLeadingConfigurationConfigurationJacobian(std::begin(fullConfiguration),
+                                                                        std::end(fullConfiguration),
+                                                                        std::begin(configurations) + sot_dim,
+                                                                        std::end(configurations), std::begin(dC1dCn),
+                                                                        std::end(dC1dCn));
     }
 
     /*!
@@ -1593,4 +1688,70 @@ namespace tardigradeHydra {
         return parameterization_info;
     }
 
+    /*!
+     * Function to throw for an unexpected error. A user should never get here!
+     */
+    void hydraBase::unexpectedError() {
+        TARDIGRADE_ERROR_TOOLS_CATCH(
+            throw std::runtime_error("You shouldn't have gotten here. If you aren't developing the code then "
+                                     "contact a developer with the stack trace."))
+    }
+
+    /*!
+     * Set the value of the unknown vector
+     *
+     * \param &X: The unknown vector
+     */
+    void hydraBase::setX(const floatVector &X) {
+        _X.second = X;
+
+        _X.first = true;
+    }
+
+    /*!
+     * Set a flag for if the global residual can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobalResidual(const bool value) { _allow_modify_global_residual = value; }
+
+    /*!
+     * Set a flag for if the global jacobian can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobalJacobian(const bool value) { _allow_modify_global_jacobian = value; }
+
+    /*!
+     * Set a flag for if the global dRdT can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdT(const bool value) { _allow_modify_global_dRdT = value; }
+
+    /*!
+     * Set a flag for if the global dRdF can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdF(const bool value) { _allow_modify_global_dRdF = value; }
+
+    /*!
+     * Set a flag for if the global dRdAdditionalDOF can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdAdditionalDOF(const bool value) {
+        _allow_modify_global_dRdAdditionalDOF = value;
+    }
+
+    /*!
+     * Set the value of the previously converged stress.
+     *
+     * \param &value: The incoming value
+     */
+    void hydraBase::setPreviouslyConvergedStress(const floatVector &value) {
+        _previouslyConvergedStress.second = value;
+        _previouslyConvergedStress.first  = true;
+    }
 }  // namespace tardigradeHydra

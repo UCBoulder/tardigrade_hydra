@@ -708,11 +708,12 @@ namespace tardigradeHydra {
                                         variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma) {
             /*!
              * Compute the deformation measures
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * C_{IJ} &= F_{iI} F_{iJ}\\
-             * Psi_{IJ} &= F_{iI} \Chi_{iJ}\\
-             * \Gamma_{IJK} &= F_{iI} \Chi_{iJ, K}
-             * \end{align}\f$
+             * Psi_{IJ} &= F_{iI} \chi_{iJ}\\
+             * \Gamma_{IJK} &= F_{iI} \chi_{iJ, K}
+             * \end{aligned}\f$
              *
              * \param &deformationGradient: The deformation gradient
              * \param &microDeformation: The micro-deformation
@@ -742,11 +743,12 @@ namespace tardigradeHydra {
                                         variableVector &dGammadF, variableVector &dGammadGradChi) {
             /*!
              * Compute the deformation measures
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * C_{IJ} &= F_{iI} F_{iJ}\\
-             * Psi_{IJ} &= F_{iI} \Chi_{iJ}\\
-             * \Gamma_{IJK} &= F_{iI} \Chi_{iJ, K}
-             * \end{align}\f$
+             * Psi_{IJ} &= F_{iI} \chi_{iJ}\\
+             * \Gamma_{IJK} &= F_{iI} \chi_{iJ, K}
+             * \end{aligned}\f$
              *
              * \param &deformationGradient: The deformation gradient
              * \param &microDeformation: The micro-deformation
@@ -823,10 +825,11 @@ namespace tardigradeHydra {
              * \f$ term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL} \f$
              *
              * Also return the Jacobian
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * \frac{\partial term^1_{IJ} }{ E_{MN} } &= A_{IJMN}\\
              * \frac{\partial term^1_{IJ} }{ \mathcal{E}_{MN} } &= D_{IJMN}
-             * \end{align}\f$
+             * \end{aligned}\f$
              *
              * \param &greenLagrangeStrain: The Green-Lagrange strain.
              * \param &microStrain: The micro-strain
@@ -908,11 +911,12 @@ namespace tardigradeHydra {
              * \f$term^2_{IJ} = \left( B_{IQKL} \mathcal{E}_{KL} + E_{KL} D_{KLIQ} \right) C_{JR}^{-1} \Psi_{RQ}\f$
              *
              * Also return the Jacobians
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * \frac{ \partial term^2_{IJ} }{ \partial E_{MN} } &= D_{MNIK} C_{JR}^{-1} \Psi_{RK}\\
              * \frac{ \partial term^2_{IJ} }{ \partial \mathcal{E}_{MN} } &= B_{IKMN} C_{JR}^{-1} \Psi_{RK}\\
              * \frac{ \partial term^2_{IJ} }{ \partial C_{MO}^{-1} \Psi_{ON} } &= \left( B_{INKL} \mathcal{E}_{KL} +
-             * E_{KL} D_{KLIN} \right) \delta_{JM} \end{align}\f$
+             * E_{KL} D_{KLIN} \right) \delta_{JM} \end{aligned}\f$
              *
              * \param &greenLagrangeStrain: The Green-Lagrange strain \f$E_{IJ} = \frac{1}{2} \left( C_{IJ} -
              * \delta_{IJ} \right)\f$ \param &microStrain: The micro-strain \f$\mathcal{E}_{IJ} = \Psi_{IJ} -
@@ -1086,10 +1090,11 @@ namespace tardigradeHydra {
              * \f$ term3_{IJ} = M_{IQR} C_{JS}^{-1} \Gamma_{SQR} \f$
              *
              * Also returns the Jacobians
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * \frac{ \partial term3_{IJ} }{ \partial M_{TUV} } &= \delta_{IT} C_{JS}^{-1} \Gamma_{SUV}\\
-             * \frac{ \partial term3_{IJ} }{ \partial C_{TW}^{-1} \Gamma_{WUV} &= M_{IUV} \delta_{JT}
-             * \end{align}\f$
+             * \frac{ \partial term3_{IJ} }{ \partial C_{TW}^{-1} \Gamma_{WUV} } &= M_{IUV} \delta_{JT}
+             * \end{aligned}\f$
              *
              * \param &invCGamma: \f$ C_{JS}^{-1} \Gamma_{SQR} \f$
              * \param &referenceHigherOrderStress: The higher order stress in the reference configuration.
@@ -1156,10 +1161,11 @@ namespace tardigradeHydra {
              * Compute the product \f$ C_{IK}^{-1} \Psi_{KJ} \f$
              *
              * Also compute the Jacobians
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * \frac{ \partial C_{IO}^{-1} \Psi_{OJ} } { \partial C_{KL} } &= -C_{IK}^{-1} C_{LO}^{-1} \Psi_{OJ}\\
              * \frac{ \partial C_{IO}^{-1} \Psi_{OJ} } { \partial \Psi_{KL} } &= C_{IK}^{-1} \delta_{JL}
-             * \end{align}\f$
+             * \end{aligned}\f$
              *
              * \param &invRCG: The inverse of the right cauchy green deformation tensor.
              * \param &Psi: The micro-deformation measure.
@@ -1235,10 +1241,10 @@ namespace tardigradeHydra {
              *
              * Also compute the Jacobians
              *
-             * \f$\begin{align}
+             * \f$\begin{aligned}
              * \frac{\partial C_{JS}^{-1} \Gamma_{SQR} }{ \partial C_{TU} } &= -C_{JT}^{-1} C_{US}^{-1} \Gamma_{SQR}\\
              * \frac{\partial C_{JS}^{-1} \Gamma_{SQR} }{ \partial \Gamma_{TUV} } &= C_{JT}^{-1} \delta_{QU} \delta_{RV}
-             * \end{align}\f$
+             * \end{aligned}\f$
              *
              * \param &invRCG: The inverse of the right Cauchy-Green deformation tensor.
              * \param &Gamma: The gradient of the micro-deformation deformation tensor.
@@ -1279,9 +1285,10 @@ namespace tardigradeHydra {
         void formIsotropicA(const parameterType &lambda, const parameterType &mu, parameterVector &A) {
             /*!
              * Form the isotropic A stiffness tensor.
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * A_{KLMN} &= \lambda \delta_{KL} \delta_{MN} + \mu \left( \delta_{KM} \delta_{LN} + \delta_{KN}
-             * \delta_{LM} \right) \end{align}\f$
+             * \delta_{LM} \right) \end{aligned}\f$
              *
              * \param &lambda: The micromorphic lambda parameter.
              * \param &mu: The micromorphic mu parameter.
@@ -1308,11 +1315,12 @@ namespace tardigradeHydra {
                             const parameterType &nu, const parameterType &sigma, parameterVector &B) {
             /*!
              * Form the isotropic B stiffness tensor.
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * B_{KLMN} &= ( eta - tau ) \delta_{KL} \delta_{MN} + \kappa \delta_{KM} \delta_{LN} + \nu \delta_{KN}
              * \delta_{LM}\\
              *          &- \sigma \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right)
-             * \end{align}\f$
+             * \end{aligned}\f$
              *
              * \param &eta: The micromorphic eta parameter.
              * \param &tau: The micromorphic tau parameter.
@@ -1344,21 +1352,24 @@ namespace tardigradeHydra {
         void formIsotropicC(const parameterVector &taus, parameterVector &C) {
             /*!
              * Form the isotropic C stiffness tensor.
-             * \f$\begin{align}
+             *
+             * \f$\begin{aligned}
              * C_{KLMNPQ} &= \tau_1 \left( \delta_{KL} \delta_{MN} \delta_{PQ} + \delta_{KQ} \delta_{LM} \delta_{NP}
              * \right)\\
              *            &+ \tau_2 \left( \delta_{KL} \delta_{MP} \delta_{NQ} + \delta_{KM} \delta_{LQ} \delta_{NP}
              * \right)\\
              *            &+ \tau_3 \delta_{KL} \delta_{MQ} \delta_{NP}\\
              *            &+ \tau_4 \delta_{KN} \delta_{LM} \delta_{PQ}\\
-             *            &+ \tau_5 \left( \delta_{KM} \delta_{LN} \delta_{PQ} + \delta_{KP} \delta_{LM} \delta_{NQ} )\\
+             *            &+ \tau_5 \left( \delta_{KM} \delta_{LN} \delta_{PQ} + \delta_{KP} \delta_{LM} \delta_{NQ}
+             * \right)\\
              *            &+ \tau_6 \delta_{KM} \delta_{LP} \delta_{NQ}\\
              *            &+ \tau_7 \delta_{KN} \delta_{LP} \delta_{MQ}\\
-             *            &+ \tau_8 \left( \delta_{KP} \delta_{LQ} \delta_{MN} + \delta_{KQ} \delta_{LN} \delta_{MP} )\\
+             *            &+ \tau_8 \left( \delta_{KP} \delta_{LQ} \delta_{MN} + \delta_{KQ} \delta_{LN} \delta_{MP}
+             * \right)\\
              *            &+ \tau_9 \delta_{KN} \delta_{LQ} \delta_{MP}\\
              *            &+ \tau_{10} \delta_{KP} \delta_{LN} \delta_{MQ}\\
              *            &+ \tau_{11} \delta_{KQ} \delta_{LP} \delta_{MN}
-             * \end{align}\f$
+             * \end{aligned}\f$
              *
              * \param &taus: The moduli (11 independent terms)
              * \param &C: The isotropic C stiffness tensor.
