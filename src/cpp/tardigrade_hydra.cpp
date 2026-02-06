@@ -722,7 +722,7 @@ namespace tardigradeHydra {
         DeformationDecompositionBase<dim,dim,dim> decomposition;
         decomposition.solveForLeadingConfigurationTotalConfigurationJacobian(
             std::begin(fullConfiguration), std::end(fullConfiguration),
-            std::begin(configurations), std::end(configurations)
+            std::begin(configurations) + sot_dim, std::end(configurations),
             std::begin(dC1dC), std::end(dC1dC)
         );
 
