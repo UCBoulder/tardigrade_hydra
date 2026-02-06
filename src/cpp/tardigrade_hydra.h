@@ -58,19 +58,18 @@ namespace tardigradeHydra {
      * HydraConfigurationBase: A base class which defines the hydra configuration
      */
     class HydraConfigurationBase {
+       public:
+        //! The default constructor for HydraConfigurationBase
+        HydraConfigurationBase() {}
+        //! The number of unknowns in each configuration
+        floatType configuration_unknown_count = 9;
+        //! The relative tolerance
+        floatType tolr                        = 1e-9;
+        //! The absolute tolerance
+        floatType tola                        = 1e-9;
 
-        public:
-            //! The default constructor for HydraConfigurationBase
-            HydraConfigurationBase() { }
-            //! The number of unknowns in each configuration
-            floatType configuration_unknown_count = 9;
-            //! The relative tolerance
-            floatType tolr = 1e-9;
-            //! The absolute tolerance
-            floatType tola = 1e-9;
-
-        private:
-            friend class hydraBase;
+       private:
+        friend class hydraBase;
     };
 
     /*!
@@ -448,7 +447,7 @@ namespace tardigradeHydra {
 
        private:
         // Friend classes
-        friend class tardigradeHydra::SolverBase;      //!< The base class for the solver
+        friend class tardigradeHydra::SolverBase;  //!< The base class for the solver
         friend class unit_test::hydraBaseTester;  //!< Friend class which allows modification of private variables. ONLY
                                                   //!< TO BE USED FOR TESTING!
 

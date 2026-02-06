@@ -449,12 +449,11 @@ BOOST_AUTO_TEST_CASE(test_getNetConfigurationJacobian_full, *boost::unit_test::t
 
     tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
 
-    deformation.getNetConfigurationJacobian(std::begin(configurations), std::end(configurations),
-                                            std::begin(jacobian), std::end(jacobian));
+    deformation.getNetConfigurationJacobian(std::begin(configurations), std::end(configurations), std::begin(jacobian),
+                                            std::end(jacobian));
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 80;
         constexpr unsigned int NUM_OUTPUTS = 16;
         std::vector<double>    x(std::begin(configurations), std::end(configurations));
@@ -478,13 +477,10 @@ BOOST_AUTO_TEST_CASE(test_getNetConfigurationJacobian_full, *boost::unit_test::t
                 answer[NUM_INPUTS * j + i] = (rp[j] - rm[j]) / (2 * delta);
             }
         }
-
     }
 
     BOOST_TEST(jacobian == answer, CHECK_PER_ELEMENT);
-
 }
-
 
 BOOST_AUTO_TEST_CASE(test_getNetConfigurationGradient, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     std::vector<double> configurations = {
@@ -1556,21 +1552,23 @@ BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationConfigurationJacobian2, *b
         -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
         +1.863538331e-01, +1.383403597e+00};
 
-    std::vector<double> answer(192*5,0);
-    std::vector<double> jacobian(192*5,0);
+    std::vector<double> answer(192 * 5, 0);
+    std::vector<double> jacobian(192 * 5, 0);
 
     tardigradeHydra::DeformationDecompositionBase<3, 4, 5> deformation;
-    try{
-    deformation.solveForLeadingConfigurationConfigurationJacobian(std::begin(total_configuration),
-                                                                  std::end(total_configuration),
-                                                                  std::begin(configurations),
-                                                                  std::end(configurations),
-                                                                  std::begin(jacobian),
-                                                                  std::end(jacobian));
-    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
+    try {
+        deformation.solveForLeadingConfigurationConfigurationJacobian(std::begin(total_configuration),
+                                                                      std::end(total_configuration),
+                                                                      std::begin(configurations),
+                                                                      std::end(configurations), std::begin(jacobian),
+                                                                      std::end(jacobian));
+    } catch (std::exception &e) {
+        tardigradeErrorTools::printNestedExceptions(e);
+        throw;
+    }
 
     {
-        double eps = 1e-5;
+        double                 eps        = 1e-5;
         constexpr unsigned int NUM_INPUT  = 80;
         constexpr unsigned int NUM_OUTPUT = 12;
         std::vector<double>    x(std::begin(configurations), std::end(configurations));

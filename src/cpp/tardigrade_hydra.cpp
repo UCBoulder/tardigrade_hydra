@@ -531,16 +531,16 @@ namespace tardigradeHydra {
                                                        const unsigned int &lowerIndex, const unsigned int &upperIndex) {
         constexpr unsigned int dim                  = 3;
         constexpr unsigned int sot_dim              = dim * dim;
-        const unsigned int num_incoming_configs = configurations.size() / sot_dim;
+        const unsigned int     num_incoming_configs = configurations.size() / sot_dim;
 
         floatVector gradient(sot_dim * sot_dim * num_incoming_configs, 0);
 
-        if (lowerIndex != upperIndex){
-            DeformationDecompositionBase<dim,dim,dim> decomposition;
+        if (lowerIndex != upperIndex) {
+            DeformationDecompositionBase<dim, dim, dim> decomposition;
             decomposition.getNetConfigurationJacobian(std::begin(configurations) + sot_dim * lowerIndex,
                                                       std::begin(configurations) + sot_dim * upperIndex,
-                                                      std::begin(gradient), std::end(gradient),
-                                                      lowerIndex * sot_dim, num_incoming_configs * sot_dim);
+                                                      std::begin(gradient), std::end(gradient), lowerIndex * sot_dim,
+                                                      num_incoming_configs * sot_dim);
         }
 
         return gradient;
@@ -717,20 +717,20 @@ namespace tardigradeHydra {
 
         secondOrderTensor fullConfiguration = getSubConfiguration(configurations, 0, num_configs);
 
-        dC1dC = secondOrderTensor(sot_dim * sot_dim, 0);
+        dC1dC  = secondOrderTensor(sot_dim * sot_dim, 0);
         dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
 
-        DeformationDecompositionBase<dim,dim,dim> decomposition;
-        decomposition.solveForLeadingConfigurationTotalConfigurationJacobian(
-            std::begin(fullConfiguration), std::end(fullConfiguration),
-            std::begin(configurations) + sot_dim, std::end(configurations),
-            std::begin(dC1dC), std::end(dC1dC)
-        );
-        decomposition.solveForLeadingConfigurationConfigurationJacobian(
-            std::begin(fullConfiguration), std::end(fullConfiguration),
-            std::begin(configurations) + sot_dim, std::end(configurations),
-            std::begin(dC1dCn), std::end(dC1dCn)
-        );
+        DeformationDecompositionBase<dim, dim, dim> decomposition;
+        decomposition.solveForLeadingConfigurationTotalConfigurationJacobian(std::begin(fullConfiguration),
+                                                                             std::end(fullConfiguration),
+                                                                             std::begin(configurations) + sot_dim,
+                                                                             std::end(configurations),
+                                                                             std::begin(dC1dC), std::end(dC1dC));
+        decomposition.solveForLeadingConfigurationConfigurationJacobian(std::begin(fullConfiguration),
+                                                                        std::end(fullConfiguration),
+                                                                        std::begin(configurations) + sot_dim,
+                                                                        std::end(configurations), std::begin(dC1dCn),
+                                                                        std::end(dC1dCn));
     }
 
     /*!

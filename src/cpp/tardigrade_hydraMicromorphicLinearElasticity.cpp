@@ -1360,10 +1360,12 @@ namespace tardigradeHydra {
              * \right)\\
              *            &+ \tau_3 \delta_{KL} \delta_{MQ} \delta_{NP}\\
              *            &+ \tau_4 \delta_{KN} \delta_{LM} \delta_{PQ}\\
-             *            &+ \tau_5 \left( \delta_{KM} \delta_{LN} \delta_{PQ} + \delta_{KP} \delta_{LM} \delta_{NQ} \right)\\
+             *            &+ \tau_5 \left( \delta_{KM} \delta_{LN} \delta_{PQ} + \delta_{KP} \delta_{LM} \delta_{NQ}
+             * \right)\\
              *            &+ \tau_6 \delta_{KM} \delta_{LP} \delta_{NQ}\\
              *            &+ \tau_7 \delta_{KN} \delta_{LP} \delta_{MQ}\\
-             *            &+ \tau_8 \left( \delta_{KP} \delta_{LQ} \delta_{MN} + \delta_{KQ} \delta_{LN} \delta_{MP} \right)\\
+             *            &+ \tau_8 \left( \delta_{KP} \delta_{LQ} \delta_{MN} + \delta_{KQ} \delta_{LN} \delta_{MP}
+             * \right)\\
              *            &+ \tau_9 \delta_{KN} \delta_{LQ} \delta_{MP}\\
              *            &+ \tau_{10} \delta_{KP} \delta_{LN} \delta_{MQ}\\
              *            &+ \tau_{11} \delta_{KQ} \delta_{LP} \delta_{MN}

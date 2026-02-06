@@ -132,10 +132,11 @@ namespace tardigradeHydra {
              * elasticRightCauchyGreen_{IJ}^{-1}\f$
              *
              *  Also compute the Jacobians
-             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ \partial ||dev ( stressMeasure )|| }{\partial dev ( stressMeasure )_{AB} } \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ \partial ||dev ( stressMeasure )||
+             * }{\partial dev ( stressMeasure )_{AB} } \frac{ \partial dev( stressMeasure )_{AB} }{
              * \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} } \frac{
-             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ \partial ||dev ( stressMeasure )||}{\partial dev (
-             * stressMeasure )_{AB} } \frac{
+             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ \partial
+             * ||dev ( stressMeasure )||}{\partial dev ( stressMeasure )_{AB} } \frac{
              * \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial
              * C_{IJ} }\f$
              *
@@ -240,10 +241,11 @@ namespace tardigradeHydra {
              * \sin( frictionAngle ) \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
              *
              *  Also compute the Jacobians
-             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ \partial ||dev ( stressMeasure )|| }{\partial dev ( stressMeasure )_{AB} } \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ \partial ||dev ( stressMeasure )||
+             * }{\partial dev ( stressMeasure )_{AB} } \frac{ \partial dev( stressMeasure )_{AB} }{
              * \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} } \frac{
-             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ \partial ||dev ( stressMeasure )||}{\partial dev (
-             * stressMeasure )_{AB} } \frac{
+             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ \partial
+             * ||dev ( stressMeasure )||}{\partial dev ( stressMeasure )_{AB} } \frac{
              * \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial
              * C_{IJ} }\f$
              *

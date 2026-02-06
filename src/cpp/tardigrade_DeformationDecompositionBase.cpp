@@ -272,7 +272,8 @@ namespace tardigradeHydra {
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aminus_iterator, class output_iterator>
-    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateLeadingNetConfigurationJacobian(
+    void
+    DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateLeadingNetConfigurationJacobian(
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end, output_iterator output_begin,
         output_iterator output_end, const unsigned int output_offset, const unsigned int output_stride) {
         for (unsigned int i = 0; i < size; ++i) {
@@ -303,7 +304,6 @@ namespace tardigradeHydra {
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
         const unsigned int output_stride) {
-
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         // Handle the case where the configuration array only contains one configuration
@@ -320,7 +320,7 @@ namespace tardigradeHydra {
                             std::end(Aminus));
 
         _assemble_output_accumulateLeadingNetConfigurationJacobian(std::begin(Aminus), std::end(Aminus), output_begin,
-                                                                   output_end,output_offset,output_stride);
+                                                                   output_end, output_offset, output_stride);
     }
 
     /*!
@@ -338,8 +338,7 @@ namespace tardigradeHydra {
     void DeformationDecompositionBase<leading_rows, size, dim>::getLeadingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end) {
-
-        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size),
                                      "The output has a size of " +
@@ -352,8 +351,7 @@ namespace tardigradeHydra {
         // Handle the case where the configuration array only contains one configuration
         std::fill(output_begin, output_end, output_type());
 
-        accumulateLeadingNetConfigurationJacobian(configurations_begin,configurations_end,output_begin,output_end);
-
+        accumulateLeadingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end);
     }
 
     /*!
@@ -370,9 +368,10 @@ namespace tardigradeHydra {
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class Aplus_iterator, class output_iterator>
-    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateTrailingNetConfigurationJacobian(
+    void
+    DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateTrailingNetConfigurationJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, output_iterator output_begin,
-        output_iterator output_end,const unsigned int output_offset,const unsigned int output_stride) {
+        output_iterator output_end, const unsigned int output_offset, const unsigned int output_stride) {
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
                 for (unsigned int k = 0; k < size; ++k) {
@@ -401,7 +400,6 @@ namespace tardigradeHydra {
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
         const unsigned int output_stride) {
-
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         // Handle the case where the configuration array only contains one configuration
@@ -417,7 +415,7 @@ namespace tardigradeHydra {
         getNetConfiguration(configurations_begin, configurations_end - size * size, std::begin(Aplus), std::end(Aplus));
 
         _assemble_output_accumulateTrailingNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), output_begin,
-                                                             output_end,output_offset,output_stride);
+                                                                    output_end, output_offset, output_stride);
     }
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
@@ -436,7 +434,7 @@ namespace tardigradeHydra {
          * \param output_end: The stopping iterator of the output
          */
 
-        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size),
                                      "The output has a size of " +
@@ -448,7 +446,7 @@ namespace tardigradeHydra {
 
         std::fill(output_begin, output_end, output_type());
 
-        accumulateTrailingNetConfigurationJacobian(configurations_begin,configurations_end,output_begin,output_end);
+        accumulateTrailingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end);
     }
 
     /*!
@@ -467,8 +465,8 @@ namespace tardigradeHydra {
     template <class Aplus_iterator, class Aminus_iterator, class output_iterator>
     void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_accumulateNetConfigurationJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end, const Aminus_iterator &Aminus_begin,
-        const Aminus_iterator &Aminus_end, output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
-        const unsigned int output_stride) {
+        const Aminus_iterator &Aminus_end, output_iterator output_begin, output_iterator output_end,
+        const unsigned int output_offset, const unsigned int output_stride) {
         // Assemble the Jacobian
         for (unsigned int i = 0; i < size; ++i) {
             for (unsigned int j = 0; j < size; ++j) {
@@ -501,17 +499,18 @@ namespace tardigradeHydra {
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end,
         const unsigned int output_offset, const unsigned int output_stride) {
-
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         const unsigned int num_configurations =
             (unsigned int)(configurations_end - configurations_begin) / (size * size);
 
         if (configuration_index == 0) {
-            accumulateLeadingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end, output_offset, output_stride);
+            accumulateLeadingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin,
+                                                      output_end, output_offset, output_stride);
 
         } else if ((configuration_index + 1) == num_configurations) {
-            accumulateTrailingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end, output_offset, output_stride);
+            accumulateTrailingNetConfigurationJacobian(configurations_begin, configurations_end, output_begin,
+                                                       output_end, output_offset, output_stride);
 
         } else if ((0 < configuration_index) && (configuration_index < (num_configurations - 1))) {
             // Get the prior and previous configurations
@@ -524,8 +523,8 @@ namespace tardigradeHydra {
                                 std::begin(Aminus), std::end(Aminus));
 
             _assemble_output_accumulateNetConfigurationJacobian(std::begin(Aplus), std::end(Aplus), std::begin(Aminus),
-                                                                std::end(Aminus), output_begin, output_end, output_offset, output_stride);
-
+                                                                std::end(Aminus), output_begin, output_end,
+                                                                output_offset, output_stride);
         }
     }
 
@@ -545,8 +544,7 @@ namespace tardigradeHydra {
     void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end) {
-
-        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == (size * size * size * size),
                                      "The output has a size of " +
@@ -563,8 +561,8 @@ namespace tardigradeHydra {
 
         std::fill(output_begin, output_end, output_type());
 
-        accumulateNetConfigurationJacobian(configurations_begin, configurations_end, configuration_index, output_begin, output_end);
-
+        accumulateNetConfigurationJacobian(configurations_begin, configurations_end, configuration_index, output_begin,
+                                           output_end);
     }
 
     /*!
@@ -579,15 +577,14 @@ namespace tardigradeHydra {
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
-    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(const configuration_iterator &configurations_begin,
-                                     const configuration_iterator &configurations_end,
-                                     output_iterator output_begin,
-                                     output_iterator output_end){
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end) {
         const unsigned int num_configurations =
             (unsigned int)(configurations_end - configurations_begin) / (size * size);
 
-        getNetConfigurationJacobian(configurations_begin, configurations_end,
-                                    output_begin, output_end, 0, num_configurations * size * size);
+        getNetConfigurationJacobian(configurations_begin, configurations_end, output_begin, output_end, 0,
+                                    num_configurations * size * size);
     }
 
     /*!
@@ -604,22 +601,21 @@ namespace tardigradeHydra {
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     template <class configuration_iterator, class output_iterator>
-    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(const configuration_iterator &configurations_begin,
-                                     const configuration_iterator &configurations_end,
-                                     output_iterator output_begin,
-                                     output_iterator output_end,
-                                     const unsigned int output_offset,
-                                     const unsigned int output_stride){
-
-        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
+    void DeformationDecompositionBase<leading_rows, size, dim>::getNetConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+        const unsigned int output_stride) {
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         const unsigned int num_configurations =
             (unsigned int)(configurations_end - configurations_begin) / (size * size);
 
-        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) >= (size * size * size * size * num_configurations),
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) >=
+                                         (size * size * size * size * num_configurations),
                                      "The output has a size of " +
                                          std::to_string((unsigned int)(output_end - output_begin)) +
-                                         " but must have a size greater than or equal to " + std::to_string(size * size * size * size * num_configurations));
+                                         " but must have a size greater than or equal to " +
+                                         std::to_string(size * size * size * size * num_configurations));
 
         TARDIGRADE_ERROR_TOOLS_CHECK(configurations_end != configurations_begin,
                                      "The configurations vector has no size");
@@ -631,12 +627,10 @@ namespace tardigradeHydra {
 
         std::fill(output_begin, output_end, output_type());
 
-        for(unsigned int c = 0; c < num_configurations; ++c){
-
-            accumulateNetConfigurationJacobian(configurations_begin, configurations_end, c, output_begin, output_end, output_offset + size * size * c, output_stride);
-
+        for (unsigned int c = 0; c < num_configurations; ++c) {
+            accumulateNetConfigurationJacobian(configurations_begin, configurations_end, c, output_begin, output_end,
+                                               output_offset + size * size * c, output_stride);
         }
-
     }
 
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
@@ -1592,7 +1586,6 @@ namespace tardigradeHydra {
             const leading_configuration_iterator &leading_configuration_end,
             const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
             output_iterator output_begin, output_iterator output_end) {
-
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
         std::fill(output_begin, output_end, output_type());
 
@@ -1627,33 +1620,26 @@ namespace tardigradeHydra {
      * \param output_stride: The number of columns in the row-major output array
      */
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
-    template <class leadingConfiguration_iterator, class Aminus_inverse_iterator,
-              class Aminus_jacobian_iterator,class output_iterator>
-    void DeformationDecompositionBase<leading_rows, size, dim>::_assemble_output_solveForLeadingConfigurationConfigurationJacobian(
-        const leadingConfiguration_iterator &leadingConfiguration_begin,
-        const leadingConfiguration_iterator &leadingConfiguration_end,
-        const Aminus_inverse_iterator &Aminus_inverse_begin,
-        const Aminus_inverse_iterator &Aminus_inverse_end,
-        const Aminus_jacobian_iterator &Aminus_jacobian_begin,
-        const Aminus_jacobian_iterator &Aminus_jacobian_end,
-        output_iterator output_begin, output_iterator output_end,
-        const unsigned int output_offset, const unsigned int output_stride) {
-
+    template <class leadingConfiguration_iterator, class Aminus_inverse_iterator, class Aminus_jacobian_iterator,
+              class output_iterator>
+    void DeformationDecompositionBase<leading_rows, size, dim>::
+        _assemble_output_solveForLeadingConfigurationConfigurationJacobian(
+            const leadingConfiguration_iterator &leadingConfiguration_begin,
+            const leadingConfiguration_iterator &leadingConfiguration_end,
+            const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+            const Aminus_jacobian_iterator &Aminus_jacobian_begin, const Aminus_jacobian_iterator &Aminus_jacobian_end,
+            output_iterator output_begin, output_iterator output_end, const unsigned int output_offset,
+            const unsigned int output_stride) {
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         std::array<output_type, leading_rows * size * size * size> intermediate_term = {output_type()};
         _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
-            leadingConfiguration_begin, leadingConfiguration_end,
-            Aminus_inverse_begin, Aminus_inverse_end,
+            leadingConfiguration_begin, leadingConfiguration_end, Aminus_inverse_begin, Aminus_inverse_end,
             std::begin(intermediate_term), std::end(intermediate_term));
 
-        _denseMatrixMultiplyAccumulate<leading_rows * size, size * size, size * size>(std::begin(intermediate_term),
-                                                                                      std::end(intermediate_term),
-                                                                                      Aminus_jacobian_begin,
-                                                                                      Aminus_jacobian_end, output_begin,
-                                                                                      output_end,
-                                                                                      0, size * size, 0, size * size,
-                                                                                      output_offset, output_stride);
+        _denseMatrixMultiplyAccumulate<leading_rows * size, size * size, size * size>(
+            std::begin(intermediate_term), std::end(intermediate_term), Aminus_jacobian_begin, Aminus_jacobian_end,
+            output_begin, output_end, 0, size * size, 0, size * size, output_offset, output_stride);
     }
 
     /*!
@@ -1679,8 +1665,7 @@ namespace tardigradeHydra {
         const total_configuration_iterator &total_configuration_end, const configuration_iterator &configurations_begin,
         const configuration_iterator &configurations_end, const unsigned int &configuration_index,
         output_iterator output_begin, output_iterator output_end) {
-
-        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == leading_rows * size * size * size,
@@ -1690,9 +1675,9 @@ namespace tardigradeHydra {
 
         std::fill(output_begin, output_end, output_type());
         if (configurations_end != configurations_begin) {
-            std::array<output_type, leading_rows * size>               leadingConfiguration;
-            std::array<configuration_type, size * size>                       Aminus_inverse;
-            std::array<configuration_type, size * size * size * size>         Aminus_jacobian;
+            std::array<output_type, leading_rows * size>              leadingConfiguration;
+            std::array<configuration_type, size * size>               Aminus_inverse;
+            std::array<configuration_type, size * size * size * size> Aminus_jacobian;
 
             solveForLeadingConfiguration(total_configuration_begin, total_configuration_end, configurations_begin,
                                          configurations_end, std::begin(Aminus_inverse), std::end(Aminus_inverse),
@@ -1702,10 +1687,9 @@ namespace tardigradeHydra {
                                         std::begin(Aminus_jacobian), std::end(Aminus_jacobian));
 
             _assemble_output_solveForLeadingConfigurationConfigurationJacobian(
-                std::begin(leadingConfiguration), std::end(leadingConfiguration),
-                std::begin(Aminus_inverse), std::end(Aminus_inverse),
-                std::begin(Aminus_jacobian), std::end(Aminus_jacobian),
-                output_begin,output_end);
+                std::begin(leadingConfiguration), std::end(leadingConfiguration), std::begin(Aminus_inverse),
+                std::end(Aminus_inverse), std::begin(Aminus_jacobian), std::end(Aminus_jacobian), output_begin,
+                output_end);
         }
     }
 
@@ -1728,39 +1712,35 @@ namespace tardigradeHydra {
     void DeformationDecompositionBase<leading_rows, size, dim>::solveForLeadingConfigurationConfigurationJacobian(
         const total_configuration_iterator &total_configuration_begin,
         const total_configuration_iterator &total_configuration_end, const configuration_iterator &configurations_begin,
-        const configuration_iterator &configurations_end,
-        output_iterator output_begin, output_iterator output_end) {
-
-        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+        const configuration_iterator &configurations_end, output_iterator output_begin, output_iterator output_end) {
+        using output_type        = typename std::iterator_traits<output_iterator>::value_type;
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         const unsigned int num_configurations = ((configurations_end - configurations_begin) / (size * size));
 
-        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == leading_rows * size * num_configurations * size * size,
-                                     "The output has a size of " +
-                                         std::to_string((unsigned int)(output_end - output_begin)) +
-                                         " but it needs a size of " + std::to_string(leading_rows * size * num_configurations * size * size));
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            (unsigned int)(output_end - output_begin) == leading_rows * size * num_configurations * size * size,
+            "The output has a size of " + std::to_string((unsigned int)(output_end - output_begin)) +
+                " but it needs a size of " + std::to_string(leading_rows * size * num_configurations * size * size));
 
         std::fill(output_begin, output_end, output_type());
         if (configurations_end != configurations_begin) {
-            std::array<output_type, leading_rows * size>               leadingConfiguration;
-            std::array<configuration_type, size * size>                       Aminus_inverse;
-            std::array<configuration_type, size * size * size * size>         Aminus_jacobian;
+            std::array<output_type, leading_rows * size>              leadingConfiguration;
+            std::array<configuration_type, size * size>               Aminus_inverse;
+            std::array<configuration_type, size * size * size * size> Aminus_jacobian;
 
             solveForLeadingConfiguration(total_configuration_begin, total_configuration_end, configurations_begin,
                                          configurations_end, std::begin(Aminus_inverse), std::end(Aminus_inverse),
                                          std::begin(leadingConfiguration), std::end(leadingConfiguration));
 
-            for (unsigned int c = 0; c < num_configurations; ++c){
-
-                getNetConfigurationJacobian(configurations_begin, configurations_end, c,
-                                            std::begin(Aminus_jacobian), std::end(Aminus_jacobian));
+            for (unsigned int c = 0; c < num_configurations; ++c) {
+                getNetConfigurationJacobian(configurations_begin, configurations_end, c, std::begin(Aminus_jacobian),
+                                            std::end(Aminus_jacobian));
 
                 _assemble_output_solveForLeadingConfigurationConfigurationJacobian(
-                    std::begin(leadingConfiguration), std::end(leadingConfiguration),
-                    std::begin(Aminus_inverse), std::end(Aminus_inverse),
-                    std::begin(Aminus_jacobian), std::end(Aminus_jacobian),
-                    output_begin,output_end,c * size * size,num_configurations * size * size);
+                    std::begin(leadingConfiguration), std::end(leadingConfiguration), std::begin(Aminus_inverse),
+                    std::end(Aminus_inverse), std::begin(Aminus_jacobian), std::end(Aminus_jacobian), output_begin,
+                    output_end, c * size * size, num_configurations * size * size);
             }
         }
     }
