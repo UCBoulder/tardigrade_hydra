@@ -55,6 +55,25 @@ namespace tardigradeHydra {
     }  // namespace unit_test
 
     /*!
+     * HydraConfigurationBase: A base class which defines the hydra configuration
+     */
+    class HydraConfigurationBase {
+
+        public:
+            //! The default constructor for HydraConfigurationBase
+            HydraConfigurationBase() { }
+            //! The number of unknowns in each configuration
+            floatType configuration_unknown_count = 9;
+            //! The relative tolerance
+            floatType tolr = 1e-9;
+            //! The absolute tolerance
+            floatType tola = 1e-9;
+
+        private:
+            friend class hydraBase;
+    };
+
+    /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
      *
      * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
