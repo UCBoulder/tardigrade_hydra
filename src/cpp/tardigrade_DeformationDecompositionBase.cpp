@@ -1678,6 +1678,7 @@ namespace tardigradeHydra {
         output_iterator output_begin, output_iterator output_end) {
 
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(output_end - output_begin) == leading_rows * size * size * size,
                                      "The output has a size of " +
@@ -1689,8 +1690,8 @@ namespace tardigradeHydra {
 
         } else {
             std::array<output_type, leading_rows * size>               leadingConfiguration;
-            std::array<output_type, size * size>                       Aminus_inverse;
-            std::array<output_type, size * size * size * size>         Aminus_jacobian;
+            std::array<configuration_type, size * size>                       Aminus_inverse;
+            std::array<configuration_type, size * size * size * size>         Aminus_jacobian;
 
             solveForLeadingConfiguration(total_configuration_begin, total_configuration_end, configurations_begin,
                                          configurations_end, std::begin(Aminus_inverse), std::end(Aminus_inverse),
