@@ -194,6 +194,13 @@ namespace tardigradeHydra {
             const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
             const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end);
 
+        template <class total_configuration_iterator, class configuration_iterator, class output_iterator>
+        void solveForLeadingConfigurationConfigurationJacobian(
+            const total_configuration_iterator &total_configuration_begin,
+            const total_configuration_iterator &total_configuration_end,
+            const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+            output_iterator output_begin, output_iterator output_end);
+
         template <class total_configuration_gradient_iterator, class leading_configuration_iterator,
                   class configuration_iterator, class configuration_gradient_iterator, class Aminus_inverse_iterator,
                   class dAminusdX_iterator, class output_iterator>
