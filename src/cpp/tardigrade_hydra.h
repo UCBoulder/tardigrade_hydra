@@ -429,7 +429,6 @@ namespace tardigradeHydra {
 
        private:
         // Friend classes
-        friend class tardigradeHydra::SolverStepBase;  //!< The base class for the solver steps
         friend class tardigradeHydra::SolverBase;      //!< The base class for the solver
         friend class unit_test::hydraBaseTester;  //!< Friend class which allows modification of private variables. ONLY
                                                   //!< TO BE USED FOR TESTING!
