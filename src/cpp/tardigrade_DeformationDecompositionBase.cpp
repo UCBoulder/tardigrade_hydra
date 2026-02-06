@@ -1651,7 +1651,9 @@ namespace tardigradeHydra {
                                                                                       std::end(intermediate_term),
                                                                                       Aminus_jacobian_begin,
                                                                                       Aminus_jacobian_end, output_begin,
-                                                                                      output_end, output_offset, output_stride);
+                                                                                      output_end,
+                                                                                      0, size * size, 0, size * size,
+                                                                                      output_offset, output_stride);
     }
 
     /*!
@@ -1740,7 +1742,7 @@ namespace tardigradeHydra {
                                          " but it needs a size of " + std::to_string(leading_rows * size * num_configurations * size * size));
 
         std::fill(output_begin, output_end, output_type());
-        if (configurations_end == configurations_begin) {
+        if (configurations_end != configurations_begin) {
             std::array<output_type, leading_rows * size>               leadingConfiguration;
             std::array<configuration_type, size * size>                       Aminus_inverse;
             std::array<configuration_type, size * size * size * size>         Aminus_jacobian;
