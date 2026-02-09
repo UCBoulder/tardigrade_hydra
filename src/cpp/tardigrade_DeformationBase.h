@@ -20,6 +20,7 @@ namespace tardigradeHydra {
 
     }
 
+    //! The base class for deformations
     class DeformationBase : public CachingDataBase {
 
         public:

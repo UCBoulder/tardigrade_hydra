@@ -153,4 +153,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_SolverBase.tpp"
+
 #endif

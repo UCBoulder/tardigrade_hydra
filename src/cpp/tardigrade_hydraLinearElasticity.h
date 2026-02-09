@@ -278,4 +278,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraLinearElasticity.tpp"
+
 #endif

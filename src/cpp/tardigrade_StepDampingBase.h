@@ -188,4 +188,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_StepDampingBase.tpp"
+
 #endif

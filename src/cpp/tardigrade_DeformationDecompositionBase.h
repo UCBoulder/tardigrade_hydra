@@ -699,6 +699,7 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_DeformationDecompositionBase.tpp"
 #include "tardigrade_DeformationDecompositionBase.cpp"
 
 #endif

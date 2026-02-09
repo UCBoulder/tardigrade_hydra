@@ -50,6 +50,7 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_SolverStep.tpp"
 #include "tardigrade_SolverStep.cpp"
 
 #endif

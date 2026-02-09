@@ -42,6 +42,7 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_CoreDefinitions.tpp"
 #include "tardigrade_CoreDefinitions.cpp"
 
 #endif

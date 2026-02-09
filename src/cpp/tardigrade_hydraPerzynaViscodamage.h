@@ -229,4 +229,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraPerzynaViscodamage.tpp"
+
 #endif

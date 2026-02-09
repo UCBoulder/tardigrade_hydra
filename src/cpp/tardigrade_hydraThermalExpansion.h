@@ -171,4 +171,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraThermalExpansion.tpp"
+
 #endif

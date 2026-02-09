@@ -190,4 +190,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraFourierHeatConduction.tpp"
+
 #endif
