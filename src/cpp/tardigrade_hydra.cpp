@@ -480,39 +480,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
-     *
-     * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
-     * F^{\text{upperIndex-1}}_{\bar{I}I} \f$
-     *
-     * with respect to all of the configurations. The returned matrix will be of size ( dimensions**2,
-     * configurations.size( ) * dimensions**2 )
-     *
-     * \param &configurations: The configurations to operate on
-     * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
-     * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
-     *   Note, the configuration indicated by the index is NOT included in the sub-configuration
-     */
-    floatVector hydraBase::getSubConfigurationJacobian(const floatVector  &configurations,
-                                                       const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        constexpr unsigned int dim                  = 3;
-        constexpr unsigned int sot_dim              = dim * dim;
-        const unsigned int     num_incoming_configs = configurations.size() / sot_dim;
-
-        floatVector gradient(sot_dim * sot_dim * num_incoming_configs, 0);
-
-        if (lowerIndex != upperIndex) {
-            DeformationDecompositionBase<dim, dim, dim> decomposition;
-            decomposition.getNetConfigurationJacobian(std::begin(configurations) + sot_dim * lowerIndex,
-                                                      std::begin(configurations) + sot_dim * upperIndex,
-                                                      std::begin(gradient), std::end(gradient), lowerIndex * sot_dim,
-                                                      num_incoming_configs * sot_dim);
-        }
-
-        return gradient;
-    }
-
-    /*!
      * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
      *
      * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots

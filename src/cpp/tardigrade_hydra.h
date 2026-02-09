@@ -180,9 +180,6 @@ namespace tardigradeHydra {
         //! Get the absolute tolerance
         constexpr floatType getAbsoluteTolerance() { return _tola; }
 
-        secondOrderTensor getSubConfigurationJacobian(const floatVector &configurations, const unsigned int &lowerIndex,
-                                                      const unsigned int &upperIndex);
-
         secondOrderTensor getSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
 
         secondOrderTensor getPrecedingConfiguration(const unsigned int &index);
