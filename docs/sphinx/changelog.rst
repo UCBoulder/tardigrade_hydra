@@ -12,12 +12,12 @@ Changelog
 New Features
 ============
 - Added NewtonSolver object to simplify hydra solver configuration (:pull:`249`). By `Nathan Miller`_.
+- Broke RelaxedSolver into the base capabilities (housed in RelaxedSolverBase) and a default version (RelaxedSolver) (:pull:`250`). By `Nathan Miller`_.
 
 Internal Changes
 ================
 - Added run_exports configuration to the conda recipe (:pull:`247`). By `Nathan Miller`_.
 - Using the DeformationDecompositionBase class to decompose the classical deformation (:pull:`248`). By `Nathan Miller`_.
-- Broke RelaxedSolver into the base capabilities (housed in RelaxedSolverBase) and a default version (RelaxedSolver). By `Nathan Miller`_.
 
 ******************
 0.7.1 (02-03-2026)
