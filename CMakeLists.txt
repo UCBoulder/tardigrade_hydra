@@ -68,20 +68,20 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_NewtonStep"
     "tardigrade_SequentialQuadraticProgrammingStep"
     "tardigrade_LevenbergMarquardtStep"
+    "tardigrade_DeformationBase"
 )
 set(ADDITIONAL_HEADER_ONLY_LIBRARIES
     "tardigrade_DeformationDecompositionBase"
-    "tardigrade_DeformationBase"
     "tardigrade_SetDataStorage"
     "tardigrade_MatrixMap"
     "tardigrade_CoreDefinitions"
     "tardigrade_CustomErrors"
     "tardigrade_ResidualBase"
 )
-set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
+set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h ${PROJECT_NAME}.tpp)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
-    set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
+    set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h ${package}.tpp)
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
 endforeach(package)
 if(TARDIGRADE_HYDRA_USE_LIBXSMM)
@@ -300,6 +300,7 @@ if(${not_conda_test} STREQUAL "true")
     install(FILES ${CPP_SRC_PATH}/${PROJECT_NAME}.cpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
         install(FILES ${CPP_SRC_PATH}/${package}.cpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+        install(FILES ${CPP_SRC_PATH}/${package}.tpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     endforeach(package)
 endif()
 
