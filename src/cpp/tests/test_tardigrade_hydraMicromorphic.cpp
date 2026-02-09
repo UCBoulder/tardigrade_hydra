@@ -197,11 +197,11 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor,
 
     BOOST_TEST(previousGradientMicroDeformation == *hydra.getPreviousGradientMicroDeformation(), CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(configurationsAnswer) == *hydra.get_configurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(configurationsAnswer) == *hydra.deformation->get_configurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousConfigurationsAnswer) ==
-                   *hydra.get_previousConfigurations(),
+                   *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.get_inverseConfigurations(),
@@ -394,11 +394,11 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor2,
 
     BOOST_TEST(previousGradientMicroDeformation == *hydra.getPreviousGradientMicroDeformation(), CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(configurationsAnswer) == *hydra.get_configurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(configurationsAnswer) == *hydra.deformation->get_configurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousConfigurationsAnswer) ==
-                   *hydra.get_previousConfigurations(),
+                   *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.get_inverseConfigurations(),
@@ -474,11 +474,11 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor2,
 
     BOOST_TEST(previousGradientMicroDeformation == *hydra.getPreviousGradientMicroDeformation(), CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(configurationsAnswer) == *hydra.get_configurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(configurationsAnswer) == *hydra.deformation->get_configurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousConfigurationsAnswer) ==
-                   *hydra.get_previousConfigurations(),
+                   *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.get_inverseConfigurations(),
@@ -3974,8 +3974,8 @@ BOOST_AUTO_TEST_CASE(test_updateUnknownVector, *boost::unit_test::tolerance(DEFA
 
         BOOST_TEST(FiAnswer == hydra.getConfiguration(i + 1), CHECK_PER_ELEMENT);
 
-        BOOST_TEST(FiAnswer == floatVector(hydra.get_configurations()->begin() + 9 * (i + 1),
-                                           hydra.get_configurations()->begin() + 9 * (i + 2)),
+        BOOST_TEST(FiAnswer == floatVector(hydra.deformation->get_configurations()->begin() + 9 * (i + 1),
+                                           hydra.deformation->get_configurations()->begin() + 9 * (i + 2)),
                    CHECK_PER_ELEMENT);
 
         BOOST_TEST(ChiiAnswer == hydra.getMicroConfiguration(i + 1), CHECK_PER_ELEMENT);
@@ -3990,8 +3990,8 @@ BOOST_AUTO_TEST_CASE(test_updateUnknownVector, *boost::unit_test::tolerance(DEFA
 
         BOOST_TEST(previousFiAnswer == hydra.getPreviousConfiguration(i + 1), CHECK_PER_ELEMENT);
 
-        BOOST_TEST(previousFiAnswer == floatVector(hydra.get_previousConfigurations()->begin() + 9 * (i + 1),
-                                                   hydra.get_previousConfigurations()->begin() + 9 * (i + 2)),
+        BOOST_TEST(previousFiAnswer == floatVector(hydra.deformation->get_previousConfigurations()->begin() + 9 * (i + 1),
+                                                   hydra.deformation->get_previousConfigurations()->begin() + 9 * (i + 2)),
                    CHECK_PER_ELEMENT);
 
         BOOST_TEST(previousChiiAnswer == hydra.getPreviousMicroConfiguration(i + 1), CHECK_PER_ELEMENT);

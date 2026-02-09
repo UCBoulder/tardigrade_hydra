@@ -640,7 +640,7 @@ namespace tardigradeHydra {
             residual.zero(sot_dim + 2);
 
             std::transform(std::begin(*get_dofDeformationGradient()), std::end(*get_dofDeformationGradient()),
-                           hydra->get_configurations()->begin() + dofConfigurationIndex * sot_dim, residual.begin(),
+                           hydra->deformation->get_configurations()->begin() + dofConfigurationIndex * sot_dim, residual.begin(),
                            std::minus<>());
 
             TARDIGRADE_ERROR_TOOLS_CHECK(getStateVariableIndices()->size() == 2,

@@ -7833,8 +7833,8 @@ namespace tardigradeHydra {
             auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
             const secondOrderTensor previousPlasticDeformationGradient =
-                secondOrderTensor(hydra->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_previousConfigurations()->begin() +
+                secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                                  hydra->deformation->get_previousConfigurations()->begin() +
                                       sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
@@ -8227,8 +8227,8 @@ namespace tardigradeHydra {
             auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
             const secondOrderTensor previousPlasticDeformationGradient =
-                secondOrderTensor(hydra->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_previousConfigurations()->begin() +
+                secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                                  hydra->deformation->get_previousConfigurations()->begin() +
                                       sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
@@ -9483,8 +9483,8 @@ namespace tardigradeHydra {
             auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
             const secondOrderTensor plasticDeformationGradient =
-                secondOrderTensor(hydra->get_configurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_configurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
+                secondOrderTensor(hydra->deformation->get_configurations()->begin() + sot_dim * plasticConfigurationIndex,
+                                  hydra->deformation->get_configurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor plasticMicroDeformation =
                 secondOrderTensor(hydra->get_microConfigurations()->begin() + sot_dim * plasticConfigurationIndex,

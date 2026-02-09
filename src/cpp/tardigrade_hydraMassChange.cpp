@@ -1258,8 +1258,8 @@ namespace tardigradeHydra {
 
             *residual.value =
                 *get_massChangeDeformationGradient() -
-                secondOrderTensor(hydra->get_configurations()->begin() + massChangeConfigurationIndex * 9,
-                                  hydra->get_configurations()->begin() + (massChangeConfigurationIndex + 1) * 9);
+                secondOrderTensor(hydra->deformation->get_configurations()->begin() + massChangeConfigurationIndex * 9,
+                                  hydra->deformation->get_configurations()->begin() + (massChangeConfigurationIndex + 1) * 9);
         }
 
         void residual::setJacobian() {

@@ -640,4 +640,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydra.tpp"
+
 #endif

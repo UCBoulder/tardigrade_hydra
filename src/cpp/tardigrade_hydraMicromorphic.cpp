@@ -97,7 +97,7 @@ namespace tardigradeHydra {
         const floatVector *stress;
         TARDIGRADE_ERROR_TOOLS_CATCH(stress = getStress());
 
-        const floatVector *configurations = get_configurations();
+        const floatVector *configurations = deformation->get_configurations();
 
         const floatVector *microConfigurations = get_microConfigurations();
 
@@ -307,7 +307,7 @@ namespace tardigradeHydra {
 
         start_index += (num_configs - 1) * sot_dim;
 
-        computeGradientMicroConfigurations(getUnknownVector(), start_index, *get_configurations(),
+        computeGradientMicroConfigurations(getUnknownVector(), start_index, *deformation->get_configurations(),
                                            *microConfigurations.value, *getGradientMicroDeformation(),
                                            *gradientMicroConfigurations.value);
     }
@@ -344,11 +344,11 @@ namespace tardigradeHydra {
 
         start_index += (num_configs - 1) * sot_dim;
 
-        computeGradientMicroConfigurations(getPreviousStateVariables(), start_index, *get_configurations(),
+        computeGradientMicroConfigurations(getPreviousStateVariables(), start_index, *deformation->get_configurations(),
                                            *microConfigurations.value, *getGradientMicroDeformation(),
                                            *gradientMicroConfigurations.value);
 
-        computeGradientMicroConfigurations(getPreviousStateVariables(), start_index, *get_previousConfigurations(),
+        computeGradientMicroConfigurations(getPreviousStateVariables(), start_index, *deformation->get_previousConfigurations(),
                                            *previousMicroConfigurations.value, *getPreviousGradientMicroDeformation(),
                                            *previousGradientMicroConfigurations.value);
     }
@@ -566,7 +566,7 @@ namespace tardigradeHydra {
 
         auto dGradChi1dGradChin = get_SetDataStorage_dGradChi1dGradChin();
 
-        calculateFirstConfigurationGradChiJacobian(*get_configurations(), *get_microConfigurations(),
+        calculateFirstConfigurationGradChiJacobian(*deformation->get_configurations(), *get_microConfigurations(),
                                                    *getGradientMicroDeformation(), *get_gradientMicroConfigurations(),
                                                    *get_dChi1dChi(), *get_dChi1dChin(), *dGradChi1dFn.value,
                                                    *dGradChi1dChi.value, *dGradChi1dChin.value,
@@ -589,7 +589,7 @@ namespace tardigradeHydra {
 
         auto previousdGradChi1dGradChin = get_SetDataStorage_previousdGradChi1dGradChin();
 
-        calculateFirstConfigurationGradChiJacobian(*get_previousConfigurations(), *get_previousMicroConfigurations(),
+        calculateFirstConfigurationGradChiJacobian(*deformation->get_previousConfigurations(), *get_previousMicroConfigurations(),
                                                    *getPreviousGradientMicroDeformation(),
                                                    *get_previousGradientMicroConfigurations(), *get_previousdChi1dChi(),
                                                    *get_previousdChi1dChin(), *previousdGradChi1dFn.value,

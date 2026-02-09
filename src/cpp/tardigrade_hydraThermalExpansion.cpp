@@ -146,8 +146,8 @@ namespace tardigradeHydra {
 
             auto residual   = get_SetDataStorage_residual();
             *residual.value = *get_thermalDeformationGradient() -
-                              floatVector(hydra->get_configurations()->begin() + thermalConfigurationIndex * 9,
-                                          hydra->get_configurations()->begin() + (thermalConfigurationIndex + 1) * 9);
+                              floatVector(hydra->deformation->get_configurations()->begin() + thermalConfigurationIndex * 9,
+                                          hydra->deformation->get_configurations()->begin() + (thermalConfigurationIndex + 1) * 9);
         }
 
         void residual::setJacobian() {

@@ -46,4 +46,34 @@ bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2,
     return true;
 }
 
-BOOST_AUTO_TEST_CASE(test_placeholder, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) { }
+namespace tardigradeHydra {
+
+    namespace unit_test {
+
+        class DeformationBaseTester {
+           public:
+
+            static void checkConfigurations(DeformationBase &deformation) {
+                BOOST_CHECK(&deformation._configurations.second == deformation.get_configurations());
+            }
+
+            static void checkPreviousConfigurations(DeformationBase &deformation) {
+                BOOST_CHECK(&deformation._previousConfigurations.second == deformation.get_previousConfigurations());
+            }
+        };
+
+    }
+
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_configurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::DeformationBase deformation;
+
+    tardigradeHydra::unit_test::DeformationBaseTester::checkConfigurations(deformation);
+}
+
+BOOST_AUTO_TEST_CASE(test_hydraBase_get_previousConfigurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::DeformationBase deformation;
+
+    tardigradeHydra::unit_test::DeformationBaseTester::checkPreviousConfigurations(deformation);
+}

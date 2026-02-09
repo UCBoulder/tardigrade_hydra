@@ -136,8 +136,8 @@ namespace tardigradeHydra {
             auto Fd = get_SetDataStorage_damageDeformationGradient();
 
             // Get the elastic deformation gradient
-            floatVector Fe = floatVector(hydra->get_configurations()->begin() + sot_dim * elastic_config_index,
-                                         hydra->get_configurations()->begin() + sot_dim * (elastic_config_index + 1));
+            floatVector Fe = floatVector(hydra->deformation->get_configurations()->begin() + sot_dim * elastic_config_index,
+                                         hydra->deformation->get_configurations()->begin() + sot_dim * (elastic_config_index + 1));
 
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
@@ -207,8 +207,8 @@ namespace tardigradeHydra {
             auto Fd = get_SetDataStorage_damageDeformationGradient();
 
             // Get the elastic deformation gradient
-            floatVector Fe = floatVector(hydra->get_configurations()->begin() + sot_dim * elastic_config_index,
-                                         hydra->get_configurations()->begin() + sot_dim * (elastic_config_index + 1));
+            floatVector Fe = floatVector(hydra->deformation->get_configurations()->begin() + sot_dim * elastic_config_index,
+                                         hydra->deformation->get_configurations()->begin() + sot_dim * (elastic_config_index + 1));
 
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
