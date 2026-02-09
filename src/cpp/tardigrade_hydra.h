@@ -371,7 +371,7 @@ namespace tardigradeHydra {
         SubcyclerSolver _solver;
 
         //! Default deformation class
-        DeformationBase _deformation;
+        DeformationBase _deformation = DeformationBase(this);
 
         // Setters that the user may need to access but not override
 
@@ -605,10 +605,6 @@ namespace tardigradeHydra {
 
         //! Flag for whether the viscoplastic damping factor has been set
         bool _viscoplastic_damping_set = false;
-
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, configurations, floatVector, passThrough)
-
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousConfigurations, floatVector, passThrough)
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, inverseConfigurations, floatVector, passThrough)
 

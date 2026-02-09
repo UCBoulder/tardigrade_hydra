@@ -339,7 +339,7 @@ namespace tardigradeHydra {
         const floatVector *unknownVector = getUnknownVector();
 
         // Set the configurations
-        auto configurations = get_SetDataStorage_configurations();
+        auto configurations = deformation->get_SetDataStorage_configurations();
 
         auto inverseConfigurations = get_SetDataStorage_inverseConfigurations();
 
@@ -406,9 +406,9 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error(message));
         }
 
-        auto configurations = get_SetDataStorage_configurations();
+        auto configurations = deformation->get_SetDataStorage_configurations();
 
-        auto previousConfigurations = get_SetDataStorage_previousConfigurations();
+        auto previousConfigurations = deformation->get_SetDataStorage_previousConfigurations();
 
         auto inverseConfigurations = get_SetDataStorage_inverseConfigurations();
 
@@ -489,7 +489,7 @@ namespace tardigradeHydra {
      * sub-configuration
      */
     secondOrderTensor hydraBase::getSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        return deformation->getSubConfiguration<3,3,3>(*get_configurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfiguration<3,3,3>(*deformation->get_configurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -530,7 +530,7 @@ namespace tardigradeHydra {
      */
     secondOrderTensor hydraBase::getPreviousSubConfiguration(const unsigned int &lowerIndex,
                                                              const unsigned int &upperIndex) {
-        return deformation->getSubConfiguration<3,3,3>(*get_previousConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfiguration<3,3,3>(*deformation->get_previousConfigurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -573,7 +573,7 @@ namespace tardigradeHydra {
      *   Note, the configuration indicated by the index is NOT included in the sub-configuration
      */
     floatVector hydraBase::getSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        return deformation->getSubConfigurationJacobian<3,3,3>(*get_configurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfigurationJacobian<3,3,3>(*deformation->get_configurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -610,7 +610,7 @@ namespace tardigradeHydra {
      */
     floatVector hydraBase::getPreviousSubConfigurationJacobian(const unsigned int &lowerIndex,
                                                                const unsigned int &upperIndex) {
-        return deformation->getSubConfigurationJacobian<3,3,3>(*get_previousConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfigurationJacobian<3,3,3>(*deformation->get_previousConfigurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -675,7 +675,7 @@ namespace tardigradeHydra {
 
         auto dF1dFn = get_SetDataStorage_dF1dFn();
 
-        calculateFirstConfigurationJacobians(*get_configurations(), *dF1dF.value, *dF1dFn.value);
+        calculateFirstConfigurationJacobians(*deformation->get_configurations(), *dF1dF.value, *dF1dFn.value);
     }
 
     /*!
@@ -687,7 +687,7 @@ namespace tardigradeHydra {
 
         auto dF1dFn = get_SetDataStorage_previousdF1dFn();
 
-        calculateFirstConfigurationJacobians(*get_previousConfigurations(), *dF1dF.value, *dF1dFn.value);
+        calculateFirstConfigurationJacobians(*deformation->get_previousConfigurations(), *dF1dF.value, *dF1dFn.value);
     }
 
     /*!
@@ -1210,7 +1210,7 @@ namespace tardigradeHydra {
         const floatVector *cauchyStress;
         TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = getStress());
 
-        const floatVector *configurations = get_configurations();
+        const floatVector *configurations = deformation->get_configurations();
 
         const unsigned int num_local_configs = configurations->size() / sot_dim;
 
