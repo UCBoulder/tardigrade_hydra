@@ -30,7 +30,10 @@ namespace tardigradeHydra {
              *
              * \param *_hydra: A pointer to the containing hydraBase object
              */
-            NewtonSolver(hydraBase *_hydra = nullptr) : IterativeSolverBase(_hydra) { step = &_step; }
+            NewtonSolver(hydraBase *_hydra = nullptr) : IterativeSolverBase(_hydra) {
+                step = &_step;
+                step->solver = this;
+            }
 
         protected:
 
