@@ -24,6 +24,7 @@
 #include "tardigrade_CoreDefinitions.h"
 #include "tardigrade_CustomErrors.h"
 #include "tardigrade_MatrixMap.h"
+#include "tardigrade_DeformationBase.h"
 #include "tardigrade_ResidualBase.h"
 #include "tardigrade_SetDataStorage.h"
 #include "tardigrade_SolverBase.h"
@@ -368,15 +369,15 @@ namespace tardigradeHydra {
         //! The class which performs the material point solve TODO: Make this an incoming pointer
         SolverBase *solver = &_solver;
 
-        //        //! The class which contains the deformation
-        //        DeformationBase *deformation = &_deformation;
+        //! The class which contains the deformation
+        DeformationBase *deformation = &_deformation;
 
        protected:
         //! Default solver
         SubcyclerSolver _solver;
 
-        //        //! Default deformation class
-        //        DeformationBase _deformation;
+        //! Default deformation class
+        DeformationBase _deformation;
 
         // Setters that the user may need to access but not override
 
