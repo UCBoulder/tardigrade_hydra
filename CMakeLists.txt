@@ -51,7 +51,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_hydraDOFVelocityGradientDeformation"
     "tardigrade_SolverBase"
     "tardigrade_IterativeSolverBase"
-    "tardigrade_RelaxedSolver"
+    "tardigrade_RelaxedSolverBase"
     "tardigrade_SubcyclerSolver"
     "tardigrade_NewtonSolver"
     "tardigrade_StepDampingBase"

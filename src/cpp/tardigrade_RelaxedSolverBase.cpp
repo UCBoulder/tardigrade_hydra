@@ -1,43 +1,43 @@
 /**
  ******************************************************************************
- * \file tardigrade_RelaxedSolver.cpp
+ * \file tardigrade_RelaxedSolverBase.cpp
  ******************************************************************************
  * A C++ library for the nonlinear solvers which attempt to relax the problem
  * during its solution
  ******************************************************************************
  */
 
-#include "tardigrade_RelaxedSolver.h"
+#include "tardigrade_RelaxedSolverBase.h"
 
 #include "tardigrade_hydra.h"
 
 namespace tardigradeHydra {
 
     /*!
-     * Default constructor for RelaxedSolver
+     * Default constructor for RelaxedSolverBase
      */
-    RelaxedSolver::RelaxedSolver() : IterativeSolverBase() {
+    RelaxedSolverBase::RelaxedSolverBase() : IterativeSolverBase() {
         internal_solver->hydra = NULL;
         step                   = internal_solver->step;
     }
 
     /*!
-     * Constructor for RelaxedSolver
+     * Constructor for RelaxedSolverBase
      *
      * \param *_hydra: The containing hydra object
      */
-    RelaxedSolver::RelaxedSolver(hydraBase *_hydra) : IterativeSolverBase(_hydra) {
+    RelaxedSolverBase::RelaxedSolverBase(hydraBase *_hydra) : IterativeSolverBase(_hydra) {
         internal_solver->hydra = _hydra;
         step                   = internal_solver->step;
     }
 
     /*!
-     * Constructor for RelaxedSolver
+     * Constructor for RelaxedSolverBase
      *
      * \param *_hydra: The containing hydra object
      * \param *_internal_solver_ptr: The pointer for the internal solver
      */
-    RelaxedSolver::RelaxedSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr) : IterativeSolverBase(_hydra) {
+    RelaxedSolverBase::RelaxedSolverBase(hydraBase *_hydra, SolverBase *_internal_solver_ptr) : IterativeSolverBase(_hydra) {
         internal_solver        = _internal_solver_ptr;
         internal_solver->hydra = hydra;
         step                   = internal_solver->step;
@@ -46,7 +46,7 @@ namespace tardigradeHydra {
     /*!
      * Reset the solver
      */
-    void RelaxedSolver::reset() {
+    void RelaxedSolverBase::reset() {
         resetRelaxedIteration();
         internal_solver->reset();
         tardigradeHydra::IterativeSolverBase::reset();
@@ -55,41 +55,41 @@ namespace tardigradeHydra {
     /*!
      * Get the current relaxed iteration
      */
-    const unsigned int RelaxedSolver::getRelaxedIteration() { return _relaxedIteration; }
+    const unsigned int RelaxedSolverBase::getRelaxedIteration() { return _relaxedIteration; }
 
     /*!
      * Get the maximum number of relaxed iterations
      */
-    const unsigned int RelaxedSolver::getMaxRelaxedIterations() { return _maxRelaxedIterations; }
+    const unsigned int RelaxedSolverBase::getMaxRelaxedIterations() { return _maxRelaxedIterations; }
 
     /*!
      * Set the maximum allowable number of relaxed iterations
      *
      * \param &value: The number of relaxed iterations
      */
-    const void RelaxedSolver::setMaxRelaxedIterations(const unsigned int &value) { _maxRelaxedIterations = value; }
+    const void RelaxedSolverBase::setMaxRelaxedIterations(const unsigned int &value) { _maxRelaxedIterations = value; }
 
     /*!
      * Set the relaxed iteration number
      *
      * \param &value: The incoming value
      */
-    void RelaxedSolver::setRelaxedIteration(const unsigned int &value) { _relaxedIteration = value; }
+    void RelaxedSolverBase::setRelaxedIteration(const unsigned int &value) { _relaxedIteration = value; }
 
     /*!
      * Reset the relaxed iteration number
      */
-    void RelaxedSolver::resetRelaxedIteration() { setRelaxedIteration(0); }
+    void RelaxedSolverBase::resetRelaxedIteration() { setRelaxedIteration(0); }
 
     /*!
      * Increment the relaxed iteration number
      */
-    void RelaxedSolver::incrementRelaxedIteration() { _relaxedIteration++; }
+    void RelaxedSolverBase::incrementRelaxedIteration() { _relaxedIteration++; }
 
     /*!
      * Initialize the residuals for a relaxed solve
      */
-    void RelaxedSolver::initializeResiduals() {
+    void RelaxedSolverBase::initializeResiduals() {
         setCurrentResidualIndexMeaningful(true);
 
         for (auto residual = std::begin(*getResidualClasses()); residual != std::end(*getResidualClasses());
@@ -106,7 +106,7 @@ namespace tardigradeHydra {
     /*!
      * Check if the relaxation iterations have converged
      */
-    bool RelaxedSolver::checkRelaxedConvergence() {
+    bool RelaxedSolverBase::checkRelaxedConvergence() {
         bool relaxedConverged = true;
 
         setCurrentResidualIndexMeaningful(true);
@@ -130,7 +130,7 @@ namespace tardigradeHydra {
      * Signal to the residuals that we have a failed relaxed solve step and
      * determine if a new relaxed step should be taken
      */
-    bool RelaxedSolver::callResidualRelaxedStepFailure() {
+    bool RelaxedSolverBase::callResidualRelaxedStepFailure() {
         bool attempt_relaxed_step = false;
 
         setCurrentResidualIndexMeaningful(true);
@@ -165,7 +165,7 @@ namespace tardigradeHydra {
     /*!
      * Attempt to perform a solve of the non-linear problem
      */
-    bool RelaxedSolver::attemptInternalSolve() {
+    bool RelaxedSolverBase::attemptInternalSolve() {
         TARDIGRADE_ERROR_TOOLS_CHECK(
             internal_solver != nullptr,
             "The solver which is to be relaxed (i.e., the internal solver) has not been defined");
@@ -191,7 +191,7 @@ namespace tardigradeHydra {
     /*!
      * Setup the next relaxed step
      */
-    void RelaxedSolver::setupNextRelaxedStep() {
+    void RelaxedSolverBase::setupNextRelaxedStep() {
         // Use the current unknown vector as the initial estimate
         setInitializeUnknownVector(false);
 
@@ -209,7 +209,7 @@ namespace tardigradeHydra {
     /*!
      * Write the relaxed iteration to the failure string
      */
-    void RelaxedSolver::logRelaxedIterationHeader() {
+    void RelaxedSolverBase::logRelaxedIterationHeader() {
         if (getFailureVerbosityLevel() > 0) {
             addToFailureOutput("\n\n###  relaxed iteration: ");
             addToFailureOutput(getRelaxedIteration());
@@ -220,7 +220,7 @@ namespace tardigradeHydra {
     /*!
      * The function that is called for the first solve attempt
      */
-    void RelaxedSolver::initialSolveAttempt() {
+    void RelaxedSolverBase::initialSolveAttempt() {
         TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The internal solver points to a null pointer")
 
         internal_solver->solve();
@@ -230,7 +230,7 @@ namespace tardigradeHydra {
      * The function that is called when there is a convergence error
      * thrown by the initial solve
      */
-    void RelaxedSolver::convergenceErrorFunction() {
+    void RelaxedSolverBase::convergenceErrorFunction() {
         try {
             performRelaxedSolve();
 
@@ -246,7 +246,7 @@ namespace tardigradeHydra {
      * Solve the non-linear problem by relaxing difficult sub-problems
      * to achieve a series of solutions.
      */
-    void RelaxedSolver::performRelaxedSolve() {
+    void RelaxedSolverBase::performRelaxedSolve() {
         TARDIGRADE_ERROR_TOOLS_CHECK(
             internal_solver != nullptr,
             "The solver which is to be relaxed (i.e., the internal solver) has not been defined");

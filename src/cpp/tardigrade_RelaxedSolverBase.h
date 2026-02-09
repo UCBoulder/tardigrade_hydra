@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * \file tardigrade_RelaxedSolver.h
+ * \file tardigrade_RelaxedSolverBase.h
  ******************************************************************************
  * A C++ library for the nonlinear solvers which attempt to relax the problem
  * during its solution
@@ -18,7 +18,7 @@ namespace tardigradeHydra {
 
     namespace unit_test {
 
-        class RelaxedSolverTester;  //!< Friend class for RelaxedSolver unit testing
+        class RelaxedSolverBaseTester;  //!< Friend class for RelaxedSolverBase unit testing
 
     }
 
@@ -26,13 +26,13 @@ namespace tardigradeHydra {
      * Class which controls a solve of a problem which may need to be
      * systematically relaxed in order to achieve the solution
      */
-    class RelaxedSolver : public IterativeSolverBase {
+    class RelaxedSolverBase : public IterativeSolverBase {
        public:
-        RelaxedSolver();
+        RelaxedSolverBase();
 
-        RelaxedSolver(hydraBase *_hydra);
+        RelaxedSolverBase(hydraBase *_hydra);
 
-        RelaxedSolver(hydraBase *_hydra, SolverBase *_internal_solver_ptr);
+        RelaxedSolverBase(hydraBase *_hydra, SolverBase *_internal_solver_ptr);
 
         virtual void initialSolveAttempt() override;
 
@@ -70,7 +70,7 @@ namespace tardigradeHydra {
         void setupNextRelaxedStep();
 
        private:
-        friend class tardigradeHydra::unit_test::RelaxedSolverTester;  //!< The unit tester for the class
+        friend class tardigradeHydra::unit_test::RelaxedSolverBaseTester;  //!< The unit tester for the class
 
         unsigned int _relaxedIteration = 0;  //!< The current relaxed iteration of the non-linear problem
 

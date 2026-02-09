@@ -1,14 +1,14 @@
 /**
- * \file test_tardigrade_RelaxedSolver.cpp
+ * \file test_tardigrade_RelaxedSolverBase.cpp
  *
- * Tests for tardigrade_RelaxedSolver
+ * Tests for tardigrade_RelaxedSolverBase
  */
 
-#include "tardigrade_RelaxedSolver.h"
+#include "tardigrade_RelaxedSolverBase.h"
 #include "tardigrade_ResidualBase.h"
 #include "tardigrade_hydra.h"
 
-#define BOOST_TEST_MODULE test_tardigrade_RelaxedSolver
+#define BOOST_TEST_MODULE test_tardigrade_RelaxedSolverBase
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -45,7 +45,7 @@ bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2,
     return true;
 }
 
-BOOST_AUTO_TEST_CASE(test_RelaxedSolver_callResidualRelaxedStepFailure,
+BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_callResidualRelaxedStepFailure,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
@@ -117,9 +117,9 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_callResidualRelaxedStepFailure,
         }
     };
 
-    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+    class RelaxedSolverBaseMock : public tardigradeHydra::RelaxedSolverBase {
        public:
-        using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+        using tardigradeHydra::RelaxedSolverBase::RelaxedSolverBase;
 
         virtual bool public_callResidualRelaxedStepFailure() { return callResidualRelaxedStepFailure(); }
     };
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_callResidualRelaxedStepFailure,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    RelaxedSolverMock solver;
+    RelaxedSolverBaseMock solver;
 
     hydra.solver = &solver;
     solver.hydra = &hydra;
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_callResidualRelaxedStepFailure,
     BOOST_TEST(hydra.r3.numRelaxedStepFailureCalls == 2);
 }
 
-BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_solve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         bool project_called = false;
@@ -218,9 +218,9 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFA
         using tardigradeHydra::hydraBase::setResidualClasses;
     };
 
-    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+    class RelaxedSolverBaseMock : public tardigradeHydra::RelaxedSolverBase {
        public:
-        using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+        using tardigradeHydra::RelaxedSolverBase::RelaxedSolverBase;
 
         unsigned int num_calls = 0;
 
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFA
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables, dimension);
 
-    RelaxedSolverMock solver;
+    RelaxedSolverBaseMock solver;
     SolverBaseMock    internal_solver;
     solver.internal_solver = &internal_solver;
     internal_solver.hydra  = &hydra;
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_solve, *boost::unit_test::tolerance(DEFA
     BOOST_TEST(solver.calledPerformRelaxedSolve);
 }
 
-BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
@@ -389,9 +389,9 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve, *boost::unit_test::
         }
     };
 
-    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+    class RelaxedSolverBaseMock : public tardigradeHydra::RelaxedSolverBase {
        public:
-        using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+        using tardigradeHydra::RelaxedSolverBase::RelaxedSolverBase;
     };
 
     class SolverBaseMock : public tardigradeHydra::SolverBase {
@@ -441,7 +441,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve, *boost::unit_test::
 
     // Form the relaxed solver
     SolverBaseMock    internal_solver;
-    RelaxedSolverMock solver;
+    RelaxedSolverBaseMock solver;
     solver.internal_solver = &internal_solver;
     internal_solver.hydra  = &hydra;
 
@@ -461,7 +461,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve, *boost::unit_test::
     BOOST_TEST(answer_1 == hydra.getNumSetupCalls(), CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve2, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve2, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
@@ -582,9 +582,9 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve2, *boost::unit_test:
         }
     };
 
-    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+    class RelaxedSolverBaseMock : public tardigradeHydra::RelaxedSolverBase {
        public:
-        using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+        using tardigradeHydra::RelaxedSolverBase::RelaxedSolverBase;
     };
 
     class SolverBaseMock : public tardigradeHydra::SolverBase {
@@ -637,7 +637,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolver_performRelaxedSolve2, *boost::unit_test:
 
     // Form the relaxed solver
     SolverBaseMock    internal_solver;
-    RelaxedSolverMock solver;
+    RelaxedSolverBaseMock solver;
     solver.internal_solver = &internal_solver;
     internal_solver.hydra  = &hydra;
 

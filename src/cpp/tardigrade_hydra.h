@@ -24,7 +24,6 @@
 #include "tardigrade_CoreDefinitions.h"
 #include "tardigrade_CustomErrors.h"
 #include "tardigrade_MatrixMap.h"
-#include "tardigrade_RelaxedSolver.h"
 #include "tardigrade_ResidualBase.h"
 #include "tardigrade_SetDataStorage.h"
 #include "tardigrade_SolverBase.h"

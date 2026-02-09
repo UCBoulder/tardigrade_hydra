@@ -59,7 +59,7 @@ namespace tardigradeHydra {
         // TEMP
         _solver.hydra                  = this;
         _solver.internal_solver->hydra = this;
-        auto local_internal_solver     = dynamic_cast<tardigradeHydra::RelaxedSolver *>(_solver.internal_solver);
+        auto local_internal_solver     = dynamic_cast<tardigradeHydra::RelaxedSolverBase *>(_solver.internal_solver);
         local_internal_solver->internal_solver->hydra = this;
         // END TEMP
     }
