@@ -12,6 +12,7 @@ Changelog
 New Features
 ============
 - Added NewtonSolver object to simplify hydra solver configuration (:pull:`249`). By `Nathan Miller`_.
+- Broke RelaxedSolver into the base capabilities (housed in RelaxedSolverBase) and a default version (RelaxedSolver) (:pull:`250`). By `Nathan Miller`_.
 
 Internal Changes
 ================

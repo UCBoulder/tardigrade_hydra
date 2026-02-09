@@ -9,7 +9,7 @@
 
 #include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_LevenbergMarquardtStep.h"
-#include "tardigrade_RelaxedSolver.h"
+#include "tardigrade_RelaxedSolverBase.h"
 #include "tardigrade_SolverBase.h"
 #include "tardigrade_constitutive_tools.h"
 #include "tardigrade_hydra.h"
@@ -50,9 +50,9 @@ namespace tardigradeHydra {
            public:
         };
 
-        class RelaxedSolverTester {
+        class RelaxedSolverBaseTester {
            public:
-            static SolverBase *get_internal_solver(RelaxedSolver &solver) { return solver.internal_solver; }
+            static SolverBase *get_internal_solver(RelaxedSolverBase &solver) { return solver.internal_solver; }
         };
 
         class hydraBaseTester {
