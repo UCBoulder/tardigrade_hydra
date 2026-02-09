@@ -6,11 +6,20 @@ Changelog
 #########
 
 ******************
-0.8.0 (unreleased)
+0.7.2 (unreleased)
 ******************
 
+New Features
+============
+- Added NewtonSolver object to simplify hydra solver configuration (:pull:`249`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Added run_exports configuration to the conda recipe (:pull:`247`). By `Nathan Miller`_.
+- Using the DeformationDecompositionBase class to decompose the classical deformation (:pull:`248`). By `Nathan Miller`_.
+
 ******************
-0.7.1 (unreleased)
+0.7.1 (02-03-2026)
 ******************
 
 Internal Changes
