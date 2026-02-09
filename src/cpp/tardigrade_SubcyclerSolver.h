@@ -12,7 +12,7 @@
 
 #include "tardigrade_CoreDefinitions.h"
 #include "tardigrade_RelaxedSolverBase.h"  //#include "tardigrade_IterativeSolverBase.h"
-#include "tardigrade_RelaxedSolverBase.h"
+#include "tardigrade_RelaxedSolver.h"
 #include "tardigrade_SolverBase.h"
 
 namespace tardigradeHydra {
@@ -64,7 +64,7 @@ namespace tardigradeHydra {
         SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
 
        protected:
-        RelaxedSolverBase _internal_solver;  //!< The default internal solver
+        RelaxedSolver _internal_solver;  //!< The default internal solver
 
         virtual void performSubcyclerSolve();
 
