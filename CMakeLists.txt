@@ -53,6 +53,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_IterativeSolverBase"
     "tardigrade_RelaxedSolver"
     "tardigrade_SubcyclerSolver"
+    "tardigrade_NewtonSolver"
     "tardigrade_StepDampingBase"
     "tardigrade_GradientDamping"
     "tardigrade_ArmijoGradientDamping"
