@@ -60,6 +60,15 @@ namespace tardigradeHydra {
             static void checkPreviousConfigurations(DeformationBase &deformation) {
                 BOOST_CHECK(&deformation._previousConfigurations.second == deformation.get_previousConfigurations());
             }
+
+            static void checkInverseConfigurations(DeformationBase &deformation) {
+                BOOST_CHECK(&deformation._inverseConfigurations.second == deformation.get_inverseConfigurations());
+            }
+
+            static void checkPreviousInverseConfigurations(DeformationBase &deformation) {
+                BOOST_CHECK(&deformation._previousInverseConfigurations.second == deformation.get_previousInverseConfigurations());
+            }
+
         };
 
     }
@@ -72,8 +81,22 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_get_configurations, *boost::unit_test:
     tardigradeHydra::unit_test::DeformationBaseTester::checkConfigurations(deformation);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_get_previousConfigurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_previousConfigurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::DeformationBase deformation;
 
     tardigradeHydra::unit_test::DeformationBaseTester::checkPreviousConfigurations(deformation);
 }
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_inverseConfigurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::DeformationBase deformation;
+
+    tardigradeHydra::unit_test::DeformationBaseTester::checkInverseConfigurations(deformation);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_previousInverseConfigurations,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::DeformationBase deformation;
+
+    tardigradeHydra::unit_test::DeformationBaseTester::checkPreviousInverseConfigurations(deformation);
+}
+

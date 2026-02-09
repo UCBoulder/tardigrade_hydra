@@ -341,7 +341,7 @@ namespace tardigradeHydra {
         // Set the configurations
         auto configurations = deformation->get_SetDataStorage_configurations();
 
-        auto inverseConfigurations = get_SetDataStorage_inverseConfigurations();
+        auto inverseConfigurations = deformation->get_SetDataStorage_inverseConfigurations();
 
         computeConfigurations(unknownVector, getStressSize(), *getDeformationGradient(), *configurations.value,
                               *inverseConfigurations.value);
@@ -410,9 +410,9 @@ namespace tardigradeHydra {
 
         auto previousConfigurations = deformation->get_SetDataStorage_previousConfigurations();
 
-        auto inverseConfigurations = get_SetDataStorage_inverseConfigurations();
+        auto inverseConfigurations = deformation->get_SetDataStorage_inverseConfigurations();
 
-        auto previousInverseConfigurations = get_SetDataStorage_previousInverseConfigurations();
+        auto previousInverseConfigurations = deformation->get_SetDataStorage_previousInverseConfigurations();
 
         // Compute the configurations
         computeConfigurations(getPreviousStateVariables(), 0, *getDeformationGradient(), *configurations.value,

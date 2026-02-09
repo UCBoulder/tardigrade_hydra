@@ -116,14 +116,6 @@ namespace tardigradeHydra {
                             hydra.getFOTDimension());
             }
 
-            static void checkInverseConfigurations(hydraBase &hydra) {
-                BOOST_CHECK(&hydra._inverseConfigurations.second == hydra.get_inverseConfigurations());
-            }
-
-            static void checkPreviousInverseConfigurations(hydraBase &hydra) {
-                BOOST_CHECK(&hydra._previousInverseConfigurations.second == hydra.get_previousInverseConfigurations());
-            }
-
             static void checkNonLinearSolveStateVariables(hydraBase &hydra) {
                 BOOST_CHECK(&hydra._nonLinearSolveStateVariables.second == hydra.get_nonLinearSolveStateVariables());
             }
@@ -338,19 +330,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getFOTDimension, *boost::unit_test::toleranc
     tardigradeHydra::unit_test::hydraBaseTester::checkFOTDimension(hydra);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_get_inverseConfigurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkInverseConfigurations(hydra);
-}
-
-BOOST_AUTO_TEST_CASE(test_hydraBase_get_previousInverseConfigurations,
-                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkPreviousInverseConfigurations(hydra);
-}
-
 BOOST_AUTO_TEST_CASE(test_hydraBase_get_nonLinearSolveStateVariables,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::hydraBase hydra;
@@ -492,11 +471,11 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_decomposeStateVariableVector,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
-                   *hydra.get_previousInverseConfigurations(),
+                   *hydra.deformation->get_previousInverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(nonLinearSolveStateVariablesAnswer == *hydra.get_nonLinearSolveStateVariables(), CHECK_PER_ELEMENT);
@@ -664,11 +643,11 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_decomposeStateVariableVector2,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
-                   *hydra.get_previousInverseConfigurations(),
+                   *hydra.deformation->get_previousInverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(nonLinearSolveStateVariablesAnswer == *hydra.get_nonLinearSolveStateVariables(), CHECK_PER_ELEMENT);
@@ -705,11 +684,11 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_decomposeStateVariableVector2,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
-                   *hydra.get_previousInverseConfigurations(),
+                   *hydra.deformation->get_previousInverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(nonLinearSolveStateVariablesAnswer == *hydra.get_nonLinearSolveStateVariables(), CHECK_PER_ELEMENT);

@@ -606,10 +606,6 @@ namespace tardigradeHydra {
         //! Flag for whether the viscoplastic damping factor has been set
         bool _viscoplastic_damping_set = false;
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, inverseConfigurations, floatVector, passThrough)
-
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousInverseConfigurations, floatVector, passThrough)
-
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, nonLinearSolveStateVariables, floatVector, passThrough)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousNonLinearSolveStateVariables, floatVector,
