@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * \file tardigrade_hydraArmijoLineSearchStep.tpp
+ * \file tardigrade_ArmijoLineSearchStep.tpp
  ******************************************************************************
- * Template definitions for hydraArmijoLineSearchStep
+ * Template definitions for ArmijoLineSearchStep
  ******************************************************************************
  */

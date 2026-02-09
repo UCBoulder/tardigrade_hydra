@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * \file tardigrade_hydraSolverStep.tpp
+ * \file tardigrade_SolverStep.tpp
  ******************************************************************************
- * Template definitions for hydraSolverStep
+ * Template definitions for SolverStep
  ******************************************************************************
  */
