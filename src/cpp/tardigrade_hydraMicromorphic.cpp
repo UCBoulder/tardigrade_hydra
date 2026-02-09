@@ -458,7 +458,7 @@ namespace tardigradeHydra {
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationJacobian(*get_microConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfigurationJacobian<3,3,3>(*get_microConfigurations(), lowerIndex, upperIndex);
     }
 
     floatVector hydraBaseMicromorphic::getPrecedingMicroConfigurationJacobian(const unsigned int &index) {
@@ -498,7 +498,7 @@ namespace tardigradeHydra {
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationJacobian(*get_previousMicroConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfigurationJacobian<3,3,3>(*get_previousMicroConfigurations(), lowerIndex, upperIndex);
     }
 
     floatVector hydraBaseMicromorphic::getPreviousPrecedingMicroConfigurationJacobian(const unsigned int &index) {
@@ -786,9 +786,9 @@ namespace tardigradeHydra {
             chiPrecede = deformation->getSubConfiguration<3,3,3>(microConfigurations, 0, index);
 
             // Set the Jacobians of the mapping terms
-            floatVector dFFollowdCs = getSubConfigurationJacobian(configurations, index + 1, num_configs);
+            floatVector dFFollowdCs = deformation->getSubConfigurationJacobian<3,3,3>(configurations, index + 1, num_configs);
 
-            floatVector dChiPrecededChis = getSubConfigurationJacobian(microConfigurations, 0, index);
+            floatVector dChiPrecededChis = deformation->getSubConfigurationJacobian<3,3,3>(microConfigurations, 0, index);
 
             fourthOrderTensor dChiPrecededChi(sot_dim * sot_dim, 0);
 
@@ -813,7 +813,7 @@ namespace tardigradeHydra {
                 }
             }
 
-            floatVector dChiFollowdChis = getSubConfigurationJacobian(microConfigurations, index + 1, num_configs);
+            floatVector dChiFollowdChis = deformation->getSubConfigurationJacobian<3,3,3>(microConfigurations, index + 1, num_configs);
 
             // Add the contribution of the term
             for (unsigned int i = 0; i < dim; i++) {
@@ -978,9 +978,9 @@ namespace tardigradeHydra {
         new (&mat) Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(invFFollow_T.data(), 3, 3);
         mat = mat.transpose().eval();
 
-        floatVector dChiFollowdChis = getSubConfigurationJacobian(microConfigurations, 1, num_configs);
+        floatVector dChiFollowdChis = deformation->getSubConfigurationJacobian<3,3,3>(microConfigurations, 1, num_configs);
 
-        floatVector dFFollowdFs = getSubConfigurationJacobian(configurations, 1, num_configs);
+        floatVector dFFollowdFs = deformation->getSubConfigurationJacobian<3,3,3>(configurations, 1, num_configs);
 
         fourthOrderTensor dInvChiFollowdChiFollow = tardigradeVectorTools::computeFlatDInvADA(invChiFollow, dim, dim);
 

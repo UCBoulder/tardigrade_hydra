@@ -606,7 +606,7 @@ namespace tardigradeHydra {
      *   Note, the configuration indicated by the index is NOT included in the sub-configuration
      */
     floatVector hydraBase::getSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        return getSubConfigurationJacobian(*get_configurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfigurationJacobian<3,3,3>(*get_configurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -643,7 +643,7 @@ namespace tardigradeHydra {
      */
     floatVector hydraBase::getPreviousSubConfigurationJacobian(const unsigned int &lowerIndex,
                                                                const unsigned int &upperIndex) {
-        return getSubConfigurationJacobian(*get_previousConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfigurationJacobian<3,3,3>(*get_previousConfigurations(), lowerIndex, upperIndex);
     }
 
     /*!

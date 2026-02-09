@@ -28,6 +28,9 @@ namespace tardigradeHydra {
             floatVector getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
                                             const unsigned int &upperIndex);
 
+            template<unsigned int leading_rows, unsigned int size, unsigned int dim>
+            floatVector getSubConfigurationJacobian(const floatVector  &configurations,
+                                                    const unsigned int &lowerIndex, const unsigned int &upperIndex);
         protected:
 
         private:

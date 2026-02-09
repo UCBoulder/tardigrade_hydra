@@ -792,12 +792,16 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfiguration, *boost::unit_test::tole
 
     hydra.initialize();
 
-    BOOST_TEST(hydra.getSubConfiguration(0, 4) == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
+    auto result = hydra.getSubConfiguration(0, 4);
+
+    BOOST_TEST(result == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
 
     floatVector answer1 = {2.24332648, 1.48246714, 2.02801682, 1.50380989, 2.98203598,
                            2.08079721, 1.58939152, 1.2551092,  2.38201794};
 
-    BOOST_TEST(hydra.getSubConfiguration(1, 3) == answer1, CHECK_PER_ELEMENT);
+    auto result1 = hydra.getSubConfiguration(1, 3);
+
+    BOOST_TEST(result1 == answer1, CHECK_PER_ELEMENT);
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_getPrecedingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
@@ -1138,18 +1142,18 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian, *boost::unit_te
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
-                   hydra.getSubConfigurationJacobian(configurations, lower, upper),
-               CHECK_PER_ELEMENT);
+    auto result = hydra.deformation->getSubConfigurationJacobian<3,3,3>(configurations, lower, upper);
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == result, CHECK_PER_ELEMENT);
 
     lower = 1;
     upper = 3;
@@ -1163,18 +1167,18 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian, *boost::unit_te
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
-                   hydra.getSubConfigurationJacobian(configurations, lower, upper),
-               CHECK_PER_ELEMENT);
+    result = hydra.deformation->getSubConfigurationJacobian<3,3,3>(configurations, lower, upper);
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == result, CHECK_PER_ELEMENT);
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian2,
@@ -1239,9 +1243,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian2,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1263,9 +1267,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian2,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1338,9 +1342,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPrecedingConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1362,9 +1366,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPrecedingConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1437,9 +1441,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getFollowingConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower + 1, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower + 1, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower + 1, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1461,9 +1465,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getFollowingConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower + 1, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower + 1, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower + 1, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1537,9 +1541,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousSubConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1562,9 +1566,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousSubConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1638,9 +1642,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousPrecedingConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1662,9 +1666,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousPrecedingConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1737,9 +1741,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousFollowingConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower + 1, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower + 1, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower + 1, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1761,9 +1765,9 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousFollowingConfigurationJacobian,
 
         floatVector Fscm;
 
-        BOOST_CHECK_NO_THROW(Fscp = hydra.getSubConfiguration(configurations + delta, lower + 1, upper));
+        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower + 1, upper);
 
-        BOOST_CHECK_NO_THROW(Fscm = hydra.getSubConfiguration(configurations - delta, lower + 1, upper));
+        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
