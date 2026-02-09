@@ -45,8 +45,7 @@ bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2,
     return true;
 }
 
-BOOST_AUTO_TEST_CASE(test_configuration,
-                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_configuration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::RelaxedSolver solver;
 
     auto internal_solver = dynamic_cast<tardigradeHydra::NewtonSolver *>(solver.internal_solver);

@@ -10,8 +10,8 @@
 #define TARDIGRADE_RELAXEDSOLVER_H
 
 #include "tardigrade_CoreDefinitions.h"
-#include "tardigrade_RelaxedSolverBase.h"
 #include "tardigrade_NewtonSolver.h"
+#include "tardigrade_RelaxedSolverBase.h"
 
 namespace tardigradeHydra {
 
@@ -31,9 +31,8 @@ namespace tardigradeHydra {
        protected:
         //! The default internal solver
         tardigradeHydra::NewtonSolver _internal_solver;
-
     };
 
-}
+}  // namespace tardigradeHydra
 
 #endif

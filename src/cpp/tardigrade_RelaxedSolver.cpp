@@ -21,4 +21,4 @@ namespace tardigradeHydra {
         step                   = internal_solver->step;
     }
 
-}
+}  // namespace tardigradeHydra

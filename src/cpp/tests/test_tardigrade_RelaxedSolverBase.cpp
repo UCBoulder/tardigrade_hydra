@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_solve, *boost::unit_test::tolerance(
                         numNonLinearSolveStateVariables, dimension);
 
     RelaxedSolverBaseMock solver;
-    SolverBaseMock    internal_solver;
+    SolverBaseMock        internal_solver;
     solver.internal_solver = &internal_solver;
     internal_solver.hydra  = &hydra;
 
@@ -440,7 +440,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve, *boost::unit_te
                         numNonLinearSolveStateVariables, dimension);
 
     // Form the relaxed solver
-    SolverBaseMock    internal_solver;
+    SolverBaseMock        internal_solver;
     RelaxedSolverBaseMock solver;
     solver.internal_solver = &internal_solver;
     internal_solver.hydra  = &hydra;
@@ -461,7 +461,8 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve, *boost::unit_te
     BOOST_TEST(answer_1 == hydra.getNumSetupCalls(), CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve2, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve2,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
        public:
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
@@ -636,7 +637,7 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve2, *boost::unit_t
                         numNonLinearSolveStateVariables, dimension);
 
     // Form the relaxed solver
-    SolverBaseMock    internal_solver;
+    SolverBaseMock        internal_solver;
     RelaxedSolverBaseMock solver;
     solver.internal_solver = &internal_solver;
     internal_solver.hydra  = &hydra;

@@ -11,8 +11,8 @@
 #define TARDIGRADE_SUBCYCLERSOLVER_H
 
 #include "tardigrade_CoreDefinitions.h"
-#include "tardigrade_RelaxedSolverBase.h"  //#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_RelaxedSolver.h"
+#include "tardigrade_RelaxedSolverBase.h"  //#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_SolverBase.h"
 
 namespace tardigradeHydra {
