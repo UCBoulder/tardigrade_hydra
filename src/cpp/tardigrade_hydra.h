@@ -519,7 +519,7 @@ namespace tardigradeHydra {
         //! The absolute tolerance
         floatType _tola;
 
-        //! A flag for whether a rank-deficient LHS will through a convergence error
+        //! A flag for whether a rank-deficient LHS will throw a convergence error
         bool _rank_deficient_error = true;
 
         //! A vector of pointers to data which should be cleared at each iteration
