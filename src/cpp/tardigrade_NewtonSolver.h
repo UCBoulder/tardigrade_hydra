@@ -22,27 +22,23 @@ namespace tardigradeHydra {
      * The Newton solver class
      */
     class NewtonSolver : public IterativeSolverBase {
+       public:
+        /*!
+         * Constructor for the Newton solver
+         *
+         * \param *_hydra: A pointer to the containing hydraBase object
+         */
+        NewtonSolver(hydraBase *_hydra = nullptr) : IterativeSolverBase(_hydra) {
+            step         = &_step;
+            step->solver = this;
+        }
 
-        public:
-
-            /*!
-             * Constructor for the Newton solver
-             *
-             * \param *_hydra: A pointer to the containing hydraBase object
-             */
-            NewtonSolver(hydraBase *_hydra = nullptr) : IterativeSolverBase(_hydra) {
-                step = &_step;
-                step->solver = this;
-            }
-
-        protected:
-
-            //! The incrementation object
-            tardigradeHydra::SolverStep _step;
-
+       protected:
+        //! The incrementation object
+        tardigradeHydra::SolverStep _step;
     };
 
-}
+}  // namespace tardigradeHydra
 
 #include "tardigrade_NewtonSolver.cpp"
 

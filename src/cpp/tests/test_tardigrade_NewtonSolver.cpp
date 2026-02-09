@@ -44,14 +44,12 @@ bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2,
 }
 
 BOOST_AUTO_TEST_CASE(test_configuration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-
     tardigradeHydra::NewtonSolver solver;
 
-    auto step    = dynamic_cast<tardigradeHydra::NewtonStep*>(solver.step->trial_step);
-    auto damping = dynamic_cast<tardigradeHydra::ArmijoGradientDamping*>(solver.step->damping);
+    auto step    = dynamic_cast<tardigradeHydra::NewtonStep *>(solver.step->trial_step);
+    auto damping = dynamic_cast<tardigradeHydra::ArmijoGradientDamping *>(solver.step->damping);
 
     BOOST_TEST(step != nullptr);
 
     BOOST_TEST(damping != nullptr);
-
 }

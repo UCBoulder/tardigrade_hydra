@@ -8,6 +8,4 @@
 
 #include "tardigrade_NewtonSolver.h"
 
-namespace tardigradeHydra {
-
-}
+namespace tardigradeHydra {}
