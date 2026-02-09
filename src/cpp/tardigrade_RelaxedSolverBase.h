@@ -7,8 +7,8 @@
  ******************************************************************************
  */
 
-#ifndef TARDIGRADE_RELAXEDSOLVER_H
-#define TARDIGRADE_RELAXEDSOLVER_H
+#ifndef TARDIGRADE_RELAXEDSOLVERBASE_H
+#define TARDIGRADE_RELAXEDSOLVERBASE_H
 
 #include "tardigrade_CoreDefinitions.h"
 #include "tardigrade_NewtonSolver.h"
@@ -28,11 +28,19 @@ namespace tardigradeHydra {
      */
     class RelaxedSolverBase : public IterativeSolverBase {
        public:
-        RelaxedSolverBase();
+        /*!
+         * The default constructor
+         */
+        RelaxedSolverBase() : IterativeSolverBase() {}
 
-        RelaxedSolverBase(hydraBase *_hydra);
+        /*!
+         * The default constructor
+         *
+         * \param *_hydra: The containing hydraBase
+         */
+        RelaxedSolverBase(hydraBase *_hydra) : IterativeSolverBase(_hydra) {}
 
-        RelaxedSolverBase(hydraBase *_hydra, SolverBase *_internal_solver_ptr);
+        RelaxedSolverBase(hydraBase *_hydra, SolverBase *_internal_solver);
 
         virtual void initialSolveAttempt() override;
 
@@ -50,11 +58,10 @@ namespace tardigradeHydra {
 
         virtual void performRelaxedSolve();
 
-        SolverBase *internal_solver = &_internal_solver;  //!< A pointer to the solver which will be relaxed
+        //! A pointer to the solver which will be relaxed
+        SolverBase *internal_solver;
 
        protected:
-        NewtonSolver _internal_solver;  //!< The default internal solver
-
         void setRelaxedIteration(const unsigned int &value);
 
         void resetRelaxedIteration();
