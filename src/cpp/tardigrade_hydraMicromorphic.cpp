@@ -365,7 +365,7 @@ namespace tardigradeHydra {
          * the sub-configuration
          */
 
-        return getSubConfiguration(*get_microConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfiguration<3,3,3>(*get_microConfigurations(), lowerIndex, upperIndex);
     }
 
     secondOrderTensor hydraBaseMicromorphic::getPrecedingMicroConfiguration(const unsigned int &index) {
@@ -410,7 +410,7 @@ namespace tardigradeHydra {
          * the sub-configuration
          */
 
-        return getSubConfiguration(*get_previousMicroConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfiguration<3,3,3>(*get_previousMicroConfigurations(), lowerIndex, upperIndex);
     }
 
     secondOrderTensor hydraBaseMicromorphic::getPreviousPrecedingMicroConfiguration(const unsigned int &index) {
@@ -659,7 +659,7 @@ namespace tardigradeHydra {
             //            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
             std::fill(temp_tot1.begin(), temp_tot1.end(), 0);
 
-            secondOrderTensor chiFollow = getSubConfiguration(microConfigurations, index + 1, getNumConfigurations());
+            secondOrderTensor chiFollow = deformation->getSubConfiguration<3,3,3>(microConfigurations, index + 1, getNumConfigurations());
 
             for (unsigned int i = 0; i < dim; i++) {
                 for (unsigned int I = 0; I < dim; I++) {
@@ -675,7 +675,7 @@ namespace tardigradeHydra {
             //            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
             std::fill(gradientChi1Reference.begin(), gradientChi1Reference.end(), 0);
 
-            secondOrderTensor FFollow = getSubConfiguration(configurations, index + 1, getNumConfigurations());
+            secondOrderTensor FFollow = deformation->getSubConfiguration<3,3,3>(configurations, index + 1, getNumConfigurations());
 
             for (unsigned int i = 0; i < dim; i++) {
                 for (unsigned int I = 0; I < dim; I++) {
@@ -692,11 +692,11 @@ namespace tardigradeHydra {
         gradientChi1Reference += gradientMicroConfiguration;
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        secondOrderTensor invChiFollow = getSubConfiguration(microConfigurations, 1, num_configs);
+        secondOrderTensor invChiFollow = deformation->getSubConfiguration<3,3,3>(microConfigurations, 1, num_configs);
         Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> > mat(invChiFollow.data(), 3, 3);
         mat = mat.inverse().eval();
 
-        secondOrderTensor invFFollow = getSubConfiguration(configurations, 1, num_configs);
+        secondOrderTensor invFFollow = deformation->getSubConfiguration<3,3,3>(configurations, 1, num_configs);
         new (&mat) Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(invFFollow.data(), 3, 3);
         mat = mat.inverse().eval();
 
@@ -783,7 +783,7 @@ namespace tardigradeHydra {
         secondOrderTensor chiPrecede(sot_dim, 0), chiFollow(sot_dim, 0), FFollow(sot_dim, 0);
 
         for (unsigned int index = 1; index < num_configs; index++) {
-            chiPrecede = getSubConfiguration(microConfigurations, 0, index);
+            chiPrecede = deformation->getSubConfiguration<3,3,3>(microConfigurations, 0, index);
 
             // Set the Jacobians of the mapping terms
             floatVector dFFollowdCs = getSubConfigurationJacobian(configurations, index + 1, num_configs);
@@ -835,7 +835,7 @@ namespace tardigradeHydra {
                 std::fill(gradientChi1Reference.begin(), gradientChi1Reference.end(), 0);
                 std::fill(temp_tot2.begin(), temp_tot2.end(), 0);
 
-                chiFollow = getSubConfiguration(microConfigurations, index + 1, getNumConfigurations());
+                chiFollow = deformation->getSubConfiguration<3,3,3>(microConfigurations, index + 1, getNumConfigurations());
 
                 for (unsigned int i = 0; i < dim; i++) {
                     for (unsigned int I = 0; I < dim; I++) {
@@ -856,7 +856,7 @@ namespace tardigradeHydra {
                 std::fill(temp_tot2a.begin(), temp_tot2a.end(), 0);
                 std::fill(temp_tot3a.begin(), temp_tot3a.end(), 0);
 
-                FFollow = getSubConfiguration(configurations, index + 1, getNumConfigurations());
+                FFollow = deformation->getSubConfiguration<3,3,3>(configurations, index + 1, getNumConfigurations());
 
                 for (unsigned int i = 0; i < dim; i++) {
                     for (unsigned int I = 0; I < dim; I++) {
@@ -960,9 +960,9 @@ namespace tardigradeHydra {
         gradientChi1Reference += gradientMicroConfiguration;
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        chiFollow = getSubConfiguration(microConfigurations, 1, num_configs);
+        chiFollow = deformation->getSubConfiguration<3,3,3>(microConfigurations, 1, num_configs);
 
-        FFollow = getSubConfiguration(configurations, 1, num_configs);
+        FFollow = deformation->getSubConfiguration<3,3,3>(configurations, 1, num_configs);
 
         secondOrderTensor                                            invChiFollow = chiFollow;
         Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> > mat(invChiFollow.data(), 3, 3);

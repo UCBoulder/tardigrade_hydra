@@ -556,7 +556,7 @@ namespace tardigradeHydra {
      * sub-configuration
      */
     secondOrderTensor hydraBase::getSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        return getSubConfiguration(*get_configurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfiguration<3,3,3>(*get_configurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -597,7 +597,7 @@ namespace tardigradeHydra {
      */
     secondOrderTensor hydraBase::getPreviousSubConfiguration(const unsigned int &lowerIndex,
                                                              const unsigned int &upperIndex) {
-        return getSubConfiguration(*get_previousConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfiguration<3,3,3>(*get_previousConfigurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -715,7 +715,7 @@ namespace tardigradeHydra {
         constexpr unsigned int sot_dim     = dim * dim;
         auto                   num_configs = getNumConfigurations();
 
-        secondOrderTensor fullConfiguration = getSubConfiguration(configurations, 0, num_configs);
+        secondOrderTensor fullConfiguration = deformation->getSubConfiguration<3,3,3>(configurations, 0, num_configs);
 
         dC1dC  = secondOrderTensor(sot_dim * sot_dim, 0);
         dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
