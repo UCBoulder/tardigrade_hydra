@@ -42,4 +42,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_LevenbergMarquardtStep.tpp"
+
 #endif

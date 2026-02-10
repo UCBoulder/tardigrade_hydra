@@ -227,6 +227,8 @@ namespace tardigradeHydra {
         //            // END GRADIENT DESCENT FUNCTIONS
     };
 
+#include "tardigrade_ArmijoGradientDamping.tpp"
+
 }  // namespace tardigradeHydra
 
 #endif

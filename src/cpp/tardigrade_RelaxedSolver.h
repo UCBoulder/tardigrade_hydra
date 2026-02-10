@@ -35,4 +35,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_RelaxedSolver.tpp"
+
 #endif

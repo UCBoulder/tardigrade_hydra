@@ -1679,8 +1679,8 @@ namespace tardigradeHydra {
             SetDataStorageBase<thirdOrderTensor> Gamma;
 
             if (isPrevious) {
-                deformationGradient1 = floatVector(hydra->get_previousConfigurations()->begin(),
-                                                   hydra->get_previousConfigurations()->begin() + sot_dim);
+                deformationGradient1 = floatVector(hydra->deformation->get_previousConfigurations()->begin(),
+                                                   hydra->deformation->get_previousConfigurations()->begin() + sot_dim);
 
                 microDeformation1 = floatVector(hydra->get_previousMicroConfigurations()->begin(),
                                                 hydra->get_previousMicroConfigurations()->begin() + sot_dim);
@@ -1696,8 +1696,8 @@ namespace tardigradeHydra {
                 Gamma = get_SetDataStorage_previousGamma();
 
             } else {
-                deformationGradient1 =
-                    floatVector(hydra->get_configurations()->begin(), hydra->get_configurations()->begin() + sot_dim);
+                deformationGradient1 = floatVector(hydra->deformation->get_configurations()->begin(),
+                                                   hydra->deformation->get_configurations()->begin() + sot_dim);
 
                 microDeformation1 = floatVector(hydra->get_microConfigurations()->begin(),
                                                 hydra->get_microConfigurations()->begin() + sot_dim);
@@ -1997,7 +1997,7 @@ namespace tardigradeHydra {
 
                 Gamma = get_previousGamma();
 
-                followingConfiguration = hydra->getPreviousFollowingConfiguration(0);
+                followingConfiguration = hydra->deformation->getPreviousFollowingConfiguration(0);
 
                 followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration(0);
 
@@ -2014,7 +2014,7 @@ namespace tardigradeHydra {
 
                 Gamma = get_gamma();
 
-                followingConfiguration = hydra->getFollowingConfiguration(0);
+                followingConfiguration = hydra->deformation->getFollowingConfiguration(0);
 
                 followingMicroConfiguration = hydra->getFollowingMicroConfiguration(0);
 
@@ -2486,11 +2486,11 @@ namespace tardigradeHydra {
 
                 Gamma = get_previousGamma();
 
-                dFFollowdFs = hydra->getPreviousFollowingConfigurationJacobian(0);
+                dFFollowdFs = hydra->deformation->getPreviousFollowingConfigurationJacobian(0);
 
                 dChiFollowdChis = hydra->getPreviousFollowingMicroConfigurationJacobian(0);
 
-                followingConfiguration = hydra->getPreviousFollowingConfiguration(0);
+                followingConfiguration = hydra->deformation->getPreviousFollowingConfiguration(0);
 
                 followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration(0);
 
@@ -2567,11 +2567,11 @@ namespace tardigradeHydra {
 
                 Gamma = get_gamma();
 
-                dFFollowdFs = hydra->getFollowingConfigurationJacobian(0);
+                dFFollowdFs = hydra->deformation->getFollowingConfigurationJacobian(0);
 
                 dChiFollowdChis = hydra->getFollowingMicroConfigurationJacobian(0);
 
-                followingConfiguration = hydra->getFollowingConfiguration(0);
+                followingConfiguration = hydra->deformation->getFollowingConfiguration(0);
 
                 followingMicroConfiguration = hydra->getFollowingMicroConfiguration(0);
 
@@ -3925,8 +3925,8 @@ namespace tardigradeHydra {
             SetDataStorageBase<floatVector> dGammadGradChin;
 
             if (isPrevious) {
-                deformationGradient1 = floatVector(hydra->get_previousConfigurations()->begin(),
-                                                   hydra->get_previousConfigurations()->begin() + sot_dim);
+                deformationGradient1 = floatVector(hydra->deformation->get_previousConfigurations()->begin(),
+                                                   hydra->deformation->get_previousConfigurations()->begin() + sot_dim);
 
                 microDeformation1 = floatVector(hydra->get_previousMicroConfigurations()->begin(),
                                                 hydra->get_previousMicroConfigurations()->begin() + sot_dim);
@@ -3935,9 +3935,9 @@ namespace tardigradeHydra {
                     floatVector(hydra->get_previousGradientMicroConfigurations()->begin(),
                                 hydra->get_previousGradientMicroConfigurations()->begin() + tot_dim);
 
-                dF1dF = hydra->get_previousdF1dF();
+                dF1dF = hydra->deformation->get_previousdF1dF();
 
-                dF1dFn = hydra->get_previousdF1dFn();
+                dF1dFn = hydra->deformation->get_previousdF1dFn();
 
                 dChi1dChi = hydra->get_previousdChi1dChi();
 
@@ -3984,8 +3984,8 @@ namespace tardigradeHydra {
                 dGammadGradChin = get_SetDataStorage_previousdGammadGradChin();
 
             } else {
-                deformationGradient1 =
-                    floatVector(hydra->get_configurations()->begin(), hydra->get_configurations()->begin() + sot_dim);
+                deformationGradient1 = floatVector(hydra->deformation->get_configurations()->begin(),
+                                                   hydra->deformation->get_configurations()->begin() + sot_dim);
 
                 microDeformation1 = floatVector(hydra->get_microConfigurations()->begin(),
                                                 hydra->get_microConfigurations()->begin() + sot_dim);
@@ -3993,9 +3993,9 @@ namespace tardigradeHydra {
                 gradientMicroDeformation1 = floatVector(hydra->get_gradientMicroConfigurations()->begin(),
                                                         hydra->get_gradientMicroConfigurations()->begin() + tot_dim);
 
-                dF1dF = hydra->get_dF1dF();
+                dF1dF = hydra->deformation->get_dF1dF();
 
-                dF1dFn = hydra->get_dF1dFn();
+                dF1dFn = hydra->deformation->get_dF1dFn();
 
                 dChi1dChi = hydra->get_dChi1dChi();
 

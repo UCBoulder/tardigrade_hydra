@@ -41,5 +41,6 @@ namespace tardigradeHydra {
 }  // namespace tardigradeHydra
 
 #include "tardigrade_NewtonSolver.cpp"
+#include "tardigrade_NewtonSolver.tpp"
 
 #endif

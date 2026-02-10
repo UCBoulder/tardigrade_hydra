@@ -120,4 +120,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraMicromorphicRadialReturnLinearElasticity.tpp"
+
 #endif

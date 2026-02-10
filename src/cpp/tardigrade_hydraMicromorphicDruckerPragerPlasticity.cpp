@@ -3183,7 +3183,7 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 stress = hydra->getPreviousStress();
 
-                Fp = hydra->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getPreviousFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -3196,7 +3196,7 @@ namespace tardigradeHydra {
             } else {
                 stress = hydra->getStress();
 
-                Fp = hydra->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -3524,11 +3524,12 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 stress = hydra->getPreviousStress();
 
-                dF1dF = hydra->get_previousdF1dF();
+                dF1dF = hydra->deformation->get_previousdF1dF();
 
-                dF1dFn = hydra->get_previousdF1dFn();
+                dF1dFn = hydra->deformation->get_previousdF1dFn();
 
-                dFpdSubFs = hydra->getPreviousFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
+                dFpdSubFs =
+                    hydra->deformation->getPreviousFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
                 dChi1dChi = hydra->get_previousdChi1dChi();
 
@@ -3537,7 +3538,7 @@ namespace tardigradeHydra {
                 dChipdSubChis =
                     hydra->getPreviousFollowingMicroConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                Fp = hydra->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getPreviousFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -3572,11 +3573,11 @@ namespace tardigradeHydra {
             } else {
                 stress = hydra->getStress();
 
-                dF1dF = hydra->get_dF1dF();
+                dF1dF = hydra->deformation->get_dF1dF();
 
-                dF1dFn = hydra->get_dF1dFn();
+                dF1dFn = hydra->deformation->get_dF1dFn();
 
-                dFpdSubFs = hydra->getFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
+                dFpdSubFs = hydra->deformation->getFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
                 dChi1dChi = hydra->get_dChi1dChi();
 
@@ -3584,7 +3585,7 @@ namespace tardigradeHydra {
 
                 dChipdSubChis = hydra->getFollowingMicroConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                Fp = hydra->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -6140,10 +6141,11 @@ namespace tardigradeHydra {
 
             if (isPrevious) {
                 set_previousPrecedingDeformationGradient(
-                    hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
+                    hydra->deformation->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
             } else {
-                set_precedingDeformationGradient(hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
+                set_precedingDeformationGradient(
+                    hydra->deformation->getPrecedingConfiguration(getPlasticConfigurationIndex()));
             }
         }
 
@@ -6202,26 +6204,29 @@ namespace tardigradeHydra {
 
             if (isPrevious) {
                 set_previousPrecedingDeformationGradient(
-                    hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
+                    hydra->deformation->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
-                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
+                dPrecedingFdSubFs =
+                    hydra->deformation->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
 
-                dF1dF = hydra->get_previousdF1dF();
+                dF1dF = hydra->deformation->get_previousdF1dF();
 
-                dF1dFn = hydra->get_previousdF1dFn();
+                dF1dFn = hydra->deformation->get_previousdF1dFn();
 
                 dPrecedingFdF = get_SetDataStorage_previousdPrecedingDeformationGradientdF();
 
                 dPrecedingFdFn = get_SetDataStorage_previousdPrecedingDeformationGradientdFn();
 
             } else {
-                set_precedingDeformationGradient(hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
+                set_precedingDeformationGradient(
+                    hydra->deformation->getPrecedingConfiguration(getPlasticConfigurationIndex()));
 
-                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
+                dPrecedingFdSubFs =
+                    hydra->deformation->getPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
 
-                dF1dF = hydra->get_dF1dF();
+                dF1dF = hydra->deformation->get_dF1dF();
 
-                dF1dFn = hydra->get_dF1dFn();
+                dF1dFn = hydra->deformation->get_dF1dFn();
 
                 dPrecedingFdF = get_SetDataStorage_dPrecedingDeformationGradientdF();
 
@@ -7832,10 +7837,9 @@ namespace tardigradeHydra {
 
             auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
-            const secondOrderTensor previousPlasticDeformationGradient =
-                secondOrderTensor(hydra->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_previousConfigurations()->begin() +
-                                      sot_dim * (plasticConfigurationIndex + 1));
+            const secondOrderTensor previousPlasticDeformationGradient = secondOrderTensor(
+                hydra->deformation->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                hydra->deformation->get_previousConfigurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
                 hydra->get_previousMicroConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
@@ -8226,10 +8230,9 @@ namespace tardigradeHydra {
 
             auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
-            const secondOrderTensor previousPlasticDeformationGradient =
-                secondOrderTensor(hydra->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_previousConfigurations()->begin() +
-                                      sot_dim * (plasticConfigurationIndex + 1));
+            const secondOrderTensor previousPlasticDeformationGradient = secondOrderTensor(
+                hydra->deformation->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                hydra->deformation->get_previousConfigurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
                 hydra->get_previousMicroConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
@@ -9482,9 +9485,9 @@ namespace tardigradeHydra {
             // Get the trial plastic deformation measures
             auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
-            const secondOrderTensor plasticDeformationGradient =
-                secondOrderTensor(hydra->get_configurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_configurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
+            const secondOrderTensor plasticDeformationGradient = secondOrderTensor(
+                hydra->deformation->get_configurations()->begin() + sot_dim * plasticConfigurationIndex,
+                hydra->deformation->get_configurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor plasticMicroDeformation =
                 secondOrderTensor(hydra->get_microConfigurations()->begin() + sot_dim * plasticConfigurationIndex,

@@ -168,4 +168,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraPerzynaJ2Viscoplasticity.tpp"
+
 #endif

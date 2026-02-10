@@ -23,6 +23,7 @@
 
 #include "tardigrade_CoreDefinitions.h"
 #include "tardigrade_CustomErrors.h"
+#include "tardigrade_DeformationBase.h"
 #include "tardigrade_MatrixMap.h"
 #include "tardigrade_ResidualBase.h"
 #include "tardigrade_SetDataStorage.h"
@@ -179,40 +180,6 @@ namespace tardigradeHydra {
         //! Get the absolute tolerance
         constexpr floatType getAbsoluteTolerance() { return _tola; }
 
-        secondOrderTensor getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
-                                              const unsigned int &upperIndex);
-
-        secondOrderTensor getSubConfigurationJacobian(const floatVector &configurations, const unsigned int &lowerIndex,
-                                                      const unsigned int &upperIndex);
-
-        secondOrderTensor getSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
-
-        secondOrderTensor getPrecedingConfiguration(const unsigned int &index);
-
-        secondOrderTensor getFollowingConfiguration(const unsigned int &index);
-
-        secondOrderTensor getConfiguration(const unsigned int &index);
-
-        secondOrderTensor getPreviousSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
-
-        secondOrderTensor getPreviousPrecedingConfiguration(const unsigned int &index);
-
-        secondOrderTensor getPreviousFollowingConfiguration(const unsigned int &index);
-
-        secondOrderTensor getPreviousConfiguration(const unsigned int &index);
-
-        floatVector getSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex);
-
-        floatVector getPrecedingConfigurationJacobian(const unsigned int &index);
-
-        floatVector getFollowingConfigurationJacobian(const unsigned int &index);
-
-        floatVector getPreviousSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex);
-
-        floatVector getPreviousPrecedingConfigurationJacobian(const unsigned int &index);
-
-        floatVector getPreviousFollowingConfigurationJacobian(const unsigned int &index);
-
         virtual void setResidualClasses();
 
         void setResidualClasses(std::vector<ResidualBase<hydraBase> *> &residualClasses);
@@ -290,36 +257,11 @@ namespace tardigradeHydra {
 
         void addToFailureOutput(const floatType &value, bool add_endline = true);
 
-        /*!
-         * Add a general non-iterable object to the output string
-         *
-         * \param &v: The value to add
-         * \param add_endline: Whether to append a newline character after the value
-         */
         template <class v_type>
-        void addToFailureOutput(const v_type &v, bool add_endline = true) {
-            _failure_output << v;
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
+        void addToFailureOutput(const v_type &v, bool add_endline = true);
 
-        /*!
-         * Add a general iterable object to the output string
-         *
-         * \param &v_begin: The starting iterator of the value vector
-         * \param &v_end: The stopping iterator of the value vector
-         * \param add_endline: Whether to append a newline character after the value
-         */
         template <class v_iterator>
-        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true) {
-            for (auto v = v_begin; v != v_end; ++v) {
-                _failure_output << *v << ", ";
-            }
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
+        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true);
 
         //! Get the failure output string
         const std::string getFailureOutput() { return _failure_output.str(); }
@@ -368,15 +310,15 @@ namespace tardigradeHydra {
         //! The class which performs the material point solve TODO: Make this an incoming pointer
         SolverBase *solver = &_solver;
 
-        //        //! The class which contains the deformation
-        //        DeformationBase *deformation = &_deformation;
+        //! The class which contains the deformation
+        DeformationBase *deformation = &_deformation;
 
        protected:
         //! Default solver
         SubcyclerSolver _solver;
 
-        //        //! Default deformation class
-        //        DeformationBase _deformation;
+        //! Default deformation class
+        DeformationBase _deformation = DeformationBase(this);
 
         // Setters that the user may need to access but not override
 
@@ -405,9 +347,6 @@ namespace tardigradeHydra {
         virtual void initializeUnknownVector();
 
         virtual void updateUnknownVector(const floatVector &newUnknownVector);
-
-        virtual void calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
-                                                          floatVector &dC1dCn);
 
         virtual void setScaledQuantities();
 
@@ -519,9 +458,6 @@ namespace tardigradeHydra {
         //! The absolute tolerance
         floatType _tola;
 
-        //! A flag for whether a rank-deficient LHS will through a convergence error
-        bool _rank_deficient_error = true;
-
         //! A vector of pointers to data which should be cleared at each iteration
         std::vector<dataBase *> _iterationData;
 
@@ -570,10 +506,6 @@ namespace tardigradeHydra {
         //! The total derivative of the unknown vector w.r.t. the additional dof
         DataStorage<floatVector> _flatdXdAdditionalDOF;
 
-        void setFirstConfigurationJacobians();
-
-        void setPreviousFirstConfigurationJacobians();
-
         void resetIterationData();
 
         void resetNLStepData();
@@ -614,14 +546,6 @@ namespace tardigradeHydra {
         //! Flag for whether the viscoplastic damping factor has been set
         bool _viscoplastic_damping_set = false;
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, configurations, floatVector, passThrough)
-
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousConfigurations, floatVector, passThrough)
-
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, inverseConfigurations, floatVector, passThrough)
-
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousInverseConfigurations, floatVector, passThrough)
-
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, nonLinearSolveStateVariables, floatVector, passThrough)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousNonLinearSolveStateVariables, floatVector,
@@ -636,20 +560,10 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, setConstraintJacobians, getConstraintJacobians,
                                                          constraintJacobians, floatVector, setConstraintJacobians)
-
-        TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, set_dF1dF, get_dF1dF, dF1dF, secondOrderTensor,
-                                                         setFirstConfigurationJacobians)
-
-        TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, set_dF1dFn, get_dF1dFn, dF1dFn, floatVector,
-                                                         setFirstConfigurationJacobians)
-
-        TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dF, get_previousdF1dF, previousdF1dF,
-                                                        secondOrderTensor, setPreviousFirstConfigurationJacobians)
-
-        TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn,
-                                                        floatVector, setPreviousFirstConfigurationJacobians)
     };
 
 }  // namespace tardigradeHydra
+
+#include "tardigrade_hydra.tpp"
 
 #endif

@@ -74,4 +74,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_PreconditionerBase.tpp"
+
 #endif

@@ -385,4 +385,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraDOFVelocityGradientDeformation.tpp"
+
 #endif

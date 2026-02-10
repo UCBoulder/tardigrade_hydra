@@ -136,4 +136,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraLinearTestMaterial.tpp"
+
 #endif

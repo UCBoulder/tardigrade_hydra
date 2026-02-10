@@ -44,4 +44,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_NonlinearStepBase.tpp"
+
 #endif

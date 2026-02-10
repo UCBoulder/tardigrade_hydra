@@ -15,6 +15,7 @@ build*/
 *results.tex
 *_results.txt
 *results.txt
+Testing*/
 
 # PyCharm IDE
 .idea/
