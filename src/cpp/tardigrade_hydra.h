@@ -180,10 +180,6 @@ namespace tardigradeHydra {
         //! Get the absolute tolerance
         constexpr floatType getAbsoluteTolerance() { return _tola; }
 
-        secondOrderTensor getPreviousSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
-
-        secondOrderTensor getPreviousPrecedingConfiguration(const unsigned int &index);
-
         secondOrderTensor getPreviousFollowingConfiguration(const unsigned int &index);
 
         secondOrderTensor getPreviousConfiguration(const unsigned int &index);

@@ -80,7 +80,7 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 auto precedingDeformationGradient = get_SetDataStorage_previousPrecedingDeformationGradient();
                 *precedingDeformationGradient.value =
-                    hydra->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
+                    hydra->deformation->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
 
             } else {
                 auto precedingDeformationGradient   = get_SetDataStorage_precedingDeformationGradient();
@@ -123,7 +123,7 @@ namespace tardigradeHydra {
 
                 auto precedingDeformationGradient = get_SetDataStorage_previousPrecedingDeformationGradient();
                 *precedingDeformationGradient.value =
-                    hydra->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
+                    hydra->deformation->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
 
                 dpFdF = get_SetDataStorage_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient();
 

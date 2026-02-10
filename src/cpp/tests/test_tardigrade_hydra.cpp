@@ -877,7 +877,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration, *boost::uni
     BOOST_TEST(hydra.deformation->getFollowingConfiguration(3) == answer3, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousSubConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -917,15 +917,15 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousSubConfiguration, *boost::unit_te
 
     hydra.initialize();
 
-    BOOST_TEST(hydra.getPreviousSubConfiguration(0, 4) == *hydra.getPreviousDeformationGradient(), CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPreviousSubConfiguration(0, 4) == *hydra.getPreviousDeformationGradient(), CHECK_PER_ELEMENT);
 
     floatVector answer1 = {2.24332648, 1.48246714, 2.02801682, 1.50380989, 2.98203598,
                            2.08079721, 1.58939152, 1.2551092,  2.38201794};
 
-    BOOST_TEST(hydra.getPreviousSubConfiguration(1, 3) == answer1, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPreviousSubConfiguration(1, 3) == answer1, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousPrecedingConfiguration,
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfiguration,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 
@@ -966,22 +966,22 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousPrecedingConfiguration,
 
     hydra.initialize();
 
-    BOOST_TEST(hydra.getPreviousPrecedingConfiguration(4) == *hydra.getPreviousDeformationGradient(),
+    BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(4) == *hydra.getPreviousDeformationGradient(),
                CHECK_PER_ELEMENT);
 
     floatVector answer1 = {-0.30350143, -0.21223491, 0.47296395,  0.18299993, -0.42974886,
                            -0.06195712, 0.92470041,  -0.36418391, -0.8287879};
 
-    BOOST_TEST(hydra.getPreviousPrecedingConfiguration(2) == answer1, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(2) == answer1, CHECK_PER_ELEMENT);
 
     floatVector answer2 = {-0.15883228, -0.1920217, 0.33770597,  0.15460279, -0.58876502,
                            -0.15099813, 0.69307214, -0.60345639, -0.66103563};
 
-    BOOST_TEST(hydra.getPreviousPrecedingConfiguration(3) == answer2, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(3) == answer2, CHECK_PER_ELEMENT);
 
     floatVector answer3 = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
-    BOOST_TEST(hydra.getPreviousPrecedingConfiguration(0) == answer3, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(0) == answer3, CHECK_PER_ELEMENT);
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousFollowingConfiguration,

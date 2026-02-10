@@ -72,6 +72,30 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
+     *
+     * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
+     * F^{\text{upperIndex-1}}_{\bar{I}I} \f$ \param &lowerIndex: The index of the lower configuration (starts at 0
+     * and goes to numConfigurations - 1) \param &upperIndex: The index of the upper configuration (starts at 0 and
+     * goes to numConfigurations) Note, the configuration indicated by the index is NOT included in the
+     * sub-configuration
+     */
+    secondOrderTensor DeformationBase::getPreviousSubConfiguration(const unsigned int &lowerIndex,
+                                                                   const unsigned int &upperIndex) {
+        return getSubConfiguration<3,3,3>(*get_previousConfigurations(), lowerIndex, upperIndex);
+    }
+
+    /*!
+     * Get the previous sub-configuration preceding but not including the index
+     *
+     * \param &index: The index of the configuration immediately following the sub-configuration
+     */
+    secondOrderTensor DeformationBase::getPreviousPrecedingConfiguration(const unsigned int &index) {
+        return getPreviousSubConfiguration(0, index);
+    }
+
+
+    /*!
      * Get the number of configurations
      */
     unsigned int DeformationBase::getNumConfigurations(){
