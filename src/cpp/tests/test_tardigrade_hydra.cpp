@@ -763,7 +763,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfiguration, *boost::unit_test
     BOOST_TEST(result1 == answer1, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getPrecedingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -804,21 +804,21 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPrecedingConfiguration, *boost::unit_test
 
     hydra.initialize();
 
-    BOOST_TEST(hydra.getPrecedingConfiguration(4) == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPrecedingConfiguration(4) == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
 
     floatVector answer1 = {0.73947165, -0.24328161, -0.68904986, 0.04049558, 0.25403825,
                            -0.1748363, 0.97015752,  -0.04452644, -0.77301275};
 
-    BOOST_TEST(hydra.getPrecedingConfiguration(2) == answer1, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPrecedingConfiguration(2) == answer1, CHECK_PER_ELEMENT);
 
     floatVector answer2 = {0.54568475,  -0.42501821, -0.54244544, -0.01317666, 0.30165847,
                            -0.09442353, 0.80588282,  -0.10806097, -0.42143322};
 
-    BOOST_TEST(hydra.getPrecedingConfiguration(3) == answer2, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPrecedingConfiguration(3) == answer2, CHECK_PER_ELEMENT);
 
     floatVector answer3 = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
-    BOOST_TEST(hydra.getPrecedingConfiguration(0) == answer3, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPrecedingConfiguration(0) == answer3, CHECK_PER_ELEMENT);
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_getFollowingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
@@ -1239,7 +1239,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian2,
                CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getPrecedingConfigurationJacobian,
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 

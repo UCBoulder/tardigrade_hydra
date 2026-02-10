@@ -44,4 +44,13 @@ namespace tardigradeHydra {
         return getSubConfiguration<3,3,3>(*get_configurations(), lowerIndex, upperIndex);
     }
 
+    /*!
+     * Get the sub-configuration preceding but not including the index
+     *
+     * \param &index: The index of the configuration immediately following the sub-configuration
+     */
+    secondOrderTensor DeformationBase::getPrecedingConfiguration(const unsigned int &index) {
+        return getSubConfiguration(0, index);
+    }
+
 }

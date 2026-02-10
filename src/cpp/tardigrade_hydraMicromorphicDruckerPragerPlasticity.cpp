@@ -6143,7 +6143,7 @@ namespace tardigradeHydra {
                     hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
             } else {
-                set_precedingDeformationGradient(hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
+                set_precedingDeformationGradient(hydra->deformation->getPrecedingConfiguration(getPlasticConfigurationIndex()));
             }
         }
 
@@ -6215,7 +6215,7 @@ namespace tardigradeHydra {
                 dPrecedingFdFn = get_SetDataStorage_previousdPrecedingDeformationGradientdFn();
 
             } else {
-                set_precedingDeformationGradient(hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
+                set_precedingDeformationGradient(hydra->deformation->getPrecedingConfiguration(getPlasticConfigurationIndex()));
 
                 dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
 
