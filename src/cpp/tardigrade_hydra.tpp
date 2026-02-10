@@ -38,4 +38,4 @@ namespace tardigradeHydra {
             _failure_output << "\n";
         }
     }
-}
+}  // namespace tardigradeHydra

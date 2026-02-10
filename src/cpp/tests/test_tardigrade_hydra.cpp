@@ -461,7 +461,8 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_decomposeStateVariableVector,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) ==
+                   *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
@@ -633,7 +634,8 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_decomposeStateVariableVector2,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) ==
+                   *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
@@ -674,7 +676,8 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_decomposeStateVariableVector2,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) ==
+                   *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
@@ -1859,12 +1862,14 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getConfiguration, *boost::unit_test::t
 
     hydra.initialize();
 
-    BOOST_TEST(hydra.deformation->getConfiguration(1) == floatVector(hydra.deformation->get_configurations()->begin() + 1 * 9,
-                                                        hydra.deformation->get_configurations()->begin() + 2 * 9),
+    BOOST_TEST(hydra.deformation->getConfiguration(1) ==
+                   floatVector(hydra.deformation->get_configurations()->begin() + 1 * 9,
+                               hydra.deformation->get_configurations()->begin() + 2 * 9),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(hydra.deformation->getPreviousConfiguration(3) == floatVector(hydra.deformation->get_previousConfigurations()->begin() + 3 * 9,
-                                                                hydra.deformation->get_previousConfigurations()->begin() + 4 * 9),
+    BOOST_TEST(hydra.deformation->getPreviousConfiguration(3) ==
+                   floatVector(hydra.deformation->get_previousConfigurations()->begin() + 3 * 9,
+                               hydra.deformation->get_previousConfigurations()->begin() + 4 * 9),
                CHECK_PER_ELEMENT);
 }
 

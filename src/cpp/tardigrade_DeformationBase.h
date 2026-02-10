@@ -14,111 +14,108 @@
 
 namespace tardigradeHydra {
 
-    namespace unit_test{
+    namespace unit_test {
 
-        class DeformationBaseTester; //!< Frient class for DeformationBase unit testing
+        class DeformationBaseTester;  //!< Frient class for DeformationBase unit testing
 
     }
 
     //! The base class for deformations
     class DeformationBase : public CachingDataBase {
+       public:
+        /*!
+         * Constructor of DeformationBase
+         *
+         * \param *_hydra: The containing hydra object
+         */
+        DeformationBase(hydraBase *_hydra = nullptr) : hydra(_hydra) {}
 
-        public:
+        template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+        floatVector getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
+                                        const unsigned int &upperIndex);
 
-            /*!
-             * Constructor of DeformationBase
-             *
-             * \param *_hydra: The containing hydra object
-             */
-            DeformationBase(hydraBase *_hydra=nullptr) : hydra(_hydra) { }
+        template <unsigned int leading_rows, unsigned int size, unsigned int dim>
+        floatVector getSubConfigurationJacobian(const floatVector &configurations, const unsigned int &lowerIndex,
+                                                const unsigned int &upperIndex);
 
-            template<unsigned int leading_rows, unsigned int size, unsigned int dim>
-            floatVector getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
-                                            const unsigned int &upperIndex);
+        secondOrderTensor getSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
 
-            template<unsigned int leading_rows, unsigned int size, unsigned int dim>
-            floatVector getSubConfigurationJacobian(const floatVector  &configurations,
-                                                    const unsigned int &lowerIndex, const unsigned int &upperIndex);
+        secondOrderTensor getPrecedingConfiguration(const unsigned int &index);
 
-            secondOrderTensor getSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
+        secondOrderTensor getFollowingConfiguration(const unsigned int &index);
 
-            secondOrderTensor getPrecedingConfiguration(const unsigned int &index);
+        secondOrderTensor getConfiguration(const unsigned int &index);
 
-            secondOrderTensor getFollowingConfiguration(const unsigned int &index);
+        secondOrderTensor getPreviousSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
 
-            secondOrderTensor getConfiguration(const unsigned int &index);
+        secondOrderTensor getPreviousPrecedingConfiguration(const unsigned int &index);
 
-            secondOrderTensor getPreviousSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
+        secondOrderTensor getPreviousFollowingConfiguration(const unsigned int &index);
 
-            secondOrderTensor getPreviousPrecedingConfiguration(const unsigned int &index);
+        secondOrderTensor getPreviousConfiguration(const unsigned int &index);
 
-            secondOrderTensor getPreviousFollowingConfiguration(const unsigned int &index);
+        floatVector getSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex);
 
-            secondOrderTensor getPreviousConfiguration(const unsigned int &index);
+        floatVector getPrecedingConfigurationJacobian(const unsigned int &index);
 
-            floatVector getSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex);
+        floatVector getFollowingConfigurationJacobian(const unsigned int &index);
 
-            floatVector getPrecedingConfigurationJacobian(const unsigned int &index);
+        floatVector getPreviousSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex);
 
-            floatVector getFollowingConfigurationJacobian(const unsigned int &index);
+        floatVector getPreviousPrecedingConfigurationJacobian(const unsigned int &index);
 
-            floatVector getPreviousSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex);
+        floatVector getPreviousFollowingConfigurationJacobian(const unsigned int &index);
 
-            floatVector getPreviousPrecedingConfigurationJacobian(const unsigned int &index);
+        virtual void calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
+                                                          floatVector &dC1dCn);
 
-            floatVector getPreviousFollowingConfigurationJacobian(const unsigned int &index);
+        // CACHED DATA STORAGE OPERATIONS
+        virtual void addIterationData(dataBase *data) override;
 
-            virtual void calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
-                                                              floatVector &dC1dCn);
+        virtual void addNLStepData(dataBase *data) override;
+        // END CACHED DATA STORAGE OPERATIONS
 
-            // CACHED DATA STORAGE OPERATIONS
-            virtual void addIterationData(dataBase *data) override;
+        // PASS-THROUGH FUNCTIONS
+        unsigned int getNumConfigurations();  // TODO: Extract this from hydra to here
+        // END PASS-THROUGH FUNCTIONS
 
-            virtual void addNLStepData(dataBase *data) override;
-            // END CACHED DATA STORAGE OPERATIONS
+        //! Pointer to the containing hydraBase object
+        hydraBase *hydra;
 
-            // PASS-THROUGH FUNCTIONS
-            unsigned int getNumConfigurations(); //TODO: Extract this from hydra to here
-            // END PASS-THROUGH FUNCTIONS
+       protected:
+        void setFirstConfigurationJacobians();
 
-            //! Pointer to the containing hydraBase object
-            hydraBase *hydra;
+        void setPreviousFirstConfigurationJacobians();
 
-        protected:
+       private:
+        friend class unit_test::DeformationBaseTester;  //!< Friend class which allows modification of private
+                                                        //!< variables. ONLY TO BE USED FOR TESTING!
 
-            void setFirstConfigurationJacobians();
+        //! A pass through function that does nothing
+        void passThrough() {}
 
-            void setPreviousFirstConfigurationJacobians();
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, configurations, floatVector, passThrough)
 
-        private:
-            friend class unit_test::DeformationBaseTester;  //!< Friend class which allows modification of private variables. ONLY
-                                                            //!< TO BE USED FOR TESTING!
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousConfigurations, floatVector, passThrough)
 
-            //! A pass through function that does nothing
-            void passThrough() {}
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, inverseConfigurations, floatVector, passThrough)
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, configurations, floatVector, passThrough)
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousInverseConfigurations, floatVector, passThrough)
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousConfigurations, floatVector, passThrough)
+        TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, set_dF1dF, get_dF1dF, dF1dF, secondOrderTensor,
+                                                         setFirstConfigurationJacobians)
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, inverseConfigurations, floatVector, passThrough)
+        TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, set_dF1dFn, get_dF1dFn, dF1dFn, floatVector,
+                                                         setFirstConfigurationJacobians)
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousInverseConfigurations, floatVector, passThrough)
+        TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dF, get_previousdF1dF, previousdF1dF,
+                                                        secondOrderTensor, setPreviousFirstConfigurationJacobians)
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, set_dF1dF, get_dF1dF, dF1dF, secondOrderTensor,
-                                                             setFirstConfigurationJacobians)
-
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, set_dF1dFn, get_dF1dFn, dF1dFn, floatVector,
-                                                             setFirstConfigurationJacobians)
-
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dF, get_previousdF1dF, previousdF1dF,
-                                                            secondOrderTensor, setPreviousFirstConfigurationJacobians)
-
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn,
-                                                            floatVector, setPreviousFirstConfigurationJacobians)
+        TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn,
+                                                        floatVector, setPreviousFirstConfigurationJacobians)
     };
 
-}
+}  // namespace tardigradeHydra
 
 #include "tardigrade_DeformationBase.tpp"
 

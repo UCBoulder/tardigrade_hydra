@@ -36,7 +36,7 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-#include "tardigrade_CustomErrors.tpp"
 #include "tardigrade_CustomErrors.cpp"
+#include "tardigrade_CustomErrors.tpp"
 
 #endif

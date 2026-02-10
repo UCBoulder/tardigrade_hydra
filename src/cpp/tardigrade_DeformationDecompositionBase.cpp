@@ -1554,7 +1554,7 @@ namespace tardigradeHydra {
             }
 
         } else {
-            std::array<output_type, size * size> Aminus = {};
+            std::array<output_type, size * size> Aminus         = {};
             std::array<output_type, size * size> Aminus_inverse = {};
 
             getNetConfiguration(configurations_begin, configurations_end, std::begin(Aminus), std::end(Aminus));

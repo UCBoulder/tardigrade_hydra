@@ -204,7 +204,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) ==
+                   *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
@@ -401,7 +402,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor2,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) ==
+                   *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
@@ -481,7 +483,8 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor2,
                    *hydra.deformation->get_previousConfigurations(),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) == *hydra.deformation->get_inverseConfigurations(),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(inverseConfigurationsAnswer) ==
+                   *hydra.deformation->get_inverseConfigurations(),
                CHECK_PER_ELEMENT);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(previousInverseConfigurationsAnswer) ==
@@ -1534,9 +1537,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigurat
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1559,9 +1562,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigurat
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1679,9 +1682,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroConf
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1704,9 +1707,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroConf
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1824,9 +1827,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConf
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower + 1, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower + 1, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower + 1, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1849,9 +1852,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConf
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower + 1, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower + 1, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower + 1, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1969,9 +1972,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroCo
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -1995,9 +1998,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroCo
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -2116,9 +2119,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousPrecedingM
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -2142,9 +2145,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousPrecedingM
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -2263,9 +2266,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingM
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower + 1, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower + 1, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower + 1, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -2289,9 +2292,9 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingM
 
         floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations + delta, lower + 1, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations + delta, lower + 1, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(microConfigurations - delta, lower + 1, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(microConfigurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -3990,8 +3993,9 @@ BOOST_AUTO_TEST_CASE(test_updateUnknownVector, *boost::unit_test::tolerance(DEFA
 
         BOOST_TEST(previousFiAnswer == hydra.deformation->getPreviousConfiguration(i + 1), CHECK_PER_ELEMENT);
 
-        BOOST_TEST(previousFiAnswer == floatVector(hydra.deformation->get_previousConfigurations()->begin() + 9 * (i + 1),
-                                                   hydra.deformation->get_previousConfigurations()->begin() + 9 * (i + 2)),
+        BOOST_TEST(previousFiAnswer ==
+                       floatVector(hydra.deformation->get_previousConfigurations()->begin() + 9 * (i + 1),
+                                   hydra.deformation->get_previousConfigurations()->begin() + 9 * (i + 2)),
                    CHECK_PER_ELEMENT);
 
         BOOST_TEST(previousChiiAnswer == hydra.getPreviousMicroConfiguration(i + 1), CHECK_PER_ELEMENT);

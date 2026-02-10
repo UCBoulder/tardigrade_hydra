@@ -1696,8 +1696,8 @@ namespace tardigradeHydra {
                 Gamma = get_SetDataStorage_previousGamma();
 
             } else {
-                deformationGradient1 =
-                    floatVector(hydra->deformation->get_configurations()->begin(), hydra->deformation->get_configurations()->begin() + sot_dim);
+                deformationGradient1 = floatVector(hydra->deformation->get_configurations()->begin(),
+                                                   hydra->deformation->get_configurations()->begin() + sot_dim);
 
                 microDeformation1 = floatVector(hydra->get_microConfigurations()->begin(),
                                                 hydra->get_microConfigurations()->begin() + sot_dim);
@@ -3984,8 +3984,8 @@ namespace tardigradeHydra {
                 dGammadGradChin = get_SetDataStorage_previousdGammadGradChin();
 
             } else {
-                deformationGradient1 =
-                    floatVector(hydra->deformation->get_configurations()->begin(), hydra->deformation->get_configurations()->begin() + sot_dim);
+                deformationGradient1 = floatVector(hydra->deformation->get_configurations()->begin(),
+                                                   hydra->deformation->get_configurations()->begin() + sot_dim);
 
                 microDeformation1 = floatVector(hydra->get_microConfigurations()->begin(),
                                                 hydra->get_microConfigurations()->begin() + sot_dim);

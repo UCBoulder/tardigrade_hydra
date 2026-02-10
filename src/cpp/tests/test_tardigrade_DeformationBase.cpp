@@ -52,18 +52,12 @@ namespace tardigradeHydra {
     namespace unit_test {
 
         class hydraBaseTester {
-
-            public:
-
-                static auto getIterationData(hydraBase &hydra) {
-                    return hydra._iterationData;
-                }
-
+           public:
+            static auto getIterationData(hydraBase &hydra) { return hydra._iterationData; }
         };
 
         class DeformationBaseTester {
            public:
-
             static void checkConfigurations(DeformationBase &deformation) {
                 BOOST_CHECK(&deformation._configurations.second == deformation.get_configurations());
             }
@@ -77,7 +71,8 @@ namespace tardigradeHydra {
             }
 
             static void checkPreviousInverseConfigurations(DeformationBase &deformation) {
-                BOOST_CHECK(&deformation._previousInverseConfigurations.second == deformation.get_previousInverseConfigurations());
+                BOOST_CHECK(&deformation._previousInverseConfigurations.second ==
+                            deformation.get_previousInverseConfigurations());
             }
 
             static void checkdF1dF(hydraBase &hydra, DeformationBase &deformation) {
@@ -91,12 +86,11 @@ namespace tardigradeHydra {
                 BOOST_CHECK(std::find(iterationData.begin(), iterationData.end(), &deformation._dF1dFn) !=
                             iterationData.end());
             }
-
         };
 
-    }
+    }  // namespace unit_test
 
-}
+}  // namespace tardigradeHydra
 
 BOOST_AUTO_TEST_CASE(test_DeformationBase_get_configurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::DeformationBase deformation;
@@ -104,13 +98,15 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_get_configurations, *boost::unit_test:
     tardigradeHydra::unit_test::DeformationBaseTester::checkConfigurations(deformation);
 }
 
-BOOST_AUTO_TEST_CASE(test_DeformationBase_get_previousConfigurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_previousConfigurations,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::DeformationBase deformation;
 
     tardigradeHydra::unit_test::DeformationBaseTester::checkPreviousConfigurations(deformation);
 }
 
-BOOST_AUTO_TEST_CASE(test_DeformationBase_get_inverseConfigurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_inverseConfigurations,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::DeformationBase deformation;
 
     tardigradeHydra::unit_test::DeformationBaseTester::checkInverseConfigurations(deformation);
@@ -133,10 +129,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfiguration, *boost::unit_test
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -169,14 +166,15 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfiguration, *boost::unit_test
     BOOST_TEST(result == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
 
     tardigradeHydra::floatVector answer1 = {2.24332648, 1.48246714, 2.02801682, 1.50380989, 2.98203598,
-                           2.08079721, 1.58939152, 1.2551092,  2.38201794};
+                                            2.08079721, 1.58939152, 1.2551092,  2.38201794};
 
     auto result1 = hydra.deformation->getSubConfiguration(1, 3);
 
     BOOST_TEST(result1 == answer1, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::floatType time = 1.1;
 
     tardigradeHydra::floatType deltaTime = 2.2;
@@ -186,10 +184,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration, *boost::uni
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -220,12 +219,12 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration, *boost::uni
     BOOST_TEST(hydra.deformation->getPrecedingConfiguration(4) == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
 
     tardigradeHydra::floatVector answer1 = {0.73947165, -0.24328161, -0.68904986, 0.04049558, 0.25403825,
-                           -0.1748363, 0.97015752,  -0.04452644, -0.77301275};
+                                            -0.1748363, 0.97015752,  -0.04452644, -0.77301275};
 
     BOOST_TEST(hydra.deformation->getPrecedingConfiguration(2) == answer1, CHECK_PER_ELEMENT);
 
     tardigradeHydra::floatVector answer2 = {0.54568475,  -0.42501821, -0.54244544, -0.01317666, 0.30165847,
-                           -0.09442353, 0.80588282,  -0.10806097, -0.42143322};
+                                            -0.09442353, 0.80588282,  -0.10806097, -0.42143322};
 
     BOOST_TEST(hydra.deformation->getPrecedingConfiguration(3) == answer2, CHECK_PER_ELEMENT);
 
@@ -234,7 +233,8 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration, *boost::uni
     BOOST_TEST(hydra.deformation->getPrecedingConfiguration(0) == answer3, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::floatType time = 1.1;
 
     tardigradeHydra::floatType deltaTime = 2.2;
@@ -244,10 +244,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration, *boost::uni
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -276,12 +277,12 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration, *boost::uni
     hydra.initialize();
 
     tardigradeHydra::floatVector answer1 = {2.09953091, 1.83604029, 2.3712323,  0.98756433, 2.58928197,
-                           1.05684715, 1.33422708, 1.67694162, 2.96443669};
+                                            1.05684715, 1.33422708, 1.67694162, 2.96443669};
 
     BOOST_TEST(hydra.deformation->getFollowingConfiguration(1) == answer1, CHECK_PER_ELEMENT);
 
     tardigradeHydra::floatVector answer2 = {1.42635131, 0.89338916, 0.94416002, 0.50183668, 1.62395295,
-                           0.1156184,  0.31728548, 0.41482621, 1.86630916};
+                                            0.1156184,  0.31728548, 0.41482621, 1.86630916};
 
     BOOST_TEST(hydra.deformation->getFollowingConfiguration(2) == answer2, CHECK_PER_ELEMENT);
 
@@ -290,7 +291,8 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration, *boost::uni
     BOOST_TEST(hydra.deformation->getFollowingConfiguration(3) == answer3, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfiguration,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::floatType time = 1.1;
 
     tardigradeHydra::floatType deltaTime = 2.2;
@@ -300,10 +302,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfiguration, *boost::u
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -330,10 +333,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfiguration, *boost::u
 
     hydra.initialize();
 
-    BOOST_TEST(hydra.deformation->getPreviousSubConfiguration(0, 4) == *hydra.getPreviousDeformationGradient(), CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getPreviousSubConfiguration(0, 4) == *hydra.getPreviousDeformationGradient(),
+               CHECK_PER_ELEMENT);
 
     tardigradeHydra::floatVector answer1 = {2.24332648, 1.48246714, 2.02801682, 1.50380989, 2.98203598,
-                           2.08079721, 1.58939152, 1.2551092,  2.38201794};
+                                            2.08079721, 1.58939152, 1.2551092,  2.38201794};
 
     BOOST_TEST(hydra.deformation->getPreviousSubConfiguration(1, 3) == answer1, CHECK_PER_ELEMENT);
 }
@@ -349,10 +353,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfiguration,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -383,12 +388,12 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfiguration,
                CHECK_PER_ELEMENT);
 
     tardigradeHydra::floatVector answer1 = {-0.30350143, -0.21223491, 0.47296395,  0.18299993, -0.42974886,
-                           -0.06195712, 0.92470041,  -0.36418391, -0.8287879};
+                                            -0.06195712, 0.92470041,  -0.36418391, -0.8287879};
 
     BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(2) == answer1, CHECK_PER_ELEMENT);
 
     tardigradeHydra::floatVector answer2 = {-0.15883228, -0.1920217, 0.33770597,  0.15460279, -0.58876502,
-                           -0.15099813, 0.69307214, -0.60345639, -0.66103563};
+                                            -0.15099813, 0.69307214, -0.60345639, -0.66103563};
 
     BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(3) == answer2, CHECK_PER_ELEMENT);
 
@@ -408,10 +413,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfiguration,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -439,12 +445,12 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfiguration,
     hydra.initialize();
 
     tardigradeHydra::floatVector answer1 = {2.09953091, 1.83604029, 2.3712323,  0.98756433, 2.58928197,
-                           1.05684715, 1.33422708, 1.67694162, 2.96443669};
+                                            1.05684715, 1.33422708, 1.67694162, 2.96443669};
 
     BOOST_TEST(hydra.deformation->getPreviousFollowingConfiguration(1) == answer1, CHECK_PER_ELEMENT);
 
     tardigradeHydra::floatVector answer2 = {1.42635131, 0.89338916, 0.94416002, 0.50183668, 1.62395295,
-                           0.1156184,  0.31728548, 0.41482621, 1.86630916};
+                                            0.1156184,  0.31728548, 0.41482621, 1.86630916};
 
     BOOST_TEST(hydra.deformation->getPreviousFollowingConfiguration(2) == answer2, CHECK_PER_ELEMENT);
 
@@ -453,7 +459,8 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfiguration,
     BOOST_TEST(hydra.deformation->getPreviousFollowingConfiguration(3) == answer3, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::floatType time = 1.1;
 
     tardigradeHydra::floatType deltaTime = 2.2;
@@ -463,10 +470,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian, *boost::u
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -514,16 +522,16 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian, *boost::u
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    auto result = hydra.deformation->getSubConfigurationJacobian<3,3,3>(configurations, lower, upper);
+    auto result = hydra.deformation->getSubConfigurationJacobian<3, 3, 3>(configurations, lower, upper);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == result, CHECK_PER_ELEMENT);
 
@@ -539,16 +547,16 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian, *boost::u
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    result = hydra.deformation->getSubConfigurationJacobian<3,3,3>(configurations, lower, upper);
+    result = hydra.deformation->getSubConfigurationJacobian<3, 3, 3>(configurations, lower, upper);
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == result, CHECK_PER_ELEMENT);
 }
@@ -564,10 +572,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian2,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -615,16 +624,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian2,
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getSubConfigurationJacobian(lower, upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getSubConfigurationJacobian(lower, upper),
                CHECK_PER_ELEMENT);
 
     lower = 1;
@@ -639,16 +649,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian2,
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getSubConfigurationJacobian(lower, upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getSubConfigurationJacobian(lower, upper),
                CHECK_PER_ELEMENT);
 }
 
@@ -663,10 +674,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -714,16 +726,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getPrecedingConfigurationJacobian(upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPrecedingConfigurationJacobian(upper),
                CHECK_PER_ELEMENT);
 
     lower = 0;
@@ -738,16 +751,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getPrecedingConfigurationJacobian(upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPrecedingConfigurationJacobian(upper),
                CHECK_PER_ELEMENT);
 }
 
@@ -762,10 +776,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfigurationJacobian,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -813,16 +828,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfigurationJacobian,
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower + 1, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower + 1, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower + 1, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getFollowingConfigurationJacobian(lower),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getFollowingConfigurationJacobian(lower),
                CHECK_PER_ELEMENT);
 
     lower = 2;
@@ -837,16 +853,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfigurationJacobian,
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower + 1, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower + 1, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower + 1, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getFollowingConfigurationJacobian(lower),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getFollowingConfigurationJacobian(lower),
                CHECK_PER_ELEMENT);
 }
 
@@ -861,10 +878,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfigurationJacobian,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -913,9 +931,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfigurationJacobian,
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -938,9 +956,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfigurationJacobian,
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
@@ -963,10 +981,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfigurationJacob
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -1014,16 +1033,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfigurationJacob
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getPreviousPrecedingConfigurationJacobian(upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousPrecedingConfigurationJacobian(upper),
                CHECK_PER_ELEMENT);
 
     lower = 0;
@@ -1038,16 +1058,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfigurationJacob
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getPreviousPrecedingConfigurationJacobian(upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousPrecedingConfigurationJacobian(upper),
                CHECK_PER_ELEMENT);
 }
 
@@ -1062,10 +1083,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfigurationJacob
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
     tardigradeHydra::floatVector additionalDOF               = {};
 
     tardigradeHydra::floatVector previousAdditionalDOF = {};
@@ -1113,16 +1135,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfigurationJacob
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower + 1, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower + 1, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower + 1, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getPreviousFollowingConfigurationJacobian(lower),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousFollowingConfigurationJacobian(lower),
                CHECK_PER_ELEMENT);
 
     lower = 2;
@@ -1137,16 +1160,17 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfigurationJacob
 
         tardigradeHydra::floatVector Fscm;
 
-        Fscp = hydra.deformation->getSubConfiguration<3,3,3>(configurations + delta, lower + 1, upper);
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower + 1, upper);
 
-        Fscm = hydra.deformation->getSubConfiguration<3,3,3>(configurations - delta, lower + 1, upper);
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower + 1, upper);
 
         for (unsigned int j = 0; j < (dimension * dimension); j++) {
             gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getPreviousFollowingConfigurationJacobian(lower),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousFollowingConfigurationJacobian(lower),
                CHECK_PER_ELEMENT);
 }
 
@@ -1161,10 +1185,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setPreviousFirstConfigurationGradients
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
@@ -1189,10 +1214,12 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setPreviousFirstConfigurationGradients
 
     tardigradeHydra::floatType eps = 1e-6;
 
-    tardigradeHydra::floatMatrix previousdF1dF_answer(deformationGradient.size(), tardigradeHydra::floatVector(deformationGradient.size(), 0));
+    tardigradeHydra::floatMatrix previousdF1dF_answer(deformationGradient.size(),
+                                                      tardigradeHydra::floatVector(deformationGradient.size(), 0));
 
-    tardigradeHydra::floatMatrix previousdF1dFn_answer(deformationGradient.size(),
-                                      tardigradeHydra::floatVector(deformationGradient.size() * (numConfigurations - 1), 0));
+    tardigradeHydra::floatMatrix previousdF1dFn_answer(
+        deformationGradient.size(),
+        tardigradeHydra::floatVector(deformationGradient.size() * (numConfigurations - 1), 0));
 
     for (unsigned int i = 0; i < previousDeformationGradient.size(); i++) {
         tardigradeHydra::floatVector delta(previousDeformationGradient.size(), 0);
@@ -1214,10 +1241,10 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setPreviousFirstConfigurationGradients
         tardigradeHydra::floatVector F1_p, F1_m;
 
         F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_previousConfigurations()->begin(),
-                           hydra_p.deformation->get_previousConfigurations()->begin() + 9);
+                                            hydra_p.deformation->get_previousConfigurations()->begin() + 9);
 
         F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_previousConfigurations()->begin(),
-                           hydra_m.deformation->get_previousConfigurations()->begin() + 9);
+                                            hydra_m.deformation->get_previousConfigurations()->begin() + 9);
 
         for (unsigned int j = 0; j < F1_p.size(); j++) {
             previousdF1dF_answer[j][i] = (F1_p[j] - F1_m[j]) / (2 * delta[i]);
@@ -1247,10 +1274,10 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setPreviousFirstConfigurationGradients
         tardigradeHydra::floatVector F1_p, F1_m;
 
         F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_previousConfigurations()->begin(),
-                           hydra_p.deformation->get_previousConfigurations()->begin() + 9);
+                                            hydra_p.deformation->get_previousConfigurations()->begin() + 9);
 
         F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_previousConfigurations()->begin(),
-                           hydra_m.deformation->get_previousConfigurations()->begin() + 9);
+                                            hydra_m.deformation->get_previousConfigurations()->begin() + 9);
 
         for (unsigned int j = 0; j < F1_p.size(); j++) {
             previousdF1dFn_answer[j][i] = (F1_p[j] - F1_m[j]) / (2 * delta[i]);
@@ -1272,10 +1299,11 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
@@ -1300,10 +1328,12 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
 
     tardigradeHydra::floatType eps = 1e-6;
 
-    tardigradeHydra::floatMatrix dF1dF_answer(deformationGradient.size(), tardigradeHydra::floatVector(deformationGradient.size(), 0));
+    tardigradeHydra::floatMatrix dF1dF_answer(deformationGradient.size(),
+                                              tardigradeHydra::floatVector(deformationGradient.size(), 0));
 
-    tardigradeHydra::floatMatrix dF1dFn_answer(deformationGradient.size(),
-                              tardigradeHydra::floatVector(deformationGradient.size() * (numConfigurations - 1), 0));
+    tardigradeHydra::floatMatrix dF1dFn_answer(
+        deformationGradient.size(),
+        tardigradeHydra::floatVector(deformationGradient.size() * (numConfigurations - 1), 0));
 
     for (unsigned int i = 0; i < deformationGradient.size(); i++) {
         tardigradeHydra::floatVector delta(deformationGradient.size(), 0);
@@ -1326,16 +1356,19 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
 
         tardigradeHydra::floatVector F1_p, F1_m;
 
-        F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_configurations()->begin(), hydra_p.deformation->get_configurations()->begin() + 9);
+        F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_configurations()->begin(),
+                                            hydra_p.deformation->get_configurations()->begin() + 9);
 
-        F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_configurations()->begin(), hydra_m.deformation->get_configurations()->begin() + 9);
+        F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_configurations()->begin(),
+                                            hydra_m.deformation->get_configurations()->begin() + 9);
 
         for (unsigned int j = 0; j < F1_p.size(); j++) {
             dF1dF_answer[j][i] = (F1_p[j] - F1_m[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dF1dF_answer) == *hydra.deformation->get_dF1dF(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dF1dF_answer) == *hydra.deformation->get_dF1dF(),
+               CHECK_PER_ELEMENT);
 
     tardigradeHydra::unit_test::DeformationBaseTester::checkdF1dF(hydra, *hydra.deformation);
 
@@ -1358,16 +1391,19 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
 
         tardigradeHydra::floatVector F1_p, F1_m;
 
-        F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_configurations()->begin(), hydra_p.deformation->get_configurations()->begin() + 9);
+        F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_configurations()->begin(),
+                                            hydra_p.deformation->get_configurations()->begin() + 9);
 
-        F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_configurations()->begin(), hydra_m.deformation->get_configurations()->begin() + 9);
+        F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_configurations()->begin(),
+                                            hydra_m.deformation->get_configurations()->begin() + 9);
 
         for (unsigned int j = 0; j < F1_p.size(); j++) {
             dF1dFn_answer[j][i] = (F1_p[j] - F1_m[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dF1dFn_answer) == *hydra.deformation->get_dF1dFn(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dF1dFn_answer) == *hydra.deformation->get_dF1dFn(),
+               CHECK_PER_ELEMENT);
 
     tardigradeHydra::unit_test::DeformationBaseTester::checkdF1dFn(hydra, *hydra.deformation);
 }

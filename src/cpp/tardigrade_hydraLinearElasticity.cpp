@@ -46,8 +46,9 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 auto previousFe = get_SetDataStorage_previousFe();
 
-                *previousFe.value = secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin(),
-                                                      hydra->deformation->get_previousConfigurations()->begin() + sot_dim);
+                *previousFe.value =
+                    secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin(),
+                                      hydra->deformation->get_previousConfigurations()->begin() + sot_dim);
 
             } else {
                 auto Fe = get_SetDataStorage_Fe();

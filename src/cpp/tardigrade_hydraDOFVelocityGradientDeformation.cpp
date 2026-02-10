@@ -83,8 +83,9 @@ namespace tardigradeHydra {
                     hydra->deformation->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
 
             } else {
-                auto precedingDeformationGradient   = get_SetDataStorage_precedingDeformationGradient();
-                *precedingDeformationGradient.value = hydra->deformation->getPrecedingConfiguration(getDOFConfigurationIndex());
+                auto precedingDeformationGradient = get_SetDataStorage_precedingDeformationGradient();
+                *precedingDeformationGradient.value =
+                    hydra->deformation->getPrecedingConfiguration(getDOFConfigurationIndex());
             }
         }
 
@@ -134,11 +135,12 @@ namespace tardigradeHydra {
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->deformation->get_dF1dFn())
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dpFdFs =
-                                                 hydra->deformation->getPrecedingConfigurationJacobian(getDOFConfigurationIndex()))
+                TARDIGRADE_ERROR_TOOLS_CATCH(
+                    dpFdFs = hydra->deformation->getPrecedingConfigurationJacobian(getDOFConfigurationIndex()))
 
-                auto precedingDeformationGradient   = get_SetDataStorage_precedingDeformationGradient();
-                *precedingDeformationGradient.value = hydra->deformation->getPrecedingConfiguration(getDOFConfigurationIndex());
+                auto precedingDeformationGradient = get_SetDataStorage_precedingDeformationGradient();
+                *precedingDeformationGradient.value =
+                    hydra->deformation->getPrecedingConfiguration(getDOFConfigurationIndex());
 
                 dpFdF = get_SetDataStorage_dPrecedingDeformationGradientdDeformationGradient();
 
@@ -640,8 +642,8 @@ namespace tardigradeHydra {
             residual.zero(sot_dim + 2);
 
             std::transform(std::begin(*get_dofDeformationGradient()), std::end(*get_dofDeformationGradient()),
-                           hydra->deformation->get_configurations()->begin() + dofConfigurationIndex * sot_dim, residual.begin(),
-                           std::minus<>());
+                           hydra->deformation->get_configurations()->begin() + dofConfigurationIndex * sot_dim,
+                           residual.begin(), std::minus<>());
 
             TARDIGRADE_ERROR_TOOLS_CHECK(getStateVariableIndices()->size() == 2,
                                          "The state variable indices must have a size of 2 instead of " +

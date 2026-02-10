@@ -7,6 +7,7 @@
  */
 
 #include "tardigrade_DeformationBase.h"
+
 #include "tardigrade_hydra.h"
 
 namespace tardigradeHydra {
@@ -40,8 +41,9 @@ namespace tardigradeHydra {
      * goes to numConfigurations) Note, the configuration indicated by the index is NOT included in the
      * sub-configuration
      */
-    secondOrderTensor DeformationBase::getSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        return getSubConfiguration<3,3,3>(*get_configurations(), lowerIndex, upperIndex);
+    secondOrderTensor DeformationBase::getSubConfiguration(const unsigned int &lowerIndex,
+                                                           const unsigned int &upperIndex) {
+        return getSubConfiguration<3, 3, 3>(*get_configurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -82,7 +84,7 @@ namespace tardigradeHydra {
      */
     secondOrderTensor DeformationBase::getPreviousSubConfiguration(const unsigned int &lowerIndex,
                                                                    const unsigned int &upperIndex) {
-        return getSubConfiguration<3,3,3>(*get_previousConfigurations(), lowerIndex, upperIndex);
+        return getSubConfiguration<3, 3, 3>(*get_previousConfigurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -124,8 +126,9 @@ namespace tardigradeHydra {
      * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
      *   Note, the configuration indicated by the index is NOT included in the sub-configuration
      */
-    floatVector DeformationBase::getSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        return getSubConfigurationJacobian<3,3,3>(*get_configurations(), lowerIndex, upperIndex);
+    floatVector DeformationBase::getSubConfigurationJacobian(const unsigned int &lowerIndex,
+                                                             const unsigned int &upperIndex) {
+        return getSubConfigurationJacobian<3, 3, 3>(*get_configurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -151,7 +154,7 @@ namespace tardigradeHydra {
     /*!
      * Get the number of configurations
      */
-    unsigned int DeformationBase::getNumConfigurations(){
+    unsigned int DeformationBase::getNumConfigurations() {
         TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The containing hydraBase class has not been set")
         return hydra->getNumConfigurations();
     }
@@ -169,8 +172,8 @@ namespace tardigradeHydra {
      *   Note, the configuration indicated by the index is NOT included in the sub-configuration
      */
     floatVector DeformationBase::getPreviousSubConfigurationJacobian(const unsigned int &lowerIndex,
-                                                               const unsigned int &upperIndex) {
-        return getSubConfigurationJacobian<3,3,3>(*get_previousConfigurations(), lowerIndex, upperIndex);
+                                                                     const unsigned int &upperIndex) {
+        return getSubConfigurationJacobian<3, 3, 3>(*get_previousConfigurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -192,13 +195,13 @@ namespace tardigradeHydra {
      *
      * whre \f$C^n = C^2, C^3, \cdots \f$
      */
-    void DeformationBase::calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
-                                                         floatVector &dC1dCn) {
+    void DeformationBase::calculateFirstConfigurationJacobians(const floatVector &configurations,
+                                                               fourthOrderTensor &dC1dC, floatVector &dC1dCn) {
         constexpr unsigned int dim         = 3;
         constexpr unsigned int sot_dim     = dim * dim;
         auto                   num_configs = getNumConfigurations();
 
-        secondOrderTensor fullConfiguration = getSubConfiguration<3,3,3>(configurations, 0, num_configs);
+        secondOrderTensor fullConfiguration = getSubConfiguration<3, 3, 3>(configurations, 0, num_configs);
 
         dC1dC  = secondOrderTensor(sot_dim * sot_dim, 0);
         dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
@@ -250,4 +253,4 @@ namespace tardigradeHydra {
         return getPreviousSubConfigurationJacobian(0, index);
     }
 
-}
+}  // namespace tardigradeHydra

@@ -127,7 +127,7 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-#include "tardigrade_MatrixMap.tpp"
 #include "tardigrade_MatrixMap.cpp"
+#include "tardigrade_MatrixMap.tpp"
 
 #endif

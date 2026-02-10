@@ -619,8 +619,8 @@ namespace tardigradeHydra {
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->deformation->get_previousdF1dFn())
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(
-                    dpFdFs = hydra->deformation->getPreviousPrecedingConfigurationJacobian(getMassChangeConfigurationIndex()))
+                TARDIGRADE_ERROR_TOOLS_CATCH(dpFdFs = hydra->deformation->getPreviousPrecedingConfigurationJacobian(
+                                                 getMassChangeConfigurationIndex()))
 
                 auto precedingDeformationGradient = get_SetDataStorage_previousPrecedingDeformationGradient();
                 *precedingDeformationGradient.value =
@@ -1259,7 +1259,8 @@ namespace tardigradeHydra {
             *residual.value =
                 *get_massChangeDeformationGradient() -
                 secondOrderTensor(hydra->deformation->get_configurations()->begin() + massChangeConfigurationIndex * 9,
-                                  hydra->deformation->get_configurations()->begin() + (massChangeConfigurationIndex + 1) * 9);
+                                  hydra->deformation->get_configurations()->begin() +
+                                      (massChangeConfigurationIndex + 1) * 9);
         }
 
         void residual::setJacobian() {

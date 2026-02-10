@@ -687,7 +687,7 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-#include "tardigrade_SetDataStorage.tpp"
 #include "tardigrade_SetDataStorage.cpp"
+#include "tardigrade_SetDataStorage.tpp"
 
 #endif

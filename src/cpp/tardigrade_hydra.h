@@ -23,8 +23,8 @@
 
 #include "tardigrade_CoreDefinitions.h"
 #include "tardigrade_CustomErrors.h"
-#include "tardigrade_MatrixMap.h"
 #include "tardigrade_DeformationBase.h"
+#include "tardigrade_MatrixMap.h"
 #include "tardigrade_ResidualBase.h"
 #include "tardigrade_SetDataStorage.h"
 #include "tardigrade_SolverBase.h"
@@ -560,7 +560,6 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, setConstraintJacobians, getConstraintJacobians,
                                                          constraintJacobians, floatVector, setConstraintJacobians)
-
     };
 
 }  // namespace tardigradeHydra

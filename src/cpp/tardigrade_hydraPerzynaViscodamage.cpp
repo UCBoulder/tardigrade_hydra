@@ -136,8 +136,9 @@ namespace tardigradeHydra {
             auto Fd = get_SetDataStorage_damageDeformationGradient();
 
             // Get the elastic deformation gradient
-            floatVector Fe = floatVector(hydra->deformation->get_configurations()->begin() + sot_dim * elastic_config_index,
-                                         hydra->deformation->get_configurations()->begin() + sot_dim * (elastic_config_index + 1));
+            floatVector Fe =
+                floatVector(hydra->deformation->get_configurations()->begin() + sot_dim * elastic_config_index,
+                            hydra->deformation->get_configurations()->begin() + sot_dim * (elastic_config_index + 1));
 
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
@@ -207,8 +208,9 @@ namespace tardigradeHydra {
             auto Fd = get_SetDataStorage_damageDeformationGradient();
 
             // Get the elastic deformation gradient
-            floatVector Fe = floatVector(hydra->deformation->get_configurations()->begin() + sot_dim * elastic_config_index,
-                                         hydra->deformation->get_configurations()->begin() + sot_dim * (elastic_config_index + 1));
+            floatVector Fe =
+                floatVector(hydra->deformation->get_configurations()->begin() + sot_dim * elastic_config_index,
+                            hydra->deformation->get_configurations()->begin() + sot_dim * (elastic_config_index + 1));
 
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
@@ -557,8 +559,8 @@ namespace tardigradeHydra {
             residual.zero(getNumEquations());
 
             for (unsigned int i = 0; i < sot_dim; i++) {
-                (*residual.value)[i] =
-                    hydra->deformation->getConfiguration(getDamageConfigurationIndex())[i] - (*get_damageDeformationGradient())[i];
+                (*residual.value)[i] = hydra->deformation->getConfiguration(getDamageConfigurationIndex())[i] -
+                                       (*get_damageDeformationGradient())[i];
             }
 
             for (unsigned int i = 0; i < num_isvs; i++) {
