@@ -1310,7 +1310,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.getPrecedingConfigurationJacobian(upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getPrecedingConfigurationJacobian(upper),
                CHECK_PER_ELEMENT);
 
     lower = 0;
@@ -1334,7 +1334,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.getPrecedingConfigurationJacobian(upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getPrecedingConfigurationJacobian(upper),
                CHECK_PER_ELEMENT);
 }
 
