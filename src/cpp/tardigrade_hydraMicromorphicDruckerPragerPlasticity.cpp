@@ -3183,7 +3183,7 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 stress = hydra->getPreviousStress();
 
-                Fp = hydra->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getPreviousFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -3537,7 +3537,7 @@ namespace tardigradeHydra {
                 dChipdSubChis =
                     hydra->getPreviousFollowingMicroConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                Fp = hydra->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getPreviousFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 

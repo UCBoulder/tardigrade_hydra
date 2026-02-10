@@ -1997,7 +1997,7 @@ namespace tardigradeHydra {
 
                 Gamma = get_previousGamma();
 
-                followingConfiguration = hydra->getPreviousFollowingConfiguration(0);
+                followingConfiguration = hydra->deformation->getPreviousFollowingConfiguration(0);
 
                 followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration(0);
 
@@ -2490,7 +2490,7 @@ namespace tardigradeHydra {
 
                 dChiFollowdChis = hydra->getPreviousFollowingMicroConfigurationJacobian(0);
 
-                followingConfiguration = hydra->getPreviousFollowingConfiguration(0);
+                followingConfiguration = hydra->deformation->getPreviousFollowingConfiguration(0);
 
                 followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration(0);
 

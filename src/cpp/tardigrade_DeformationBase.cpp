@@ -94,6 +94,14 @@ namespace tardigradeHydra {
         return getPreviousSubConfiguration(0, index);
     }
 
+    /*!
+     * Get the previous sub-configuration following but not including the index
+     *
+     * \param &index: The index of the current configuration immediately before the sub-configuration
+     */
+    secondOrderTensor DeformationBase::getPreviousFollowingConfiguration(const unsigned int &index) {
+        return getPreviousSubConfiguration(index + 1, getNumConfigurations());
+    }
 
     /*!
      * Get the number of configurations
