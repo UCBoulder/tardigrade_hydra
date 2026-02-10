@@ -184,6 +184,39 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get the Jacobian of the first configuration w.r.t. the total mapping and the remaining configurations.
+     *
+     * \param &configurations: The configurations which describe the mapping from the current to the reference
+     * configuration \param &dC1dC: The Jacobian of the first entry w.r.t. the total \param &dC1dCn: The Jacobian of
+     * the first entry w.r.t. the remaining terms
+     *
+     * whre \f$C^n = C^2, C^3, \cdots \f$
+     */
+    void DeformationBase::calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
+                                                         floatVector &dC1dCn) {
+        constexpr unsigned int dim         = 3;
+        constexpr unsigned int sot_dim     = dim * dim;
+        auto                   num_configs = getNumConfigurations();
+
+        secondOrderTensor fullConfiguration = getSubConfiguration<3,3,3>(configurations, 0, num_configs);
+
+        dC1dC  = secondOrderTensor(sot_dim * sot_dim, 0);
+        dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
+
+        DeformationDecompositionBase<dim, dim, dim> decomposition;
+        decomposition.solveForLeadingConfigurationTotalConfigurationJacobian(std::begin(fullConfiguration),
+                                                                             std::end(fullConfiguration),
+                                                                             std::begin(configurations) + sot_dim,
+                                                                             std::end(configurations),
+                                                                             std::begin(dC1dC), std::end(dC1dC));
+        decomposition.solveForLeadingConfigurationConfigurationJacobian(std::begin(fullConfiguration),
+                                                                        std::end(fullConfiguration),
+                                                                        std::begin(configurations) + sot_dim,
+                                                                        std::end(configurations), std::begin(dC1dCn),
+                                                                        std::end(dC1dCn));
+    }
+
+    /*!
      * Get the jacobian of the previous sub-configuration preceding but not including the index with
      * respect to the previous configurations.
      *

@@ -68,6 +68,9 @@ namespace tardigradeHydra {
 
             floatVector getPreviousFollowingConfigurationJacobian(const unsigned int &index);
 
+            virtual void calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
+                                                              floatVector &dC1dCn);
+
             // CACHED DATA STORAGE OPERATIONS
             virtual void addIterationData(dataBase *data) override;
 

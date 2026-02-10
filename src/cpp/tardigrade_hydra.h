@@ -348,9 +348,6 @@ namespace tardigradeHydra {
 
         virtual void updateUnknownVector(const floatVector &newUnknownVector);
 
-        virtual void calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
-                                                          floatVector &dC1dCn);
-
         virtual void setScaledQuantities();
 
         void unexpectedError();

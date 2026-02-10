@@ -533,7 +533,7 @@ namespace tardigradeHydra {
 
         auto dChi1dChin = get_SetDataStorage_dChi1dChin();
 
-        calculateFirstConfigurationJacobians(*get_microConfigurations(), *dChi1dChi.value, *dChi1dChin.value);
+        deformation->calculateFirstConfigurationJacobians(*get_microConfigurations(), *dChi1dChi.value, *dChi1dChin.value);
     }
 
     void hydraBaseMicromorphic::setPreviousFirstMicroConfigurationJacobians() {
@@ -546,7 +546,7 @@ namespace tardigradeHydra {
 
         auto previousdChi1dChin = get_SetDataStorage_previousdChi1dChin();
 
-        calculateFirstConfigurationJacobians(*get_previousMicroConfigurations(), *previousdChi1dChi.value,
+        deformation->calculateFirstConfigurationJacobians(*get_previousMicroConfigurations(), *previousdChi1dChi.value,
                                              *previousdChi1dChin.value);
     }
 
