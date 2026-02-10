@@ -180,8 +180,6 @@ namespace tardigradeHydra {
         //! Get the absolute tolerance
         constexpr floatType getAbsoluteTolerance() { return _tola; }
 
-        floatVector getPreviousFollowingConfigurationJacobian(const unsigned int &index);
-
         virtual void setResidualClasses();
 
         void setResidualClasses(std::vector<ResidualBase<hydraBase> *> &residualClasses);
