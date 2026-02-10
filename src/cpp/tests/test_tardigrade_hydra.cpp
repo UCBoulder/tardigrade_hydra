@@ -1040,7 +1040,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfiguration,
     BOOST_TEST(hydra.deformation->getPreviousFollowingConfiguration(3) == answer3, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -1140,7 +1140,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian, *boost::unit_te
     BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == result, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian2,
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian2,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 
@@ -1211,7 +1211,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian2,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.getSubConfigurationJacobian(lower, upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getSubConfigurationJacobian(lower, upper),
                CHECK_PER_ELEMENT);
 
     lower = 1;
@@ -1235,7 +1235,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfigurationJacobian2,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.getSubConfigurationJacobian(lower, upper),
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == hydra.deformation->getSubConfigurationJacobian(lower, upper),
                CHECK_PER_ELEMENT);
 }
 
