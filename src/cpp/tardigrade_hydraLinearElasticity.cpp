@@ -83,9 +83,9 @@ namespace tardigradeHydra {
 
                 auto previousdFedFn = get_SetDataStorage_previousdFedFn();
 
-                *previousdFedF.value = *hydra->get_previousdF1dF();
+                *previousdFedF.value = *hydra->deformation->get_previousdF1dF();
 
-                *previousdFedFn.value = *hydra->get_previousdF1dFn();
+                *previousdFedFn.value = *hydra->deformation->get_previousdF1dFn();
 
             } else {
                 auto dFedF = get_SetDataStorage_dFedF();

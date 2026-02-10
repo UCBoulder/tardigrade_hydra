@@ -506,8 +506,6 @@ namespace tardigradeHydra {
         //! The total derivative of the unknown vector w.r.t. the additional dof
         DataStorage<floatVector> _flatdXdAdditionalDOF;
 
-        void setPreviousFirstConfigurationJacobians();
-
         void resetIterationData();
 
         void resetNLStepData();
@@ -563,11 +561,6 @@ namespace tardigradeHydra {
         TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, setConstraintJacobians, getConstraintJacobians,
                                                          constraintJacobians, floatVector, setConstraintJacobians)
 
-        TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dF, get_previousdF1dF, previousdF1dF,
-                                                        secondOrderTensor, setPreviousFirstConfigurationJacobians)
-
-        TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn,
-                                                        floatVector, setPreviousFirstConfigurationJacobians)
     };
 
 }  // namespace tardigradeHydra

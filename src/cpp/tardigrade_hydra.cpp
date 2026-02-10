@@ -480,18 +480,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Set the Jacobians of the previous first configuration w.r.t. the total configuration and the remaining
-     * sub-configurations
-     */
-    void hydraBase::setPreviousFirstConfigurationJacobians() {
-        auto dF1dF = get_SetDataStorage_previousdF1dF();
-
-        auto dF1dFn = get_SetDataStorage_previousdF1dFn();
-
-        deformation->calculateFirstConfigurationJacobians(*deformation->get_previousConfigurations(), *dF1dF.value, *dF1dFn.value);
-    }
-
-    /*!
      * Reset the iteration data to the new base state
      */
     void hydraBase::resetIterationData() {

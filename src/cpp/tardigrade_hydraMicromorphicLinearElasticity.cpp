@@ -3935,9 +3935,9 @@ namespace tardigradeHydra {
                     floatVector(hydra->get_previousGradientMicroConfigurations()->begin(),
                                 hydra->get_previousGradientMicroConfigurations()->begin() + tot_dim);
 
-                dF1dF = hydra->get_previousdF1dF();
+                dF1dF = hydra->deformation->get_previousdF1dF();
 
-                dF1dFn = hydra->get_previousdF1dFn();
+                dF1dFn = hydra->deformation->get_previousdF1dFn();
 
                 dChi1dChi = hydra->get_previousdChi1dChi();
 

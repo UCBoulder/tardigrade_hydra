@@ -114,9 +114,9 @@ namespace tardigradeHydra {
             SetDataStorageBase<floatVector> dpFdFn;
 
             if (isPrevious) {
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->get_previousdF1dF())
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->deformation->get_previousdF1dF())
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->get_previousdF1dFn())
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->deformation->get_previousdF1dFn())
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
                     dpFdFs = hydra->deformation->getPreviousPrecedingConfigurationJacobian(getDOFConfigurationIndex()))

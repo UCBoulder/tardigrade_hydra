@@ -88,6 +88,8 @@ namespace tardigradeHydra {
 
             void setFirstConfigurationJacobians();
 
+            void setPreviousFirstConfigurationJacobians();
+
         private:
             friend class unit_test::DeformationBaseTester;  //!< Friend class which allows modification of private variables. ONLY
                                                             //!< TO BE USED FOR TESTING!
@@ -109,6 +111,11 @@ namespace tardigradeHydra {
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(private, set_dF1dFn, get_dF1dFn, dF1dFn, floatVector,
                                                              setFirstConfigurationJacobians)
 
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dF, get_previousdF1dF, previousdF1dF,
+                                                            secondOrderTensor, setPreviousFirstConfigurationJacobians)
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn,
+                                                            floatVector, setPreviousFirstConfigurationJacobians)
     };
 
 }

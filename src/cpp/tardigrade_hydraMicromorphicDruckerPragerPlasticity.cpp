@@ -3524,9 +3524,9 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 stress = hydra->getPreviousStress();
 
-                dF1dF = hydra->get_previousdF1dF();
+                dF1dF = hydra->deformation->get_previousdF1dF();
 
-                dF1dFn = hydra->get_previousdF1dFn();
+                dF1dFn = hydra->deformation->get_previousdF1dFn();
 
                 dFpdSubFs = hydra->deformation->getPreviousFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
@@ -6206,9 +6206,9 @@ namespace tardigradeHydra {
 
                 dPrecedingFdSubFs = hydra->deformation->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
 
-                dF1dF = hydra->get_previousdF1dF();
+                dF1dF = hydra->deformation->get_previousdF1dF();
 
-                dF1dFn = hydra->get_previousdF1dFn();
+                dF1dFn = hydra->deformation->get_previousdF1dFn();
 
                 dPrecedingFdF = get_SetDataStorage_previousdPrecedingDeformationGradientdF();
 
