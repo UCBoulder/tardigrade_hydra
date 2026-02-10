@@ -710,7 +710,7 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_decomposeStateVariableVector2,
     BOOST_TEST(scaled_deformationGradient == *hydra.getDeformationGradient());
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -751,14 +751,14 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getSubConfiguration, *boost::unit_test::tole
 
     hydra.initialize();
 
-    auto result = hydra.getSubConfiguration(0, 4);
+    auto result = hydra.deformation->getSubConfiguration(0, 4);
 
     BOOST_TEST(result == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
 
     floatVector answer1 = {2.24332648, 1.48246714, 2.02801682, 1.50380989, 2.98203598,
                            2.08079721, 1.58939152, 1.2551092,  2.38201794};
 
-    auto result1 = hydra.getSubConfiguration(1, 3);
+    auto result1 = hydra.deformation->getSubConfiguration(1, 3);
 
     BOOST_TEST(result1 == answer1, CHECK_PER_ELEMENT);
 }
