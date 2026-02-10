@@ -168,7 +168,7 @@ namespace tardigradeHydra {
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
                     precedingConfigurationJacobian =
-                        hydra->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex()));
+                        hydra->deformation->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex()));
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = hydra->getPreviousStress());
 

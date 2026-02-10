@@ -620,7 +620,7 @@ namespace tardigradeHydra {
                 TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->get_previousdF1dFn())
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian(getMassChangeConfigurationIndex()))
+                    dpFdFs = hydra->deformation->getPreviousPrecedingConfigurationJacobian(getMassChangeConfigurationIndex()))
 
                 auto precedingDeformationGradient = get_SetDataStorage_previousPrecedingDeformationGradient();
                 *precedingDeformationGradient.value =
