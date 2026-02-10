@@ -1004,7 +1004,7 @@ namespace tardigradeHydra {
                 get_previousMassChangeIntermediateVelocityGradient();
 
             const secondOrderTensor previousMassChangeDeformationGradient =
-                hydra->getPreviousConfiguration(getMassChangeConfigurationIndex());
+                hydra->deformation->getPreviousConfiguration(getMassChangeConfigurationIndex());
 
             auto massChangeDeformationGradient = get_SetDataStorage_massChangeDeformationGradient();
 
@@ -1044,7 +1044,7 @@ namespace tardigradeHydra {
                 get_previousMassChangeIntermediateVelocityGradient();
 
             const secondOrderTensor previousMassChangeDeformationGradient =
-                hydra->getPreviousConfiguration(getMassChangeConfigurationIndex());
+                hydra->deformation->getPreviousConfiguration(getMassChangeConfigurationIndex());
 
             auto massChangeDeformationGradient = get_SetDataStorage_massChangeDeformationGradient();
 

@@ -480,15 +480,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Get the previous configuration indicated by the provided index
-     *
-     * \param &index: The index of the current configuration to be extracted
-     */
-    secondOrderTensor hydraBase::getPreviousConfiguration(const unsigned int &index) {
-        return deformation->getPreviousSubConfiguration(index, index + 1);
-    }
-
-    /*!
      * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
      *
      * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots

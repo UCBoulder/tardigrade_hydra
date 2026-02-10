@@ -54,6 +54,8 @@ namespace tardigradeHydra {
 
             secondOrderTensor getPreviousFollowingConfiguration(const unsigned int &index);
 
+            secondOrderTensor getPreviousConfiguration(const unsigned int &index);
+
             // CACHED DATA STORAGE OPERATIONS
             virtual void addIterationData(dataBase *data) override;
 

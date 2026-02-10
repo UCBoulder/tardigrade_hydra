@@ -421,7 +421,7 @@ namespace tardigradeHydra {
                 get_previousDOFIntermediateVelocityGradient();
 
             const secondOrderTensor previousDOFDeformationGradient =
-                hydra->getPreviousConfiguration(getDOFConfigurationIndex());
+                hydra->deformation->getPreviousConfiguration(getDOFConfigurationIndex());
 
             auto dofDeformationGradient = get_SetDataStorage_dofDeformationGradient();
 
@@ -466,7 +466,7 @@ namespace tardigradeHydra {
                 get_previousDOFIntermediateVelocityGradient();
 
             const secondOrderTensor previousDOFDeformationGradient =
-                hydra->getPreviousConfiguration(getDOFConfigurationIndex());
+                hydra->deformation->getPreviousConfiguration(getDOFConfigurationIndex());
 
             auto dofDeformationGradient = get_SetDataStorage_dofDeformationGradient();
 

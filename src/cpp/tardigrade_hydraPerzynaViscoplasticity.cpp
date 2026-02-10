@@ -2339,7 +2339,7 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CATCH(previousVelocityGradient = get_previousVelocityGradient());
 
             TARDIGRADE_ERROR_TOOLS_CATCH(previousPlasticDeformationGradient =
-                                             hydra->getPreviousConfiguration(getPlasticConfigurationIndex()));
+                                             hydra->deformation->getPreviousConfiguration(getPlasticConfigurationIndex()));
 
             TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::evolveF(
                 hydra->getDeltaTime(), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient,
@@ -2460,7 +2460,7 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CATCH(previousVelocityGradient = get_previousVelocityGradient());
 
             TARDIGRADE_ERROR_TOOLS_CATCH(previousPlasticDeformationGradient =
-                                             hydra->getPreviousConfiguration(getPlasticConfigurationIndex()));
+                                             hydra->deformation->getPreviousConfiguration(getPlasticConfigurationIndex()));
 
             if (setPreviousDerivatives) {
                 fourthOrderTensor ddFdPreviousF;

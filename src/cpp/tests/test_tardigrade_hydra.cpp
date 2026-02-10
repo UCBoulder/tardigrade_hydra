@@ -3078,7 +3078,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRdF, *boost::unit_test::tolerance(DEFAULT
     BOOST_TEST(cauchyStressAnswer == *hydra.getStress(), CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_getConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     /*!
      * Boost test of the get-configuration command
      */
@@ -3122,7 +3122,7 @@ BOOST_AUTO_TEST_CASE(test_getConfiguration, *boost::unit_test::tolerance(DEFAULT
                                                         hydra.deformation->get_configurations()->begin() + 2 * 9),
                CHECK_PER_ELEMENT);
 
-    BOOST_TEST(hydra.getPreviousConfiguration(3) == floatVector(hydra.deformation->get_previousConfigurations()->begin() + 3 * 9,
+    BOOST_TEST(hydra.deformation->getPreviousConfiguration(3) == floatVector(hydra.deformation->get_previousConfigurations()->begin() + 3 * 9,
                                                                 hydra.deformation->get_previousConfigurations()->begin() + 4 * 9),
                CHECK_PER_ELEMENT);
 }
