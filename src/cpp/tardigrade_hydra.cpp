@@ -480,16 +480,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Get the jacobian of the sub-configuration following but not including the index with respect to the current
-     * configurations.
-     *
-     * \param &index: The index of the current configuration immediately before the sub-configuration
-     */
-    floatVector hydraBase::getFollowingConfigurationJacobian(const unsigned int &index) {
-        return deformation->getSubConfigurationJacobian(index + 1, getNumConfigurations());
-    }
-
-    /*!
      * Get the jacobian of a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
      *
      * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots

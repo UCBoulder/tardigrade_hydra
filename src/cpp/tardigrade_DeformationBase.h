@@ -60,6 +60,8 @@ namespace tardigradeHydra {
 
             floatVector getPrecedingConfigurationJacobian(const unsigned int &index);
 
+            floatVector getFollowingConfigurationJacobian(const unsigned int &index);
+
             // CACHED DATA STORAGE OPERATIONS
             virtual void addIterationData(dataBase *data) override;
 

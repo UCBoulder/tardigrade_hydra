@@ -3576,7 +3576,7 @@ namespace tardigradeHydra {
 
                 dF1dFn = hydra->get_dF1dFn();
 
-                dFpdSubFs = hydra->getFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
+                dFpdSubFs = hydra->deformation->getFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
                 dChi1dChi = hydra->get_dChi1dChi();
 

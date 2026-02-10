@@ -2567,7 +2567,7 @@ namespace tardigradeHydra {
 
                 Gamma = get_gamma();
 
-                dFFollowdFs = hydra->getFollowingConfigurationJacobian(0);
+                dFFollowdFs = hydra->deformation->getFollowingConfigurationJacobian(0);
 
                 dChiFollowdChis = hydra->getFollowingMicroConfigurationJacobian(0);
 

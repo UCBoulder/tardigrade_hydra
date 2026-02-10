@@ -139,6 +139,16 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get the jacobian of the sub-configuration following but not including the index with respect to the current
+     * configurations.
+     *
+     * \param &index: The index of the current configuration immediately before the sub-configuration
+     */
+    floatVector DeformationBase::getFollowingConfigurationJacobian(const unsigned int &index) {
+        return getSubConfigurationJacobian(index + 1, getNumConfigurations());
+    }
+
+    /*!
      * Get the number of configurations
      */
     unsigned int DeformationBase::getNumConfigurations(){
