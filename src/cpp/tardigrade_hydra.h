@@ -277,36 +277,11 @@ namespace tardigradeHydra {
 
         void addToFailureOutput(const floatType &value, bool add_endline = true);
 
-        /*!
-         * Add a general non-iterable object to the output string
-         *
-         * \param &v: The value to add
-         * \param add_endline: Whether to append a newline character after the value
-         */
         template <class v_type>
-        void addToFailureOutput(const v_type &v, bool add_endline = true) {
-            _failure_output << v;
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
+        void addToFailureOutput(const v_type &v, bool add_endline = true);
 
-        /*!
-         * Add a general iterable object to the output string
-         *
-         * \param &v_begin: The starting iterator of the value vector
-         * \param &v_end: The stopping iterator of the value vector
-         * \param add_endline: Whether to append a newline character after the value
-         */
         template <class v_iterator>
-        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true) {
-            for (auto v = v_begin; v != v_end; ++v) {
-                _failure_output << *v << ", ";
-            }
-            if (add_endline) {
-                _failure_output << "\n";
-            }
-        }
+        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true);
 
         //! Get the failure output string
         const std::string getFailureOutput() { return _failure_output.str(); }
