@@ -297,7 +297,7 @@ if(${not_conda_test} STREQUAL "true")
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake
         )
     endforeach(package)
-    install(FILES ${CPP_SRC_PATH}/${PROJECT_NAME}.cpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    install(FILES ${CPP_SRC_PATH}/${PROJECT_NAME}.cpp ${CPP_SRC_PATH}/${PROJECT_NAME}.tpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
         install(FILES ${CPP_SRC_PATH}/${package}.cpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
         install(FILES ${CPP_SRC_PATH}/${package}.tpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
