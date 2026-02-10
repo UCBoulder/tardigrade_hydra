@@ -3993,9 +3993,9 @@ namespace tardigradeHydra {
                 gradientMicroDeformation1 = floatVector(hydra->get_gradientMicroConfigurations()->begin(),
                                                         hydra->get_gradientMicroConfigurations()->begin() + tot_dim);
 
-                dF1dF = hydra->get_dF1dF();
+                dF1dF = hydra->deformation->get_dF1dF();
 
-                dF1dFn = hydra->get_dF1dFn();
+                dF1dFn = hydra->deformation->get_dF1dFn();
 
                 dChi1dChi = hydra->get_dChi1dChi();
 

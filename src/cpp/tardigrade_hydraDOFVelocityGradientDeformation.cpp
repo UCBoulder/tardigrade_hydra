@@ -130,9 +130,9 @@ namespace tardigradeHydra {
                 dpFdFn = get_SetDataStorage_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients();
 
             } else {
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->get_dF1dF())
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->deformation->get_dF1dF())
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->get_dF1dFn())
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->deformation->get_dF1dFn())
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(dpFdFs =
                                                  hydra->deformation->getPrecedingConfigurationJacobian(getDOFConfigurationIndex()))

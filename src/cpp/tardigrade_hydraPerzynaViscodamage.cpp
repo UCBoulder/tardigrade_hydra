@@ -222,9 +222,9 @@ namespace tardigradeHydra {
             floatVector dFedSubFs(sot_dim * (num_configs - 1) * sot_dim, 0);
 
             if (elastic_config_index == 0) {
-                dFedF = *hydra->get_dF1dF();
+                dFedF = *hydra->deformation->get_dF1dF();
 
-                dFedSubFs = *hydra->get_dF1dFn();
+                dFedSubFs = *hydra->deformation->get_dF1dFn();
 
             } else {
                 for (unsigned int i = 0; i < sot_dim; i++) {

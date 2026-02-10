@@ -217,6 +217,18 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining
+     * sub-configurations
+     */
+    void DeformationBase::setFirstConfigurationJacobians() {
+        auto dF1dF = get_SetDataStorage_dF1dF();
+
+        auto dF1dFn = get_SetDataStorage_dF1dFn();
+
+        calculateFirstConfigurationJacobians(*get_configurations(), *dF1dF.value, *dF1dFn.value);
+    }
+
+    /*!
      * Get the jacobian of the previous sub-configuration preceding but not including the index with
      * respect to the previous configurations.
      *

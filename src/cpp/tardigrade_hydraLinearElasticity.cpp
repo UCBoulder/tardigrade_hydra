@@ -92,9 +92,9 @@ namespace tardigradeHydra {
 
                 auto dFedFn = get_SetDataStorage_dFedFn();
 
-                *dFedF.value = *hydra->get_dF1dF();
+                *dFedF.value = *hydra->deformation->get_dF1dF();
 
-                *dFedFn.value = *hydra->get_dF1dFn();
+                *dFedFn.value = *hydra->deformation->get_dF1dFn();
             }
         }
 

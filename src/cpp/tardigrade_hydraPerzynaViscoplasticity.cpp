@@ -193,9 +193,9 @@ namespace tardigradeHydra {
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = hydra->getStress());
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->get_dF1dF());
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->deformation->get_dF1dF());
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dSubFs = hydra->get_dF1dFn());
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dSubFs = hydra->deformation->get_dF1dFn());
 
                 drivingStress = get_SetDataStorage_drivingStress();
 
