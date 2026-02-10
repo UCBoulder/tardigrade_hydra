@@ -44,11 +44,17 @@ namespace tardigradeHydra {
 
             secondOrderTensor getPrecedingConfiguration(const unsigned int &index);
 
+            secondOrderTensor getFollowingConfiguration(const unsigned int &index);
+
             // CACHED DATA STORAGE OPERATIONS
             virtual void addIterationData(dataBase *data) override;
 
             virtual void addNLStepData(dataBase *data) override;
             // END CACHED DATA STORAGE OPERATIONS
+
+            // PASS-THROUGH FUNCTIONS
+            unsigned int getNumConfigurations(); //TODO: Extract this from hydra to here
+            // END PASS-THROUGH FUNCTIONS
 
             //! Pointer to the containing hydraBase object
             hydraBase *hydra;

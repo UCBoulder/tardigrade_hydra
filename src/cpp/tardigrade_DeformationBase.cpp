@@ -53,4 +53,20 @@ namespace tardigradeHydra {
         return getSubConfiguration(0, index);
     }
 
+    /*!
+     * Get the sub-configuration following but not including the index
+     *
+     * \param &index: The index of the current configuration immediately before the sub-configuration
+     */
+    secondOrderTensor DeformationBase::getFollowingConfiguration(const unsigned int &index) {
+        return getSubConfiguration(index + 1, getNumConfigurations());
+    }
+
+    /*!
+     * Get the number of configurations
+     */
+    unsigned int DeformationBase::getNumConfigurations(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "The containing hydraBase class has not been set")
+        return hydra->getNumConfigurations();
+    }
 }

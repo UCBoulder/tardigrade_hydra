@@ -821,7 +821,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration, *boost::uni
     BOOST_TEST(hydra.deformation->getPrecedingConfiguration(0) == answer3, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getFollowingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -865,16 +865,16 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getFollowingConfiguration, *boost::unit_test
     floatVector answer1 = {2.09953091, 1.83604029, 2.3712323,  0.98756433, 2.58928197,
                            1.05684715, 1.33422708, 1.67694162, 2.96443669};
 
-    BOOST_TEST(hydra.getFollowingConfiguration(1) == answer1, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getFollowingConfiguration(1) == answer1, CHECK_PER_ELEMENT);
 
     floatVector answer2 = {1.42635131, 0.89338916, 0.94416002, 0.50183668, 1.62395295,
                            0.1156184,  0.31728548, 0.41482621, 1.86630916};
 
-    BOOST_TEST(hydra.getFollowingConfiguration(2) == answer2, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getFollowingConfiguration(2) == answer2, CHECK_PER_ELEMENT);
 
     floatVector answer3 = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
-    BOOST_TEST(hydra.getFollowingConfiguration(3) == answer3, CHECK_PER_ELEMENT);
+    BOOST_TEST(hydra.deformation->getFollowingConfiguration(3) == answer3, CHECK_PER_ELEMENT);
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousSubConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
@@ -1338,7 +1338,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
                CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_hydraBase_getFollowingConfigurationJacobian,
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfigurationJacobian,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     floatType time = 1.1;
 

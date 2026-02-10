@@ -480,15 +480,6 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Get the sub-configuration following but not including the index
-     *
-     * \param &index: The index of the current configuration immediately before the sub-configuration
-     */
-    secondOrderTensor hydraBase::getFollowingConfiguration(const unsigned int &index) {
-        return deformation->getSubConfiguration(index + 1, getNumConfigurations());
-    }
-
-    /*!
      * Get the configuration indicated by the provided index
      *
      * \param &index: The index of the current configuration to be extracted

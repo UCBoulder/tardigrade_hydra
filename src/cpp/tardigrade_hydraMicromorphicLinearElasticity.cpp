@@ -2014,7 +2014,7 @@ namespace tardigradeHydra {
 
                 Gamma = get_gamma();
 
-                followingConfiguration = hydra->getFollowingConfiguration(0);
+                followingConfiguration = hydra->deformation->getFollowingConfiguration(0);
 
                 followingMicroConfiguration = hydra->getFollowingMicroConfiguration(0);
 
@@ -2571,7 +2571,7 @@ namespace tardigradeHydra {
 
                 dChiFollowdChis = hydra->getFollowingMicroConfigurationJacobian(0);
 
-                followingConfiguration = hydra->getFollowingConfiguration(0);
+                followingConfiguration = hydra->deformation->getFollowingConfiguration(0);
 
                 followingMicroConfiguration = hydra->getFollowingMicroConfiguration(0);
 
