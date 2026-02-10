@@ -3118,7 +3118,7 @@ BOOST_AUTO_TEST_CASE(test_getConfiguration, *boost::unit_test::tolerance(DEFAULT
 
     hydra.initialize();
 
-    BOOST_TEST(hydra.getConfiguration(1) == floatVector(hydra.deformation->get_configurations()->begin() + 1 * 9,
+    BOOST_TEST(hydra.deformation->getConfiguration(1) == floatVector(hydra.deformation->get_configurations()->begin() + 1 * 9,
                                                         hydra.deformation->get_configurations()->begin() + 2 * 9),
                CHECK_PER_ELEMENT);
 

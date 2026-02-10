@@ -2980,7 +2980,7 @@ namespace tardigradeHydra {
             // Set the residual for the plastic deformation gradient
             for (unsigned int i = 0; i < sot_dim; i++) {
                 (*residual.value)[i] =
-                    (*get_plasticDeformationGradient())[i] - hydra->getConfiguration(getPlasticConfigurationIndex())[i];
+                    (*get_plasticDeformationGradient())[i] - hydra->deformation->getConfiguration(getPlasticConfigurationIndex())[i];
             }
 
             // Set the residual for the plastic state variables

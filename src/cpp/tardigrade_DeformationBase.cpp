@@ -63,6 +63,15 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get the configuration indicated by the provided index
+     *
+     * \param &index: The index of the current configuration to be extracted
+     */
+    secondOrderTensor DeformationBase::getConfiguration(const unsigned int &index) {
+        return getSubConfiguration(index, index + 1);
+    }
+
+    /*!
      * Get the number of configurations
      */
     unsigned int DeformationBase::getNumConfigurations(){

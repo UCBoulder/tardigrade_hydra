@@ -3972,7 +3972,7 @@ BOOST_AUTO_TEST_CASE(test_updateUnknownVector, *boost::unit_test::tolerance(DEFA
         floatVector previousGradChiiAnswer(previousAnswers.begin() + 2 * (numConfigurations - 1) * 9 + i * 27,
                                            previousAnswers.begin() + 2 * (numConfigurations - 1) * 9 + (i + 1) * 27);
 
-        BOOST_TEST(FiAnswer == hydra.getConfiguration(i + 1), CHECK_PER_ELEMENT);
+        BOOST_TEST(FiAnswer == hydra.deformation->getConfiguration(i + 1), CHECK_PER_ELEMENT);
 
         BOOST_TEST(FiAnswer == floatVector(hydra.deformation->get_configurations()->begin() + 9 * (i + 1),
                                            hydra.deformation->get_configurations()->begin() + 9 * (i + 2)),

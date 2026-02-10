@@ -558,7 +558,7 @@ namespace tardigradeHydra {
 
             for (unsigned int i = 0; i < sot_dim; i++) {
                 (*residual.value)[i] =
-                    hydra->getConfiguration(getDamageConfigurationIndex())[i] - (*get_damageDeformationGradient())[i];
+                    hydra->deformation->getConfiguration(getDamageConfigurationIndex())[i] - (*get_damageDeformationGradient())[i];
             }
 
             for (unsigned int i = 0; i < num_isvs; i++) {
