@@ -129,11 +129,9 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
@@ -233,11 +231,9 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerSuccess,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
@@ -337,11 +333,9 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;

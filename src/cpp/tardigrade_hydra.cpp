@@ -28,7 +28,7 @@ namespace tardigradeHydra {
      * \param &parameters: The model parameters
      * \param &numConfigurations: The number of configurations
      * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
-     * non-linear solve's residual \param &dimension: The dimension of the problem (defaults to 3)
+     * non-linear solve's residual
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBase::hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
@@ -36,10 +36,9 @@ namespace tardigradeHydra {
                          const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
                          const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                          const floatVector &parameters, const unsigned int numConfigurations,
-                         const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
+                         const unsigned int     numNonLinearSolveStateVariables,
                          HydraConfigurationBase _hydra_configuration)
         : hydra_configuration(_hydra_configuration),
-          _dimension(dimension),
           _stress_size(_hydra_configuration.configuration_unknown_count),
           _time(time),
           _deltaTime(deltaTime),

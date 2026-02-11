@@ -35,7 +35,6 @@ namespace tardigradeHydra {
      * \param &numConfigurations: The number of configurations
      * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
      *     non-linear solve's residual
-     * \param &dimension: The dimension of the problem (defaults to 3)
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBaseMicromorphic::hydraBaseMicromorphic(
@@ -46,11 +45,10 @@ namespace tardigradeHydra {
         const thirdOrderTensor &previousGradientMicroDeformation, const floatVector &additionalDOF,
         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
         const floatVector &parameters, const unsigned int numConfigurations,
-        const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
-        HydraConfigurationBase _hydra_configuration)
+        const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
         : hydraBase(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                     additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                    numNonLinearSolveStateVariables, dimension, _hydra_configuration),
+                    numNonLinearSolveStateVariables, _hydra_configuration),
           _microDeformation(microDeformation),
           _previousMicroDeformation(previousMicroDeformation),
           _gradientMicroDeformation(gradientMicroDeformation),

@@ -136,8 +136,6 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     class MaxRowPreconditionerMock
         : public tardigradeHydra::MaxRowPreconditioner {  // Change the parent class to MaxRowPreconditioner when that
                                                           // exists
@@ -172,7 +170,7 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
     tardigradeHydra::SolverStepBase      step(&solver);

@@ -238,11 +238,9 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -367,11 +365,9 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -510,11 +506,9 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -626,11 +620,9 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;

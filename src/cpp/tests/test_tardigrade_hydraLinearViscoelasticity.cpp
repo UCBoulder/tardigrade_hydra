@@ -193,8 +193,6 @@ BOOST_AUTO_TEST_CASE(test_residual_runBasicGetTests_and_decomposeParameters,
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -221,7 +219,7 @@ BOOST_AUTO_TEST_CASE(test_residual_runBasicGetTests_and_decomposeParameters,
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -286,8 +284,6 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposeElasticDeformation, *boost::unit_tes
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -304,7 +300,7 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposeElasticDeformation, *boost::unit_tes
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -354,8 +350,6 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposePreviousElasticDeformation,
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -367,7 +361,7 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposePreviousElasticDeformation,
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -413,15 +407,13 @@ BOOST_AUTO_TEST_CASE(test_residual_gradientsOfDecomposedElasticDeformationGradie
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -440,11 +432,11 @@ BOOST_AUTO_TEST_CASE(test_residual_gradientsOfDecomposedElasticDeformationGradie
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient + delta,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient - delta,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -478,11 +470,11 @@ BOOST_AUTO_TEST_CASE(test_residual_gradientsOfDecomposedElasticDeformationGradie
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient + delta, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient - delta, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -546,15 +538,13 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposeStateVariableVector, *boost::unit_te
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -602,8 +592,6 @@ BOOST_AUTO_TEST_CASE(test_residual_setRateMultipliers, *boost::unit_test::tolera
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -618,7 +606,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setRateMultipliers, *boost::unit_test::tolera
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -666,8 +654,6 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRateMultipliersdT, *boost::unit_test::tol
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -682,7 +668,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRateMultipliersdT, *boost::unit_test::tol
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -697,11 +683,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRateMultipliersdT, *boost::unit_test::tol
 
         hydraBaseMock hydrap(time, deltaTime, temperature + deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature - deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -725,11 +711,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRateMultipliersdT, *boost::unit_test::tol
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature + deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature - deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -788,8 +774,6 @@ BOOST_AUTO_TEST_CASE(test_residual_getViscoelasticParameters, *boost::unit_test:
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -800,7 +784,7 @@ BOOST_AUTO_TEST_CASE(test_residual_getViscoelasticParameters, *boost::unit_test:
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -868,8 +852,6 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStress, *boost::unit_test::toleranc
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -898,7 +880,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStress, *boost::unit_test::toleranc
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -947,15 +929,13 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStressDerivatives, *boost::unit_tes
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -990,11 +970,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStressDerivatives, *boost::unit_tes
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient + deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient - deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1022,11 +1002,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStressDerivatives, *boost::unit_tes
 
         hydraBaseMock hydrap(time, deltaTime, temperature + deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature - deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1062,11 +1042,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStressDerivatives, *boost::unit_tes
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient + deltas, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient - deltas, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1097,11 +1077,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStressDerivatives, *boost::unit_tes
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature + deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature - deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1132,11 +1112,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStressDerivatives, *boost::unit_tes
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables + deltas, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables - deltas, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1219,8 +1199,6 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStress, *boost::unit_test::tol
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -1256,7 +1234,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStress, *boost::unit_test::tol
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1306,15 +1284,13 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStressDerivatives,
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1349,11 +1325,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStressDerivatives,
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient + deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient - deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1382,11 +1358,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStressDerivatives,
 
         hydraBaseMock hydrap(time, deltaTime, temperature + deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature - deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1429,11 +1405,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStressDerivatives,
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient + deltas, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient - deltas, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1466,11 +1442,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStressDerivatives,
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature + deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature - deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1520,11 +1496,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStressDerivatives,
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables + deltas, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables - deltas, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1630,8 +1606,6 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2Stress, *boost::unit_test::tolerance(DE
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -1642,7 +1616,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2Stress, *boost::unit_test::tolerance(DE
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1694,8 +1668,6 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -1716,7 +1688,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1731,11 +1703,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient + deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient - deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1757,11 +1729,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
         hydraBaseMock hydrap(time, deltaTime, temperature + deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature - deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1787,11 +1759,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient + deltas, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient - deltas, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1818,11 +1790,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature + deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature - deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1849,11 +1821,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables + deltas, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables - deltas, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1919,8 +1891,6 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -1950,7 +1920,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1965,11 +1935,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient + deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient - deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1991,11 +1961,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
         hydraBaseMock hydrap(time, deltaTime, temperature + deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature - deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -2021,11 +1991,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient + deltas, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient - deltas, {}, {}, previousStateVariables, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -2051,11 +2021,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature + deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature - deltas[0], deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -2080,11 +2050,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables + deltas, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables - deltas, parameters,
-                             numConfigurations, numNonLinearSolveStateVariables, dimension);
+                             numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -2151,8 +2121,6 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRdT, *boost::unit_test::tolerance(DEFAULT
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -2165,7 +2133,7 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRdT, *boost::unit_test::tolerance(DEFAULT
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -2182,11 +2150,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRdT, *boost::unit_test::tolerance(DEFAULT
 
         hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient + deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient - deltas,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -2212,11 +2180,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRdT, *boost::unit_test::tolerance(DEFAULT
 
         hydraBaseMock hydrap(time, deltaTime, temperature + deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydraBaseMock hydram(time, deltaTime, temperature - deltas[0], previousTemperature, deformationGradient,
                              previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables, dimension);
+                             numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -2292,11 +2260,9 @@ BOOST_AUTO_TEST_CASE(test_residual_evaluate, *boost::unit_test::tolerance(DEFAUL
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::PreconditionerBase preconditioner;
     auto local_trial_step = dynamic_cast<tardigradeHydra::NonlinearStepBase *>(hydra.solver->step->trial_step);
@@ -2327,11 +2293,11 @@ BOOST_AUTO_TEST_CASE(test_residual_evaluate, *boost::unit_test::tolerance(DEFAUL
 
             hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient, {},
                                  {}, previousStateVariables, parameters, numConfigurations,
-                                 numNonLinearSolveStateVariables, dimension);
+                                 numNonLinearSolveStateVariables);
 
             hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient, {},
                                  {}, previousStateVariables, parameters, numConfigurations,
-                                 numNonLinearSolveStateVariables, dimension);
+                                 numNonLinearSolveStateVariables);
 
             tardigradeHydra::PreconditionerBase preconditionerp;
             auto                                local_trial_stepp =
@@ -2377,11 +2343,11 @@ BOOST_AUTO_TEST_CASE(test_residual_evaluate, *boost::unit_test::tolerance(DEFAUL
 
             hydraBaseMock hydrap(time, deltaTime, xp[i], previousTemperature, deformationGradient,
                                  previousDeformationGradient, {}, {}, previousStateVariables, parameters,
-                                 numConfigurations, numNonLinearSolveStateVariables, dimension);
+                                 numConfigurations, numNonLinearSolveStateVariables);
 
             hydraBaseMock hydram(time, deltaTime, xm[i], previousTemperature, deformationGradient,
                                  previousDeformationGradient, {}, {}, previousStateVariables, parameters,
-                                 numConfigurations, numNonLinearSolveStateVariables, dimension);
+                                 numConfigurations, numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
             hydram.evaluate();
@@ -2446,15 +2412,13 @@ BOOST_AUTO_TEST_CASE(test_addParameterizationInfo, *boost::unit_test::tolerance(
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -2517,8 +2481,6 @@ BOOST_AUTO_TEST_CASE(test_residual_updateAdditionalStateVariables,
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    unsigned int dimension = 3;
-
     unsigned int ISVlb = 2;
 
     unsigned int ISVub = 31;
@@ -2547,7 +2509,7 @@ BOOST_AUTO_TEST_CASE(test_residual_updateAdditionalStateVariables,
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     hydra.initialize();
 

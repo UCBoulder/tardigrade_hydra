@@ -278,8 +278,6 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         tardigradeHydra::floatVector jacobian = {-0.15378708, 0.9615284,   0.36965948,  -0.0381362,  -0.21576496,
@@ -313,7 +311,7 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::floatVector unknownVector = {0.39293837, -0.42772133, -0.54629709, 0.10262954, 0.43893794};
 
@@ -355,11 +353,11 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
 
             hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                  previousDeformationGradient, {}, {}, previousStateVariables, parameters,
-                                 numConfigurations, numNonLinearSolveStateVariables, dimension);
+                                 numConfigurations, numNonLinearSolveStateVariables);
 
             hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                  previousDeformationGradient, {}, {}, previousStateVariables, parameters,
-                                 numConfigurations, numNonLinearSolveStateVariables, dimension);
+                                 numConfigurations, numNonLinearSolveStateVariables);
 
             tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector(hydrap, xp);
 
@@ -428,8 +426,6 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_checkDescentDirection, *boost::unit_tes
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     class StepDampingMock : public tardigradeHydra::StepDampingBase {
        public:
         using tardigradeHydra::StepDampingBase::StepDampingBase;
@@ -463,7 +459,7 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_checkDescentDirection, *boost::unit_tes
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase solver;
     SolverStepBaseMock          step;
@@ -519,8 +515,6 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
     unsigned int numConfigurations = 4;
 
     unsigned int numNonLinearSolveStateVariables = 5;
-
-    unsigned int dimension = 3;
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
@@ -578,7 +572,7 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     SolverStepBaseMock  step;
     StepDampingBaseMock damping;
@@ -598,7 +592,7 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
 
     hydraBaseMock hydra2(time, deltaTime, temperature, previousTemperature, deformationGradient,
                          previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                         numNonLinearSolveStateVariables, dimension);
+                         numNonLinearSolveStateVariables);
 
     SolverStepBaseMock  step2;
     StepDampingBaseMock damping2;
@@ -647,8 +641,6 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_performGradientStep, *boost::unit_test
     unsigned int numConfigurations = 4;
 
     unsigned int numNonLinearSolveStateVariables = 5;
-
-    unsigned int dimension = 3;
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
@@ -719,7 +711,7 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_performGradientStep, *boost::unit_test
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     SolverStepBaseMock  step;
     StepDampingBaseMock damping;

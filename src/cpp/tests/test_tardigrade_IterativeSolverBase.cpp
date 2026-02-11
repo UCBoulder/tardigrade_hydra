@@ -383,12 +383,10 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     test_SolverBase_solve_in_gradient_convergence = 0;
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     IterativeSolverBaseMock   solver;
     SolverStepBaseMock        step;
@@ -437,7 +435,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     test_SolverBase_solve_in_gradient_convergence = 0;
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                            numNonLinearSolveStateVariables, dimension);
+                            numNonLinearSolveStateVariables);
 
     IterativeSolverBaseMock   solver_pre;
     SolverStepBaseMock        step_pre;
@@ -573,11 +571,9 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulIterativeSte
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     IterativeSolverBaseMock solver;
 
@@ -678,11 +674,9 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     IterativeSolverBaseMock solver;
     solver.hydra = &hydra;
@@ -782,11 +776,9 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostIterativeSolve,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     IterativeSolverBaseMock solver;
     hydra.solver = &solver;
@@ -835,11 +827,9 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_checkConvergence, *boost::unit_tes
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::IterativeSolverBase solver;
 
@@ -903,11 +893,9 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_setTolerance, *boost::unit_test::t
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::IterativeSolverBase solver;
 

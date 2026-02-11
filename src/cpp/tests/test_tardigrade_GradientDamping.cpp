@@ -113,8 +113,6 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     class GradientDampingMock : public tardigradeHydra::GradientDamping {
        public:
         tardigradeHydra::floatType rnorm = 10.3;
@@ -171,7 +169,7 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     GradientDampingMock             damping;
     tardigradeHydra::SolverStepBase step;

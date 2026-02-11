@@ -101,7 +101,7 @@ namespace tardigradeHydra {
                   const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
                   const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                   const floatVector &parameters, const unsigned int numConfigurations,
-                  const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension = 3,
+                  const unsigned int     numNonLinearSolveStateVariables,
                   HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
         virtual void initialize();
@@ -172,16 +172,20 @@ namespace tardigradeHydra {
         const unsigned int getCurrentResidualOffset();
 
         //! Get the dimension
-        constexpr unsigned int getDimension() { return _dimension; }
+        constexpr unsigned int getDimension() { return deformation->dimension; }
 
         //! Get a second order tensor's dimension
-        constexpr unsigned int getSOTDimension() { return _dimension * _dimension; }
+        constexpr unsigned int getSOTDimension() { return deformation->dimension * deformation->dimension; }
 
         //! Get a third order tensor's dimension
-        constexpr unsigned int getTOTDimension() { return _dimension * _dimension * _dimension; }
+        constexpr unsigned int getTOTDimension() {
+            return deformation->dimension * deformation->dimension * deformation->dimension;
+        }
 
         //! Get a fourth order tensor's dimension
-        constexpr unsigned int getFOTDimension() { return _dimension * _dimension * _dimension * _dimension; }
+        constexpr unsigned int getFOTDimension() {
+            return deformation->dimension * deformation->dimension * deformation->dimension * deformation->dimension;
+        }
 
         virtual void setResidualClasses();
 
@@ -394,9 +398,6 @@ namespace tardigradeHydra {
         friend class tardigradeHydra::SolverBase;  //!< The base class for the solver
         friend class unit_test::hydraBaseTester;  //!< Friend class which allows modification of private variables. ONLY
                                                   //!< TO BE USED FOR TESTING!
-
-        //! The spatial dimension of the problem
-        unsigned int _dimension;
 
         //! The number of terms in the stress measures
         unsigned int _stress_size;
