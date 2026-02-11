@@ -54,8 +54,7 @@ namespace tardigradeHydra {
           _microDeformation(microDeformation),
           _previousMicroDeformation(previousMicroDeformation),
           _gradientMicroDeformation(gradientMicroDeformation),
-          _previousGradientMicroDeformation(previousGradientMicroDeformation) {
-    }
+          _previousGradientMicroDeformation(previousGradientMicroDeformation) {}
 
     /*!
      * Initialize the hydra object

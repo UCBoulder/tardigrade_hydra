@@ -64,9 +64,9 @@ namespace tardigradeHydra {
         //! The number of unknowns in each configuration
         unsigned int configuration_unknown_count = 0;
         //! The relative tolerance
-        floatType tolr                        = 1e-9;
+        floatType tolr                           = 1e-9;
         //! The absolute tolerance
-        floatType tola                        = 1e-9;
+        floatType tola                           = 1e-9;
 
        private:
         friend class hydraBase;
@@ -76,11 +76,8 @@ namespace tardigradeHydra {
      * HydraClassicalConfiguration: A class which defines a classical deformation problem
      */
     class HydraClassicalConfiguration : public HydraConfigurationBase {
-
-        public:
-            HydraClassicalConfiguration() {
-                configuration_unknown_count = 9;
-            }
+       public:
+        HydraClassicalConfiguration() { configuration_unknown_count = 9; }
     };
 
     /*!
@@ -119,7 +116,9 @@ namespace tardigradeHydra {
 
         // Getter functions
         //! Get a reference to the number of unknowns in each configuration
-        constexpr unsigned int getConfigurationUnknownCount() { return hydra_configuration.configuration_unknown_count; }
+        constexpr unsigned int getConfigurationUnknownCount() {
+            return hydra_configuration.configuration_unknown_count;
+        }
 
         //! Get a reference to the number of components of the stress
         constexpr unsigned int getStressSize() { return _stress_size; }

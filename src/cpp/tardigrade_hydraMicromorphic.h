@@ -22,11 +22,8 @@ namespace tardigradeHydra {
      * HydraClassicalConfiguration: A class which defines a classical deformation problem
      */
     class HydraMicromorphicConfiguration : public HydraConfigurationBase {
-
-        public:
-            HydraMicromorphicConfiguration() {
-                configuration_unknown_count = 45;
-            }
+       public:
+        HydraMicromorphicConfiguration() { configuration_unknown_count = 45; }
     };
 
     //! The base class for hydra framework micromorphic material models
@@ -44,7 +41,8 @@ namespace tardigradeHydra {
                               const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                               const floatVector &previousStateVariables, const floatVector &parameters,
                               const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                              const unsigned int dimension = 3, HydraConfigurationBase _hydra_configuration = HydraMicromorphicConfiguration());
+                              const unsigned int     dimension            = 3,
+                              HydraConfigurationBase _hydra_configuration = HydraMicromorphicConfiguration());
 
         virtual void initialize() override;
 

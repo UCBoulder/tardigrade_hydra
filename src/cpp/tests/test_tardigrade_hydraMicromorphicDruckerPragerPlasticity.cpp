@@ -1707,7 +1707,8 @@ BOOST_AUTO_TEST_CASE(test_setDrivingStresses, *boost::unit_test::tolerance(1e-5)
                   unknownVector.begin() + hydra_configuration.configuration_unknown_count + dimension * dimension);
 
     floatVector chi(unknownVector.begin() + hydra_configuration.configuration_unknown_count + dimension * dimension,
-                    unknownVector.begin() + hydra_configuration.configuration_unknown_count + 2 * dimension * dimension);
+                    unknownVector.begin() + hydra_configuration.configuration_unknown_count +
+                        2 * dimension * dimension);
 
     floatVector answerMacroStress;
 
@@ -2697,7 +2698,8 @@ BOOST_AUTO_TEST_CASE(test_setCohesion, *boost::unit_test::tolerance(DEFAULT_TEST
 
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < numNonLinearSolveStateVariables; j++) {
-            dMicroGradientCohesiondXAssembled[i][j + numConfigurations * hydra.hydra_configuration.configuration_unknown_count] =
+            dMicroGradientCohesiondXAssembled[i][j + numConfigurations *
+                                                         hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_dMicroGradientCohesiondStateVariables())[numNonLinearSolveStateVariables * i + j];
         }
     }
@@ -2771,16 +2773,20 @@ BOOST_AUTO_TEST_CASE(test_setCohesion, *boost::unit_test::tolerance(DEFAULT_TEST
     floatMatrix previousdMicroGradientCohesiondXAssembled(3, floatVector(previousStateVariables.size(), 0));
 
     for (unsigned int i = 0; i < numNonLinearSolveStateVariables; i++) {
-        previousdMacroCohesiondXAssembled[i + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+        previousdMacroCohesiondXAssembled[i + (numConfigurations - 1) *
+                                                  hydra.hydra_configuration.configuration_unknown_count] =
             (*R.get_dMacroCohesiondStateVariables())[i];
 
-        previousdMicroCohesiondXAssembled[i + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+        previousdMicroCohesiondXAssembled[i + (numConfigurations - 1) *
+                                                  hydra.hydra_configuration.configuration_unknown_count] =
             (*R.get_dMicroCohesiondStateVariables())[i];
     }
 
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < numNonLinearSolveStateVariables; j++) {
-            previousdMicroGradientCohesiondXAssembled[i][j + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+            previousdMicroGradientCohesiondXAssembled[i][j +
+                                                         (numConfigurations - 1) *
+                                                             hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_dMicroGradientCohesiondStateVariables())[numNonLinearSolveStateVariables * i + j];
         }
     }
@@ -3125,7 +3131,8 @@ BOOST_AUTO_TEST_CASE(test_setCohesion2, *boost::unit_test::tolerance(DEFAULT_TES
 
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < numNonLinearSolveStateVariables; j++) {
-            dMicroGradientCohesiondXAssembled[i][j + numConfigurations * hydra.hydra_configuration.configuration_unknown_count] =
+            dMicroGradientCohesiondXAssembled[i][j + numConfigurations *
+                                                         hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_dMicroGradientCohesiondStateVariables())[numNonLinearSolveStateVariables * i + j];
         }
     }
@@ -3199,16 +3206,20 @@ BOOST_AUTO_TEST_CASE(test_setCohesion2, *boost::unit_test::tolerance(DEFAULT_TES
     floatMatrix previousdMicroGradientCohesiondXAssembled(3, floatVector(previousStateVariables.size(), 0));
 
     for (unsigned int i = 0; i < numNonLinearSolveStateVariables; i++) {
-        previousdMacroCohesiondXAssembled[i + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+        previousdMacroCohesiondXAssembled[i + (numConfigurations - 1) *
+                                                  hydra.hydra_configuration.configuration_unknown_count] =
             (*R.get_dMacroCohesiondStateVariables())[i];
 
-        previousdMicroCohesiondXAssembled[i + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+        previousdMicroCohesiondXAssembled[i + (numConfigurations - 1) *
+                                                  hydra.hydra_configuration.configuration_unknown_count] =
             (*R.get_dMicroCohesiondStateVariables())[i];
     }
 
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < numNonLinearSolveStateVariables; j++) {
-            previousdMicroGradientCohesiondXAssembled[i][j + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+            previousdMicroGradientCohesiondXAssembled[i][j +
+                                                         (numConfigurations - 1) *
+                                                             hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_dMicroGradientCohesiondStateVariables())[numNonLinearSolveStateVariables * i + j];
         }
     }
@@ -3560,7 +3571,8 @@ BOOST_AUTO_TEST_CASE(test_setCohesion3, *boost::unit_test::tolerance(DEFAULT_TES
 
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < numNonLinearSolveStateVariables; j++) {
-            dMicroGradientCohesiondXAssembled[i][j + numConfigurations * hydra.hydra_configuration.configuration_unknown_count] =
+            dMicroGradientCohesiondXAssembled[i][j + numConfigurations *
+                                                         hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_dMicroGradientCohesiondStateVariables())[numNonLinearSolveStateVariables * i + j];
         }
     }
@@ -3636,16 +3648,20 @@ BOOST_AUTO_TEST_CASE(test_setCohesion3, *boost::unit_test::tolerance(DEFAULT_TES
     floatMatrix previousdMicroGradientCohesiondXAssembled(3, floatVector(previousStateVariables.size(), 0));
 
     for (unsigned int i = 0; i < numNonLinearSolveStateVariables; i++) {
-        previousdMacroCohesiondXAssembled[i + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+        previousdMacroCohesiondXAssembled[i + (numConfigurations - 1) *
+                                                  hydra.hydra_configuration.configuration_unknown_count] =
             (*R.get_previousdMacroCohesiondStateVariables())[i];
 
-        previousdMicroCohesiondXAssembled[i + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+        previousdMicroCohesiondXAssembled[i + (numConfigurations - 1) *
+                                                  hydra.hydra_configuration.configuration_unknown_count] =
             (*R.get_previousdMicroCohesiondStateVariables())[i];
     }
 
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < numNonLinearSolveStateVariables; j++) {
-            previousdMicroGradientCohesiondXAssembled[i][j + (numConfigurations - 1) * hydra.hydra_configuration.configuration_unknown_count] =
+            previousdMicroGradientCohesiondXAssembled[i][j +
+                                                         (numConfigurations - 1) *
+                                                             hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_previousdMicroGradientCohesiondStateVariables())[numNonLinearSolveStateVariables * i + j];
         }
     }
@@ -4891,11 +4907,13 @@ BOOST_AUTO_TEST_CASE(test_setFlowDerivatives2, *boost::unit_test::tolerance(1e-5
             }
 
             for (unsigned int k = 0; k < 9; k++) {
-                assembled_d2MicroGradientFlowdDrivingStressdX[27 * i + j][k + hydra.hydra_configuration.configuration_unknown_count] =
+                assembled_d2MicroGradientFlowdDrivingStressdX[27 * i + j][k + hydra.hydra_configuration
+                                                                                  .configuration_unknown_count] =
                     (*R.get_d2MicroGradientFlowdDrivingStressdFn())[27 * 9 * i + 9 * j + k];
 
-                assembled_d2MicroGradientFlowdDrivingStressdX[27 * i + j][k + hydra.hydra_configuration.configuration_unknown_count + 9] =
-                    (*R.get_d2MicroGradientFlowdDrivingStressdChin())[27 * 9 * i + 9 * j + k];
+                assembled_d2MicroGradientFlowdDrivingStressdX
+                    [27 * i + j][k + hydra.hydra_configuration.configuration_unknown_count + 9] =
+                        (*R.get_d2MicroGradientFlowdDrivingStressdChin())[27 * 9 * i + 9 * j + k];
             }
         }
     }
@@ -6864,7 +6882,8 @@ BOOST_AUTO_TEST_CASE(test_setUpdatedPlasticStrainLikeISVs2, *boost::unit_test::t
 
     for (unsigned int i = 0; i < 5; i++) {
         for (unsigned int j = 0; j < 10; j++) {
-            assembled_dUpdatedPlasticStrainLikeISVsdX[i][j + 2 * hydra.hydra_configuration.configuration_unknown_count] =
+            assembled_dUpdatedPlasticStrainLikeISVsdX[i][j +
+                                                         2 * hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_dUpdatedPlasticStrainLikeISVsdStateVariables())[10 * i + j];
         }
     }
@@ -6915,7 +6934,8 @@ BOOST_AUTO_TEST_CASE(test_setUpdatedPlasticStrainLikeISVs2, *boost::unit_test::t
 
     for (unsigned int i = 0; i < 5; i++) {
         for (unsigned int j = 0; j < 10; j++) {
-            assembled_dUpdatedPlasticStrainLikeISVsdPreviousISVs[i][j + hydra.hydra_configuration.configuration_unknown_count] =
+            assembled_dUpdatedPlasticStrainLikeISVsdPreviousISVs[i][j + hydra.hydra_configuration
+                                                                            .configuration_unknown_count] =
                 (*R.get_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables())[10 * i + j];
         }
     }
@@ -7774,11 +7794,13 @@ BOOST_AUTO_TEST_CASE(test_setYield2, *boost::unit_test::tolerance(DEFAULT_TEST_T
 
     // Fn derivatives
     for (unsigned int i = 0; i < 9; i++) {
-        assemble_dMacroYielddX[i + hydra.hydra_configuration.configuration_unknown_count] = (*R.get_dMacroYielddFn())[i];
+        assemble_dMacroYielddX[i + hydra.hydra_configuration.configuration_unknown_count] =
+            (*R.get_dMacroYielddFn())[i];
     }
 
     for (unsigned int i = 0; i < 9; i++) {
-        assemble_dMicroYielddX[i + hydra.hydra_configuration.configuration_unknown_count] = (*R.get_dMicroYielddFn())[i];
+        assemble_dMicroYielddX[i + hydra.hydra_configuration.configuration_unknown_count] =
+            (*R.get_dMicroYielddFn())[i];
     }
 
     for (unsigned int i = 0; i < 3; i++) {
@@ -7798,11 +7820,13 @@ BOOST_AUTO_TEST_CASE(test_setYield2, *boost::unit_test::tolerance(DEFAULT_TEST_T
 
     // State variable derivatives
     for (unsigned int i = 0; i < 10; i++) {
-        assemble_dMacroYielddX[i + 2 * hydra.hydra_configuration.configuration_unknown_count] = (*R.get_dMacroYielddStateVariables())[i];
+        assemble_dMacroYielddX[i + 2 * hydra.hydra_configuration.configuration_unknown_count] =
+            (*R.get_dMacroYielddStateVariables())[i];
     }
 
     for (unsigned int i = 0; i < 10; i++) {
-        assemble_dMicroYielddX[i + 2 * hydra.hydra_configuration.configuration_unknown_count] = (*R.get_dMicroYielddStateVariables())[i];
+        assemble_dMicroYielddX[i + 2 * hydra.hydra_configuration.configuration_unknown_count] =
+            (*R.get_dMicroYielddStateVariables())[i];
     }
 
     for (unsigned int i = 0; i < 3; i++) {
@@ -8127,7 +8151,8 @@ BOOST_AUTO_TEST_CASE(test_setYield2, *boost::unit_test::tolerance(DEFAULT_TEST_T
 
     for (unsigned int i = 0; i < 3; i++) {
         for (unsigned int j = 0; j < 10; j++) {
-            assemble_previousdMicroGradientYielddStateVariables[i][j + hydra.hydra_configuration.configuration_unknown_count] =
+            assemble_previousdMicroGradientYielddStateVariables[i][j + hydra.hydra_configuration
+                                                                           .configuration_unknown_count] =
                 (*R.get_previousdMicroGradientYielddStateVariables())[10 * i + j];
         }
     }
@@ -8575,7 +8600,8 @@ BOOST_AUTO_TEST_CASE(test_setPrecedingDeformationGradient, *boost::unit_test::to
     for (unsigned int i = 0; i < 9; i++) {
         floatVector delta(unknownVector.size(), 0);
 
-        delta[i + hydra.hydra_configuration.configuration_unknown_count] = eps * std::fabs(unknownVector[i + hydra.hydra_configuration.configuration_unknown_count]) + eps;
+        delta[i + hydra.hydra_configuration.configuration_unknown_count] =
+            eps * std::fabs(unknownVector[i + hydra.hydra_configuration.configuration_unknown_count]) + eps;
 
         hydraBaseMicromorphicMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                          previousDeformationGradient, microDeformation, previousMicroDeformation,
@@ -8606,7 +8632,8 @@ BOOST_AUTO_TEST_CASE(test_setPrecedingDeformationGradient, *boost::unit_test::to
         floatVector vm = *Rm.get_precedingDeformationGradient();
 
         for (unsigned int j = 0; j < vp.size(); j++) {
-            dPrecedingFdFn[j][i] = (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count]);
+            dPrecedingFdFn[j][i] =
+                (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count]);
         }
     }
 
@@ -9049,7 +9076,8 @@ BOOST_AUTO_TEST_CASE(test_setPrecedingMicroDeformation, *boost::unit_test::toler
         floatVector vm = *Rm.get_precedingMicroDeformation();
 
         for (unsigned int j = 0; j < vp.size(); j++) {
-            dPrecedingChidChin[j][i] = (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count + 9]);
+            dPrecedingChidChin[j][i] =
+                (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count + 9]);
         }
     }
 
@@ -9421,7 +9449,8 @@ BOOST_AUTO_TEST_CASE(test_setPrecedingGradientMicroDeformation, *boost::unit_tes
     for (unsigned int i = 0; i < 9; i++) {
         floatVector delta(unknownVector.size(), 0);
 
-        delta[i + hydra.hydra_configuration.configuration_unknown_count] = eps * std::fabs(unknownVector[i + hydra.hydra_configuration.configuration_unknown_count]) + eps;
+        delta[i + hydra.hydra_configuration.configuration_unknown_count] =
+            eps * std::fabs(unknownVector[i + hydra.hydra_configuration.configuration_unknown_count]) + eps;
 
         hydraBaseMicromorphicMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                          previousDeformationGradient, microDeformation, previousMicroDeformation,
@@ -9452,7 +9481,8 @@ BOOST_AUTO_TEST_CASE(test_setPrecedingGradientMicroDeformation, *boost::unit_tes
         floatVector vm = *Rm.get_precedingGradientMicroDeformation();
 
         for (unsigned int j = 0; j < vp.size(); j++) {
-            dPrecedingGradChidFn[j][i] = (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count]);
+            dPrecedingGradChidFn[j][i] =
+                (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count]);
         }
     }
 
@@ -9537,7 +9567,8 @@ BOOST_AUTO_TEST_CASE(test_setPrecedingGradientMicroDeformation, *boost::unit_tes
         floatVector vm = *Rm.get_precedingGradientMicroDeformation();
 
         for (unsigned int j = 0; j < vp.size(); j++) {
-            dPrecedingGradChidChin[j][i] = (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count + 9]);
+            dPrecedingGradChidChin[j][i] =
+                (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count + 9]);
         }
     }
 
@@ -9622,7 +9653,8 @@ BOOST_AUTO_TEST_CASE(test_setPrecedingGradientMicroDeformation, *boost::unit_tes
         floatVector vm = *Rm.get_precedingGradientMicroDeformation();
 
         for (unsigned int j = 0; j < vp.size(); j++) {
-            dPrecedingGradChidGradChin[j][i] = (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count + 18]);
+            dPrecedingGradChidGradChin[j][i] =
+                (vp[j] - vm[j]) / (2 * delta[i + hydra.hydra_configuration.configuration_unknown_count + 18]);
         }
     }
 
@@ -11235,7 +11267,8 @@ BOOST_AUTO_TEST_CASE(test_setPlasticVelocityGradients2, *boost::unit_test::toler
 
     floatMatrix previousdMicroLdStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
 
-    floatMatrix previousdMicroGradientLdStress(27, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix previousdMicroGradientLdStress(27,
+                                               floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
 
     floatMatrix previousdMacroLdISVs(9, floatVector(previousStateVariables.size(), 0));
 
@@ -11633,11 +11666,14 @@ BOOST_AUTO_TEST_CASE(test_setPlasticVelocityGradients2, *boost::unit_test::toler
         }
     }
 
-    floatMatrix assembled_previousdMacroLdStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix assembled_previousdMacroLdStress(9,
+                                                 floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
 
-    floatMatrix assembled_previousdMicroLdStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix assembled_previousdMicroLdStress(9,
+                                                 floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
 
-    floatMatrix assembled_previousdMicroGradientLdStress(27, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix assembled_previousdMicroGradientLdStress(
+        27, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
 
     for (unsigned int i = 0; i < 9; i++) {
         for (unsigned int j = 0; j < 9; j++) {
@@ -14840,11 +14876,15 @@ BOOST_AUTO_TEST_CASE(test_setPlasticDeformation2, *boost::unit_test::tolerance(D
 
     floatMatrix dUpdatedPlasticGradChidGradChi(27, floatVector(27, 0));
 
-    floatMatrix dUpdatedPlasticFdPreviousStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix dUpdatedPlasticFdPreviousStress(9,
+                                                floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
 
-    floatMatrix dUpdatedPlasticChidPreviousStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix dUpdatedPlasticChidPreviousStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count,
+                                                                 0));
 
-    floatMatrix dUpdatedPlasticGradChidPreviousStress(27, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix dUpdatedPlasticGradChidPreviousStress(27,
+                                                      floatVector(hydra.hydra_configuration.configuration_unknown_count,
+                                                                  0));
 
     floatMatrix dUpdatedPlasticFdPreviousISVs(9, floatVector(previousStateVariables.size(), 0));
 
@@ -15406,7 +15446,8 @@ BOOST_AUTO_TEST_CASE(test_setPlasticDeformation2, *boost::unit_test::tolerance(D
         }
 
         for (unsigned int j = 0; j < 10; j++) {
-            assembled_dUpdatedPlasticGradChidPreviousISVs[i][j + hydra.hydra_configuration.configuration_unknown_count] =
+            assembled_dUpdatedPlasticGradChidPreviousISVs[i][j +
+                                                             hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables())[10 * i + j];
         }
     }
@@ -15908,11 +15949,15 @@ BOOST_AUTO_TEST_CASE(test_setPlasticDeformation3, *boost::unit_test::tolerance(D
 
     floatMatrix dUpdatedPlasticGradChidGradChi(27, floatVector(27, 0));
 
-    floatMatrix dUpdatedPlasticFdPreviousStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix dUpdatedPlasticFdPreviousStress(9,
+                                                floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
 
-    floatMatrix dUpdatedPlasticChidPreviousStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix dUpdatedPlasticChidPreviousStress(9, floatVector(hydra.hydra_configuration.configuration_unknown_count,
+                                                                 0));
 
-    floatMatrix dUpdatedPlasticGradChidPreviousStress(27, floatVector(hydra.hydra_configuration.configuration_unknown_count, 0));
+    floatMatrix dUpdatedPlasticGradChidPreviousStress(27,
+                                                      floatVector(hydra.hydra_configuration.configuration_unknown_count,
+                                                                  0));
 
     floatMatrix dUpdatedPlasticFdPreviousISVs(9, floatVector(previousStateVariables.size(), 0));
 
@@ -16475,7 +16520,8 @@ BOOST_AUTO_TEST_CASE(test_setPlasticDeformation3, *boost::unit_test::tolerance(D
         }
 
         for (unsigned int j = 0; j < 10; j++) {
-            assembled_dUpdatedPlasticGradChidPreviousISVs[i][j + hydra.hydra_configuration.configuration_unknown_count] =
+            assembled_dUpdatedPlasticGradChidPreviousISVs[i][j +
+                                                             hydra.hydra_configuration.configuration_unknown_count] =
                 (*R.get_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables())[10 * i + j];
         }
     }
@@ -16955,31 +17001,51 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableResiduals, *boost::unit_test::toleranc
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1(10, 0);
-    answer1[0] = R.macroYield + 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R.macroYield;
-    answer1[1] = R.microYield + 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R.microYield;
+    answer1[0] = R.macroYield +
+                 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R.macroYield;
+    answer1[1] = R.microYield +
+                 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R.microYield;
     answer1[2] =
-        R.microGradientYield[0] + 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] * R.microGradientYield[0];
+        R.microGradientYield[0] +
+        0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] * R.microGradientYield[0];
     answer1[3] =
-        R.microGradientYield[1] + 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] * R.microGradientYield[1];
+        R.microGradientYield[1] +
+        0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] * R.microGradientYield[1];
     answer1[4] =
-        R.microGradientYield[2] + 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] * R.microGradientYield[2];
-    answer1[5] = R.updatedPlasticStrainLikeISVs[0] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
-    answer1[6] = R.updatedPlasticStrainLikeISVs[1] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
-    answer1[7] = R.updatedPlasticStrainLikeISVs[2] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
-    answer1[8] = R.updatedPlasticStrainLikeISVs[3] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
-    answer1[9] = R.updatedPlasticStrainLikeISVs[4] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
+        R.microGradientYield[2] +
+        0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] * R.microGradientYield[2];
+    answer1[5] = R.updatedPlasticStrainLikeISVs[0] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
+    answer1[6] = R.updatedPlasticStrainLikeISVs[1] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
+    answer1[7] = R.updatedPlasticStrainLikeISVs[2] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
+    answer1[8] = R.updatedPlasticStrainLikeISVs[3] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
+    answer1[9] = R.updatedPlasticStrainLikeISVs[4] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
 
     floatVector answer2(10, 0);
-    answer2[0] = 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R2.macroYield);
-    answer2[1] = 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R2.microYield);
-    answer2[2] = 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] * R2.microGradientYield[0]);
-    answer2[3] = 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] * R2.microGradientYield[1]);
-    answer2[4] = 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] * R2.microGradientYield[2]);
-    answer2[5] = R2.updatedPlasticStrainLikeISVs[0] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
-    answer2[6] = R2.updatedPlasticStrainLikeISVs[1] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
-    answer2[7] = R2.updatedPlasticStrainLikeISVs[2] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
-    answer2[8] = R2.updatedPlasticStrainLikeISVs[3] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
-    answer2[9] = R2.updatedPlasticStrainLikeISVs[4] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
+    answer2[0] =
+        0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R2.macroYield);
+    answer2[1] =
+        0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R2.microYield);
+    answer2[2] = 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] *
+                                 R2.microGradientYield[0]);
+    answer2[3] = 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] *
+                                 R2.microGradientYield[1]);
+    answer2[4] = 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] *
+                                 R2.microGradientYield[2]);
+    answer2[5] = R2.updatedPlasticStrainLikeISVs[0] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
+    answer2[6] = R2.updatedPlasticStrainLikeISVs[1] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
+    answer2[7] = R2.updatedPlasticStrainLikeISVs[2] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
+    answer2[8] = R2.updatedPlasticStrainLikeISVs[3] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
+    answer2[9] = R2.updatedPlasticStrainLikeISVs[4] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
 
     BOOST_TEST(answer1 == *R.get_stateVariableResiduals(), CHECK_PER_ELEMENT);
 
@@ -17255,51 +17321,81 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableResiduals2, *boost::unit_test::toleran
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1(10, 0);
-    answer1[0] = R.macroYield + 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R.macroYield) +
-                 R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0]);
-    answer1[1] = R.microYield + 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R.microYield) +
-                 R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1]);
+    answer1[0] =
+        R.macroYield +
+        0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R.macroYield) +
+        R.getPlasticMultiplierBarrierModulus() *
+            tardigradeConstitutiveTools::mac(
+                -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0]);
+    answer1[1] =
+        R.microYield +
+        0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R.microYield) +
+        R.getPlasticMultiplierBarrierModulus() *
+            tardigradeConstitutiveTools::mac(
+                -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1]);
     answer1[2] = R.microGradientYield[0] +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] * R.microGradientYield[0]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] *
+                                 R.microGradientYield[0]) +
                  R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2]);
+                     tardigradeConstitutiveTools::mac(
+                         -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2]);
     answer1[3] = R.microGradientYield[1] +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] * R.microGradientYield[1]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] *
+                                 R.microGradientYield[1]) +
                  R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3]);
+                     tardigradeConstitutiveTools::mac(
+                         -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3]);
     answer1[4] = R.microGradientYield[2] +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] * R.microGradientYield[2]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] *
+                                 R.microGradientYield[2]) +
                  R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4]);
-    answer1[5] = R.updatedPlasticStrainLikeISVs[0] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
-    answer1[6] = R.updatedPlasticStrainLikeISVs[1] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
-    answer1[7] = R.updatedPlasticStrainLikeISVs[2] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
-    answer1[8] = R.updatedPlasticStrainLikeISVs[3] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
-    answer1[9] = R.updatedPlasticStrainLikeISVs[4] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
+                     tardigradeConstitutiveTools::mac(
+                         -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4]);
+    answer1[5] = R.updatedPlasticStrainLikeISVs[0] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
+    answer1[6] = R.updatedPlasticStrainLikeISVs[1] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
+    answer1[7] = R.updatedPlasticStrainLikeISVs[2] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
+    answer1[8] = R.updatedPlasticStrainLikeISVs[3] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
+    answer1[9] = R.updatedPlasticStrainLikeISVs[4] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
 
     floatVector answer2(10, 0);
     answer2[0] = 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R2.macroYield +
                  R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0]);
+                     tardigradeConstitutiveTools::mac(
+                         -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0]);
     answer2[1] = 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R2.microYield +
                  R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1]);
-    answer2[2] = 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] * R2.microGradientYield[0] +
-                 R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2]);
-    answer2[3] = 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] * R2.microGradientYield[1] +
-                 R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3]);
-    answer2[4] = 0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] * R2.microGradientYield[2] +
-                 R.getPlasticMultiplierBarrierModulus() *
-                     tardigradeConstitutiveTools::mac(-unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4]);
-    answer2[5] = R2.updatedPlasticStrainLikeISVs[0] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
-    answer2[6] = R2.updatedPlasticStrainLikeISVs[1] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
-    answer2[7] = R2.updatedPlasticStrainLikeISVs[2] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
-    answer2[8] = R2.updatedPlasticStrainLikeISVs[3] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
-    answer2[9] = R2.updatedPlasticStrainLikeISVs[4] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
+                     tardigradeConstitutiveTools::mac(
+                         -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1]);
+    answer2[2] =
+        0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] * R2.microGradientYield[0] +
+        R.getPlasticMultiplierBarrierModulus() *
+            tardigradeConstitutiveTools::mac(
+                -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2]);
+    answer2[3] =
+        0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] * R2.microGradientYield[1] +
+        R.getPlasticMultiplierBarrierModulus() *
+            tardigradeConstitutiveTools::mac(
+                -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3]);
+    answer2[4] =
+        0.1 * unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] * R2.microGradientYield[2] +
+        R.getPlasticMultiplierBarrierModulus() *
+            tardigradeConstitutiveTools::mac(
+                -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4]);
+    answer2[5] = R2.updatedPlasticStrainLikeISVs[0] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
+    answer2[6] = R2.updatedPlasticStrainLikeISVs[1] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
+    answer2[7] = R2.updatedPlasticStrainLikeISVs[2] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
+    answer2[8] = R2.updatedPlasticStrainLikeISVs[3] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
+    answer2[9] = R2.updatedPlasticStrainLikeISVs[4] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
 
     BOOST_TEST(answer1 == *R.get_stateVariableResiduals(), CHECK_PER_ELEMENT);
 
@@ -18824,58 +18920,78 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableResiduals_weak, *boost::unit_test::tol
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1(10, 0);
-    answer1[0] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R.macroYield, a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R.macroYield) +
-                 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
-                            -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0], a);
-    answer1[1] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R.microYield, a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R.microYield) +
-                 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
-                            -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1], a);
+    answer1[0] =
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R.macroYield, a) +
+        0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R.macroYield) +
+        1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
+                   -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0], a);
+    answer1[1] =
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R.microYield, a) +
+        0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R.microYield) +
+        1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
+                   -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1], a);
     answer1[2] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R.microGradientYield[0], a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] * R.microGradientYield[0]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] *
+                                 R.microGradientYield[0]) +
                  1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
                             -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2], a);
     answer1[3] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R.microGradientYield[1], a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] * R.microGradientYield[1]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] *
+                                 R.microGradientYield[1]) +
                  1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
                             -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3], a);
     answer1[4] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R.microGradientYield[2], a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] * R.microGradientYield[2]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] *
+                                 R.microGradientYield[2]) +
                  1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
                             -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4], a);
-    answer1[5] = R.updatedPlasticStrainLikeISVs[0] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
-    answer1[6] = R.updatedPlasticStrainLikeISVs[1] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
-    answer1[7] = R.updatedPlasticStrainLikeISVs[2] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
-    answer1[8] = R.updatedPlasticStrainLikeISVs[3] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
-    answer1[9] = R.updatedPlasticStrainLikeISVs[4] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
+    answer1[5] = R.updatedPlasticStrainLikeISVs[0] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
+    answer1[6] = R.updatedPlasticStrainLikeISVs[1] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
+    answer1[7] = R.updatedPlasticStrainLikeISVs[2] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
+    answer1[8] = R.updatedPlasticStrainLikeISVs[3] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
+    answer1[9] = R.updatedPlasticStrainLikeISVs[4] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
 
     floatVector answer2(10, 0);
-    answer2[0] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R2.macroYield, a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R2.macroYield) +
-                 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
-                            -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0], a);
-    answer2[1] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R2.microYield, a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R2.microYield) +
-                 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
-                            -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1], a);
+    answer2[0] =
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R2.macroYield, a) +
+        0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0] * R2.macroYield) +
+        1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
+                   -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0], a);
+    answer2[1] =
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R2.microYield, a) +
+        0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1] * R2.microYield) +
+        1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
+                   -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 1], a);
     answer2[2] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R2.microGradientYield[0], a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] * R2.microGradientYield[0]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2] *
+                                 R2.microGradientYield[0]) +
                  1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
                             -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 2], a);
     answer2[3] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R2.microGradientYield[1], a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] * R2.microGradientYield[1]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3] *
+                                 R2.microGradientYield[1]) +
                  1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
                             -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 3], a);
     answer2[4] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(R2.microGradientYield[2], a) +
-                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] * R2.microGradientYield[2]) +
+                 0.1 * std::fabs(unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4] *
+                                 R2.microGradientYield[2]) +
                  1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac(
                             -unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 4], a);
-    answer2[5] = R2.updatedPlasticStrainLikeISVs[0] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
-    answer2[6] = R2.updatedPlasticStrainLikeISVs[1] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
-    answer2[7] = R2.updatedPlasticStrainLikeISVs[2] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
-    answer2[8] = R2.updatedPlasticStrainLikeISVs[3] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
-    answer2[9] = R2.updatedPlasticStrainLikeISVs[4] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
+    answer2[5] = R2.updatedPlasticStrainLikeISVs[0] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
+    answer2[6] = R2.updatedPlasticStrainLikeISVs[1] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
+    answer2[7] = R2.updatedPlasticStrainLikeISVs[2] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
+    answer2[8] = R2.updatedPlasticStrainLikeISVs[3] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
+    answer2[9] = R2.updatedPlasticStrainLikeISVs[4] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
 
     BOOST_TEST(answer1 == *R.get_stateVariableResiduals(), CHECK_PER_ELEMENT);
 
@@ -20397,10 +20513,12 @@ BOOST_AUTO_TEST_CASE(test_setResidual, *boost::unit_test::tolerance(DEFAULT_TEST
     residualMock R(&hydra, 55, 1, stateVariableIndices, parameters);
 
     floatVector answer = tardigradeVectorTools::appendVectors(
-        {R.updatedPlasticDeformationGradient - floatVector(unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 0,
-                                                           unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 9),
-         R.updatedPlasticMicroDeformation - floatVector(unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 9,
-                                                        unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 18),
+        {R.updatedPlasticDeformationGradient -
+             floatVector(unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 0,
+                         unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 9),
+         R.updatedPlasticMicroDeformation -
+             floatVector(unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 9,
+                         unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 18),
          R.updatedPlasticGradientMicroDeformation -
              floatVector(unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 18,
                          unknownVector.begin() + hydra.hydra_configuration.configuration_unknown_count + 45),

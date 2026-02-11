@@ -52,7 +52,7 @@ namespace tardigradeHydra {
           _previousStateVariables(previousStateVariables),
           _parameters(parameters),
           _numConfigurations(numConfigurations),
-          _numNonLinearSolveStateVariables(numNonLinearSolveStateVariables){
+          _numNonLinearSolveStateVariables(numNonLinearSolveStateVariables) {
         // TEMP
         _solver.hydra                  = this;
         _solver.internal_solver->hydra = this;
