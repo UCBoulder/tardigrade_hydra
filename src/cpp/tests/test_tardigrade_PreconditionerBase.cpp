@@ -133,6 +133,8 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -174,7 +176,7 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
         using tardigradeHydra::hydraBase::hydraBase;
     };
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables);
 

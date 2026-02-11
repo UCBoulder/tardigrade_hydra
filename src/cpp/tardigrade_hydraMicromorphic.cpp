@@ -15,8 +15,7 @@ namespace tardigradeHydra {
      * The main constructor for the micromorphic hydra base class. Inputs are all the required values for most
      * solves.
      *
-     * \param &time: The current time
-     * \param &deltaTime: The change in time
+     * \param &DOFStorage: The degree of freedom storage class
      * \param &temperature: The current temperature
      * \param &previousTemperature: The previous temperature
      * \param &deformationGradient: The current deformation gradient
@@ -38,7 +37,7 @@ namespace tardigradeHydra {
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBaseMicromorphic::hydraBaseMicromorphic(
-        const floatType &time, const floatType &deltaTime, const floatType &temperature,
+        const DOFStorageBase &DOFStorage, const floatType &temperature,
         const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
         const secondOrderTensor &previousDeformationGradient, const secondOrderTensor &microDeformation,
         const secondOrderTensor &previousMicroDeformation, const thirdOrderTensor &gradientMicroDeformation,
@@ -46,7 +45,7 @@ namespace tardigradeHydra {
         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
         const floatVector &parameters, const unsigned int numConfigurations,
         const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
-        : hydraBase(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+        : hydraBase(DOFStorage, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                     additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
                     numNonLinearSolveStateVariables, _hydra_configuration),
           _microDeformation(microDeformation),

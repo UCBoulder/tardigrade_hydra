@@ -86,6 +86,11 @@ namespace tardigradeHydra {
     class DOFStorageBase {
        public:
         /*!
+         * Default constructor
+         */
+        DOFStorageBase() : _time(0), _deltaTime(0) {}
+
+        /*!
          * Constructor which sets the time information
          *
          * \param &time: The current time
@@ -118,7 +123,7 @@ namespace tardigradeHydra {
         hydraBase() {}
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
-        hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
+        hydraBase(const DOFStorageBase &DOFStorage, const floatType &temperature,
                   const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
                   const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
                   const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
@@ -345,6 +350,9 @@ namespace tardigradeHydra {
         //! The class which defines the hydra configuration
         HydraConfigurationBase hydra_configuration;
 
+        //! The class which stores the degrees of freedom
+        DOFStorageBase dof;
+
        protected:
         //! Default solver
         SubcyclerSolver _solver;
@@ -423,12 +431,6 @@ namespace tardigradeHydra {
 
         //! The number of terms in the stress measures
         unsigned int _stress_size;
-
-        //! The current time
-        floatType _time;
-
-        //! The change in time
-        floatType _deltaTime;
 
         //! The current temperature
         floatType _temperature;
