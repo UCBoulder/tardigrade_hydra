@@ -24,6 +24,7 @@ Breaking Changes
 ================
 - Changing the hydra interface to simplify creating hydra objects (:pull:`252`). By `Nathan Miller`_.
 - Removed the tolerance getter functions to just use the HydraConfigurationBase class values (:pull:`253`). By `Nathan Miller`_.
+- Moved dimension to DeformationBase (:pull:`254`). By `Nathan Miller`_.
 
 ******************
 0.7.1 (02-03-2026)
