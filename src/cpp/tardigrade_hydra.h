@@ -101,7 +101,7 @@ namespace tardigradeHydra {
                   const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
                   const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                   const floatVector &parameters, const unsigned int numConfigurations,
-                  const unsigned int numNonLinearSolveStateVariables,
+                  const unsigned int     numNonLinearSolveStateVariables,
                   HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
         virtual void initialize();
@@ -178,10 +178,14 @@ namespace tardigradeHydra {
         constexpr unsigned int getSOTDimension() { return deformation->dimension * deformation->dimension; }
 
         //! Get a third order tensor's dimension
-        constexpr unsigned int getTOTDimension() { return deformation->dimension * deformation->dimension * deformation->dimension; }
+        constexpr unsigned int getTOTDimension() {
+            return deformation->dimension * deformation->dimension * deformation->dimension;
+        }
 
         //! Get a fourth order tensor's dimension
-        constexpr unsigned int getFOTDimension() { return deformation->dimension * deformation->dimension * deformation->dimension * deformation->dimension; }
+        constexpr unsigned int getFOTDimension() {
+            return deformation->dimension * deformation->dimension * deformation->dimension * deformation->dimension;
+        }
 
         virtual void setResidualClasses();
 

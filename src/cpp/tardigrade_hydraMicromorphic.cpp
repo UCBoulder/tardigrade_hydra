@@ -45,8 +45,7 @@ namespace tardigradeHydra {
         const thirdOrderTensor &previousGradientMicroDeformation, const floatVector &additionalDOF,
         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
         const floatVector &parameters, const unsigned int numConfigurations,
-        const unsigned int numNonLinearSolveStateVariables,
-        HydraConfigurationBase _hydra_configuration)
+        const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
         : hydraBase(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                     additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
                     numNonLinearSolveStateVariables, _hydra_configuration),

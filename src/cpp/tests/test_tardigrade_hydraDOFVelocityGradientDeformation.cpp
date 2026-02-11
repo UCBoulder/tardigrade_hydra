@@ -3218,11 +3218,13 @@ BOOST_AUTO_TEST_CASE(test_residual_dofResidual_2, *boost::unit_test::tolerance(D
 
             hydraBaseMock hydrap(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+                                 previousStateVariables, parameters, numConfigurations,
+                                 numNonLinearSolveStateVariables);
 
             hydraBaseMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+                                 previousStateVariables, parameters, numConfigurations,
+                                 numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 
@@ -3322,11 +3324,13 @@ BOOST_AUTO_TEST_CASE(test_residual_dofResidual_2, *boost::unit_test::tolerance(D
 
             hydraBaseMock hydrap(time, deltaTime, xp[0], previousTemperature, deformationGradient,
                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+                                 previousStateVariables, parameters, numConfigurations,
+                                 numNonLinearSolveStateVariables);
 
             hydraBaseMock hydram(time, deltaTime, xm[0], previousTemperature, deformationGradient,
                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+                                 previousStateVariables, parameters, numConfigurations,
+                                 numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 
@@ -3553,11 +3557,13 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
 
             hydraBaseMock hydrap(time, deltaTime, xp[0], previousTemperature, deformationGradient,
                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+                                 previousStateVariables, parameters, numConfigurations,
+                                 numNonLinearSolveStateVariables);
 
             hydraBaseMock hydram(time, deltaTime, xm[0], previousTemperature, deformationGradient,
                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+                                 previousStateVariables, parameters, numConfigurations,
+                                 numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
 
@@ -3763,11 +3769,13 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel2, *boost::unit_test::tolerance(D
 
             hydraBaseMock hydrap(time, deltaTime, xp[0], previousTemperature, deformationGradient,
                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+                                 previousStateVariables, parameters, numConfigurations,
+                                 numNonLinearSolveStateVariables);
 
             hydraBaseMock hydram(time, deltaTime, xm[0], previousTemperature, deformationGradient,
                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                 previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+                                 previousStateVariables, parameters, numConfigurations,
+                                 numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
 

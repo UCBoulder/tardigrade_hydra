@@ -29,7 +29,8 @@ namespace tardigradeHydra {
          * \param *_hydra: The containing hydra object
          * \param _dimension: The spatial dimension
          */
-        DeformationBase(hydraBase *_hydra = nullptr, const unsigned int _dimension=3) : hydra(_hydra), dimension(_dimension) {}
+        DeformationBase(hydraBase *_hydra = nullptr, const unsigned int _dimension = 3)
+            : hydra(_hydra), dimension(_dimension) {}
 
         template <unsigned int leading_rows, unsigned int size, unsigned int dim>
         floatVector getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,

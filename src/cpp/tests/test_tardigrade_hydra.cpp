@@ -101,18 +101,23 @@ namespace tardigradeHydra {
                 BOOST_CHECK(hydra._numNonLinearSolveStateVariables == hydra.getNumNonLinearSolveStateVariables());
             }
 
-            static void checkDimension(hydraBase &hydra) { BOOST_CHECK(hydra.deformation->dimension == hydra.getDimension()); }
+            static void checkDimension(hydraBase &hydra) {
+                BOOST_CHECK(hydra.deformation->dimension == hydra.getDimension());
+            }
 
             static void checkSOTDimension(hydraBase &hydra) {
                 BOOST_CHECK(hydra.deformation->dimension * hydra.deformation->dimension == hydra.getSOTDimension());
             }
 
             static void checkTOTDimension(hydraBase &hydra) {
-                BOOST_CHECK(hydra.deformation->dimension * hydra.deformation->dimension * hydra.deformation->dimension == hydra.getTOTDimension());
+                BOOST_CHECK(hydra.deformation->dimension * hydra.deformation->dimension *
+                                hydra.deformation->dimension ==
+                            hydra.getTOTDimension());
             }
 
             static void checkFOTDimension(hydraBase &hydra) {
-                BOOST_CHECK(hydra.deformation->dimension * hydra.deformation->dimension * hydra.deformation->dimension * hydra.deformation->dimension ==
+                BOOST_CHECK(hydra.deformation->dimension * hydra.deformation->dimension * hydra.deformation->dimension *
+                                hydra.deformation->dimension ==
                             hydra.getFOTDimension());
             }
 

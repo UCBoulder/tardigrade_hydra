@@ -36,7 +36,8 @@ namespace tardigradeHydra {
                          const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
                          const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                          const floatVector &parameters, const unsigned int numConfigurations,
-                         const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
+                         const unsigned int     numNonLinearSolveStateVariables,
+                         HydraConfigurationBase _hydra_configuration)
         : hydra_configuration(_hydra_configuration),
           _stress_size(_hydra_configuration.configuration_unknown_count),
           _time(time),
