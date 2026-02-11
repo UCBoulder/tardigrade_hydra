@@ -114,8 +114,6 @@ BOOST_AUTO_TEST_CASE(test_LevenbergMarquardtStep_getNonlinearLMTerms, *boost::un
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
         tardigradeHydra::floatVector residual = {1, 2, 3, 4, 5};
@@ -165,7 +163,7 @@ BOOST_AUTO_TEST_CASE(test_LevenbergMarquardtStep_getNonlinearLMTerms, *boost::un
 
     hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
                         previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+                        numNonLinearSolveStateVariables);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
     tardigradeHydra::SolverStepBase      step(&solver);

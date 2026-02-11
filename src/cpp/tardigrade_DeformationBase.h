@@ -27,8 +27,9 @@ namespace tardigradeHydra {
          * Constructor of DeformationBase
          *
          * \param *_hydra: The containing hydra object
+         * \param _dimension: The spatial dimension
          */
-        DeformationBase(hydraBase *_hydra = nullptr) : hydra(_hydra) {}
+        DeformationBase(hydraBase *_hydra = nullptr, const unsigned int _dimension=3) : hydra(_hydra), dimension(_dimension) {}
 
         template <unsigned int leading_rows, unsigned int size, unsigned int dim>
         floatVector getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
@@ -81,6 +82,9 @@ namespace tardigradeHydra {
 
         //! Pointer to the containing hydraBase object
         hydraBase *hydra;
+
+        //! The spatial dimension of the problem
+        const unsigned int dimension;
 
        protected:
         void setFirstConfigurationJacobians();
