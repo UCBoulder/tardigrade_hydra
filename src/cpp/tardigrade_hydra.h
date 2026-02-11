@@ -81,6 +81,28 @@ namespace tardigradeHydra {
     };
 
     /*!
+     * DOFStorageBase: A class which stores the degrees of freedom
+     */
+    class DOFStorageBase {
+       public:
+        /*!
+         * Constructor which sets the time information
+         *
+         * \param &time: The current time
+         * \param &deltaTime: The change in time from the previous time
+         */
+        DOFStorageBase(const floatType &time, const floatType &deltaTime) : _time(time), _deltaTime(deltaTime) {}
+
+        //! The current time
+        const floatType _time;
+
+        //! The change in time from the previous timestep
+        const floatType _deltaTime;
+
+       protected:
+    };
+
+    /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
      *
      * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
