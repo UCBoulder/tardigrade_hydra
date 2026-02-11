@@ -145,11 +145,11 @@ namespace tardigradeHydra {
             static unsigned int getIterationDataSize(hydraBase &hydra) { return hydra._iterationData.size(); }
 
             static void checkRelativeTolerance(hydraBase &hydra) {
-                BOOST_CHECK(hydra._tolr == hydra.getRelativeTolerance());
+                BOOST_CHECK(hydra.hydra_configuration.tolr == hydra.getRelativeTolerance());
             }
 
             static void checkAbsoluteTolerance(hydraBase &hydra) {
-                BOOST_CHECK(hydra._tola == hydra.getAbsoluteTolerance());
+                BOOST_CHECK(hydra.hydra_configuration.tola == hydra.getAbsoluteTolerance());
             }
 
             static void formNonLinearResidual(hydraBase &hydra) { BOOST_CHECK_NO_THROW(hydra.formNonLinearResidual()); }
@@ -203,7 +203,7 @@ namespace tardigradeHydra {
             }
 
             static void set_configuration_unknown_count(hydraBase &hydra, const unsigned int &value) {
-                hydra._configuration_unknown_count = value;
+                hydra.hydra_configuration.configuration_unknown_count = value;
             }
 
             static void updateUnknownVector(hydraBase &hydra, const floatVector &value) {
@@ -1982,7 +1982,7 @@ BOOST_AUTO_TEST_CASE(test_computeTangents, *boost::unit_test::tolerance(2e-6)) {
 
     hydraBaseMock                    hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                                previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                                               numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
+                                               numNonLinearSolveStateVariables, dimension);
     tardigradeHydra::SolverStepBase  step_pre(hydra_pre.solver);
     tardigradeHydra::TrialStepBase   trial_step_pre(&step_pre);
     tardigradeHydra::StepDampingBase damping_pre(&step_pre);
@@ -2096,7 +2096,7 @@ BOOST_AUTO_TEST_CASE(test_computeFlatdXdAdditionalDOF, *boost::unit_test::tolera
 
     hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
                             previousDeformationGradient, {1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, previousStateVariables,
-                            parameters, numConfigurations, numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
+                            parameters, numConfigurations, numNonLinearSolveStateVariables, dimension);
 
     tardigradeHydra::SolverStepBase step_pre(hydra_pre.solver);
 
