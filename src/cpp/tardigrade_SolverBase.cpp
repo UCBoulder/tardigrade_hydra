@@ -60,7 +60,7 @@ namespace tardigradeHydra {
      */
     const floatType SolverBase::getRelativeTolerance() {
         TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
-        return hydra->getRelativeTolerance();
+        return hydra->hydra_configuration.tolr;
     }
 
     /*!
@@ -68,7 +68,7 @@ namespace tardigradeHydra {
      */
     const floatType SolverBase::getAbsoluteTolerance() {
         TARDIGRADE_ERROR_TOOLS_CHECK(hydra != nullptr, "Hydra has not been defined");
-        return hydra->getAbsoluteTolerance();
+        return hydra->hydra_configuration.tola;
     }
 
     /*!

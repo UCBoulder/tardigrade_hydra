@@ -404,7 +404,7 @@ namespace tardigradeHydra {
                 // Perturb the plastic multiplier
                 floatType delta =
                     std::fmax((*get_plasticMultipliers())[0],
-                              hydra->getRelativeTolerance() * (*get_macroYield()) + hydra->getAbsoluteTolerance());
+                              hydra->hydra_configuration.tolr * (*get_macroYield()) + hydra->hydra_configuration.tola);
                 indices.push_back((*getStateVariableIndices())[0]);
                 values.push_back(delta);
             }
@@ -415,7 +415,7 @@ namespace tardigradeHydra {
                 // Perturb the plastic multiplier
                 floatType delta =
                     std::fmax((*get_plasticMultipliers())[1],
-                              hydra->getRelativeTolerance() * (*get_microYield()) + hydra->getAbsoluteTolerance());
+                              hydra->hydra_configuration.tolr * (*get_microYield()) + hydra->hydra_configuration.tola);
                 indices.push_back((*getStateVariableIndices())[1]);
                 values.push_back(delta);
             }
@@ -426,8 +426,8 @@ namespace tardigradeHydra {
                 if ((*get_microGradientYield())[i] > 0) {
                     // Perturb the plastic multiplier
                     floatType delta = std::fmax((*get_plasticMultipliers())[i + 2],
-                                                hydra->getRelativeTolerance() * (*get_microGradientYield())[i] +
-                                                    hydra->getAbsoluteTolerance());
+                                                hydra->hydra_configuration.tolr * (*get_microGradientYield())[i] +
+                                                    hydra->hydra_configuration.tola);
                     indices.push_back((*getStateVariableIndices())[i + 2]);
                     values.push_back(delta);
                 }

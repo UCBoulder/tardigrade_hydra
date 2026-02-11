@@ -183,12 +183,6 @@ namespace tardigradeHydra {
         //! Get a fourth order tensor's dimension
         constexpr unsigned int getFOTDimension() { return _dimension * _dimension * _dimension * _dimension; }
 
-        //! Get the relative tolerance
-        constexpr floatType getRelativeTolerance() { return hydra_configuration.tolr; }
-
-        //! Get the absolute tolerance
-        constexpr floatType getAbsoluteTolerance() { return hydra_configuration.tola; }
-
         virtual void setResidualClasses();
 
         void setResidualClasses(std::vector<ResidualBase<hydraBase> *> &residualClasses);
