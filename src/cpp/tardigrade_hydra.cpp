@@ -28,9 +28,8 @@ namespace tardigradeHydra {
      * \param &parameters: The model parameters
      * \param &numConfigurations: The number of configurations
      * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
-     * non-linear solve's residual \param &dimension: The dimension of the problem (defaults to 3) \param
-     * &configuration_unknown_count: The number of unknowns in each configuration (defaults to 9) \param &tolr: The
-     * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9)
+     * non-linear solve's residual \param &dimension: The dimension of the problem (defaults to 3)
+      \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBase::hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
                          const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
@@ -38,10 +37,10 @@ namespace tardigradeHydra {
                          const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                          const floatVector &parameters, const unsigned int numConfigurations,
                          const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
-                         const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola)
-        : _dimension(dimension),
-          _configuration_unknown_count(configuration_unknown_count),
-          _stress_size(configuration_unknown_count),
+                         HydraConfigurationBase _hydra_configuration)
+        : hydra_configuration(_hydra_configuration),
+          _dimension(dimension),
+          _stress_size(_hydra_configuration.configuration_unknown_count),
           _time(time),
           _deltaTime(deltaTime),
           _temperature(temperature),
@@ -53,9 +52,7 @@ namespace tardigradeHydra {
           _previousStateVariables(previousStateVariables),
           _parameters(parameters),
           _numConfigurations(numConfigurations),
-          _numNonLinearSolveStateVariables(numNonLinearSolveStateVariables),
-          _tolr(tolr),
-          _tola(tola) {
+          _numNonLinearSolveStateVariables(numNonLinearSolveStateVariables) {
         // TEMP
         _solver.hydra                  = this;
         _solver.internal_solver->hydra = this;

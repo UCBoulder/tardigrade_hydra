@@ -18,6 +18,14 @@ namespace tardigradeHydra {
     typedef std::vector<floatType> fifthOrderTensor;  //!< Fifth order tensors
     typedef std::vector<floatType> sixthOrderTensor;  //!< Sixth order tensors
 
+    /*!
+     * HydraClassicalConfiguration: A class which defines a classical deformation problem
+     */
+    class HydraMicromorphicConfiguration : public HydraConfigurationBase {
+       public:
+        HydraMicromorphicConfiguration() { configuration_unknown_count = 45; }
+    };
+
     //! The base class for hydra framework micromorphic material models
     class hydraBaseMicromorphic : public hydraBase {
        public:
@@ -33,8 +41,8 @@ namespace tardigradeHydra {
                               const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                               const floatVector &previousStateVariables, const floatVector &parameters,
                               const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                              const unsigned int dimension = 3, const unsigned int configuration_unknown_count = 45,
-                              const floatType tolr = 1e-9, const floatType tola = 1e-9);
+                              const unsigned int     dimension            = 3,
+                              HydraConfigurationBase _hydra_configuration = HydraMicromorphicConfiguration());
 
         virtual void initialize() override;
 

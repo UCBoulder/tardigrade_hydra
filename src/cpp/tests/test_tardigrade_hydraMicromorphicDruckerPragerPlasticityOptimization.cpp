@@ -272,12 +272,6 @@ BOOST_AUTO_TEST_CASE(test_computeStateVariableResidual, *boost::unit_test::toler
 
     unsigned int dimension = 3;
 
-    unsigned int configuration_unknown_count = 45;
-
-    floatType tolr = 1e-2;
-
-    floatType tola = 1e-3;
-
     class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic> {
        public:
         using tardigradeHydra::ResidualBaseMicromorphic<
@@ -368,8 +362,7 @@ BOOST_AUTO_TEST_CASE(test_computeStateVariableResidual, *boost::unit_test::toler
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                    tola);
+                                    numNonLinearSolveStateVariables, dimension);
 
     hydra.initialize();
 
@@ -386,48 +379,64 @@ BOOST_AUTO_TEST_CASE(test_computeStateVariableResidual, *boost::unit_test::toler
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1(15, 0);
-    answer1[0] = unknownVector[2 * configuration_unknown_count + 0 + 0] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 0];
-    answer1[1] = unknownVector[2 * configuration_unknown_count + 0 + 1] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 1];
-    answer1[2] = unknownVector[2 * configuration_unknown_count + 0 + 2] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 2];
-    answer1[3] = unknownVector[2 * configuration_unknown_count + 0 + 3] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 3];
-    answer1[4] = unknownVector[2 * configuration_unknown_count + 0 + 4] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 4];
-    answer1[5]  = R.updatedPlasticStrainLikeISVs[0] - unknownVector[2 * configuration_unknown_count + 5 + 0];
-    answer1[6]  = R.updatedPlasticStrainLikeISVs[1] - unknownVector[2 * configuration_unknown_count + 5 + 1];
-    answer1[7]  = R.updatedPlasticStrainLikeISVs[2] - unknownVector[2 * configuration_unknown_count + 5 + 2];
-    answer1[8]  = R.updatedPlasticStrainLikeISVs[3] - unknownVector[2 * configuration_unknown_count + 5 + 3];
-    answer1[9]  = R.updatedPlasticStrainLikeISVs[4] - unknownVector[2 * configuration_unknown_count + 5 + 4];
-    answer1[10] = -R.macroYield - unknownVector[2 * configuration_unknown_count + 10 + 0];
-    answer1[11] = -R.microYield - unknownVector[2 * configuration_unknown_count + 10 + 1];
-    answer1[12] = -R.microGradientYield[0] - unknownVector[2 * configuration_unknown_count + 10 + 2];
-    answer1[13] = -R.microGradientYield[1] - unknownVector[2 * configuration_unknown_count + 10 + 3];
-    answer1[14] = -R.microGradientYield[2] - unknownVector[2 * configuration_unknown_count + 10 + 4];
+    answer1[0] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 0] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 0];
+    answer1[1] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 1] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 1];
+    answer1[2] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 2] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 2];
+    answer1[3] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 3] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 3];
+    answer1[4] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 4] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 4];
+    answer1[5] = R.updatedPlasticStrainLikeISVs[0] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
+    answer1[6] = R.updatedPlasticStrainLikeISVs[1] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
+    answer1[7] = R.updatedPlasticStrainLikeISVs[2] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
+    answer1[8] = R.updatedPlasticStrainLikeISVs[3] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
+    answer1[9] = R.updatedPlasticStrainLikeISVs[4] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
+    answer1[10] = -R.macroYield - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 0];
+    answer1[11] = -R.microYield - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 1];
+    answer1[12] =
+        -R.microGradientYield[0] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 2];
+    answer1[13] =
+        -R.microGradientYield[1] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 3];
+    answer1[14] =
+        -R.microGradientYield[2] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 4];
 
     floatVector answer2(15, 0);
-    answer2[0] = unknownVector[2 * configuration_unknown_count + 0 + 0] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 0];
-    answer2[1] = unknownVector[2 * configuration_unknown_count + 0 + 1] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 1];
-    answer2[2] = unknownVector[2 * configuration_unknown_count + 0 + 2] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 2];
-    answer2[3] = unknownVector[2 * configuration_unknown_count + 0 + 3] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 3];
-    answer2[4] = unknownVector[2 * configuration_unknown_count + 0 + 4] *
-                 unknownVector[2 * configuration_unknown_count + 10 + 4];
-    answer2[5]  = R2.updatedPlasticStrainLikeISVs[0] - unknownVector[2 * configuration_unknown_count + 5 + 0];
-    answer2[6]  = R2.updatedPlasticStrainLikeISVs[1] - unknownVector[2 * configuration_unknown_count + 5 + 1];
-    answer2[7]  = R2.updatedPlasticStrainLikeISVs[2] - unknownVector[2 * configuration_unknown_count + 5 + 2];
-    answer2[8]  = R2.updatedPlasticStrainLikeISVs[3] - unknownVector[2 * configuration_unknown_count + 5 + 3];
-    answer2[9]  = R2.updatedPlasticStrainLikeISVs[4] - unknownVector[2 * configuration_unknown_count + 5 + 4];
-    answer2[10] = -R2.macroYield - unknownVector[2 * configuration_unknown_count + 10 + 0];
-    answer2[11] = -R2.microYield - unknownVector[2 * configuration_unknown_count + 10 + 1];
-    answer2[12] = -R2.microGradientYield[0] - unknownVector[2 * configuration_unknown_count + 10 + 2];
-    answer2[13] = -R2.microGradientYield[1] - unknownVector[2 * configuration_unknown_count + 10 + 3];
-    answer2[14] = -R2.microGradientYield[2] - unknownVector[2 * configuration_unknown_count + 10 + 4];
+    answer2[0] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 0] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 0];
+    answer2[1] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 1] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 1];
+    answer2[2] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 2] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 2];
+    answer2[3] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 3] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 3];
+    answer2[4] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 4] *
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 4];
+    answer2[5] = R2.updatedPlasticStrainLikeISVs[0] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 0];
+    answer2[6] = R2.updatedPlasticStrainLikeISVs[1] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 1];
+    answer2[7] = R2.updatedPlasticStrainLikeISVs[2] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 2];
+    answer2[8] = R2.updatedPlasticStrainLikeISVs[3] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 3];
+    answer2[9] = R2.updatedPlasticStrainLikeISVs[4] -
+                 unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 5 + 4];
+    answer2[10] = -R2.macroYield - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 0];
+    answer2[11] = -R2.microYield - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 1];
+    answer2[12] =
+        -R2.microGradientYield[0] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 2];
+    answer2[13] =
+        -R2.microGradientYield[1] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 3];
+    answer2[14] =
+        -R2.microGradientYield[2] - unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 4];
 
     BOOST_TEST(answer1 == *R.get_stateVariableResiduals(), CHECK_PER_ELEMENT);
 
@@ -602,12 +611,6 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians, *boost::unit_test::toleranc
 
     unsigned int dimension = 3;
 
-    unsigned int configuration_unknown_count = 45;
-
-    floatType tolr = 1e-2;
-
-    floatType tola = 1e-3;
-
     class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic> {
        public:
         using tardigradeHydra::ResidualBaseMicromorphic<
@@ -699,8 +702,7 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians, *boost::unit_test::toleranc
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                    tola);
+                                    numNonLinearSolveStateVariables, dimension);
 
     hydra.initialize();
 
@@ -721,15 +723,13 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians, *boost::unit_test::toleranc
                                          previousDeformationGradient, microDeformation, previousMicroDeformation,
                                          gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                          previousStateVariables, parameters, numConfigurations,
-                                         numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                         tola);
+                                         numNonLinearSolveStateVariables, dimension);
 
         hydraBaseMicromorphicMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                          previousDeformationGradient, microDeformation, previousMicroDeformation,
                                          gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                          previousStateVariables, parameters, numConfigurations,
-                                         numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                         tola);
+                                         numNonLinearSolveStateVariables, dimension);
 
         hydrap.initialize();
 
@@ -924,12 +924,6 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
 
     unsigned int dimension = 3;
 
-    unsigned int configuration_unknown_count = 45;
-
-    floatType tolr = 1e-2;
-
-    floatType tola = 1e-3;
-
     class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic> {
        public:
         using tardigradeHydra::ResidualBaseMicromorphic<
@@ -1021,8 +1015,7 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                    tola);
+                                    numNonLinearSolveStateVariables, dimension);
 
     hydra.initialize();
 
@@ -1053,16 +1046,14 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
                                          microDeformation + delta_Chi, previousMicroDeformation,
                                          gradientMicroDeformation + delta_GradChi, previousGradientMicroDeformation, {},
                                          {}, previousStateVariables, parameters, numConfigurations,
-                                         numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                         tola);
+                                         numNonLinearSolveStateVariables, dimension);
 
         hydraBaseMicromorphicMock hydram(time, deltaTime, temperature, previousTemperature,
                                          deformationGradient - delta_F, previousDeformationGradient,
                                          microDeformation - delta_Chi, previousMicroDeformation,
                                          gradientMicroDeformation - delta_GradChi, previousGradientMicroDeformation, {},
                                          {}, previousStateVariables, parameters, numConfigurations,
-                                         numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                         tola);
+                                         numNonLinearSolveStateVariables, dimension);
 
         hydrap.initialize();
 
@@ -1256,12 +1247,6 @@ BOOST_AUTO_TEST_CASE(test_computeConstraints, *boost::unit_test::tolerance(DEFAU
 
     unsigned int dimension = 3;
 
-    unsigned int configuration_unknown_count = 45;
-
-    floatType tolr = 1e-2;
-
-    floatType tola = 1e-3;
-
     class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic> {
        public:
         using tardigradeHydra::ResidualBaseMicromorphic<
@@ -1352,8 +1337,7 @@ BOOST_AUTO_TEST_CASE(test_computeConstraints, *boost::unit_test::tolerance(DEFAU
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                    tola);
+                                    numNonLinearSolveStateVariables, dimension);
 
     hydra.initialize();
 
@@ -1364,16 +1348,16 @@ BOOST_AUTO_TEST_CASE(test_computeConstraints, *boost::unit_test::tolerance(DEFAU
     residualMock R2(&hydra, 60, 1, stateVariableIndices, parameters);
 
     floatVector answer1(10, 0);
-    answer1[0] = unknownVector[2 * configuration_unknown_count + 0 + 0];
-    answer1[1] = unknownVector[2 * configuration_unknown_count + 0 + 1];
-    answer1[2] = unknownVector[2 * configuration_unknown_count + 0 + 2];
-    answer1[3] = unknownVector[2 * configuration_unknown_count + 0 + 3];
-    answer1[4] = unknownVector[2 * configuration_unknown_count + 0 + 4];
-    answer1[5] = unknownVector[2 * configuration_unknown_count + 10 + 0];
-    answer1[6] = unknownVector[2 * configuration_unknown_count + 10 + 1];
-    answer1[7] = unknownVector[2 * configuration_unknown_count + 10 + 2];
-    answer1[8] = unknownVector[2 * configuration_unknown_count + 10 + 3];
-    answer1[9] = unknownVector[2 * configuration_unknown_count + 10 + 4];
+    answer1[0] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 0];
+    answer1[1] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 1];
+    answer1[2] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 2];
+    answer1[3] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 3];
+    answer1[4] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 0 + 4];
+    answer1[5] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 0];
+    answer1[6] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 1];
+    answer1[7] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 2];
+    answer1[8] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 3];
+    answer1[9] = unknownVector[2 * hydra.hydra_configuration.configuration_unknown_count + 10 + 4];
 
     BOOST_TEST(answer1 == *R.getConstraints(), CHECK_PER_ELEMENT);
 }
@@ -1546,12 +1530,6 @@ BOOST_AUTO_TEST_CASE(test_setConstraintJacobians, *boost::unit_test::tolerance(D
 
     unsigned int dimension = 3;
 
-    unsigned int configuration_unknown_count = 45;
-
-    floatType tolr = 1e-2;
-
-    floatType tola = 1e-3;
-
     class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic> {
        public:
         using tardigradeHydra::ResidualBaseMicromorphic<
@@ -1643,8 +1621,7 @@ BOOST_AUTO_TEST_CASE(test_setConstraintJacobians, *boost::unit_test::tolerance(D
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                    tola);
+                                    numNonLinearSolveStateVariables, dimension);
 
     hydra.initialize();
 
@@ -1665,15 +1642,13 @@ BOOST_AUTO_TEST_CASE(test_setConstraintJacobians, *boost::unit_test::tolerance(D
                                          previousDeformationGradient, microDeformation, previousMicroDeformation,
                                          gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                          previousStateVariables, parameters, numConfigurations,
-                                         numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                         tola);
+                                         numNonLinearSolveStateVariables, dimension);
 
         hydraBaseMicromorphicMock hydram(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                          previousDeformationGradient, microDeformation, previousMicroDeformation,
                                          gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                          previousStateVariables, parameters, numConfigurations,
-                                         numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                         tola);
+                                         numNonLinearSolveStateVariables, dimension);
 
         hydrap.initialize();
 
@@ -1867,12 +1842,6 @@ BOOST_AUTO_TEST_CASE(test_suggestInitialIterates, *boost::unit_test::tolerance(D
 
     unsigned int dimension = 3;
 
-    unsigned int configuration_unknown_count = 45;
-
-    floatType tolr = 1e-9;
-
-    floatType tola = 1e-9;
-
     class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic> {
        public:
         using tardigradeHydra::ResidualBaseMicromorphic<
@@ -1963,8 +1932,7 @@ BOOST_AUTO_TEST_CASE(test_suggestInitialIterates, *boost::unit_test::tolerance(D
                                     previousDeformationGradient, microDeformation, previousMicroDeformation,
                                     gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
                                     previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr,
-                                    tola);
+                                    numNonLinearSolveStateVariables, dimension);
 
     hydra.initialize();
 

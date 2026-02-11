@@ -62,14 +62,22 @@ namespace tardigradeHydra {
         //! The default constructor for HydraConfigurationBase
         HydraConfigurationBase() {}
         //! The number of unknowns in each configuration
-        floatType configuration_unknown_count = 9;
+        unsigned int configuration_unknown_count = 0;
         //! The relative tolerance
-        floatType tolr                        = 1e-9;
+        floatType tolr                           = 1e-9;
         //! The absolute tolerance
-        floatType tola                        = 1e-9;
+        floatType tola                           = 1e-9;
 
        private:
         friend class hydraBase;
+    };
+
+    /*!
+     * HydraClassicalConfiguration: A class which defines a classical deformation problem
+     */
+    class HydraClassicalConfiguration : public HydraConfigurationBase {
+       public:
+        HydraClassicalConfiguration() { configuration_unknown_count = 9; }
     };
 
     /*!
@@ -85,7 +93,7 @@ namespace tardigradeHydra {
        public:
         // Constructors
         //! Default constructor for hydraBase
-        hydraBase() : _configuration_unknown_count(0) {}
+        hydraBase() {}
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
         hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
@@ -94,8 +102,7 @@ namespace tardigradeHydra {
                   const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                   const floatVector &parameters, const unsigned int numConfigurations,
                   const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension = 3,
-                  const unsigned int configuration_unknown_count = 9, const floatType tolr = 1e-9,
-                  const floatType tola = 1e-9);
+                  HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
         virtual void initialize();
 
@@ -109,7 +116,9 @@ namespace tardigradeHydra {
 
         // Getter functions
         //! Get a reference to the number of unknowns in each configuration
-        constexpr unsigned int getConfigurationUnknownCount() { return _configuration_unknown_count; }
+        constexpr unsigned int getConfigurationUnknownCount() {
+            return hydra_configuration.configuration_unknown_count;
+        }
 
         //! Get a reference to the number of components of the stress
         constexpr unsigned int getStressSize() { return _stress_size; }
@@ -175,10 +184,10 @@ namespace tardigradeHydra {
         constexpr unsigned int getFOTDimension() { return _dimension * _dimension * _dimension * _dimension; }
 
         //! Get the relative tolerance
-        constexpr floatType getRelativeTolerance() { return _tolr; }
+        constexpr floatType getRelativeTolerance() { return hydra_configuration.tolr; }
 
         //! Get the absolute tolerance
-        constexpr floatType getAbsoluteTolerance() { return _tola; }
+        constexpr floatType getAbsoluteTolerance() { return hydra_configuration.tola; }
 
         virtual void setResidualClasses();
 
@@ -313,6 +322,9 @@ namespace tardigradeHydra {
         //! The class which contains the deformation
         DeformationBase *deformation = &_deformation;
 
+        //! The class which defines the hydra configuration
+        HydraConfigurationBase hydra_configuration;
+
        protected:
         //! Default solver
         SubcyclerSolver _solver;
@@ -392,9 +404,6 @@ namespace tardigradeHydra {
         //! The spatial dimension of the problem
         unsigned int _dimension;
 
-        //! The number of unknowns required for a configuration
-        unsigned int _configuration_unknown_count;
-
         //! The number of terms in the stress measures
         unsigned int _stress_size;
 
@@ -451,12 +460,6 @@ namespace tardigradeHydra {
 
         //! A scale factor for the residual which can be used to loosen the tolerance
         floatType _residual_scale_factor = 1;
-
-        //! The relative tolerance
-        floatType _tolr;
-
-        //! The absolute tolerance
-        floatType _tola;
 
         //! A vector of pointers to data which should be cleared at each iteration
         std::vector<dataBase *> _iterationData;
