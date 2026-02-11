@@ -144,14 +144,6 @@ namespace tardigradeHydra {
 
             static unsigned int getIterationDataSize(hydraBase &hydra) { return hydra._iterationData.size(); }
 
-            static void checkRelativeTolerance(hydraBase &hydra) {
-                BOOST_CHECK(hydra.hydra_configuration.tolr == hydra.getRelativeTolerance());
-            }
-
-            static void checkAbsoluteTolerance(hydraBase &hydra) {
-                BOOST_CHECK(hydra.hydra_configuration.tola == hydra.getAbsoluteTolerance());
-            }
-
             static void formNonLinearResidual(hydraBase &hydra) { BOOST_CHECK_NO_THROW(hydra.formNonLinearResidual()); }
 
             static void formNonLinearDerivatives(hydraBase &hydra) {
@@ -346,18 +338,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_get_previousAdditionalStateVariables,
     tardigradeHydra::hydraBase hydra;
 
     tardigradeHydra::unit_test::hydraBaseTester::checkPreviousAdditionalStateVariables(hydra);
-}
-
-BOOST_AUTO_TEST_CASE(test_hydraBase_getRelativeTolerance, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkRelativeTolerance(hydra);
-}
-
-BOOST_AUTO_TEST_CASE(test_hydraBase_getAbsoluteTolerance, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkAbsoluteTolerance(hydra);
 }
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_decomposeStateVariableVector,

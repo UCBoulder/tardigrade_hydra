@@ -9934,7 +9934,7 @@ namespace tardigradeHydra {
 
             floatType a = rc * c0 - c;
 
-            floatType tol = hydra->getRelativeTolerance() * std::fabs(c) + hydra->getAbsoluteTolerance();
+            floatType tol = hydra->hydra_configuration.tolr * std::fabs(c) + hydra->hydra_configuration.tola;
 
             floatType b;
             if (a < tol) {
@@ -9972,7 +9972,7 @@ namespace tardigradeHydra {
 
             floatType a = rc * c0 - c;
 
-            floatType tol = hydra->getRelativeTolerance() * std::fabs(c) + hydra->getAbsoluteTolerance();
+            floatType tol = hydra->hydra_configuration.tolr * std::fabs(c) + hydra->hydra_configuration.tola;
 
             floatType b;
             if (a < tol) {
@@ -10008,17 +10008,17 @@ namespace tardigradeHydra {
             computeBaseCohesion(baseMacroCohesion, baseMicroCohesion, baseMicroGradientCohesion);
 
             floatType tol =
-                hydra->getRelativeTolerance() * std::fabs(baseMacroCohesion) + hydra->getAbsoluteTolerance();
+                hydra->hydra_configuration.tolr * std::fabs(baseMacroCohesion) + hydra->hydra_configuration.tola;
 
             isConverged = (isConverged) && (std::fabs(baseMacroCohesion - *get_macroCohesion()) <= tol);
 
-            tol = hydra->getRelativeTolerance() * std::fabs(baseMicroCohesion) + hydra->getAbsoluteTolerance();
+            tol = hydra->hydra_configuration.tolr * std::fabs(baseMicroCohesion) + hydra->hydra_configuration.tola;
 
             isConverged = (isConverged) && (std::fabs(baseMicroCohesion - *get_microCohesion()) <= tol);
 
             for (unsigned int i = 0; i < dim; i++) {
-                tol = hydra->getRelativeTolerance() * std::fabs(baseMicroGradientCohesion[i]) +
-                      hydra->getAbsoluteTolerance();
+                tol = hydra->hydra_configuration.tolr * std::fabs(baseMicroGradientCohesion[i]) +
+                      hydra->hydra_configuration.tola;
 
                 isConverged = (isConverged) &&
                               (std::fabs(baseMicroGradientCohesion[i] - (*get_microGradientCohesion())[i]) <= tol);
