@@ -89,8 +89,6 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
-
-
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -171,8 +169,8 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
 
     tardigradeHydra::floatType answer1 = 0.5 * 1e-8 * 10.3;
 
-    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     GradientDampingMock             damping;
     tardigradeHydra::SolverStepBase step;

@@ -35,16 +35,16 @@ namespace tardigradeHydra {
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBaseMicromorphic::hydraBaseMicromorphic(
-        const DOFStorageBase &DOFStorage,
-        const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
-        const secondOrderTensor &microDeformation, const secondOrderTensor &previousMicroDeformation,
-        const thirdOrderTensor &gradientMicroDeformation, const thirdOrderTensor &previousGradientMicroDeformation,
-        const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
-        const floatVector &previousStateVariables, const floatVector &parameters, const unsigned int numConfigurations,
+        const DOFStorageBase &DOFStorage, const secondOrderTensor &deformationGradient,
+        const secondOrderTensor &previousDeformationGradient, const secondOrderTensor &microDeformation,
+        const secondOrderTensor &previousMicroDeformation, const thirdOrderTensor &gradientMicroDeformation,
+        const thirdOrderTensor &previousGradientMicroDeformation, const floatVector &additionalDOF,
+        const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
+        const floatVector &parameters, const unsigned int numConfigurations,
         const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
-        : hydraBase(DOFStorage, deformationGradient, previousDeformationGradient,
-                    additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                    numNonLinearSolveStateVariables, _hydra_configuration),
+        : hydraBase(DOFStorage, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF,
+                    previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables,
+                    _hydra_configuration),
           _microDeformation(microDeformation),
           _previousMicroDeformation(previousMicroDeformation),
           _gradientMicroDeformation(gradientMicroDeformation),

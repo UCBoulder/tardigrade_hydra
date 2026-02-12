@@ -102,8 +102,12 @@ namespace tardigradeHydra {
          * \param &temperature: The current temperature
          * \param &previous_temperature: The previous temperature
          */
-        DOFStorageBase(const floatType &time, const floatType &deltaTime, const floatType &temperature, const floatType &previous_temperature)
-            : _time(time), _deltaTime(deltaTime), _temperature(temperature), _previous_temperature(previous_temperature) {}
+        DOFStorageBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
+                       const floatType &previous_temperature)
+            : _time(time),
+              _deltaTime(deltaTime),
+              _temperature(temperature),
+              _previous_temperature(previous_temperature) {}
 
         //! The current time
         const floatType _time;
@@ -136,11 +140,11 @@ namespace tardigradeHydra {
         hydraBase() {}
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
-        hydraBase(const DOFStorageBase &DOFStorage,
-                  const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
-                  const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
-                  const floatVector &previousStateVariables, const floatVector &parameters,
-                  const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
+        hydraBase(const DOFStorageBase &DOFStorage, const secondOrderTensor &deformationGradient,
+                  const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
+                  const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
+                  const floatVector &parameters, const unsigned int numConfigurations,
+                  const unsigned int     numNonLinearSolveStateVariables,
                   HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
         virtual void initialize();

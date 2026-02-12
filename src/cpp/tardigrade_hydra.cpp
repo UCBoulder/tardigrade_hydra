@@ -28,8 +28,7 @@ namespace tardigradeHydra {
      * non-linear solve's residual
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
-    hydraBase::hydraBase(const DOFStorageBase &DOFStorage,
-                         const secondOrderTensor &deformationGradient,
+    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const secondOrderTensor &deformationGradient,
                          const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
                          const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                          const floatVector &parameters, const unsigned int numConfigurations,
@@ -1109,7 +1108,8 @@ namespace tardigradeHydra {
 
         _scaled_deltaTime = _scale_factor * dof._deltaTime;
 
-        _scaled_temperature = _scale_factor * (dof._temperature - dof._previous_temperature) + dof._previous_temperature;
+        _scaled_temperature =
+            _scale_factor * (dof._temperature - dof._previous_temperature) + dof._previous_temperature;
 
         _scaled_deformationGradient =
             _scale_factor * (_deformationGradient - _previousDeformationGradient) + _previousDeformationGradient;
