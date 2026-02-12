@@ -146,11 +146,11 @@ BOOST_AUTO_TEST_CASE(test_residual_basicGetTests, *boost::unit_test::tolerance(D
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -166,8 +166,8 @@ BOOST_AUTO_TEST_CASE(test_residual_basicGetTests, *boost::unit_test::tolerance(D
 
     unsigned int numNonLinearSolveStateVariables = 3;
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -227,11 +227,11 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposeParameters, *boost::unit_test::toler
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -255,8 +255,8 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposeParameters, *boost::unit_test::toler
 
     floatVector quadraticParameters = {7e-5, 8e-5, 9e-5, 8e-5, 10e-5, 11e-5, 9e-5, 11e-5, 12e-5};
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -323,11 +323,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalGreenLagrangeStrain,
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -346,8 +346,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalGreenLagrangeStrain,
     floatVector thermalGreenLagrangeStrain = {0.28448393, 0.3251832,  0.36588248, 0.3251832, 0.40658175,
                                               0.44728103, 0.36588248, 0.44728103, 0.4879803};
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -408,11 +408,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalGreenLagrangeStrainDerivatives,
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -428,8 +428,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalGreenLagrangeStrainDerivatives,
 
     unsigned int numNonLinearSolveStateVariables = 3;
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -448,13 +448,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalGreenLagrangeStrainDerivatives,
 
         deltas[i] = eps * std::fabs(deformationGradient[i]) + eps;
 
-        hydraBaseMock hydrap(dof, temperature, previousTemperature, deformationGradient + deltas,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        hydraBaseMock hydrap(dof, deformationGradient + deltas, previousDeformationGradient, {}, {},
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dof, temperature, previousTemperature, deformationGradient - deltas,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        hydraBaseMock hydram(dof, deformationGradient - deltas, previousDeformationGradient, {}, {},
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -476,13 +474,15 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalGreenLagrangeStrainDerivatives,
 
         deltas[i] = eps * std::fabs(temperature) + eps;
 
-        hydraBaseMock hydrap(dof, temperature + deltas[i], previousTemperature, deformationGradient,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature + deltas[i], previousTemperature);
 
-        hydraBaseMock hydram(dof, temperature - deltas[i], previousTemperature, deformationGradient,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature - deltas[i], previousTemperature);
+
+        hydraBaseMock hydrap(dofp, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+
+        hydraBaseMock hydram(dofm, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                             parameters, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -568,11 +568,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalDeformationGradient,
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -594,8 +594,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalDeformationGradient,
     floatVector E;
     tardigradeConstitutiveTools::computeGreenLagrangeStrain(thermalDeformationGradient, E);
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -660,11 +660,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalDeformationGradientDerivatives,
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -680,8 +680,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalDeformationGradientDerivatives,
 
     unsigned int numNonLinearSolveStateVariables = 3;
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -700,13 +700,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalDeformationGradientDerivatives,
 
         deltas[i] = eps * std::fabs(deformationGradient[i]) + eps;
 
-        hydraBaseMock hydrap(dof, temperature, previousTemperature, deformationGradient + deltas,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        hydraBaseMock hydrap(dof, deformationGradient + deltas, previousDeformationGradient, {}, {},
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dof, temperature, previousTemperature, deformationGradient - deltas,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        hydraBaseMock hydram(dof, deformationGradient - deltas, previousDeformationGradient, {}, {},
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -728,13 +726,15 @@ BOOST_AUTO_TEST_CASE(test_residual_setThermalDeformationGradientDerivatives,
 
         deltas[i] = eps * std::fabs(temperature) + eps;
 
-        hydraBaseMock hydrap(dof, temperature + deltas[i], previousTemperature, deformationGradient,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature + deltas[i], previousTemperature);
 
-        hydraBaseMock hydram(dof, temperature - deltas[i], previousTemperature, deformationGradient,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature - deltas[i], previousTemperature);
+
+        hydraBaseMock hydrap(dofp, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+
+        hydraBaseMock hydram(dofm, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                             parameters, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -812,11 +812,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setResidual, *boost::unit_test::tolerance(DEF
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -836,8 +836,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setResidual, *boost::unit_test::tolerance(DEF
 
     floatVector residual = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -899,11 +899,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setResidualDerivatives, *boost::unit_test::to
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -919,8 +919,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setResidualDerivatives, *boost::unit_test::to
 
     unsigned int numNonLinearSolveStateVariables = 3;
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -941,13 +941,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setResidualDerivatives, *boost::unit_test::to
 
         deltas[i] = eps * std::fabs(deltas[i]) + eps;
 
-        hydraBaseMock hydrap(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                             {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        hydraBaseMock hydrap(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                             parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                             {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        hydraBaseMock hydram(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                             parameters, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -972,13 +970,11 @@ BOOST_AUTO_TEST_CASE(test_residual_setResidualDerivatives, *boost::unit_test::to
 
         deltas[i] = eps * std::fabs(deltas[i]) + eps;
 
-        hydraBaseMock hydrap(dof, temperature, previousTemperature, deformationGradient + deltas,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        hydraBaseMock hydrap(dof, deformationGradient + deltas, previousDeformationGradient, {}, {},
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dof, temperature, previousTemperature, deformationGradient - deltas,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        hydraBaseMock hydram(dof, deformationGradient - deltas, previousDeformationGradient, {}, {},
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1003,13 +999,15 @@ BOOST_AUTO_TEST_CASE(test_residual_setResidualDerivatives, *boost::unit_test::to
 
         deltas[i] = eps * std::fabs(deltas[i]) + eps;
 
-        hydraBaseMock hydrap(dof, temperature + deltas[i], previousTemperature, deformationGradient,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature + deltas[i], previousTemperature);
 
-        hydraBaseMock hydram(dof, temperature - deltas[i], previousTemperature, deformationGradient,
-                             previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                             numNonLinearSolveStateVariables);
+        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature - deltas[i], previousTemperature);
+
+        hydraBaseMock hydrap(dofp, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+
+        hydraBaseMock hydram(dofm, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                             parameters, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1084,11 +1082,11 @@ BOOST_AUTO_TEST_CASE(test_residual_addParameterizationInfo, *boost::unit_test::t
 
     floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     floatType temperature = 300.0;
 
     floatType previousTemperature = 320.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
@@ -1104,8 +1102,8 @@ BOOST_AUTO_TEST_CASE(test_residual_addParameterizationInfo, *boost::unit_test::t
 
     unsigned int numNonLinearSolveStateVariables = 3;
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 

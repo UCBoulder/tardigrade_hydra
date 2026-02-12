@@ -109,11 +109,11 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
                                                         -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
@@ -135,8 +135,8 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase         solver;
     tardigradeHydra::SolverStepBase     step;
@@ -167,8 +167,8 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
 
     result = {0, 0, 0};
 
-    hydraBaseMock hydra_pre(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {},
-                            {}, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra_pre(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                            parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase           solver_pre;
     tardigradeHydra::SolverStepBase       step_pre;

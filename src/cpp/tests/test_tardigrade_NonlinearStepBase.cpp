@@ -95,11 +95,11 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
-
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature);
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
                                                         -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
@@ -164,8 +164,8 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
         using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
     };
 
-    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
-                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, deformationGradient, previousDeformationGradient, {}, {}, previousStateVariables,
+                        parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     SolverStepBaseMock    step;
     StepDampingBaseMock   damping;

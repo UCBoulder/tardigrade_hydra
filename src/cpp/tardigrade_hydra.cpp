@@ -17,8 +17,6 @@ namespace tardigradeHydra {
      * The main constructor for the hydra base class. Inputs are all the required values for most solves.
      *
      * \param &DOFStorage: The degrees of freedom storage object
-     * \param &temperature: The current temperature
-     * \param &previousTemperature: The previous temperature
      * \param &deformationGradient: The current deformation gradient
      * \param &additionalDOF: Any additional degrees of freedom required for the model
      * \param &previousAdditionalDOF: Any previous additional degrees of freedom required for the model
@@ -30,8 +28,7 @@ namespace tardigradeHydra {
      * non-linear solve's residual
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
-    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const floatType &temperature,
-                         const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
+    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const secondOrderTensor &deformationGradient,
                          const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
                          const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                          const floatVector &parameters, const unsigned int numConfigurations,
@@ -40,8 +37,6 @@ namespace tardigradeHydra {
         : hydra_configuration(_hydra_configuration),
           dof(DOFStorage),
           _stress_size(_hydra_configuration.configuration_unknown_count),
-          _temperature(temperature),
-          _previousTemperature(previousTemperature),
           _deformationGradient(deformationGradient),
           _previousDeformationGradient(previousDeformationGradient),
           _additionalDOF(additionalDOF),
@@ -1113,7 +1108,8 @@ namespace tardigradeHydra {
 
         _scaled_deltaTime = _scale_factor * dof._deltaTime;
 
-        _scaled_temperature = _scale_factor * (_temperature - _previousTemperature) + _previousTemperature;
+        _scaled_temperature =
+            _scale_factor * (dof._temperature - dof._previous_temperature) + dof._previous_temperature;
 
         _scaled_deformationGradient =
             _scale_factor * (_deformationGradient - _previousDeformationGradient) + _previousDeformationGradient;

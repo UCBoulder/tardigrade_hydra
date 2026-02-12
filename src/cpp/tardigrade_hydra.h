@@ -88,21 +88,38 @@ namespace tardigradeHydra {
         /*!
          * Default constructor
          */
-        DOFStorageBase() : _time(0), _deltaTime(0) {}
+        DOFStorageBase() : _time(0), _deltaTime(0), _temperature(0), _previous_temperature(0) {}
 
         /*!
          * Constructor which sets the time information
          *
+         * TODO: We're eventually going to store the degrees of freedom into a single storage
+         *       array but, for now, I'm leaving them as discrete just to help with the
+         *       transition.
+         *
          * \param &time: The current time
          * \param &deltaTime: The change in time from the previous time
+         * \param &temperature: The current temperature
+         * \param &previous_temperature: The previous temperature
          */
-        DOFStorageBase(const floatType &time, const floatType &deltaTime) : _time(time), _deltaTime(deltaTime) {}
+        DOFStorageBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
+                       const floatType &previous_temperature)
+            : _time(time),
+              _deltaTime(deltaTime),
+              _temperature(temperature),
+              _previous_temperature(previous_temperature) {}
 
         //! The current time
         const floatType _time;
 
         //! The change in time from the previous timestep
         const floatType _deltaTime;
+
+        //! The current temperature
+        const floatType _temperature;
+
+        //! The previous temperature
+        const floatType _previous_temperature;
 
        protected:
     };
@@ -123,11 +140,11 @@ namespace tardigradeHydra {
         hydraBase() {}
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
-        hydraBase(const DOFStorageBase &DOFStorage, const floatType &temperature, const floatType &previousTemperature,
-                  const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
-                  const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
-                  const floatVector &previousStateVariables, const floatVector &parameters,
-                  const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
+        hydraBase(const DOFStorageBase &DOFStorage, const secondOrderTensor &deformationGradient,
+                  const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
+                  const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
+                  const floatVector &parameters, const unsigned int numConfigurations,
+                  const unsigned int     numNonLinearSolveStateVariables,
                   HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
         virtual void initialize();
@@ -159,7 +176,7 @@ namespace tardigradeHydra {
         const floatType getTemperature() { return getScaledTemperature(); };
 
         //! Get a reference to the previous temperature
-        const floatType getPreviousTemperature() { return _previousTemperature; };
+        const floatType getPreviousTemperature() { return dof._previous_temperature; };
 
         //! Get a reference to the deformation gradient
         const secondOrderTensor *getDeformationGradient() { return getScaledDeformationGradient(); }
@@ -430,12 +447,6 @@ namespace tardigradeHydra {
 
         //! The number of terms in the stress measures
         unsigned int _stress_size;
-
-        //! The current temperature
-        floatType _temperature;
-
-        //! The previous temperature
-        floatType _previousTemperature;
 
         //! The current deformation gradient
         secondOrderTensor _deformationGradient;
