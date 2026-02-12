@@ -1895,15 +1895,15 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
             floatVector gradChip(std::begin(xp) + 18, std::end(xp));
             floatVector gradChim(std::begin(xm) + 18, std::end(xm));
 
-            hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, Fp,
-                                             previousDeformationGradient, chip, previousMicroDeformation, gradChip,
-                                             previousGradientMicroDeformation, {}, {}, previousStateVariables,
-                                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, Fp, previousDeformationGradient,
+                                             chip, previousMicroDeformation, gradChip, previousGradientMicroDeformation,
+                                             {}, {}, previousStateVariables, parameters, numConfigurations,
+                                             numNonLinearSolveStateVariables);
 
-            hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, Fm,
-                                             previousDeformationGradient, chim, previousMicroDeformation, gradChim,
-                                             previousGradientMicroDeformation, {}, {}, previousStateVariables,
-                                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, Fm, previousDeformationGradient,
+                                             chim, previousMicroDeformation, gradChim, previousGradientMicroDeformation,
+                                             {}, {}, previousStateVariables, parameters, numConfigurations,
+                                             numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 
@@ -2227,15 +2227,15 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD2, *boost::unit_test::tole
             floatVector gradChip(std::begin(xp) + 18, std::end(xp));
             floatVector gradChim(std::begin(xm) + 18, std::end(xm));
 
-            hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, Fp,
-                                             previousDeformationGradient, chip, previousMicroDeformation, gradChip,
-                                             previousGradientMicroDeformation, {}, {}, previousStateVariables,
-                                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, Fp, previousDeformationGradient,
+                                             chip, previousMicroDeformation, gradChip, previousGradientMicroDeformation,
+                                             {}, {}, previousStateVariables, parameters, numConfigurations,
+                                             numNonLinearSolveStateVariables);
 
-            hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, Fm,
-                                             previousDeformationGradient, chim, previousMicroDeformation, gradChim,
-                                             previousGradientMicroDeformation, {}, {}, previousStateVariables,
-                                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, Fm, previousDeformationGradient,
+                                             chim, previousMicroDeformation, gradChim, previousGradientMicroDeformation,
+                                             {}, {}, previousStateVariables, parameters, numConfigurations,
+                                             numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 
@@ -2559,15 +2559,15 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD3, *boost::unit_test::tole
             floatVector gradChip(std::begin(xp) + 18, std::end(xp));
             floatVector gradChim(std::begin(xm) + 18, std::end(xm));
 
-            hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, Fp,
-                                             previousDeformationGradient, chip, previousMicroDeformation, gradChip,
-                                             previousGradientMicroDeformation, {}, {}, previousStateVariables,
-                                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, Fp, previousDeformationGradient,
+                                             chip, previousMicroDeformation, gradChip, previousGradientMicroDeformation,
+                                             {}, {}, previousStateVariables, parameters, numConfigurations,
+                                             numNonLinearSolveStateVariables);
 
-            hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, Fm,
-                                             previousDeformationGradient, chim, previousMicroDeformation, gradChim,
-                                             previousGradientMicroDeformation, {}, {}, previousStateVariables,
-                                             parameters, numConfigurations, numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, Fm, previousDeformationGradient,
+                                             chim, previousMicroDeformation, gradChim, previousGradientMicroDeformation,
+                                             {}, {}, previousStateVariables, parameters, numConfigurations,
+                                             numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 

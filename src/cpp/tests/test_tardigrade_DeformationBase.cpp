@@ -1354,15 +1354,13 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
 
         delta[i] = eps * std::fabs(deformationGradient[i]) + eps;
 
-        tardigradeHydra::hydraBase hydra_p(dof, temperature, previousTemperature,
-                                           deformationGradient + delta, previousDeformationGradient, {}, {},
-                                           previousStateVariables, parameters, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_p(dof, temperature, previousTemperature, deformationGradient + delta,
+                                           previousDeformationGradient, {}, {}, previousStateVariables, parameters,
+                                           numConfigurations, numNonLinearSolveStateVariables);
 
-        tardigradeHydra::hydraBase hydra_m(dof, temperature, previousTemperature,
-                                           deformationGradient - delta, previousDeformationGradient, {}, {},
-                                           previousStateVariables, parameters, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_m(dof, temperature, previousTemperature, deformationGradient - delta,
+                                           previousDeformationGradient, {}, {}, previousStateVariables, parameters,
+                                           numConfigurations, numNonLinearSolveStateVariables);
 
         hydra_p.initialize();
 

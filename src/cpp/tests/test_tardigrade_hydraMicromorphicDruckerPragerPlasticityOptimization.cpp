@@ -1041,19 +1041,17 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
 
         floatVector delta_GradChi(delta.begin() + 18, delta.begin() + 45);
 
-        hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature,
-                                         deformationGradient + delta_F, previousDeformationGradient,
-                                         microDeformation + delta_Chi, previousMicroDeformation,
-                                         gradientMicroDeformation + delta_GradChi, previousGradientMicroDeformation, {},
-                                         {}, previousStateVariables, parameters, numConfigurations,
-                                         numNonLinearSolveStateVariables);
+        hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, deformationGradient + delta_F,
+                                         previousDeformationGradient, microDeformation + delta_Chi,
+                                         previousMicroDeformation, gradientMicroDeformation + delta_GradChi,
+                                         previousGradientMicroDeformation, {}, {}, previousStateVariables, parameters,
+                                         numConfigurations, numNonLinearSolveStateVariables);
 
-        hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature,
-                                         deformationGradient - delta_F, previousDeformationGradient,
-                                         microDeformation - delta_Chi, previousMicroDeformation,
-                                         gradientMicroDeformation - delta_GradChi, previousGradientMicroDeformation, {},
-                                         {}, previousStateVariables, parameters, numConfigurations,
-                                         numNonLinearSolveStateVariables);
+        hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, deformationGradient - delta_F,
+                                         previousDeformationGradient, microDeformation - delta_Chi,
+                                         previousMicroDeformation, gradientMicroDeformation - delta_GradChi,
+                                         previousGradientMicroDeformation, {}, {}, previousStateVariables, parameters,
+                                         numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 

@@ -5170,15 +5170,15 @@ BOOST_AUTO_TEST_CASE(test_setResidual2, *boost::unit_test::tolerance(DEFAULT_TES
                          dm.begin() + deformationGradient.size() + microDeformation.size());
         floatVector gradChim(dm.begin() + deformationGradient.size() + microDeformation.size(), dm.end());
 
-        hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, Fp,
-                                         previousDeformationGradient, chip, previousMicroDeformation, gradChip,
-                                         previousGradientMicroDeformation, {}, {}, previousStateVariables, parameters,
-                                         numConfigurations, numNonLinearSolveStateVariables);
+        hydraBaseMicromorphicMock hydrap(dof, temperature, previousTemperature, Fp, previousDeformationGradient, chip,
+                                         previousMicroDeformation, gradChip, previousGradientMicroDeformation, {}, {},
+                                         previousStateVariables, parameters, numConfigurations,
+                                         numNonLinearSolveStateVariables);
 
-        hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, Fm,
-                                         previousDeformationGradient, chim, previousMicroDeformation, gradChim,
-                                         previousGradientMicroDeformation, {}, {}, previousStateVariables, parameters,
-                                         numConfigurations, numNonLinearSolveStateVariables);
+        hydraBaseMicromorphicMock hydram(dof, temperature, previousTemperature, Fm, previousDeformationGradient, chim,
+                                         previousMicroDeformation, gradChim, previousGradientMicroDeformation, {}, {},
+                                         previousStateVariables, parameters, numConfigurations,
+                                         numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -5208,17 +5208,17 @@ BOOST_AUTO_TEST_CASE(test_setResidual2, *boost::unit_test::tolerance(DEFAULT_TES
 
         delta[i] = eps * std::fabs(temperature) + eps;
 
-        hydraBaseMicromorphicMock hydrap(dof, temperature + delta[i], previousTemperature,
-                                         deformationGradient, previousDeformationGradient, microDeformation,
-                                         previousMicroDeformation, gradientMicroDeformation,
-                                         previousGradientMicroDeformation, {}, {}, previousStateVariables, parameters,
-                                         numConfigurations, numNonLinearSolveStateVariables);
+        hydraBaseMicromorphicMock hydrap(dof, temperature + delta[i], previousTemperature, deformationGradient,
+                                         previousDeformationGradient, microDeformation, previousMicroDeformation,
+                                         gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
+                                         previousStateVariables, parameters, numConfigurations,
+                                         numNonLinearSolveStateVariables);
 
-        hydraBaseMicromorphicMock hydram(dof, temperature - delta[i], previousTemperature,
-                                         deformationGradient, previousDeformationGradient, microDeformation,
-                                         previousMicroDeformation, gradientMicroDeformation,
-                                         previousGradientMicroDeformation, {}, {}, previousStateVariables, parameters,
-                                         numConfigurations, numNonLinearSolveStateVariables);
+        hydraBaseMicromorphicMock hydram(dof, temperature - delta[i], previousTemperature, deformationGradient,
+                                         previousDeformationGradient, microDeformation, previousMicroDeformation,
+                                         gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
+                                         previousStateVariables, parameters, numConfigurations,
+                                         numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 

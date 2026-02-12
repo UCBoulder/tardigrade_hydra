@@ -123,12 +123,11 @@ namespace tardigradeHydra {
         hydraBase() {}
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
-        hydraBase(const DOFStorageBase &DOFStorage, const floatType &temperature,
-                  const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
-                  const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
-                  const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
-                  const floatVector &parameters, const unsigned int numConfigurations,
-                  const unsigned int     numNonLinearSolveStateVariables,
+        hydraBase(const DOFStorageBase &DOFStorage, const floatType &temperature, const floatType &previousTemperature,
+                  const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
+                  const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
+                  const floatVector &previousStateVariables, const floatVector &parameters,
+                  const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                   HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
         virtual void initialize();

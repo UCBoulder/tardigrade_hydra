@@ -37,13 +37,12 @@ namespace tardigradeHydra {
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBaseMicromorphic::hydraBaseMicromorphic(
-        const DOFStorageBase &DOFStorage, const floatType &temperature,
-        const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
-        const secondOrderTensor &previousDeformationGradient, const secondOrderTensor &microDeformation,
-        const secondOrderTensor &previousMicroDeformation, const thirdOrderTensor &gradientMicroDeformation,
-        const thirdOrderTensor &previousGradientMicroDeformation, const floatVector &additionalDOF,
-        const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
-        const floatVector &parameters, const unsigned int numConfigurations,
+        const DOFStorageBase &DOFStorage, const floatType &temperature, const floatType &previousTemperature,
+        const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
+        const secondOrderTensor &microDeformation, const secondOrderTensor &previousMicroDeformation,
+        const thirdOrderTensor &gradientMicroDeformation, const thirdOrderTensor &previousGradientMicroDeformation,
+        const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
+        const floatVector &previousStateVariables, const floatVector &parameters, const unsigned int numConfigurations,
         const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
         : hydraBase(DOFStorage, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                     additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,

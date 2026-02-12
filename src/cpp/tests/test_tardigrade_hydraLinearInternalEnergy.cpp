@@ -388,15 +388,13 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
             x_p[i] += delta;
             x_m[i] -= delta;
 
-            tardigradeHydra::hydraBase hydrap(dof, temperature, previousTemperature, x_p,
-                                              previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                              previousStateVariables, parameters, numConfigurations,
-                                              numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBase hydrap(dof, temperature, previousTemperature, x_p, previousDeformationGradient,
+                                              additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
+                                              numConfigurations, numNonLinearSolveStateVariables);
 
-            tardigradeHydra::hydraBase hydram(dof, temperature, previousTemperature, x_m,
-                                              previousDeformationGradient, additionalDOF, previousAdditionalDOF,
-                                              previousStateVariables, parameters, numConfigurations,
-                                              numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBase hydram(dof, temperature, previousTemperature, x_m, previousDeformationGradient,
+                                              additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
+                                              numConfigurations, numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 
