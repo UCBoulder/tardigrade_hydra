@@ -16,8 +16,7 @@ namespace tardigradeHydra {
     /*!
      * The main constructor for the hydra base class. Inputs are all the required values for most solves.
      *
-     * \param &time: The current time
-     * \param &deltaTime: The change in time
+     * \param &DOFStorage: The degrees of freedom storage object
      * \param &temperature: The current temperature
      * \param &previousTemperature: The previous temperature
      * \param &deformationGradient: The current deformation gradient
@@ -31,7 +30,7 @@ namespace tardigradeHydra {
      * non-linear solve's residual
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
-    hydraBase::hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
+    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const floatType &temperature,
                          const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
                          const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
                          const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
@@ -39,9 +38,8 @@ namespace tardigradeHydra {
                          const unsigned int     numNonLinearSolveStateVariables,
                          HydraConfigurationBase _hydra_configuration)
         : hydra_configuration(_hydra_configuration),
+          dof(DOFStorage),
           _stress_size(_hydra_configuration.configuration_unknown_count),
-          _time(time),
-          _deltaTime(deltaTime),
           _temperature(temperature),
           _previousTemperature(previousTemperature),
           _deformationGradient(deformationGradient),
@@ -1111,9 +1109,9 @@ namespace tardigradeHydra {
      * Set the scaled quantities
      */
     void hydraBase::setScaledQuantities() {
-        _scaled_time = (_scale_factor - 1) * _deltaTime + _time;
+        _scaled_time = (_scale_factor - 1) * dof._deltaTime + dof._time;
 
-        _scaled_deltaTime = _scale_factor * _deltaTime;
+        _scaled_deltaTime = _scale_factor * dof._deltaTime;
 
         _scaled_temperature = _scale_factor * (_temperature - _previousTemperature) + _previousTemperature;
 

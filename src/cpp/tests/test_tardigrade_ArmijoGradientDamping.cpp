@@ -175,6 +175,8 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_checkLSConvergence,
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -199,9 +201,8 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_checkLSConvergence,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
+                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverStepBase        step;
     tardigradeHydra::ArmijoGradientDamping damping;

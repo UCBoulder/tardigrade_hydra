@@ -81,6 +81,33 @@ namespace tardigradeHydra {
     };
 
     /*!
+     * DOFStorageBase: A class which stores the degrees of freedom
+     */
+    class DOFStorageBase {
+       public:
+        /*!
+         * Default constructor
+         */
+        DOFStorageBase() : _time(0), _deltaTime(0) {}
+
+        /*!
+         * Constructor which sets the time information
+         *
+         * \param &time: The current time
+         * \param &deltaTime: The change in time from the previous time
+         */
+        DOFStorageBase(const floatType &time, const floatType &deltaTime) : _time(time), _deltaTime(deltaTime) {}
+
+        //! The current time
+        const floatType _time;
+
+        //! The change in time from the previous timestep
+        const floatType _deltaTime;
+
+       protected:
+    };
+
+    /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
      *
      * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
@@ -96,12 +123,11 @@ namespace tardigradeHydra {
         hydraBase() {}
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
-        hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
-                  const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
-                  const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
-                  const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
-                  const floatVector &parameters, const unsigned int numConfigurations,
-                  const unsigned int     numNonLinearSolveStateVariables,
+        hydraBase(const DOFStorageBase &DOFStorage, const floatType &temperature, const floatType &previousTemperature,
+                  const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
+                  const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
+                  const floatVector &previousStateVariables, const floatVector &parameters,
+                  const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                   HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
         virtual void initialize();
@@ -323,6 +349,9 @@ namespace tardigradeHydra {
         //! The class which defines the hydra configuration
         HydraConfigurationBase hydra_configuration;
 
+        //! The class which stores the degrees of freedom
+        DOFStorageBase dof;
+
        protected:
         //! Default solver
         SubcyclerSolver _solver;
@@ -401,12 +430,6 @@ namespace tardigradeHydra {
 
         //! The number of terms in the stress measures
         unsigned int _stress_size;
-
-        //! The current time
-        floatType _time;
-
-        //! The change in time
-        floatType _deltaTime;
 
         //! The current temperature
         floatType _temperature;

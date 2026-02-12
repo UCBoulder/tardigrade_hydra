@@ -214,6 +214,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial,
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -238,9 +240,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
+                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -341,6 +342,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -365,9 +368,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
+                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -482,6 +484,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix,
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -506,9 +510,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
+                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -596,6 +599,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -620,9 +625,8 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
+                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;

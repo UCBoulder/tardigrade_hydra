@@ -105,6 +105,8 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler,
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -129,9 +131,8 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualPreSubcycler,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
+                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
@@ -207,6 +208,8 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerSuccess,
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -231,9 +234,8 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerSuccess,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
+                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
@@ -309,6 +311,8 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
 
     tardigradeHydra::floatType deltaTime = 2.2;
 
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime);
+
     tardigradeHydra::floatType temperature = 5.3;
 
     tardigradeHydra::floatType previousTemperature = 23.4;
@@ -333,9 +337,8 @@ BOOST_AUTO_TEST_CASE(test_SubcyclerSolver_callResidualSubcyclerFailure,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, temperature, previousTemperature, deformationGradient, previousDeformationGradient, {}, {},
+                        previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     SubcyclerSolverMock solver;
     solver.hydra = &hydra;
