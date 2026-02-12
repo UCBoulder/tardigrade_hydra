@@ -31,8 +31,8 @@ namespace tardigradeHydra {
        public:
         hydraBaseMicromorphic() {}
 
-        hydraBaseMicromorphic(const DOFStorageBase &DOFStorage, const floatType &temperature,
-                              const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
+        hydraBaseMicromorphic(const DOFStorageBase &DOFStorage,
+                              const secondOrderTensor &deformationGradient,
                               const secondOrderTensor &previousDeformationGradient,
                               const secondOrderTensor &microDeformation,
                               const secondOrderTensor &previousMicroDeformation,
