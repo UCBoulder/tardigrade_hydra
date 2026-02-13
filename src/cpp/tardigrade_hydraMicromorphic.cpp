@@ -26,12 +26,13 @@ namespace tardigradeHydra {
      *     non-linear solve's residual
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
-    hydraBaseMicromorphic::hydraBaseMicromorphic(
-        const MicromorphicDOFStorage &DOFStorage,
-        const floatVector &additionalDOF,
-        const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
-        const floatVector &parameters, const unsigned int numConfigurations,
-        const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
+    hydraBaseMicromorphic::hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage,
+                                                 const floatVector            &additionalDOF,
+                                                 const floatVector            &previousAdditionalDOF,
+                                                 const floatVector            &previousStateVariables,
+                                                 const floatVector &parameters, const unsigned int numConfigurations,
+                                                 const unsigned int     numNonLinearSolveStateVariables,
+                                                 HydraConfigurationBase _hydra_configuration)
         : hydraBase(DOFStorage, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
                     numConfigurations, numNonLinearSolveStateVariables, _hydra_configuration) {}
 
@@ -60,9 +61,9 @@ namespace tardigradeHydra {
             getScaleFactor() * (local_dof->_micro_deformation - local_dof->_previous_micro_deformation) +
             local_dof->_previous_micro_deformation;
 
-        _scaled_gradientMicroDeformation =
-            getScaleFactor() * (local_dof->_gradient_micro_deformation - local_dof->_previous_gradient_micro_deformation) +
-            local_dof->_previous_gradient_micro_deformation;
+        _scaled_gradientMicroDeformation = getScaleFactor() * (local_dof->_gradient_micro_deformation -
+                                                               local_dof->_previous_gradient_micro_deformation) +
+                                           local_dof->_previous_gradient_micro_deformation;
     }
 
     void hydraBaseMicromorphic::initializeUnknownVector() {
