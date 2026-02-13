@@ -16,10 +16,6 @@ namespace tardigradeHydra {
      * solves.
      *
      * \param &DOFStorage: The degree of freedom storage class
-     * \param &gradientMicroDeformation: The current reference spatial gradient of the micro-deformation \f$
-     *     \frac{\partial}{\partial X} \chi \f$
-     * \param &previousGradientMicroDeformation: The previous reference spatial
-     *     gradient of the micro-deformation \f$ \frac{\partial}{\partial X} \chi \f$
      * \param &additionalDOF: Additional degrees of freedom used in the material models
      * \param &previousAdditionalDOF: The previous values of the additional degrees of freedom used in the material
      *     models
@@ -30,16 +26,15 @@ namespace tardigradeHydra {
      *     non-linear solve's residual
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
-    hydraBaseMicromorphic::hydraBaseMicromorphic(
-        const MicromorphicDOFStorage &DOFStorage, const thirdOrderTensor &gradientMicroDeformation,
-        const thirdOrderTensor &previousGradientMicroDeformation, const floatVector &additionalDOF,
-        const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
-        const floatVector &parameters, const unsigned int numConfigurations,
-        const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
+    hydraBaseMicromorphic::hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage,
+                                                 const floatVector            &additionalDOF,
+                                                 const floatVector            &previousAdditionalDOF,
+                                                 const floatVector            &previousStateVariables,
+                                                 const floatVector &parameters, const unsigned int numConfigurations,
+                                                 const unsigned int     numNonLinearSolveStateVariables,
+                                                 HydraConfigurationBase _hydra_configuration)
         : hydraBase(DOFStorage, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
-                    numConfigurations, numNonLinearSolveStateVariables, _hydra_configuration),
-          _gradientMicroDeformation(gradientMicroDeformation),
-          _previousGradientMicroDeformation(previousGradientMicroDeformation) {}
+                    numConfigurations, numNonLinearSolveStateVariables, _hydra_configuration) {}
 
     /*!
      * Initialize the hydra object
@@ -66,9 +61,9 @@ namespace tardigradeHydra {
             getScaleFactor() * (local_dof->_micro_deformation - local_dof->_previous_micro_deformation) +
             local_dof->_previous_micro_deformation;
 
-        _scaled_gradientMicroDeformation =
-            getScaleFactor() * (_gradientMicroDeformation - _previousGradientMicroDeformation) +
-            _previousGradientMicroDeformation;
+        _scaled_gradientMicroDeformation = getScaleFactor() * (local_dof->_gradient_micro_deformation -
+                                                               local_dof->_previous_gradient_micro_deformation) +
+                                           local_dof->_previous_gradient_micro_deformation;
     }
 
     void hydraBaseMicromorphic::initializeUnknownVector() {

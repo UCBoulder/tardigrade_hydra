@@ -26,17 +26,67 @@ namespace tardigradeHydra {
         HydraMicromorphicConfiguration() { configuration_unknown_count = 45; }
     };
 
+    /*!
+     * A storage class for the micromorphic degrees of freedom
+     */
+    class MicromorphicDOFStorage : public DOFStorageBase {
+       public:
+        /*!
+         * Constructor which sets the dof information
+         *
+         * TODO: We're eventually going to store the degrees of freedom into a single storage
+         *       array but, for now, I'm leaving them as discrete just to help with the
+         *       transition.
+         *
+         * \param &time: The current time
+         * \param &deltaTime: The change in time from the previous time
+         * \param &temperature: The current temperature
+         * \param &previous_temperature: The previous temperature
+         * \param &deformation_gradient: The deformation gradient
+         * \param &previous_deformation_gradient: The previous deformation gradient
+         * \param &micro_deformation: The micro-deformation
+         * \param &previous_micro_deformation: The previous micro-deformation
+         * version of DOFStorage
+         * \param &gradient_micro_deformation: The spatial gradient of the micro-deformation
+         * \param &previous_gradient_micro_deformation: The previous spatial gradient of the micro-deformation
+         */
+        MicromorphicDOFStorage(const floatType &time, const floatType &deltaTime, const floatType &temperature,
+                               const floatType &previous_temperature, const floatVector &deformation_gradient,
+                               const floatVector &previous_deformation_gradient, const floatVector &micro_deformation,
+                               const floatVector &previous_micro_deformation,
+                               const floatVector &gradient_micro_deformation,
+                               const floatVector &previous_gradient_micro_deformation)
+            : DOFStorageBase(time, deltaTime, temperature, previous_temperature, deformation_gradient,
+                             previous_deformation_gradient),
+              _micro_deformation(micro_deformation),
+              _previous_micro_deformation(previous_micro_deformation),
+              _gradient_micro_deformation(gradient_micro_deformation),
+              _previous_gradient_micro_deformation(previous_gradient_micro_deformation) {}
+
+        //! The micro deformation
+        const floatVector _micro_deformation;
+
+        //! The previous micro deformation
+        const floatVector _previous_micro_deformation;
+
+        //! The gradient of the micro deformation
+        const floatVector _gradient_micro_deformation;
+
+        //! The previous spatial gradient of the micro deformation
+        const floatVector _previous_gradient_micro_deformation;
+
+       protected:
+    };
+
     //! The base class for hydra framework micromorphic material models
     class hydraBaseMicromorphic : public hydraBase {
        public:
         hydraBaseMicromorphic() {}
 
-        hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage,
-                              const thirdOrderTensor       &gradientMicroDeformation,
-                              const thirdOrderTensor       &previousGradientMicroDeformation,
-                              const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
-                              const floatVector &previousStateVariables, const floatVector &parameters,
-                              const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
+        hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage, const floatVector &additionalDOF,
+                              const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
+                              const floatVector &parameters, const unsigned int numConfigurations,
+                              const unsigned int     numNonLinearSolveStateVariables,
                               HydraConfigurationBase _hydra_configuration = HydraMicromorphicConfiguration());
 
         virtual void initialize() override;
@@ -54,7 +104,10 @@ namespace tardigradeHydra {
         const thirdOrderTensor *getGradientMicroDeformation() { return getScaledGradientMicroDeformation(); }
 
         //! Get the previous spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
-        const thirdOrderTensor *getPreviousGradientMicroDeformation() { return &_previousGradientMicroDeformation; }
+        const thirdOrderTensor *getPreviousGradientMicroDeformation() {
+            auto local_dof = static_cast<const tardigradeHydra::MicromorphicDOFStorage *>(dof);
+            return &local_dof->_previous_gradient_micro_deformation;
+        }
 
         secondOrderTensor getSubMicroConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex);
 
@@ -119,12 +172,6 @@ namespace tardigradeHydra {
         virtual void setScaledQuantities() override;
 
        private:
-        thirdOrderTensor _gradientMicroDeformation;  //!< The spatial gradient of the micro-deformation w.r.t. the
-                                                     //!< reference coordinates
-
-        thirdOrderTensor _previousGradientMicroDeformation;  //!< The previous spatial gradient of the micro-deformation
-                                                             //!< w.r.t. the reference coordinates
-
         secondOrderTensor _scaled_microDeformation;  //!< The current micro-deformation scaled by the scale factor
 
         thirdOrderTensor _scaled_gradientMicroDeformation;  //!< The spatial gradient of the micro-deformation w.r.t.
