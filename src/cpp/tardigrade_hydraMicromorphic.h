@@ -49,15 +49,19 @@ namespace tardigradeHydra {
          * version of DOFStorage
          * \param &gradient_micro_deformation: The spatial gradient of the micro-deformation
          * \param &previous_gradient_micro_deformation: The previous spatial gradient of the micro-deformation
+         * \param &additional_dof: The additional degrees of freedom
+         * \param &previous_additional_dof: The previous additional degrees of freedom
          */
         MicromorphicDOFStorage(const floatType &time, const floatType &deltaTime, const floatType &temperature,
                                const floatType &previous_temperature, const floatVector &deformation_gradient,
                                const floatVector &previous_deformation_gradient, const floatVector &micro_deformation,
                                const floatVector &previous_micro_deformation,
                                const floatVector &gradient_micro_deformation,
-                               const floatVector &previous_gradient_micro_deformation)
+                               const floatVector &previous_gradient_micro_deformation,
+                               const floatVector &additional_dof,
+                               const floatVector &previous_additional_dof)
             : DOFStorageBase(time, deltaTime, temperature, previous_temperature, deformation_gradient,
-                             previous_deformation_gradient),
+                             previous_deformation_gradient, additional_dof, previous_additional_dof),
               _micro_deformation(micro_deformation),
               _previous_micro_deformation(previous_micro_deformation),
               _gradient_micro_deformation(gradient_micro_deformation),
@@ -83,8 +87,7 @@ namespace tardigradeHydra {
        public:
         hydraBaseMicromorphic() {}
 
-        hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage, const floatVector &additionalDOF,
-                              const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
+        hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage, const floatVector &previousStateVariables,
                               const floatVector &parameters, const unsigned int numConfigurations,
                               const unsigned int     numNonLinearSolveStateVariables,
                               HydraConfigurationBase _hydra_configuration = HydraMicromorphicConfiguration());

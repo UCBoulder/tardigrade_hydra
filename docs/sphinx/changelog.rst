@@ -30,6 +30,7 @@ Breaking Changes
 - Moved deformationGradient and previousDeformationGradient to the dof storage class (:pull:`257`). By `Nathan Miller`_.
 - Moved microDeformation and previousMicroDeformation to the dof storage class (:pull:`258`). By `Nathan Miller`_.
 - Moved gradientMicroDeformation and previousGradientMicroDeformation to the dof storage class (:pull:`259`). By `Nathan Miller`_.
+- Moved additionalDOF and previousAdditionalDOF to the dof storage class (:pull:`260`). By `Nathan Miller`_.
 
 ******************
 0.7.1 (02-03-2026)
