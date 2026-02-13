@@ -39,9 +39,8 @@ namespace tardigradeHydra {
         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
         const floatVector &parameters, const unsigned int numConfigurations,
         const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
-        : hydraBase(DOFStorage, additionalDOF, previousAdditionalDOF,
-                    previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables,
-                    _hydra_configuration),
+        : hydraBase(DOFStorage, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
+                    numConfigurations, numNonLinearSolveStateVariables, _hydra_configuration),
           _microDeformation(microDeformation),
           _previousMicroDeformation(previousMicroDeformation),
           _gradientMicroDeformation(gradientMicroDeformation),

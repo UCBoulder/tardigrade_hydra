@@ -98,7 +98,8 @@ BOOST_AUTO_TEST_CASE(test_residual_runBasicGetTests, *boost::unit_test::toleranc
 
     floatVector previousAdditionalDOF(155);
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient);
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient);
 
     floatVector previousStateVariables = {};
 
@@ -108,9 +109,8 @@ BOOST_AUTO_TEST_CASE(test_residual_runBasicGetTests, *boost::unit_test::toleranc
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::hydraBase hydra(dof,  additionalDOF,
-                                     previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -162,7 +162,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getTemperatureGradient, *boost::unit_test::to
         -2.022474e-01, -5.182882e-01, -3.130880e-01, +2.625631e-02, +3.332491e-01, -7.881830e-01, -7.382101e-01,
         -3.560388e-01, +3.231287e-01, +6.930125e-01, +1.065147e-01, +7.089050e-01, -2.303244e-01};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient);
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient);
 
     floatVector previousStateVariables = {};
 
@@ -172,9 +173,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getTemperatureGradient, *boost::unit_test::to
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::hydraBase hydra(dof,  additionalDOF,
-                                     previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -224,7 +224,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getConductivity, *boost::unit_test::tolerance
         -2.022474e-01, -5.182882e-01, -3.130880e-01, +2.625631e-02, +3.332491e-01, -7.881830e-01, -7.382101e-01,
         -3.560388e-01, +3.231287e-01, +6.930125e-01, +1.065147e-01, +7.089050e-01, -2.303244e-01};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient);
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient);
 
     floatVector previousStateVariables = {};
 
@@ -234,9 +235,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getConductivity, *boost::unit_test::tolerance
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::hydraBase hydra(dof,  additionalDOF,
-                                     previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -284,7 +284,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getHeatFlux, *boost::unit_test::tolerance(DEF
         -2.022474e-01, -5.182882e-01, -3.130880e-01, +2.625631e-02, +3.332491e-01, -7.881830e-01, -7.382101e-01,
         -3.560388e-01, +3.231287e-01, +6.930125e-01, +1.065147e-01, +7.089050e-01, -2.303244e-01};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient);
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient);
 
     floatVector previousStateVariables = {};
 
@@ -296,9 +297,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getHeatFlux, *boost::unit_test::tolerance(DEF
 
     constexpr unsigned int temperatureGradientIndex = 28;
 
-    tardigradeHydra::hydraBase hydra(dof,  additionalDOF,
-                                     previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -335,12 +335,10 @@ BOOST_AUTO_TEST_CASE(test_residual_getHeatFlux, *boost::unit_test::tolerance(DEF
             xp[offset + i] += delta;
             xm[offset + i] -= delta;
 
-            tardigradeHydra::hydraBase hydrap(dof,  xp,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
+            tardigradeHydra::hydraBase hydrap(dof, xp, previousAdditionalDOF, previousStateVariables, parameters,
                                               numConfigurations, numNonLinearSolveStateVariables);
 
-            tardigradeHydra::hydraBase hydram(dof,  xm,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
+            tardigradeHydra::hydraBase hydram(dof, xm, previousAdditionalDOF, previousStateVariables, parameters,
                                               numConfigurations, numNonLinearSolveStateVariables);
 
             hydrap.initialize();
@@ -396,7 +394,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
         -2.022474e-01, -5.182882e-01, -3.130880e-01, +2.625631e-02, +3.332491e-01, -7.881830e-01, -7.382101e-01,
         -3.560388e-01, +3.231287e-01, +6.930125e-01, +1.065147e-01, +7.089050e-01, -2.303244e-01};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient);
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient);
 
     floatVector unknownVector = {
         -3.664242e-01, -2.914706e-01, -6.578363e-01, +6.582253e-01, -3.226583e-01, +1.047402e-01, +1.571029e-01,
@@ -414,9 +413,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
 
     constexpr unsigned int temperatureGradientIndex = 28;
 
-    tardigradeHydra::hydraBase hydra(dof,  additionalDOF,
-                                     previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -450,17 +448,17 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, xp,
+                                                 previousDeformationGradient);
 
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm,
+                                                 previousDeformationGradient);
 
-            tardigradeHydra::hydraBase hydrap(dofp, additionalDOF,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
-                                              numConfigurations, numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBase hydrap(dofp, additionalDOF, previousAdditionalDOF, previousStateVariables,
+                                              parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-            tardigradeHydra::hydraBase hydram(dofm, additionalDOF,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
-                                              numConfigurations, numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBase hydram(dofm, additionalDOF, previousAdditionalDOF, previousStateVariables,
+                                              parameters, numConfigurations, numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 
@@ -502,17 +500,17 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
             xp += delta;
             xm -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, xp, previousTemperature, deformationGradient, previousDeformationGradient);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, xp, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient);
 
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm, previousTemperature, deformationGradient, previousDeformationGradient);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient);
 
-            tardigradeHydra::hydraBase hydrap(dofp,  additionalDOF,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
-                                              numConfigurations, numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBase hydrap(dofp, additionalDOF, previousAdditionalDOF, previousStateVariables,
+                                              parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-            tardigradeHydra::hydraBase hydram(dofm,  additionalDOF,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
-                                              numConfigurations, numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBase hydram(dofm, additionalDOF, previousAdditionalDOF, previousStateVariables,
+                                              parameters, numConfigurations, numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 
@@ -554,13 +552,11 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::hydraBase hydrap(dof,  additionalDOF,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
-                                              numConfigurations, numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBase hydrap(dof, additionalDOF, previousAdditionalDOF, previousStateVariables,
+                                              parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-            tardigradeHydra::hydraBase hydram(dof,  additionalDOF,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
-                                              numConfigurations, numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBase hydram(dof, additionalDOF, previousAdditionalDOF, previousStateVariables,
+                                              parameters, numConfigurations, numNonLinearSolveStateVariables);
 
             hydrap.initialize();
 
@@ -598,12 +594,10 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::hydraBase hydrap(dof,  xp,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
+            tardigradeHydra::hydraBase hydrap(dof, xp, previousAdditionalDOF, previousStateVariables, parameters,
                                               numConfigurations, numNonLinearSolveStateVariables);
 
-            tardigradeHydra::hydraBase hydram(dof,  xm,
-                                              previousAdditionalDOF, previousStateVariables, parameters,
+            tardigradeHydra::hydraBase hydram(dof, xm, previousAdditionalDOF, previousStateVariables, parameters,
                                               numConfigurations, numNonLinearSolveStateVariables);
 
             hydrap.initialize();
