@@ -94,7 +94,9 @@ namespace tardigradeHydra {
               _temperature(0),
               _previous_temperature(0),
               _deformation_gradient(floatVector(0, 0)),
-              _previous_deformation_gradient(floatVector(0, 0)) {}
+              _previous_deformation_gradient(floatVector(0, 0)),
+              _micro_deformation(floatVector(0, 0)),
+              _previous_micro_deformation(floatVector(0, 0)) {}
 
         /*!
          * Constructor which sets the time information
@@ -109,16 +111,21 @@ namespace tardigradeHydra {
          * \param &previous_temperature: The previous temperature
          * \param &deformation_gradient: The deformation gradient
          * \param &previous_deformation_gradient: The previous deformation gradient
+         * \param &micro_deformation: The micro-deformation TODO: Move into a derived micromorphic version of DOFStorage
+         * \param &previous_micro_deformation: The previous micro-deformation TODO: Move into a derived micromorphic version of DOFStorage
          */
         DOFStorageBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
                        const floatType &previous_temperature, const floatVector &deformation_gradient,
-                       const floatVector &previous_deformation_gradient)
+                       const floatVector &previous_deformation_gradient,
+                       const floatVector &micro_deformation=floatVector(0,0), const floatVector &previous_micro_deformation=floatVector(0,0))
             : _time(time),
               _deltaTime(deltaTime),
               _temperature(temperature),
               _previous_temperature(previous_temperature),
               _deformation_gradient(deformation_gradient),
-              _previous_deformation_gradient(previous_deformation_gradient) {}
+              _previous_deformation_gradient(previous_deformation_gradient),
+              _micro_deformation(micro_deformation),
+              _previous_micro_deformation(previous_micro_deformation) {}
 
         //! The current time
         const floatType _time;
@@ -137,6 +144,12 @@ namespace tardigradeHydra {
 
         //! The previous deformation gradient
         const floatVector _previous_deformation_gradient;
+
+        //! The micro deformation
+        const floatVector _micro_deformation;
+
+        //! The previous micro deformation
+        const floatVector _previous_micro_deformation;
 
        protected:
     };

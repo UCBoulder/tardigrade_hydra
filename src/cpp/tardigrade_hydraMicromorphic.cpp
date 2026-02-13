@@ -16,8 +16,6 @@ namespace tardigradeHydra {
      * solves.
      *
      * \param &DOFStorage: The degree of freedom storage class
-     * \param &microDeformation: The current micro-deformation \f$ \chi \f$
-     * \param &previousMicroDeformation: The previous micro-deformation \f$ \chi \f$
      * \param &gradientMicroDeformation: The current reference spatial gradient of the micro-deformation \f$
      *     \frac{\partial}{\partial X} \chi \f$
      * \param &previousGradientMicroDeformation: The previous reference spatial
@@ -33,16 +31,14 @@ namespace tardigradeHydra {
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBaseMicromorphic::hydraBaseMicromorphic(
-        const DOFStorageBase &DOFStorage, const secondOrderTensor &microDeformation,
-        const secondOrderTensor &previousMicroDeformation, const thirdOrderTensor &gradientMicroDeformation,
+        const DOFStorageBase &DOFStorage,
+        const thirdOrderTensor &gradientMicroDeformation,
         const thirdOrderTensor &previousGradientMicroDeformation, const floatVector &additionalDOF,
         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
         const floatVector &parameters, const unsigned int numConfigurations,
         const unsigned int numNonLinearSolveStateVariables, HydraConfigurationBase _hydra_configuration)
         : hydraBase(DOFStorage, additionalDOF, previousAdditionalDOF, previousStateVariables, parameters,
                     numConfigurations, numNonLinearSolveStateVariables, _hydra_configuration),
-          _microDeformation(microDeformation),
-          _previousMicroDeformation(previousMicroDeformation),
           _gradientMicroDeformation(gradientMicroDeformation),
           _previousGradientMicroDeformation(previousGradientMicroDeformation) {}
 
@@ -65,7 +61,7 @@ namespace tardigradeHydra {
         hydraBase::hydraBase::setScaledQuantities();
 
         _scaled_microDeformation =
-            getScaleFactor() * (_microDeformation - _previousMicroDeformation) + _previousMicroDeformation;
+            getScaleFactor() * (dof._micro_deformation - dof._previous_micro_deformation) + dof._previous_micro_deformation;
 
         _scaled_gradientMicroDeformation =
             getScaleFactor() * (_gradientMicroDeformation - _previousGradientMicroDeformation) +
