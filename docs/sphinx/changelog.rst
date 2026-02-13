@@ -28,6 +28,8 @@ Breaking Changes
 - Moved time and deltaTime to the dof storage class (:pull:`255`). By `Nathan Miller`_.
 - Moved temperature and previousTemperature to the dof storage class (:pull:`256`). By `Nathan Miller`_.
 - Moved deformationGradient and previousDeformationGradient to the dof storage class (:pull:`257`). By `Nathan Miller`_.
+- Moved microDeformation and previousMicroDeformation to the dof storage class (:pull:`258`). By `Nathan Miller`_.
+- Moved gradientMicroDeformation and previousGradientMicroDeformation to the dof storage class (:pull:`259`). By `Nathan Miller`_.
 
 ******************
 0.7.1 (02-03-2026)
