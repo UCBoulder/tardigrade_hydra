@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor,
     floatVector previousGradientMicroDeformation = {63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76,
                                                     77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09,  -0.01, -0.02,
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_constructor2,
     floatVector previousGradientMicroDeformation = {63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76,
                                                     77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09,  -0.01, -0.02,
@@ -525,7 +525,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigurat
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -614,7 +614,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreceedingMicroCon
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -698,7 +698,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getUnknownVector,
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -859,7 +859,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConf
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -943,7 +943,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getMicroConfiguration
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1032,7 +1032,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroCo
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1121,7 +1121,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousPreceeding
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1205,7 +1205,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingM
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1289,7 +1289,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_previousMicroConf
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1378,7 +1378,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigurat
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1517,7 +1517,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroConf
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1656,7 +1656,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConf
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1795,7 +1795,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroCo
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -1936,7 +1936,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousPrecedingM
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -2077,7 +2077,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingM
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -2218,7 +2218,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_dChi1dChi,
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -2273,9 +2273,9 @@ previousDeformationGradient, microDeformation, previousMicroDeformation);
 
         delta[i] = std::fabs(eps * microDeformation[i]) + eps;
 
-        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation + delta, previousMicroDeformation);
+        tardigradeHydra::MicromorphicDOFStorage dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation + delta, previousMicroDeformation);
 
-        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation - delta, previousMicroDeformation);
+        tardigradeHydra::MicromorphicDOFStorage dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation - delta, previousMicroDeformation);
 
         hydraBaseMicromorphicMock hydrap(dofp,
                                          gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
@@ -2341,7 +2341,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_getPreviousdChi1dChi,
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -2396,9 +2396,9 @@ previousDeformationGradient, microDeformation, previousMicroDeformation);
 
         delta[i] = std::fabs(eps * microDeformation[i]) + eps;
 
-        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation, previousMicroDeformation + delta);
+        tardigradeHydra::MicromorphicDOFStorage dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation, previousMicroDeformation + delta);
                                                                                                                                                                                                     
-        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation, previousMicroDeformation - delta);
+        tardigradeHydra::MicromorphicDOFStorage dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation, previousMicroDeformation - delta);
 
         hydraBaseMicromorphicMock hydrap(dofp,
                                          gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
@@ -2464,7 +2464,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_dChi1dChin,
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -2582,7 +2582,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_previousdChi1dChi
         -0.34104036, -0.34692948, 0.19552953,  -0.18123357, 0.1919703,   0.05438325,  -0.11104943,
         0.42513249,  0.34167,     -0.14260243, -0.45640854, -0.19523193, -0.10181432};
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -2694,7 +2694,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_gradientMicroConf
 
     floatVector previousGradientMicroDeformation(27, 0);
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -2789,7 +2789,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_gradientMicroConf
 
     floatVector previousGradientMicroDeformation(27, 0);
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -2850,10 +2850,10 @@ previousDeformationGradient, microDeformation, previousMicroDeformation);
 
         delta[i] = eps * std::fabs(deformationGradient[i]) + eps;
 
-        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature,
+        tardigradeHydra::MicromorphicDOFStorage dofp(time, deltaTime, temperature, previousTemperature,
                                              deformationGradient + delta, previousDeformationGradient, microDeformation, previousMicroDeformation);
 
-        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature,
+        tardigradeHydra::MicromorphicDOFStorage dofm(time, deltaTime, temperature, previousTemperature,
                                              deformationGradient - delta, previousDeformationGradient, microDeformation, previousMicroDeformation);
 
         hydraBaseMicromorphicMock hydrap(dofp, gradientMicroDeformation,
@@ -2917,9 +2917,9 @@ previousDeformationGradient, microDeformation, previousMicroDeformation);
 
         delta[i] = eps * std::fabs(microDeformation[i]) + eps;
 
-        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation + delta, previousMicroDeformation);
+        tardigradeHydra::MicromorphicDOFStorage dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation + delta, previousMicroDeformation);
 
-        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation - delta, previousMicroDeformation);
+        tardigradeHydra::MicromorphicDOFStorage dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation - delta, previousMicroDeformation);
 
         hydraBaseMicromorphicMock hydrap(dofp,
                                          gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
@@ -3078,7 +3078,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_previousGradientM
 
     floatVector previousGradientMicroDeformation(27, 0);
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -3172,7 +3172,7 @@ BOOST_AUTO_TEST_CASE(test_tardigrade_hydraBaseMicromorphic_get_previousGradientM
 
     floatVector previousGradientMicroDeformation(27, 0);
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -3233,10 +3233,10 @@ previousDeformationGradient, microDeformation, previousMicroDeformation);
 
         delta[i] = eps * std::fabs(deformationGradient[i]) + eps;
 
-        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+        tardigradeHydra::MicromorphicDOFStorage dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient + delta, microDeformation, previousMicroDeformation);
 
-        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+        tardigradeHydra::MicromorphicDOFStorage dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient - delta, microDeformation, previousMicroDeformation);
 
         hydraBaseMicromorphicMock hydrap(dofp, gradientMicroDeformation,
@@ -3301,9 +3301,9 @@ previousDeformationGradient, microDeformation, previousMicroDeformation);
 
         delta[i] = eps * std::fabs(microDeformation[i]) + eps;
 
-        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation, previousMicroDeformation + delta);
+        tardigradeHydra::MicromorphicDOFStorage dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation, previousMicroDeformation + delta);
                                                                                                                                                                                                     
-        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation, previousMicroDeformation - delta);
+        tardigradeHydra::MicromorphicDOFStorage dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, microDeformation, previousMicroDeformation - delta);
 
         hydraBaseMicromorphicMock hydrap(dofp,
                                          gradientMicroDeformation, previousGradientMicroDeformation, {}, {},
@@ -3471,7 +3471,7 @@ BOOST_AUTO_TEST_CASE(test_ResidualBaseMicromorphic, *boost::unit_test::tolerance
 
     floatVector previousGradientMicroDeformation(27, 0);
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {
@@ -3537,7 +3537,7 @@ BOOST_AUTO_TEST_CASE(test_updateUnknownVector, *boost::unit_test::tolerance(DEFA
 
     floatVector previousGradientMicroDeformation(27, 0);
 
-    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+    tardigradeHydra::MicromorphicDOFStorage dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
 previousDeformationGradient, microDeformation, previousMicroDeformation);
 
     floatVector previousStateVariables = {-0.10788248,
