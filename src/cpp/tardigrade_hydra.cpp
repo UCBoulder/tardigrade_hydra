@@ -32,7 +32,7 @@ namespace tardigradeHydra {
                          const unsigned int     numNonLinearSolveStateVariables,
                          HydraConfigurationBase _hydra_configuration)
         : hydra_configuration(_hydra_configuration),
-          dof(DOFStorage),
+          dof(&DOFStorage),
           _stress_size(_hydra_configuration.configuration_unknown_count),
           _additionalDOF(additionalDOF),
           _previousAdditionalDOF(previousAdditionalDOF),
@@ -1099,15 +1099,16 @@ namespace tardigradeHydra {
      * Set the scaled quantities
      */
     void hydraBase::setScaledQuantities() {
-        _scaled_time = (_scale_factor - 1) * dof._deltaTime + dof._time;
+        _scaled_time = (_scale_factor - 1) * dof->_deltaTime + dof->_time;
 
-        _scaled_deltaTime = _scale_factor * dof._deltaTime;
+        _scaled_deltaTime = _scale_factor * dof->_deltaTime;
 
         _scaled_temperature =
-            _scale_factor * (dof._temperature - dof._previous_temperature) + dof._previous_temperature;
+            _scale_factor * (dof->_temperature - dof->_previous_temperature) + dof->_previous_temperature;
 
-        _scaled_deformationGradient = _scale_factor * (dof._deformation_gradient - dof._previous_deformation_gradient) +
-                                      dof._previous_deformation_gradient;
+        _scaled_deformationGradient =
+            _scale_factor * (dof->_deformation_gradient - dof->_previous_deformation_gradient) +
+            dof->_previous_deformation_gradient;
 
         _scaled_additionalDOF = _scale_factor * (_additionalDOF - _previousAdditionalDOF) + _previousAdditionalDOF;
     }

@@ -31,10 +31,9 @@ namespace tardigradeHydra {
        public:
         hydraBaseMicromorphic() {}
 
-        hydraBaseMicromorphic(const DOFStorageBase &DOFStorage, const secondOrderTensor &microDeformation,
-                              const secondOrderTensor &previousMicroDeformation,
-                              const thirdOrderTensor  &gradientMicroDeformation,
-                              const thirdOrderTensor  &previousGradientMicroDeformation,
+        hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage,
+                              const thirdOrderTensor       &gradientMicroDeformation,
+                              const thirdOrderTensor       &previousGradientMicroDeformation,
                               const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                               const floatVector &previousStateVariables, const floatVector &parameters,
                               const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
@@ -46,7 +45,10 @@ namespace tardigradeHydra {
         const secondOrderTensor *getMicroDeformation() { return getScaledMicroDeformation(); }
 
         //! Get the previous micro-deformation tensor
-        const secondOrderTensor *getPreviousMicroDeformation() { return &_previousMicroDeformation; }
+        const secondOrderTensor *getPreviousMicroDeformation() {
+            auto local_dof = static_cast<const tardigradeHydra::MicromorphicDOFStorage *>(dof);
+            return &local_dof->_previous_micro_deformation;
+        }
 
         //! Get the current spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
         const thirdOrderTensor *getGradientMicroDeformation() { return getScaledGradientMicroDeformation(); }
@@ -117,10 +119,6 @@ namespace tardigradeHydra {
         virtual void setScaledQuantities() override;
 
        private:
-        secondOrderTensor _microDeformation;  //!< The current micro-deformation
-
-        secondOrderTensor _previousMicroDeformation;  //!< The previous micro-deformation
-
         thirdOrderTensor _gradientMicroDeformation;  //!< The spatial gradient of the micro-deformation w.r.t. the
                                                      //!< reference coordinates
 

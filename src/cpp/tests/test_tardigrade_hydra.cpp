@@ -68,7 +68,7 @@ namespace tardigradeHydra {
             }
 
             static void checkPreviousTemperature(hydraBase &hydra) {
-                BOOST_CHECK(hydra.dof._previous_temperature == hydra.getPreviousTemperature());
+                BOOST_CHECK(hydra.dof->_previous_temperature == hydra.getPreviousTemperature());
             }
 
             static void checkDeformationGradient(hydraBase &hydra) {
@@ -76,7 +76,7 @@ namespace tardigradeHydra {
             }
 
             static void checkPreviousDeformationGradient(hydraBase &hydra) {
-                BOOST_CHECK(&hydra.dof._previous_deformation_gradient == hydra.getPreviousDeformationGradient());
+                BOOST_CHECK(&hydra.dof->_previous_deformation_gradient == hydra.getPreviousDeformationGradient());
             }
 
             static void checkAdditionalDOF(hydraBase &hydra) {
