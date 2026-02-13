@@ -141,43 +141,6 @@ namespace tardigradeHydra {
        protected:
     };
 
-    class MicromorphicDOFStorage : public DOFStorageBase {
-       public:
-        /*!
-         * Constructor which sets the dof information
-         *
-         * TODO: We're eventually going to store the degrees of freedom into a single storage
-         *       array but, for now, I'm leaving them as discrete just to help with the
-         *       transition.
-         *
-         * \param &time: The current time
-         * \param &deltaTime: The change in time from the previous time
-         * \param &temperature: The current temperature
-         * \param &previous_temperature: The previous temperature
-         * \param &deformation_gradient: The deformation gradient
-         * \param &previous_deformation_gradient: The previous deformation gradient
-         * \param &micro_deformation: The micro-deformation TODO: Move into a derived micromorphic version of DOFStorage
-         * \param &previous_micro_deformation: The previous micro-deformation TODO: Move into a derived micromorphic
-         * version of DOFStorage
-         */
-        MicromorphicDOFStorage(const floatType &time, const floatType &deltaTime, const floatType &temperature,
-                               const floatType &previous_temperature, const floatVector &deformation_gradient,
-                               const floatVector &previous_deformation_gradient, const floatVector &micro_deformation,
-                               const floatVector &previous_micro_deformation)
-            : DOFStorageBase(time, deltaTime, temperature, previous_temperature, deformation_gradient,
-                             previous_deformation_gradient),
-              _micro_deformation(micro_deformation),
-              _previous_micro_deformation(previous_micro_deformation) {}
-
-        //! The micro deformation
-        const floatVector _micro_deformation;
-
-        //! The previous micro deformation
-        const floatVector _previous_micro_deformation;
-
-       protected:
-    };
-
     /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
      *
