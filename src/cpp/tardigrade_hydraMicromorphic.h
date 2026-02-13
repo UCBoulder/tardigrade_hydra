@@ -31,7 +31,7 @@ namespace tardigradeHydra {
        public:
         hydraBaseMicromorphic() {}
 
-        hydraBaseMicromorphic(const DOFStorageBase &DOFStorage,
+        hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage,
                               const thirdOrderTensor  &gradientMicroDeformation,
                               const thirdOrderTensor  &previousGradientMicroDeformation,
                               const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
@@ -45,7 +45,7 @@ namespace tardigradeHydra {
         const secondOrderTensor *getMicroDeformation() { return getScaledMicroDeformation(); }
 
         //! Get the previous micro-deformation tensor
-        const secondOrderTensor *getPreviousMicroDeformation() { return &dof._previous_micro_deformation; }
+        const secondOrderTensor *getPreviousMicroDeformation() { auto local_dof = static_cast<const tardigradeHydra::MicromorphicDOFStorage*>(dof); return &local_dof->_previous_micro_deformation; }
 
         //! Get the current spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
         const thirdOrderTensor *getGradientMicroDeformation() { return getScaledGradientMicroDeformation(); }
