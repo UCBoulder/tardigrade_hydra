@@ -88,7 +88,13 @@ namespace tardigradeHydra {
         /*!
          * Default constructor
          */
-        DOFStorageBase() : _time(0), _deltaTime(0), _temperature(0), _previous_temperature(0) {}
+        DOFStorageBase()
+            : _time(0),
+              _deltaTime(0),
+              _temperature(0),
+              _previous_temperature(0),
+              _deformation_gradient(floatVector(0, 0)),
+              _previous_deformation_gradient(floatVector(0, 0)) {}
 
         /*!
          * Constructor which sets the time information
@@ -101,13 +107,18 @@ namespace tardigradeHydra {
          * \param &deltaTime: The change in time from the previous time
          * \param &temperature: The current temperature
          * \param &previous_temperature: The previous temperature
+         * \param &deformation_gradient: The deformation gradient
+         * \param &previous_deformation_gradient: The previous deformation gradient
          */
         DOFStorageBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
-                       const floatType &previous_temperature)
+                       const floatType &previous_temperature, const floatVector &deformation_gradient,
+                       const floatVector &previous_deformation_gradient)
             : _time(time),
               _deltaTime(deltaTime),
               _temperature(temperature),
-              _previous_temperature(previous_temperature) {}
+              _previous_temperature(previous_temperature),
+              _deformation_gradient(deformation_gradient),
+              _previous_deformation_gradient(previous_deformation_gradient) {}
 
         //! The current time
         const floatType _time;
@@ -120,6 +131,12 @@ namespace tardigradeHydra {
 
         //! The previous temperature
         const floatType _previous_temperature;
+
+        //! The deformation gradient
+        const floatVector _deformation_gradient;
+
+        //! The previous deformation gradient
+        const floatVector _previous_deformation_gradient;
 
        protected:
     };
@@ -140,8 +157,7 @@ namespace tardigradeHydra {
         hydraBase() {}
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
-        hydraBase(const DOFStorageBase &DOFStorage, const secondOrderTensor &deformationGradient,
-                  const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
+        hydraBase(const DOFStorageBase &DOFStorage, const floatVector &additionalDOF,
                   const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
                   const floatVector &parameters, const unsigned int numConfigurations,
                   const unsigned int     numNonLinearSolveStateVariables,
@@ -182,7 +198,7 @@ namespace tardigradeHydra {
         const secondOrderTensor *getDeformationGradient() { return getScaledDeformationGradient(); }
 
         //! Get a reference to the previous deformation gradient
-        const secondOrderTensor *getPreviousDeformationGradient() { return &_previousDeformationGradient; }
+        const secondOrderTensor *getPreviousDeformationGradient() { return &dof._previous_deformation_gradient; }
 
         //! Get a reference to the additional degrees of freedom
         const floatVector *getAdditionalDOF() { return getScaledAdditionalDOF(); }
@@ -447,12 +463,6 @@ namespace tardigradeHydra {
 
         //! The number of terms in the stress measures
         unsigned int _stress_size;
-
-        //! The current deformation gradient
-        secondOrderTensor _deformationGradient;
-
-        //! The previous deformation gradient
-        secondOrderTensor _previousDeformationGradient;
 
         //! The current additional degrees of freedom
         floatVector _additionalDOF;
