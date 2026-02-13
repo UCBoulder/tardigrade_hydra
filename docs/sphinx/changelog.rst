@@ -25,6 +25,9 @@ Breaking Changes
 - Changing the hydra interface to simplify creating hydra objects (:pull:`252`). By `Nathan Miller`_.
 - Removed the tolerance getter functions to just use the HydraConfigurationBase class values (:pull:`253`). By `Nathan Miller`_.
 - Moved dimension to DeformationBase (:pull:`254`). By `Nathan Miller`_.
+- Moved time and deltaTime to the dof storage class (:pull:`255`). By `Nathan Miller`_.
+- Moved temperature and previousTemperature to the dof storage class (:pull:`256`). By `Nathan Miller`_.
+- Moved deformationGradient and previousDeformationGradient to the dof storage class (:pull:`257`). By `Nathan Miller`_.
 
 ******************
 0.7.1 (02-03-2026)
