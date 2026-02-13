@@ -1106,8 +1106,9 @@ namespace tardigradeHydra {
         _scaled_temperature =
             _scale_factor * (dof->_temperature - dof->_previous_temperature) + dof->_previous_temperature;
 
-        _scaled_deformationGradient = _scale_factor * (dof->_deformation_gradient - dof->_previous_deformation_gradient) +
-                                      dof->_previous_deformation_gradient;
+        _scaled_deformationGradient =
+            _scale_factor * (dof->_deformation_gradient - dof->_previous_deformation_gradient) +
+            dof->_previous_deformation_gradient;
 
         _scaled_additionalDOF = _scale_factor * (_additionalDOF - _previousAdditionalDOF) + _previousAdditionalDOF;
     }

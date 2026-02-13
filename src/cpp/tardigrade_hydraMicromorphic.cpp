@@ -31,8 +31,7 @@ namespace tardigradeHydra {
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBaseMicromorphic::hydraBaseMicromorphic(
-        const MicromorphicDOFStorage &DOFStorage,
-        const thirdOrderTensor &gradientMicroDeformation,
+        const MicromorphicDOFStorage &DOFStorage, const thirdOrderTensor &gradientMicroDeformation,
         const thirdOrderTensor &previousGradientMicroDeformation, const floatVector &additionalDOF,
         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
         const floatVector &parameters, const unsigned int numConfigurations,
@@ -58,12 +57,14 @@ namespace tardigradeHydra {
          * Scale the current values by the scale factor
          */
 
-        auto local_dof = static_cast<const tardigradeHydra::MicromorphicDOFStorage*>(dof); //TODO: Avoid this static cast
+        auto local_dof =
+            static_cast<const tardigradeHydra::MicromorphicDOFStorage *>(dof);  // TODO: Avoid this static cast
 
         hydraBase::hydraBase::setScaledQuantities();
 
         _scaled_microDeformation =
-            getScaleFactor() * (local_dof->_micro_deformation - local_dof->_previous_micro_deformation) + local_dof->_previous_micro_deformation;
+            getScaleFactor() * (local_dof->_micro_deformation - local_dof->_previous_micro_deformation) +
+            local_dof->_previous_micro_deformation;
 
         _scaled_gradientMicroDeformation =
             getScaleFactor() * (_gradientMicroDeformation - _previousGradientMicroDeformation) +
