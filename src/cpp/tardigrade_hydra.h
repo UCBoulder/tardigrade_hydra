@@ -155,6 +155,30 @@ namespace tardigradeHydra {
     };
 
     /*!
+     * A class which stores the model configuration
+     */
+    class ModelConfigurationBase {
+       public:
+        /*!
+         * The default constructor
+         */
+        ModelConfigurationBase() : _previous_state_variables(floatVector(0, 0)), _parameters(floatVector(0, 0)) {}
+
+        /*!
+         * The constructor
+         *
+         * \param &previous_state_variables: The previous values of the internal state variables
+         * \param &parameters: The model parameters
+         */
+        ModelConfigurationBase(const floatVector &previous_state_variables, const floatVector &parameters)
+            : _previous_state_variables(previous_state_variables), _parameters(parameters) {}
+
+        const floatVector _previous_state_variables;
+
+        const floatVector _parameters;
+    };
+
+    /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
      *
      * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
@@ -170,8 +194,8 @@ namespace tardigradeHydra {
         hydraBase() {}
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
-        hydraBase(const DOFStorageBase &DOFStorage, const floatVector &previousStateVariables,
-                  const floatVector &parameters, const unsigned int numConfigurations,
+        hydraBase(const DOFStorageBase &DOFStorage, const ModelConfigurationBase &ModelConfiguration,
+                  const unsigned int numConfigurations,
                   const unsigned int     numNonLinearSolveStateVariables,
                   HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
@@ -219,10 +243,10 @@ namespace tardigradeHydra {
         const floatVector *getPreviousAdditionalDOF() { return &dof->_previous_additional_dof; }
 
         //! Get a reference to the previous values of the state variables
-        const floatVector *getPreviousStateVariables() { return &_previousStateVariables; }
+        const floatVector *getPreviousStateVariables() { return &model_configuration->_previous_state_variables; }
 
         //! Get a reference to the model parameters
-        const floatVector *getParameters() { return &_parameters; }
+        const floatVector *getParameters() { return &model_configuration->_parameters; }
 
         //! Get a reference to the number of configurations
         constexpr unsigned int getNumConfigurations() { return _numConfigurations; }
@@ -397,6 +421,9 @@ namespace tardigradeHydra {
         //! The class which stores the degrees of freedom
         const DOFStorageBase *dof;
 
+        //! The class which stores the model configuration
+        const ModelConfigurationBase *model_configuration;
+
        protected:
         //! Default solver
         SubcyclerSolver _solver;
@@ -475,12 +502,6 @@ namespace tardigradeHydra {
 
         //! The number of terms in the stress measures
         unsigned int _stress_size;
-
-        //! The previous state variables
-        floatVector _previousStateVariables;
-
-        //! The model parameters
-        floatVector _parameters;
 
         //! The current time scaled by the scaling factor
         floatType _scaled_time;
