@@ -191,10 +191,9 @@ BOOST_AUTO_TEST_CASE(test_setTrialStress, *boost::unit_test::tolerance(DEFAULT_T
         virtual void setdTrialStressdD() override {}
     };
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration, numConfigurations,
-                                                 numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -281,10 +280,9 @@ BOOST_AUTO_TEST_CASE(test_setdTrialStressdD, *boost::unit_test::tolerance(DEFAUL
        protected:
     };
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration, numConfigurations,
-                                                 numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -332,11 +330,9 @@ BOOST_AUTO_TEST_CASE(test_setdTrialStressdD, *boost::unit_test::tolerance(DEFAUL
                                                          gradChim, previousGradientMicroDeformation, additionalDOF,
                                                          previousAdditionalDOF);
 
-            tardigradeHydra::hydraBaseMicromorphic hydrap(dofp, model_configuration, numConfigurations,
-                                                          numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBaseMicromorphic hydrap(dofp, model_configuration);
 
-            tardigradeHydra::hydraBaseMicromorphic hydram(dofm, model_configuration, numConfigurations,
-                                                          numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBaseMicromorphic hydram(dofm, model_configuration);
 
             hydrap.initialize();
 
@@ -460,10 +456,9 @@ BOOST_AUTO_TEST_CASE(test_setResidaul, *boost::unit_test::tolerance(DEFAULT_TEST
         virtual void setdTrialStressdD() override {}
     };
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration, numConfigurations,
-                                                 numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -550,10 +545,9 @@ BOOST_AUTO_TEST_CASE(test_residual_jacobians, *boost::unit_test::tolerance(DEFAU
        protected:
     };
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration, numConfigurations,
-                                                 numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -586,11 +580,9 @@ BOOST_AUTO_TEST_CASE(test_residual_jacobians, *boost::unit_test::tolerance(DEFAU
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::hydraBaseMicromorphic hydrap(dof, model_configuration, numConfigurations,
-                                                          numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBaseMicromorphic hydrap(dof, model_configuration);
 
-            tardigradeHydra::hydraBaseMicromorphic hydram(dof, model_configuration, numConfigurations,
-                                                          numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBaseMicromorphic hydram(dof, model_configuration);
 
             hydrap.initialize();
 
@@ -656,11 +648,9 @@ BOOST_AUTO_TEST_CASE(test_residual_jacobians, *boost::unit_test::tolerance(DEFAU
                                                          gradChim, previousGradientMicroDeformation, additionalDOF,
                                                          previousAdditionalDOF);
 
-            tardigradeHydra::hydraBaseMicromorphic hydrap(dofp, model_configuration, numConfigurations,
-                                                          numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBaseMicromorphic hydrap(dofp, model_configuration);
 
-            tardigradeHydra::hydraBaseMicromorphic hydram(dofm, model_configuration, numConfigurations,
-                                                          numNonLinearSolveStateVariables);
+            tardigradeHydra::hydraBaseMicromorphic hydram(dofm, model_configuration);
 
             hydrap.initialize();
 

@@ -155,9 +155,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfiguration, *boost::unit_test
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -210,9 +210,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -270,9 +270,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -328,9 +328,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfiguration,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -380,9 +380,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfiguration,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -441,9 +441,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfiguration,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -499,9 +499,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -604,9 +604,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian2,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -709,9 +709,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -814,9 +814,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfigurationJacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -919,9 +919,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfigurationJacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -1024,9 +1024,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfigurationJacob
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -1129,9 +1129,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfigurationJacob
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -1234,9 +1234,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setPreviousFirstConfigurationGradients
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -1260,11 +1260,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setPreviousFirstConfigurationGradients
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient - delta, additionalDOF, previousAdditionalDOF);
 
-        tardigradeHydra::hydraBase hydra_p(dofp, model_configuration, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_p(dofp, model_configuration);
 
-        tardigradeHydra::hydraBase hydra_m(dofm, model_configuration, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_m(dofm, model_configuration);
 
         hydra_p.initialize();
 
@@ -1291,15 +1289,13 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setPreviousFirstConfigurationGradients
 
         delta[i] += eps * std::fabs(previousStateVariables[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-        tardigradeHydra::hydraBase hydra_p(dof, model_configurationp, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_p(dof, model_configurationp);
 
-        tardigradeHydra::hydraBase hydra_m(dof, model_configurationm, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_m(dof, model_configurationm);
 
         hydra_p.initialize();
 
@@ -1359,9 +1355,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -1387,11 +1383,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
                                              deformationGradient - delta, previousDeformationGradient, additionalDOF,
                                              previousAdditionalDOF);
 
-        tardigradeHydra::hydraBase hydra_p(dofp, model_configuration, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_p(dofp, model_configuration);
 
-        tardigradeHydra::hydraBase hydra_m(dofm, model_configuration, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_m(dofm, model_configuration);
 
         hydra_p.initialize();
 
@@ -1420,15 +1414,13 @@ BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
 
         delta[i] += eps * std::fabs(previousStateVariables[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-        tardigradeHydra::hydraBase hydra_p(dof, model_configurationp, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_p(dof, model_configurationp);
 
-        tardigradeHydra::hydraBase hydra_m(dof, model_configurationm, numConfigurations,
-                                           numNonLinearSolveStateVariables);
+        tardigradeHydra::hydraBase hydra_m(dof, model_configurationm);
 
         hydra_p.initialize();
 

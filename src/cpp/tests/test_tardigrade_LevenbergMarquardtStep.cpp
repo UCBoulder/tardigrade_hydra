@@ -168,9 +168,9 @@ BOOST_AUTO_TEST_CASE(test_LevenbergMarquardtStep_getNonlinearLMTerms, *boost::un
                                               0.51788095,  -0.21093811, 0.377036,    2.34049101,  0.18253039,
                                               0.15427055,  -0.10279234, -0.03867597, 0.18253039,  1.69872961};
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
-    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, model_configuration);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
     tardigradeHydra::SolverStepBase      step(&solver);
