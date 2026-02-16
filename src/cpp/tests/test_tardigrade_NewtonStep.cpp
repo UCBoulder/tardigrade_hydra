@@ -140,7 +140,9 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase         solver;
     tardigradeHydra::SolverStepBase     step;
@@ -171,7 +173,7 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
 
     result = {0, 0, 0};
 
-    hydraBaseMock hydra_pre(dof, previousStateVariables, parameters, numConfigurations,
+    hydraBaseMock hydra_pre(dof, model_configuration, numConfigurations,
                             numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase           solver_pre;

@@ -206,7 +206,9 @@ BOOST_AUTO_TEST_CASE(test_ArmijoGradientDamping_checkLSConvergence,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverStepBase        step;
     tardigradeHydra::ArmijoGradientDamping damping;

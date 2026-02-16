@@ -159,7 +159,9 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_callResidualRelaxedStepFailure,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     RelaxedSolverBaseMock solver;
 
@@ -281,7 +283,9 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_solve, *boost::unit_test::tolerance(
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     RelaxedSolverBaseMock solver;
     SolverBaseMock        internal_solver;
@@ -446,7 +450,9 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve, *boost::unit_te
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     // Form the relaxed solver
     SolverBaseMock        internal_solver;
@@ -646,7 +652,9 @@ BOOST_AUTO_TEST_CASE(test_RelaxedSolverBase_performRelaxedSolve2,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     // Form the relaxed solver
     SolverBaseMock        internal_solver;

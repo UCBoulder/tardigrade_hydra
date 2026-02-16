@@ -154,7 +154,9 @@ BOOST_AUTO_TEST_CASE(test_residual_basicGetTests, *boost::unit_test::tolerance(D
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -272,7 +274,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofPrecedingDeformationGradient_1,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -392,7 +396,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofPrecedingDeformationGradient_2,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -427,10 +433,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofPrecedingDeformationGradient_2,
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, Fm,
                                              previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -469,10 +475,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofPrecedingDeformationGradient_2,
 
         xm[i + offset] -= delta;
 
-        hydraBaseMock hydrap(dof, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dof, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dof, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dof, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -515,10 +521,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofPrecedingDeformationGradient_2,
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
                                              additionalDOF, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -558,9 +564,13 @@ BOOST_AUTO_TEST_CASE(test_residual_dofPrecedingDeformationGradient_2,
 
         xm[i + offset] -= delta;
 
-        hydraBaseMock hydrap(dof, xp, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(xp, parameters);
 
-        hydraBaseMock hydram(dof, xm, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(xm, parameters);
+
+        hydraBaseMock hydrap(dof, model_configurationp, numConfigurations, numNonLinearSolveStateVariables);
+
+        hydraBaseMock hydram(dof, model_configurationm, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -668,7 +678,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofIntermediateVelocityGradient_1,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -787,7 +799,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofIntermediateVelocityGradient_2,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -828,10 +842,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofIntermediateVelocityGradient_2,
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, Fm,
                                              previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -870,10 +884,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofIntermediateVelocityGradient_2,
 
         xm[i + offset] -= delta;
 
-        hydraBaseMock hydrap(dof, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dof, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dof, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dof, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -918,10 +932,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofIntermediateVelocityGradient_2,
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient, xm, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -964,10 +978,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofIntermediateVelocityGradient_2,
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
                                              additionalDOF, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -1007,9 +1021,13 @@ BOOST_AUTO_TEST_CASE(test_residual_dofIntermediateVelocityGradient_2,
 
         xm[i + offset] -= delta;
 
-        hydraBaseMock hydrap(dof, xp, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(xp, parameters);
 
-        hydraBaseMock hydram(dof, xm, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(xm, parameters);
+
+        hydraBaseMock hydrap(dof, model_configurationp, numConfigurations, numNonLinearSolveStateVariables);
+
+        hydraBaseMock hydram(dof, model_configurationm, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1054,10 +1072,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofIntermediateVelocityGradient_2,
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient, additionalDOF, xm);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -1216,7 +1234,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_1, *boost::unit_test::
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1326,7 +1346,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_2, *boost::unit_test::
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1369,10 +1391,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_2, *boost::unit_test::
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, Fm,
                                              previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -1413,10 +1435,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_2, *boost::unit_test::
 
         xm[i + offset] -= delta;
 
-        hydraBaseMock hydrap(dof, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dof, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dof, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dof, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -1463,10 +1485,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_2, *boost::unit_test::
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient, xm, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -1511,10 +1533,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_2, *boost::unit_test::
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
                                              additionalDOF, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -1555,9 +1577,13 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_2, *boost::unit_test::
 
         xm[i + offset] -= delta;
 
-        hydraBaseMock hydrap(dof, xp, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(xp, parameters);
 
-        hydraBaseMock hydram(dof, xm, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(xm, parameters);
+
+        hydraBaseMock hydrap(dof, model_configurationp, numConfigurations, numNonLinearSolveStateVariables);
+
+        hydraBaseMock hydram(dof, model_configurationm, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -1603,10 +1629,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_2, *boost::unit_test::
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient, additionalDOF, xm);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -1767,7 +1793,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_3, *boost::unit_test::
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1881,7 +1909,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_4, *boost::unit_test::
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -1925,10 +1955,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_4, *boost::unit_test::
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, Fm,
                                              previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -1973,10 +2003,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_4, *boost::unit_test::
 
         xm[i + offset] -= delta;
 
-        hydraBaseMock hydrap(dof, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dof, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dof, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dof, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -2027,10 +2057,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_4, *boost::unit_test::
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient, xm, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -2079,10 +2109,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_4, *boost::unit_test::
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
                                              additionalDOF, previousAdditionalDOF);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -2127,9 +2157,13 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_4, *boost::unit_test::
 
         xm[i + offset] -= delta;
 
-        hydraBaseMock hydrap(dof, xp, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(xp, parameters);
 
-        hydraBaseMock hydram(dof, xm, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(xm, parameters);
+
+        hydraBaseMock hydrap(dof, model_configurationp, numConfigurations, numNonLinearSolveStateVariables);
+
+        hydraBaseMock hydram(dof, model_configurationm, numConfigurations, numNonLinearSolveStateVariables);
 
         hydrap.initialize();
 
@@ -2179,10 +2213,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofDeformationGradient_4, *boost::unit_test::
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                              previousDeformationGradient, additionalDOF, xm);
 
-        hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
-        hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+        hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                              numNonLinearSolveStateVariables);
 
         hydrap.initialize();
@@ -2297,7 +2331,9 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeRate_1, *boost::unit_test::toleranc
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -2406,7 +2442,9 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeRate_2, *boost::unit_test::toleranc
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -2444,10 +2482,10 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeRate_2, *boost::unit_test::toleranc
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                                  previousDeformationGradient, xm, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.initialize();
@@ -2565,7 +2603,9 @@ BOOST_AUTO_TEST_CASE(test_residual_internalHeatGenerationRate_1, *boost::unit_te
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -2676,7 +2716,9 @@ BOOST_AUTO_TEST_CASE(test_residual_internalHeatGenerationRate_2, *boost::unit_te
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -2714,10 +2756,10 @@ BOOST_AUTO_TEST_CASE(test_residual_internalHeatGenerationRate_2, *boost::unit_te
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                                  previousDeformationGradient, xm, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.initialize();
@@ -2836,7 +2878,9 @@ BOOST_AUTO_TEST_CASE(test_residual_internalHeatGenerationRate_3, *boost::unit_te
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -2948,7 +2992,9 @@ BOOST_AUTO_TEST_CASE(test_residual_internalHeatGenerationRate_4, *boost::unit_te
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -2986,10 +3032,10 @@ BOOST_AUTO_TEST_CASE(test_residual_internalHeatGenerationRate_4, *boost::unit_te
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                                  previousDeformationGradient, xm, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.initialize();
@@ -3135,7 +3181,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofResidual, *boost::unit_test::tolerance(DEF
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -3239,7 +3287,9 @@ BOOST_AUTO_TEST_CASE(test_residual_dofResidual_2, *boost::unit_test::tolerance(D
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -3277,10 +3327,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofResidual_2, *boost::unit_test::tolerance(D
 
             xm[i] -= delta;
 
-            hydraBaseMock hydrap(dof, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dof, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dof, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dof, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.initialize();
@@ -3333,10 +3383,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofResidual_2, *boost::unit_test::tolerance(D
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm,
                                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.initialize();
@@ -3389,10 +3439,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofResidual_2, *boost::unit_test::tolerance(D
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm[0], previousTemperature, deformationGradient,
                                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.initialize();
@@ -3447,10 +3497,10 @@ BOOST_AUTO_TEST_CASE(test_residual_dofResidual_2, *boost::unit_test::tolerance(D
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                                  previousDeformationGradient, xm, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.initialize();
@@ -3549,7 +3599,9 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
 
     unsigned int numNonLinearSolveStateVariables = 2;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -3587,10 +3639,10 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm,
                                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
@@ -3633,10 +3685,10 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm[0], previousTemperature, deformationGradient,
                                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
@@ -3679,10 +3731,10 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel, *boost::unit_test::tolerance(DE
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                                  previousDeformationGradient, xm, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
@@ -3772,7 +3824,9 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel2, *boost::unit_test::tolerance(D
 
     unsigned int numNonLinearSolveStateVariables = 2;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -3810,10 +3864,10 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel2, *boost::unit_test::tolerance(D
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm,
                                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
@@ -3856,10 +3910,10 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel2, *boost::unit_test::tolerance(D
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm[0], previousTemperature, deformationGradient,
                                                  previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
@@ -3902,10 +3956,10 @@ BOOST_AUTO_TEST_CASE(test_residual_exampleModel2, *boost::unit_test::tolerance(D
             tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                                  previousDeformationGradient, xm, previousAdditionalDOF);
 
-            hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydrap(dofp, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
+            hydraBaseMock hydram(dofm, model_configuration, numConfigurations,
                                  numNonLinearSolveStateVariables);
 
             hydrap.evaluate();
@@ -4018,7 +4072,9 @@ BOOST_AUTO_TEST_CASE(test_residual_suggestInitialIterateValues, *boost::unit_tes
 
     const unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 

@@ -169,7 +169,9 @@ BOOST_AUTO_TEST_CASE(test_NonlinearStepBase_getNonlinearTerms, *boost::unit_test
         using tardigradeHydra::NonlinearStepBase::NonlinearStepBase;
     };
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     SolverStepBaseMock    step;
     StepDampingBaseMock   damping;

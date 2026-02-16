@@ -181,7 +181,9 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
         using tardigradeHydra::hydraBase::hydraBase;
     };
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
+
+    hydraBaseMock hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
     tardigradeHydra::SolverStepBase      step(&solver);

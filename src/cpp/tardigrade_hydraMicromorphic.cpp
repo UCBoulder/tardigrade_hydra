@@ -17,8 +17,6 @@ namespace tardigradeHydra {
      *
      * \param &DOFStorage: The degree of freedom storage class
      * \param &ModelConfiguration: The model configuration class
-     * \param &previousStateVariables: The previous state variables
-     * \param &parameters: The model parameters
      * \param &numConfigurations: The number of configurations
      * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
      *     non-linear solve's residual
