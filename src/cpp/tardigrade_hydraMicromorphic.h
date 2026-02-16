@@ -58,8 +58,7 @@ namespace tardigradeHydra {
                                const floatVector &previous_micro_deformation,
                                const floatVector &gradient_micro_deformation,
                                const floatVector &previous_gradient_micro_deformation,
-                               const floatVector &additional_dof,
-                               const floatVector &previous_additional_dof)
+                               const floatVector &additional_dof, const floatVector &previous_additional_dof)
             : DOFStorageBase(time, deltaTime, temperature, previous_temperature, deformation_gradient,
                              previous_deformation_gradient, additional_dof, previous_additional_dof),
               _micro_deformation(micro_deformation),

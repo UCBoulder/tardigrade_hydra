@@ -245,8 +245,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_computeTrial,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof,  previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -378,8 +377,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTRHSVecto
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof,  previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -525,8 +523,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_assembleKKTMatrix,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof,  previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;
@@ -645,8 +642,7 @@ BOOST_AUTO_TEST_CASE(test_SequentialQuadraticProgrammingStep_initializeActiveCon
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    hydraBaseMock hydra(dof,  previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase            solver;
     SolverStepBaseMock                     step;

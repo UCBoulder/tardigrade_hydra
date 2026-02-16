@@ -175,8 +175,7 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
         virtual const unsigned int getNumUnknowns() override { return 5; }
     };
 
-    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables);
+    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
     tardigradeHydra::SolverStepBase      step(&solver);
