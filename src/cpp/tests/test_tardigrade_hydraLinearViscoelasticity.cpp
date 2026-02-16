@@ -224,7 +224,8 @@ BOOST_AUTO_TEST_CASE(test_residual_runBasicGetTests_and_decomposeParameters,
 
     floatVector GTaus = {0.01, 10.0, 100.0};
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -312,7 +313,8 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposeElasticDeformation, *boost::unit_tes
     floatVector previousFehatAnswer = {-0.37676148, -0.54767451, 0.79991771,  -0.21452614, -1.53775117,
                                        -0.35606336, 0.83115907,  -1.10884443, -1.13343036};
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -380,7 +382,8 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposePreviousElasticDeformation,
     floatVector FehatAnswer = {-0.37676148, -0.54767451, 0.79991771,  -0.21452614, -1.53775117,
                                -0.35606336, 0.83115907,  -1.10884443, -1.13343036};
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -439,7 +442,8 @@ BOOST_AUTO_TEST_CASE(test_residual_gradientsOfDecomposedElasticDeformationGradie
 
     unsigned int ISVub = 31;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -583,7 +587,8 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposeStateVariableVector, *boost::unit_te
 
     unsigned int ISVub = 31;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -652,7 +657,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setRateMultipliers, *boost::unit_test::tolera
 
     floatType previousIsochoricRateMultiplierAnswer = 34.516501010605985;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -721,7 +727,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRateMultipliersdT, *boost::unit_test::tol
 
     floatType dPreviousIsochoricRateMultiplierdPreviousT = 0;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -852,7 +859,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getViscoelasticParameters, *boost::unit_test:
 
     floatVector isochoricViscoelasticParametersAnswer = {113.4, 0.01, 10.0, 100, 24.6, 26.8, 29.0};
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -955,7 +963,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStress, *boost::unit_test::toleranc
                                                  ISVs, params, 0.5, previousPK2MeanStressAnswer,
                                                  previousUpdatedISVsAnswer);
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1017,7 +1026,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStressDerivatives, *boost::unit_tes
 
     unsigned int ISVub = 31;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1210,9 +1220,13 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2MeanStressDerivatives, *boost::unit_tes
 
         deltas[i + ISVlb] = eps * std::fabs(previousStateVariables[i + ISVlb]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + deltas, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + deltas, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - deltas, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - deltas, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydrap(dof, model_configurationp);
 
@@ -1339,7 +1353,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStress, *boost::unit_test::tol
                                                  previousRateModifier, ISVs, params, 0.5,
                                                  previousPK2IsochoricStressAnswer, previousUpdatedISVsAnswer);
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1402,7 +1417,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStressDerivatives,
 
     unsigned int ISVub = 31;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1624,9 +1640,13 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2IsochoricStressDerivatives,
 
         deltas[i + ISVlb] = eps * std::fabs(previousStateVariables[i + ISVlb]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + deltas, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + deltas, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - deltas, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - deltas, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydrap(dof, model_configurationp);
 
@@ -1751,7 +1771,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2Stress, *boost::unit_test::tolerance(DE
 
     floatVector previousPK2StressAnswer = {44.6, -2., -3., -4., 40.6, -6., -7., -8., 36.6};
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1830,7 +1851,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
     floatVector previousdPK2StressdT(deformationGradient.size(), 0);
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1979,9 +2001,13 @@ BOOST_AUTO_TEST_CASE(test_residual_setPK2StressDerivatives, *boost::unit_test::t
 
         deltas[i + ISVlb] = eps * std::fabs(previousStateVariables[i + ISVlb]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + deltas, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + deltas, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - deltas, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - deltas, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydrap(dof, model_configurationp);
 
@@ -2085,7 +2111,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
     floatVector previousdCauchyStressdT(deformationGradient.size(), 0);
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2231,9 +2258,13 @@ BOOST_AUTO_TEST_CASE(test_residual_setdCauchyStressdT, *boost::unit_test::tolera
 
         deltas[i + ISVlb] = eps * std::fabs(previousStateVariables[i + ISVlb]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + deltas, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + deltas, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - deltas, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - deltas, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydrap(dof, model_configurationp);
 
@@ -2321,7 +2352,8 @@ BOOST_AUTO_TEST_CASE(test_residual_setdRdT, *boost::unit_test::tolerance(DEFAULT
 
     floatVector dRdT(deformationGradient.size(), 0);
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2465,7 +2497,8 @@ BOOST_AUTO_TEST_CASE(test_residual_evaluate, *boost::unit_test::tolerance(DEFAUL
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2632,7 +2665,8 @@ BOOST_AUTO_TEST_CASE(test_addParameterizationInfo, *boost::unit_test::tolerance(
 
     unsigned int ISVub = 31;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2730,7 +2764,8 @@ BOOST_AUTO_TEST_CASE(test_residual_updateAdditionalStateVariables,
                                                  ISVs, params, 0.5, previousPK2MeanStressAnswer,
                                                  previousUpdatedVolumetricISVsAnswer);
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 

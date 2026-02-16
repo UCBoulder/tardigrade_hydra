@@ -358,11 +358,9 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
 
             xm[i] -= delta;
 
-            hydraBaseMock hydrap(dof, model_configuration, numConfigurations,
-                                 numNonLinearSolveStateVariables);
+            hydraBaseMock hydrap(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
-            hydraBaseMock hydram(dof, model_configuration, numConfigurations,
-                                 numNonLinearSolveStateVariables);
+            hydraBaseMock hydram(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
             tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector(hydrap, xp);
 

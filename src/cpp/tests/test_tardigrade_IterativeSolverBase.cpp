@@ -440,8 +440,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     BOOST_TEST(hydra.num_derivative_calls == 3);  // 3 because we initialize the jacobian
 
     test_SolverBase_solve_in_gradient_convergence = 0;
-    hydraBaseMock hydra_pre(dof, model_configuration, numConfigurations,
-                            numNonLinearSolveStateVariables);
+    hydraBaseMock hydra_pre(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     IterativeSolverBaseMock   solver_pre;
     SolverStepBaseMock        step_pre;

@@ -173,8 +173,7 @@ BOOST_AUTO_TEST_CASE(test_NewtonStep_computeTrial, *boost::unit_test::tolerance(
 
     result = {0, 0, 0};
 
-    hydraBaseMock hydra_pre(dof, model_configuration, numConfigurations,
-                            numNonLinearSolveStateVariables);
+    hydraBaseMock hydra_pre(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     tardigradeHydra::SolverBase           solver_pre;
     tardigradeHydra::SolverStepBase       step_pre;

@@ -453,7 +453,8 @@ BOOST_AUTO_TEST_CASE(test_residual_basicGetTests, *boost::unit_test::tolerance(D
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -572,7 +573,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_drivingStress, *boost::unit_test::toleran
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -802,9 +804,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_drivingStress, *boost::unit_test::toleran
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -946,7 +952,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_flowDirection, *boost::unit_test::toleran
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1080,7 +1087,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_flowDirection_jacobian, *boost::unit_test
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1296,9 +1304,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_flowDirection_jacobian, *boost::unit_test
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -1440,7 +1452,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_yieldFunction, *boost::unit_test::toleran
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1568,7 +1581,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_yieldFunction_jacobian, *boost::unit_test
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -1769,9 +1783,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_yieldFunction_jacobian, *boost::unit_test
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -1890,7 +1908,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticThermalMultiplier, *boost::unit_te
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2098,7 +2117,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_dragStress, *boost::unit_test::tolerance(
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2229,7 +2249,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_dragStress_jacobian, *boost::unit_test::t
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2427,7 +2448,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_hardeningFunction, *boost::unit_test::tol
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2622,7 +2644,8 @@ BOOST_AUTO_TEST_CASE(test_residual_decomposeParameters, *boost::unit_test::toler
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2753,7 +2776,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getStateVariableIndices, *boost::unit_test::t
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -2858,7 +2882,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariables, *boost::unit_test::tolera
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -3127,7 +3152,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticMuliplier, *boost::unit_test::tole
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -3263,7 +3289,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticMultiplier_jacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -3543,9 +3570,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticMultiplier_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -3617,9 +3648,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticMultiplier_jacobian,
         delta[18 + hydra.stateVariableIndices[i]] +=
             eps * std::fabs(previousStateVariables[18 + hydra.stateVariableIndices[i]]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -3913,7 +3948,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient, *boost::unit_test::tole
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -4047,7 +4083,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -4346,9 +4383,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -4425,9 +4466,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         delta[18 + hydra.stateVariableIndices[i]] +=
             eps * std::fabs(previousStateVariables[18 + hydra.stateVariableIndices[i]]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -4697,7 +4742,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRate,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -4831,7 +4877,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -5134,9 +5181,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -5215,9 +5266,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
         delta[18 + hydra.stateVariableIndices[i]] +=
             eps * std::fabs(previousStateVariables[18 + hydra.stateVariableIndices[i]]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -5455,7 +5510,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -5588,7 +5644,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -5889,9 +5946,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -5968,9 +6029,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         delta[18 + hydra.stateVariableIndices[i]] +=
             eps * std::fabs(previousStateVariables[18 + hydra.stateVariableIndices[i]]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -6216,7 +6281,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticStateVariables, *boost::unit_test:
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -6348,7 +6414,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticStateVariables_jacobian,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -6651,9 +6718,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticStateVariables_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -6730,9 +6801,13 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticStateVariables_jacobian,
         delta[18 + hydra.stateVariableIndices[i]] +=
             eps * std::fabs(previousStateVariables[18 + hydra.stateVariableIndices[i]]) + eps;
 
-        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
-        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables);
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
 
         hydraBaseMock hydra_p(dof, model_configurationp);
 
@@ -6869,7 +6944,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -6990,7 +7066,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getJacobian, *boost::unit_test::tolerance(DEF
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -7135,7 +7212,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getdRdT, *boost::unit_test::tolerance(DEFAULT
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -7296,7 +7374,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getdRdF, *boost::unit_test::tolerance(DEFAULT
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -7459,7 +7538,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getParameterizationInfo, *boost::unit_test::t
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -7577,7 +7657,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getJacobian2, *boost::unit_test::tolerance(DE
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -7722,7 +7803,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getdRdT2, *boost::unit_test::tolerance(DEFAUL
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -7883,7 +7965,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getdRdF2, *boost::unit_test::tolerance(DEFAUL
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 

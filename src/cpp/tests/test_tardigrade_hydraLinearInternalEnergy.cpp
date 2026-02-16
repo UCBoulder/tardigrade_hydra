@@ -111,8 +111,7 @@ BOOST_AUTO_TEST_CASE(test_residual_runBasicGetTests, *boost::unit_test::toleranc
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -175,8 +174,7 @@ BOOST_AUTO_TEST_CASE(test_residual_getSpecificHeat, *boost::unit_test::tolerance
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -237,8 +235,7 @@ BOOST_AUTO_TEST_CASE(test_residual_getInternalEnergy, *boost::unit_test::toleran
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
@@ -357,8 +354,7 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters);
 
-    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations,
-                                     numNonLinearSolveStateVariables);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration, numConfigurations, numNonLinearSolveStateVariables);
 
     hydra.initialize();
 
