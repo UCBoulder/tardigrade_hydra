@@ -316,7 +316,8 @@ BOOST_AUTO_TEST_CASE(test_setResidualNorm, *boost::unit_test::tolerance(DEFAULT_
         virtual const unsigned int getNumUnknowns() override { return 5; }
     };
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -467,7 +468,8 @@ BOOST_AUTO_TEST_CASE(test_SolverStepBase_checkDescentDirection, *boost::unit_tes
         virtual const unsigned int getNumUnknowns() override { return 5; }
     };
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -587,7 +589,8 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_checkGradientConvergence,
         using tardigradeHydra::SolverStepBase::SolverStepBase;
     };
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 
@@ -731,7 +734,8 @@ BOOST_AUTO_TEST_CASE(test_StepDampingBase_performGradientStep, *boost::unit_test
 
     tardigradeHydra::floatVector answer = {0.36320787, -0.21103717, -0.12118634, 0.00516978, -0.08423};
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     hydraBaseMock hydra(dof, model_configuration);
 

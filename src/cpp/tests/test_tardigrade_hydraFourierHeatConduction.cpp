@@ -109,7 +109,8 @@ BOOST_AUTO_TEST_CASE(test_residual_runBasicGetTests, *boost::unit_test::toleranc
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
@@ -174,7 +175,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getTemperatureGradient, *boost::unit_test::to
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
@@ -237,7 +239,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getConductivity, *boost::unit_test::tolerance
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
@@ -300,7 +303,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getHeatFlux, *boost::unit_test::tolerance(DEF
 
     constexpr unsigned int temperatureGradientIndex = 28;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
@@ -421,7 +425,8 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
 
     constexpr unsigned int temperatureGradientIndex = 28;
 
-    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
