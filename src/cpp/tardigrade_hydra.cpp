@@ -18,21 +18,14 @@ namespace tardigradeHydra {
      *
      * \param &DOFStorage: The degrees of freedom storage object
      * \param &ModelConfiguration: The model configuration object
-     * \param &numConfigurations: The number of configurations
-     * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
-     * non-linear solve's residual
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const ModelConfigurationBase &ModelConfiguration,
-                         const unsigned int numConfigurations,
-                         const unsigned int     numNonLinearSolveStateVariables,
                          HydraConfigurationBase _hydra_configuration)
         : hydra_configuration(_hydra_configuration),
           dof(&DOFStorage),
           model_configuration(&ModelConfiguration),
-          _stress_size(_hydra_configuration.configuration_unknown_count),
-          _numConfigurations(numConfigurations),
-          _numNonLinearSolveStateVariables(numNonLinearSolveStateVariables) {
+          _stress_size(_hydra_configuration.configuration_unknown_count) {
         // TEMP
         _solver.hydra                  = this;
         _solver.internal_solver->hydra = this;

@@ -162,22 +162,39 @@ namespace tardigradeHydra {
         /*!
          * The default constructor
          */
-        ModelConfigurationBase() : _previous_state_variables(floatVector(0, 0)), _parameters(floatVector(0, 0)) {}
+        ModelConfigurationBase()
+            : _previous_state_variables(floatVector(0, 0)),
+              _parameters(floatVector(0, 0)),
+              _num_configurations(0),
+              _num_nonlinear_solve_state_variables(0) {}
 
         /*!
          * The constructor
          *
          * \param &previous_state_variables: The previous values of the internal state variables
          * \param &parameters: The model parameters
+         * \param &num_configurations: The number of configurations
+         * \param &num_nonlinear_solve_state_variables: The number of state variables required for the nonlinear solve
          */
-        ModelConfigurationBase(const floatVector &previous_state_variables, const floatVector &parameters)
-            : _previous_state_variables(previous_state_variables), _parameters(parameters) {}
+        ModelConfigurationBase(const floatVector &previous_state_variables, const floatVector &parameters,
+                               const unsigned int  num_configurations,
+                               const unsigned int &num_nonlinear_solve_state_variables)
+            : _previous_state_variables(previous_state_variables),
+              _parameters(parameters),
+              _num_configurations(num_configurations),
+              _num_nonlinear_solve_state_variables(num_nonlinear_solve_state_variables) {}
 
         //! The previous values of the state variables
         const floatVector _previous_state_variables;
 
         //! The model parameters
         const floatVector _parameters;
+
+        //! The number of configurations TODO: Maybe should be in the deformation?
+        const unsigned int _num_configurations;
+
+        //! Added the number of nonlinear solve state variables
+        const unsigned int _num_nonlinear_solve_state_variables;
     };
 
     /*!
@@ -197,8 +214,6 @@ namespace tardigradeHydra {
 
         //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
         hydraBase(const DOFStorageBase &DOFStorage, const ModelConfigurationBase &ModelConfiguration,
-                  const unsigned int numConfigurations,
-                  const unsigned int     numNonLinearSolveStateVariables,
                   HydraConfigurationBase _hydra_configuration = HydraClassicalConfiguration());
 
         virtual void initialize();
@@ -251,10 +266,12 @@ namespace tardigradeHydra {
         const floatVector *getParameters() { return &model_configuration->_parameters; }
 
         //! Get a reference to the number of configurations
-        constexpr unsigned int getNumConfigurations() { return _numConfigurations; }
+        constexpr unsigned int getNumConfigurations() { return model_configuration->_num_configurations; }
 
         //! Get a reference to the number of state variables involved in the non-linear solve
-        constexpr unsigned int getNumNonLinearSolveStateVariables() { return _numNonLinearSolveStateVariables; }
+        constexpr unsigned int getNumNonLinearSolveStateVariables() {
+            return model_configuration->_num_nonlinear_solve_state_variables;
+        }
 
         virtual const unsigned int getNumUnknowns();
 
@@ -519,12 +536,6 @@ namespace tardigradeHydra {
 
         //! The current additional degrees of freedom scaled by the scaling factor
         floatVector _scaled_additionalDOF;
-
-        //! The number of configurations
-        unsigned int _numConfigurations;
-
-        //! The number of state variables which will be solved in the Newton-Raphson loop
-        unsigned int _numNonLinearSolveStateVariables;
 
         //! A scale factor for the residual which can be used to loosen the tolerance
         floatType _residual_scale_factor = 1;
