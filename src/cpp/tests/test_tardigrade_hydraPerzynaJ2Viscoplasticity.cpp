@@ -214,6 +214,10 @@ BOOST_AUTO_TEST_CASE(test_get_yieldFunction, *boost::unit_test::tolerance(DEFAUL
     floatVector previousStateVariables = {0, 0, 0, 0, 0, 0, 0,    0,    0,    0,    0,   0,
                                           0, 0, 0, 0, 0, 0, 0.01, 0.02, 6.00, 0.04, 0.05};
 
+    floatVector additionalDOF = {};
+
+    floatVector previousAdditionalDOF = {};
+
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient);
 
@@ -360,6 +364,10 @@ BOOST_AUTO_TEST_CASE(test_get_yieldFunction2, *boost::unit_test::tolerance(DEFAU
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
     floatVector previousDeformationGradient = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+
+    floatVector additionalDOF = {};
+
+    floatVector previousAdditionalDOF = {};
 
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient);
@@ -773,6 +781,10 @@ BOOST_AUTO_TEST_CASE(test_get_dragStress, *boost::unit_test::tolerance(DEFAULT_T
 
     floatVector previousDeformationGradient = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
+    floatVector additionalDOF = {};
+
+    floatVector previousAdditionalDOF = {};
+
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient);
 
@@ -976,6 +988,10 @@ BOOST_AUTO_TEST_CASE(test_get_hardeningFunction, *boost::unit_test::tolerance(DE
 
     floatVector previousDeformationGradient = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
+    floatVector additionalDOF = {};
+
+    floatVector previousAdditionalDOF = {};
+
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient);
 
@@ -1104,6 +1120,10 @@ BOOST_AUTO_TEST_CASE(test_get_hardeningFunction2, *boost::unit_test::tolerance(D
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
     floatVector previousDeformationGradient = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+
+    floatVector additionalDOF = {};
+
+    floatVector previousAdditionalDOF = {};
 
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient);
@@ -1288,6 +1308,10 @@ BOOST_AUTO_TEST_CASE(test_get_jacobian, *boost::unit_test::tolerance(DEFAULT_TES
 
     floatVector previousDeformationGradient = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
+    floatVector additionalDOF = {};
+
+    floatVector previousAdditionalDOF = {};
+
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient);
 
@@ -1433,6 +1457,10 @@ BOOST_AUTO_TEST_CASE(test_addParameterizationInfo, *boost::unit_test::tolerance(
     floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
 
     floatVector previousDeformationGradient = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+
+    floatVector additionalDOF = {};
+
+    floatVector previousAdditionalDOF = {};
 
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient);
