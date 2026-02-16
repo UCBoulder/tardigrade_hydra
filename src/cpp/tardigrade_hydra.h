@@ -173,8 +173,10 @@ namespace tardigradeHydra {
         ModelConfigurationBase(const floatVector &previous_state_variables, const floatVector &parameters)
             : _previous_state_variables(previous_state_variables), _parameters(parameters) {}
 
+        //! The previous values of the state variables
         const floatVector _previous_state_variables;
 
+        //! The model parameters
         const floatVector _parameters;
     };
 
