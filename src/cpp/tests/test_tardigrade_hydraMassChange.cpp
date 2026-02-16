@@ -3282,10 +3282,10 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeIntermediateVelocityGradient_2,
         aDm[i + offset] -= delta;
 
         tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDp, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDp);
 
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDm, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDm);
 
         hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
                              numNonLinearSolveStateVariables);
@@ -3331,10 +3331,10 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeIntermediateVelocityGradient_2,
         aDm[i + offset] -= delta;
 
         tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDp, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDp);
 
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDm, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDm);
 
         hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
                              numNonLinearSolveStateVariables);
@@ -3992,10 +3992,10 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeDeformationGradient_2,
         aDm[i + offset] -= delta;
 
         tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDp, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDp);
 
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDm, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDm);
 
         hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
                              numNonLinearSolveStateVariables);
@@ -4040,10 +4040,10 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeDeformationGradient_2,
         aDm[i + offset] -= delta;
 
         tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDp, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDp);
 
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDm, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDm);
 
         hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
                              numNonLinearSolveStateVariables);
@@ -4088,10 +4088,10 @@ BOOST_AUTO_TEST_CASE(test_residual_massChangeDeformationGradient_2,
         aDm[i + offset] -= delta;
 
         tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDp, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDp);
 
         tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                             previousDeformationGradient, aDm, previousAdditionalDOF);
+                                             previousDeformationGradient, additionalDOF, aDm);
 
         hydraBaseMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
                              numNonLinearSolveStateVariables);
