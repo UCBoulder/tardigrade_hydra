@@ -144,8 +144,12 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                                        previousDeformationGradient);
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
@@ -177,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_PreconditionerBase_formPreconditioner, *boost::unit_te
         using tardigradeHydra::hydraBase::hydraBase;
     };
 
-    hydraBaseMock hydra(dof, {}, {}, previousStateVariables, parameters, numConfigurations,
+    hydraBaseMock hydra(dof, previousStateVariables, parameters, numConfigurations,
                         numNonLinearSolveStateVariables);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
