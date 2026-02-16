@@ -17,8 +17,6 @@ namespace tardigradeHydra {
      * The main constructor for the hydra base class. Inputs are all the required values for most solves.
      *
      * \param &DOFStorage: The degrees of freedom storage object
-     * \param &additionalDOF: Any additional degrees of freedom required for the model
-     * \param &previousAdditionalDOF: Any previous additional degrees of freedom required for the model
      * \param &previousStateVariables: The previous state variables
      * \param &parameters: The model parameters
      * \param &numConfigurations: The number of configurations
@@ -26,16 +24,13 @@ namespace tardigradeHydra {
      * non-linear solve's residual
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
-    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const floatVector &additionalDOF,
-                         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
+    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const floatVector &previousStateVariables,
                          const floatVector &parameters, const unsigned int numConfigurations,
                          const unsigned int     numNonLinearSolveStateVariables,
                          HydraConfigurationBase _hydra_configuration)
         : hydra_configuration(_hydra_configuration),
           dof(&DOFStorage),
           _stress_size(_hydra_configuration.configuration_unknown_count),
-          _additionalDOF(additionalDOF),
-          _previousAdditionalDOF(previousAdditionalDOF),
           _previousStateVariables(previousStateVariables),
           _parameters(parameters),
           _numConfigurations(numConfigurations),
@@ -1110,7 +1105,8 @@ namespace tardigradeHydra {
             _scale_factor * (dof->_deformation_gradient - dof->_previous_deformation_gradient) +
             dof->_previous_deformation_gradient;
 
-        _scaled_additionalDOF = _scale_factor * (_additionalDOF - _previousAdditionalDOF) + _previousAdditionalDOF;
+        _scaled_additionalDOF =
+            _scale_factor * (dof->_additional_dof - dof->_previous_additional_dof) + dof->_previous_additional_dof;
     }
 
     /*!
