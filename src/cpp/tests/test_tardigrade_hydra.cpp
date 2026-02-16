@@ -618,7 +618,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getNumConfigurations, *boost::unit_test::tol
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_getNumNonLinearSolveStateVariables,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -911,7 +910,6 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_get_additionalStateVariables,
 
 BOOST_AUTO_TEST_CASE(test_hydraBase_get_previousAdditionalStateVariables,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
