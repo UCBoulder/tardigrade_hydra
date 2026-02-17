@@ -216,8 +216,10 @@ BOOST_AUTO_TEST_CASE(test_setActiveConstraints, *boost::unit_test::tolerance(DEF
 
     std::vector<bool> answer = {true, true, true, true, true};
 
-    tardigradeHydra::hydraBaseMicromorphic hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                                 numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration);
     hydra.initialize();
 
     residualMock residual1(&hydra, 55, 1, stateVariableIndices, parameters, 0.27);
@@ -410,8 +412,10 @@ BOOST_AUTO_TEST_CASE(test_updateActiveConstraints, *boost::unit_test::tolerance(
 
     std::vector<bool> answer = {true, true, true, true, true};
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -623,8 +627,10 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableResiduals, *boost::unit_test::toleranc
         }
     };
 
-    tardigradeHydra::hydraBaseMicromorphic hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                                 numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBaseMicromorphic hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -892,8 +898,10 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians, *boost::unit_test::toleranc
         }
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -933,11 +941,9 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians, *boost::unit_test::toleranc
             xp[i] += delta;
             xm[i] -= delta;
 
-            hydraBaseMicromorphicMock hydrap(dof, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dof, model_configuration);
 
-            hydraBaseMicromorphicMock hydram(dof, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dof, model_configuration);
 
             hydrap.initialize();
 
@@ -1212,8 +1218,10 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians2, *boost::unit_test::toleran
         }
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -1253,11 +1261,9 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians2, *boost::unit_test::toleran
             xp[i] += delta;
             xm[i] -= delta;
 
-            hydraBaseMicromorphicMock hydrap(dof, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dof, model_configuration);
 
-            hydraBaseMicromorphicMock hydram(dof, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dof, model_configuration);
 
             hydrap.initialize();
 
@@ -1532,8 +1538,10 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians3, *boost::unit_test::toleran
         }
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -1573,11 +1581,9 @@ BOOST_AUTO_TEST_CASE(test_setStateVariableJacobians3, *boost::unit_test::toleran
             xp[i] += delta;
             xm[i] -= delta;
 
-            hydraBaseMicromorphicMock hydrap(dof, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dof, model_configuration);
 
-            hydraBaseMicromorphicMock hydram(dof, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dof, model_configuration);
 
             hydrap.initialize();
 
@@ -1854,8 +1860,10 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
         }
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -1915,11 +1923,9 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD, *boost::unit_test::toler
                                                          gradChim, previousGradientMicroDeformation, additionalDOF,
                                                          previousAdditionalDOF);
 
-            hydraBaseMicromorphicMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dofp, model_configuration);
 
-            hydraBaseMicromorphicMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dofm, model_configuration);
 
             hydrap.initialize();
 
@@ -2196,8 +2202,10 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD2, *boost::unit_test::tole
         }
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -2257,11 +2265,9 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD2, *boost::unit_test::tole
                                                          gradChim, previousGradientMicroDeformation, additionalDOF,
                                                          previousAdditionalDOF);
 
-            hydraBaseMicromorphicMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dofp, model_configuration);
 
-            hydraBaseMicromorphicMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dofm, model_configuration);
 
             hydrap.initialize();
 
@@ -2538,8 +2544,10 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD3, *boost::unit_test::tole
         }
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -2599,11 +2607,9 @@ BOOST_AUTO_TEST_CASE(test_setdStateVariableResidualsdD3, *boost::unit_test::tole
                                                          gradChim, previousGradientMicroDeformation, additionalDOF,
                                                          previousAdditionalDOF);
 
-            hydraBaseMicromorphicMock hydrap(dofp, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydrap(dofp, model_configuration);
 
-            hydraBaseMicromorphicMock hydram(dofm, previousStateVariables, parameters, numConfigurations,
-                                             numNonLinearSolveStateVariables);
+            hydraBaseMicromorphicMock hydram(dofm, model_configuration);
 
             hydrap.initialize();
 
@@ -2917,8 +2923,10 @@ BOOST_AUTO_TEST_CASE(test_correctResiduals, *boost::unit_test::tolerance(DEFAULT
         }
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -3167,8 +3175,10 @@ BOOST_AUTO_TEST_CASE(test_successfulIterativeStep, *boost::unit_test::tolerance(
        private:
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 
@@ -3407,8 +3417,10 @@ BOOST_AUTO_TEST_CASE(test_preIterativeSolve, *boost::unit_test::tolerance(DEFAUL
        private:
     };
 
-    hydraBaseMicromorphicMock hydra(dof, previousStateVariables, parameters, numConfigurations,
-                                    numNonLinearSolveStateVariables);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMicromorphicMock hydra(dof, model_configuration);
 
     hydra.initialize();
 

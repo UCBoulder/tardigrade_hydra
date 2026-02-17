@@ -16,20 +16,13 @@ namespace tardigradeHydra {
      * solves.
      *
      * \param &DOFStorage: The degree of freedom storage class
-     * \param &previousStateVariables: The previous state variables
-     * \param &parameters: The model parameters
-     * \param &numConfigurations: The number of configurations
-     * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
-     *     non-linear solve's residual
+     * \param &ModelConfiguration: The model configuration class
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
     hydraBaseMicromorphic::hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage,
-                                                 const floatVector            &previousStateVariables,
-                                                 const floatVector &parameters, const unsigned int numConfigurations,
-                                                 const unsigned int     numNonLinearSolveStateVariables,
-                                                 HydraConfigurationBase _hydra_configuration)
-        : hydraBase(DOFStorage, previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables,
-                    _hydra_configuration) {}
+                                                 const ModelConfigurationBase &ModelConfiguration,
+                                                 HydraConfigurationBase        _hydra_configuration)
+        : hydraBase(DOFStorage, ModelConfiguration, _hydra_configuration) {}
 
     /*!
      * Initialize the hydra object

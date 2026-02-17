@@ -17,24 +17,15 @@ namespace tardigradeHydra {
      * The main constructor for the hydra base class. Inputs are all the required values for most solves.
      *
      * \param &DOFStorage: The degrees of freedom storage object
-     * \param &previousStateVariables: The previous state variables
-     * \param &parameters: The model parameters
-     * \param &numConfigurations: The number of configurations
-     * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
-     * non-linear solve's residual
+     * \param &ModelConfiguration: The model configuration object
       \param &_hydra_configuration: Class which defines the hydra configuration
      */
-    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const floatVector &previousStateVariables,
-                         const floatVector &parameters, const unsigned int numConfigurations,
-                         const unsigned int     numNonLinearSolveStateVariables,
+    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const ModelConfigurationBase &ModelConfiguration,
                          HydraConfigurationBase _hydra_configuration)
         : hydra_configuration(_hydra_configuration),
           dof(&DOFStorage),
-          _stress_size(_hydra_configuration.configuration_unknown_count),
-          _previousStateVariables(previousStateVariables),
-          _parameters(parameters),
-          _numConfigurations(numConfigurations),
-          _numNonLinearSolveStateVariables(numNonLinearSolveStateVariables) {
+          model_configuration(&ModelConfiguration),
+          _stress_size(_hydra_configuration.configuration_unknown_count) {
         // TEMP
         _solver.hydra                  = this;
         _solver.internal_solver->hydra = this;

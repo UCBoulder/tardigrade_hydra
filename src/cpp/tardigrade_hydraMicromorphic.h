@@ -86,10 +86,9 @@ namespace tardigradeHydra {
        public:
         hydraBaseMicromorphic() {}
 
-        hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage, const floatVector &previousStateVariables,
-                              const floatVector &parameters, const unsigned int numConfigurations,
-                              const unsigned int     numNonLinearSolveStateVariables,
-                              HydraConfigurationBase _hydra_configuration = HydraMicromorphicConfiguration());
+        hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage,
+                              const ModelConfigurationBase &ModelConfiguration,
+                              HydraConfigurationBase        _hydra_configuration = HydraMicromorphicConfiguration());
 
         virtual void initialize() override;
 
