@@ -148,10 +148,11 @@ namespace tardigradeHydra {
         // End pass-through functions
 
        private:
-        friend class tardigradeHydra::hydraBase;                    //!< TEMP REMOVE THIS
         friend class tardigradeHydra::unit_test::SolverBaseTester;  //!< The unit tester for the class
     };
 
 }  // namespace tardigradeHydra
+
+#include "tardigrade_SolverBase.tpp"
 
 #endif

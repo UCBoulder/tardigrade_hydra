@@ -406,5 +406,6 @@ namespace tardigradeHydra {
 }  // namespace tardigradeHydra
 
 #include "tardigrade_ResidualBase.cpp"
+#include "tardigrade_ResidualBase.tpp"
 
 #endif

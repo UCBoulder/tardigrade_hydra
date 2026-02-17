@@ -173,4 +173,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraLinearInternalEnergy.tpp"
+
 #endif

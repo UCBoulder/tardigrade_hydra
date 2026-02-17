@@ -89,4 +89,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_IterativeSolverBase.tpp"
+
 #endif

@@ -9,8 +9,32 @@ Changelog
 0.8.0 (unreleased)
 ******************
 
+New Features
+============
+- Added NewtonSolver object to simplify hydra solver configuration (:pull:`249`). By `Nathan Miller`_.
+- Broke RelaxedSolver into the base capabilities (housed in RelaxedSolverBase) and a default version (RelaxedSolver) (:pull:`250`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Added run_exports configuration to the conda recipe (:pull:`247`). By `Nathan Miller`_.
+- Using the DeformationDecompositionBase class to decompose the classical deformation (:pull:`248`). By `Nathan Miller`_.
+- Extracted the classical deformation decomposition to DeformationBase (:pull:`251`). By `Nathan Miller`_.
+
+Breaking Changes
+================
+- Changing the hydra interface to simplify creating hydra objects (:pull:`252`). By `Nathan Miller`_.
+- Removed the tolerance getter functions to just use the HydraConfigurationBase class values (:pull:`253`). By `Nathan Miller`_.
+- Moved dimension to DeformationBase (:pull:`254`). By `Nathan Miller`_.
+- Moved time and deltaTime to the dof storage class (:pull:`255`). By `Nathan Miller`_.
+- Moved temperature and previousTemperature to the dof storage class (:pull:`256`). By `Nathan Miller`_.
+- Moved deformationGradient and previousDeformationGradient to the dof storage class (:pull:`257`). By `Nathan Miller`_.
+- Moved microDeformation and previousMicroDeformation to the dof storage class (:pull:`258`). By `Nathan Miller`_.
+- Moved gradientMicroDeformation and previousGradientMicroDeformation to the dof storage class (:pull:`259`). By `Nathan Miller`_.
+- Moved additionalDOF and previousAdditionalDOF to the dof storage class (:pull:`260`). By `Nathan Miller`_.
+- Moved model configuration inputs to the ModelConfigurationBase class (:pull:`261`). By `Nathan Miller`_.
+
 ******************
-0.7.1 (unreleased)
+0.7.1 (02-03-2026)
 ******************
 
 Internal Changes

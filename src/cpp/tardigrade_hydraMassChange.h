@@ -453,4 +453,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraMassChange.tpp"
+
 #endif

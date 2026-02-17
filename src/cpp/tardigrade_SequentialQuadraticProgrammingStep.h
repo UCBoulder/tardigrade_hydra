@@ -46,4 +46,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_SequentialQuadraticProgrammingStep.tpp"
+
 #endif

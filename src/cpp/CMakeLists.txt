@@ -36,7 +36,7 @@ foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
-    install(FILES ${package}.h ${package}.cpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    install(FILES ${package}.h ${package}.cpp ${package}.tpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     get_target_property(target_sources ${package} SOURCES)
     foreach(source ${target_sources})
         set_property(GLOBAL APPEND PROPERTY CLANG_FORMAT_SOURCE_FILES "${PROJECT_SOURCE_DIR}/${source}")

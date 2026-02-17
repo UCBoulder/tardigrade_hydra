@@ -37,4 +37,6 @@ namespace tardigradeHydra {
     };
 }  // namespace tardigradeHydra
 
+#include "tardigrade_MaxRowPreconditioner.tpp"
+
 #endif

@@ -144,4 +144,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization.tpp"
+
 #endif

@@ -107,15 +107,16 @@ namespace tardigradeHydra {
 
             if (isPrevious) {
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    precedingConfiguration = hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
+                    precedingConfiguration =
+                        hydra->deformation->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = hydra->getPreviousStress());
 
                 drivingStress = get_SetDataStorage_previousDrivingStress();
 
             } else {
-                TARDIGRADE_ERROR_TOOLS_CATCH(precedingConfiguration =
-                                                 hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
+                TARDIGRADE_ERROR_TOOLS_CATCH(precedingConfiguration = hydra->deformation->getPrecedingConfiguration(
+                                                 getPlasticConfigurationIndex()));
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = hydra->getStress());
 
@@ -164,17 +165,18 @@ namespace tardigradeHydra {
 
             if (isPrevious) {
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    precedingConfiguration = hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
+                    precedingConfiguration =
+                        hydra->deformation->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
                     precedingConfigurationJacobian =
-                        hydra->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex()));
+                        hydra->deformation->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex()));
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = hydra->getPreviousStress());
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->get_previousdF1dF());
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->deformation->get_previousdF1dF());
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dSubFs = hydra->get_previousdF1dFn());
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dSubFs = hydra->deformation->get_previousdF1dFn());
 
                 drivingStress = get_SetDataStorage_previousDrivingStress();
 
@@ -185,17 +187,18 @@ namespace tardigradeHydra {
                 dDrivingStressdSubFs = get_SetDataStorage_dPreviousDrivingStressdPreviousSubFs();
 
             } else {
-                TARDIGRADE_ERROR_TOOLS_CATCH(precedingConfiguration =
-                                                 hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
-
-                TARDIGRADE_ERROR_TOOLS_CATCH(precedingConfigurationJacobian = hydra->getPrecedingConfigurationJacobian(
+                TARDIGRADE_ERROR_TOOLS_CATCH(precedingConfiguration = hydra->deformation->getPrecedingConfiguration(
                                                  getPlasticConfigurationIndex()));
+
+                TARDIGRADE_ERROR_TOOLS_CATCH(
+                    precedingConfigurationJacobian =
+                        hydra->deformation->getPrecedingConfigurationJacobian(getPlasticConfigurationIndex()));
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = hydra->getStress());
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->get_dF1dF());
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->deformation->get_dF1dF());
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dSubFs = hydra->get_dF1dFn());
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dSubFs = hydra->deformation->get_dF1dFn());
 
                 drivingStress = get_SetDataStorage_drivingStress();
 
@@ -2338,8 +2341,9 @@ namespace tardigradeHydra {
 
             TARDIGRADE_ERROR_TOOLS_CATCH(previousVelocityGradient = get_previousVelocityGradient());
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(previousPlasticDeformationGradient =
-                                             hydra->getPreviousConfiguration(getPlasticConfigurationIndex()));
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                previousPlasticDeformationGradient =
+                    hydra->deformation->getPreviousConfiguration(getPlasticConfigurationIndex()));
 
             TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::evolveF(
                 hydra->getDeltaTime(), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient,
@@ -2459,8 +2463,9 @@ namespace tardigradeHydra {
 
             TARDIGRADE_ERROR_TOOLS_CATCH(previousVelocityGradient = get_previousVelocityGradient());
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(previousPlasticDeformationGradient =
-                                             hydra->getPreviousConfiguration(getPlasticConfigurationIndex()));
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                previousPlasticDeformationGradient =
+                    hydra->deformation->getPreviousConfiguration(getPlasticConfigurationIndex()));
 
             if (setPreviousDerivatives) {
                 fourthOrderTensor ddFdPreviousF;
@@ -2979,8 +2984,8 @@ namespace tardigradeHydra {
 
             // Set the residual for the plastic deformation gradient
             for (unsigned int i = 0; i < sot_dim; i++) {
-                (*residual.value)[i] =
-                    (*get_plasticDeformationGradient())[i] - hydra->getConfiguration(getPlasticConfigurationIndex())[i];
+                (*residual.value)[i] = (*get_plasticDeformationGradient())[i] -
+                                       hydra->deformation->getConfiguration(getPlasticConfigurationIndex())[i];
             }
 
             // Set the residual for the plastic state variables

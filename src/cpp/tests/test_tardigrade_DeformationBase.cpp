@@ -4,7 +4,8 @@
  * Tests for tardigrade_DeformationBase
  */
 
-#include <tardigrade_DeformationBase.h>
+#include "tardigrade_DeformationBase.h"
+#include "tardigrade_hydra.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_DeformationBase
 #include <boost/test/included/unit_test.hpp>
@@ -46,2637 +47,1423 @@ bool tolerantCheck(const std::vector<double> &v1, const std::vector<double> &v2,
     return true;
 }
 
-BOOST_AUTO_TEST_CASE(test_denseMatrixMultiply, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    class DeformationBase_mock : public tardigradeHydra::DeformationBase<1, 2, 3> {
-       public:
-        DeformationBase_mock() {}
+namespace tardigradeHydra {
 
-        void public_denseMatrixMultiply(const std::vector<double> &A, const std::vector<double> &B,
-                                        std::vector<double> &C) {
-            _denseMatrixMultiply<2, 3, 4>(std::begin(A), std::end(A), std::begin(B), std::end(B), std::begin(C),
-                                          std::end(C));
-        }
-    };
+    namespace unit_test {
 
-    std::vector<double> A = {1, 2, 3, 4, 5, 6};
+        class hydraBaseTester {
+           public:
+            static auto getIterationData(hydraBase &hydra) { return hydra._iterationData; }
+        };
 
-    std::vector<double> B = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-
-    std::vector<double> answer = {56, 62, 68, 74, 128, 143, 158, 173};
-
-    std::vector<double> result(8, -1);
-
-    DeformationBase_mock deformation;
-
-    deformation.public_denseMatrixMultiply(A, B, result);
-
-    BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
-}
-
-BOOST_AUTO_TEST_CASE(test_denseMatrixMultiply_2, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    class DeformationBase_mock : public tardigradeHydra::DeformationBase<1, 2, 3> {
-       public:
-        DeformationBase_mock() {}
-
-        void public_denseMatrixMultiply(const std::vector<double> &A, const std::vector<double> &B,
-                                        std::vector<double> &C) {
-            _denseMatrixMultiply<3, 3, 2>(std::begin(A), std::end(A), std::begin(B), std::end(B), std::begin(C),
-                                          std::end(C), 0, 3, 2, 10, 2, 10);
-        }
-    };
-
-    std::vector<double> A = {1., 2., 3., 4., 5., 6., 7., 8., 9.};
-
-    std::vector<double> B = {0.12, 0.23, 0.34, 0.45, 0.56, 0.67, 0.78, 0.89, 1.,   1.11, 1.22, 1.33, 1.44, 1.55, 1.66,
-                             1.77, 1.88, 1.99, 2.1,  2.21, 2.32, 2.43, 2.54, 2.65, 2.76, 2.87, 2.98, 3.09, 3.2,  3.31};
-
-    std::vector<double> answer = {0., 0., 10.84, 11.5, 0., 0., 0., 0.,    0.,   0., 0., 0., 23.8, 25.45, 0.,
-                                  0., 0., 0.,    0.,   0., 0., 0., 36.76, 39.4, 0., 0., 0., 0.,   0.,    0.};
-
-    std::vector<double> result(30, -1);
-
-    DeformationBase_mock deformation;
-    deformation.public_denseMatrixMultiply(A, B, result);
-
-    BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
-}
-
-BOOST_AUTO_TEST_CASE(test_assembledInverseAdA, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    class DeformationBase_mock : public tardigradeHydra::DeformationBase<2, 3, 4> {
-       public:
-        DeformationBase_mock() {}
-
-        void public_assembledAinversedA(const std::vector<double> &A_inverse, std::vector<double> &B) {
-            _assembledAinversedA(std::begin(A_inverse), std::end(A_inverse), std::begin(B), std::end(B));
-        }
-    };
-
-    std::vector<double> A = {1.0, 0.1, 0.2, 0.3, 1.4, 0.5, 0.6, 0.7, 1.8};
-
-    std::vector<double> A_inverse(9, 0);
-
-    Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _A(A.data(), 3, 3);
-    Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _A_inverse(A_inverse.data(), 3, 3);
-    _A_inverse = _A.inverse();
-
-    std::vector<double> result(81, 0);
-
-    DeformationBase_mock deformation;
-    deformation.public_assembledAinversedA(A_inverse, result);
-
-    {
-        double                 eps        = 1e-6;
-        constexpr unsigned int NUM_INPUT  = 9;
-        constexpr unsigned int NUM_OUTPUT = 9;
-        std::vector<double>    x          = A;
-        std::vector<double>    jacobian(NUM_INPUT * NUM_OUTPUT);
-
-        for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-            double delta = eps * std::fabs(x[i]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i] += delta;
-            xm[i] -= delta;
-
-            std::vector<double> rp(NUM_OUTPUT, 0);
-            std::vector<double> rm(NUM_OUTPUT, 0);
-
-            Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _xp(xp.data(), 3, 3);
-            Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _xm(xm.data(), 3, 3);
-
-            Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _rp(rp.data(), 3, 3);
-            Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > _rm(rm.data(), 3, 3);
-
-            _rp = _xp.inverse();
-            _rm = _xm.inverse();
-
-            for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                jacobian[NUM_INPUT * j + i] = (rp[j] - rm[j]) / (2 * delta);
+        class DeformationBaseTester {
+           public:
+            static void checkConfigurations(DeformationBase &deformation) {
+                BOOST_CHECK(&deformation._configurations.second == deformation.get_configurations());
             }
-        }
 
-        BOOST_TEST(jacobian == result, CHECK_PER_ELEMENT);
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_getNetConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> answer = {-1.854335085e+00, -4.818731479e+00, +2.023409992e+00, +2.560814284e+00,
-                                  +3.876505881e+00, +9.445160110e+00, -4.099758968e+00, -3.346599356e+00,
-                                  -9.017019788e-02, -1.845898419e+00, +1.817802803e+00, -1.782496383e+00,
-                                  -7.111239393e-01, +4.733923547e-01, -1.671751118e+00, +4.093105290e+00};
-
-    std::vector<double> result(16, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.getNetConfiguration(std::begin(configurations), std::end(configurations), std::begin(result),
-                                    std::end(result));
-
-    BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
-}
-
-BOOST_AUTO_TEST_CASE(test_getLeadingNetConfigurationJacobian, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    double       eps           = 1e-6;
-    unsigned int configuration = 0;
-
-    std::vector<double> jacobian(256, 0);
-    std::vector<double> answer(256, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.getLeadingNetConfigurationJacobian(std::begin(configurations), std::end(configurations),
-                                                   std::begin(jacobian), std::end(jacobian));
-
-    {
-        constexpr unsigned int NUM_INPUTS  = 16;
-        constexpr unsigned int NUM_OUTPUTS = 16;
-        std::vector<double>    x(std::begin(configurations), std::end(configurations));
-
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double delta = eps * std::fabs(x[i + 16 * configuration]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i + 16 * configuration] += delta;
-            xm[i + 16 * configuration] -= delta;
-
-            std::vector<double> rp(16);
-            std::vector<double> rm(16);
-
-            deformation.getNetConfiguration(std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-            deformation.getNetConfiguration(std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                answer[NUM_INPUTS * j + i] = (rp[j] - rm[j]) / (2 * delta);
+            static void checkPreviousConfigurations(DeformationBase &deformation) {
+                BOOST_CHECK(&deformation._previousConfigurations.second == deformation.get_previousConfigurations());
             }
-        }
 
-        BOOST_TEST(jacobian == answer, CHECK_PER_ELEMENT);
-    }
-
-    // Test for a single configuration
-    deformation.getLeadingNetConfigurationJacobian(std::begin(configurations), std::begin(configurations) + 16,
-                                                   std::begin(jacobian), std::end(jacobian));
-
-    {
-        constexpr unsigned int NUM_INPUTS  = 16;
-        constexpr unsigned int NUM_OUTPUTS = 16;
-        std::vector<double>    x(std::begin(configurations), std::begin(configurations) + 16);
-
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double delta = eps * std::fabs(x[i + 16 * configuration]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i + 16 * configuration] += delta;
-            xm[i + 16 * configuration] -= delta;
-
-            std::vector<double> rp(16);
-            std::vector<double> rm(16);
-
-            deformation.getNetConfiguration(std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-            deformation.getNetConfiguration(std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                answer[NUM_INPUTS * j + i] = (rp[j] - rm[j]) / (2 * delta);
+            static void checkInverseConfigurations(DeformationBase &deformation) {
+                BOOST_CHECK(&deformation._inverseConfigurations.second == deformation.get_inverseConfigurations());
             }
-        }
 
-        BOOST_TEST(jacobian == answer, CHECK_PER_ELEMENT);
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_getTrailingNetConfigurationJacobian, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    double       eps           = 1e-6;
-    unsigned int configuration = 4;
-
-    std::vector<double> jacobian(256, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-    std::vector<double>                       answer(256, 0);
-
-    deformation.getTrailingNetConfigurationJacobian(std::begin(configurations), std::end(configurations),
-                                                    std::begin(jacobian), std::end(jacobian));
-
-    {
-        constexpr unsigned int NUM_INPUTS  = 16;
-        constexpr unsigned int NUM_OUTPUTS = 16;
-        std::vector<double>    x(std::begin(configurations), std::end(configurations));
-
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double delta = eps * std::fabs(x[i + 16 * configuration]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i + 16 * configuration] += delta;
-            xm[i + 16 * configuration] -= delta;
-
-            std::vector<double> rp(16);
-            std::vector<double> rm(16);
-
-            deformation.getNetConfiguration(std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-            deformation.getNetConfiguration(std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                answer[NUM_INPUTS * j + i] = (rp[j] - rm[j]) / (2 * delta);
+            static void checkPreviousInverseConfigurations(DeformationBase &deformation) {
+                BOOST_CHECK(&deformation._previousInverseConfigurations.second ==
+                            deformation.get_previousInverseConfigurations());
             }
-        }
 
-        BOOST_TEST(jacobian == answer, CHECK_PER_ELEMENT);
-    }
-
-    // Test for a single configuration
-    configuration = 0;
-    deformation.getTrailingNetConfigurationJacobian(std::begin(configurations), std::begin(configurations) + 16,
-                                                    std::begin(jacobian), std::end(jacobian));
-
-    {
-        constexpr unsigned int NUM_INPUTS  = 16;
-        constexpr unsigned int NUM_OUTPUTS = 16;
-        std::vector<double>    x(std::begin(configurations), std::begin(configurations) + 16);
-
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double delta = eps * std::fabs(x[i + 16 * configuration]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i + 16 * configuration] += delta;
-            xm[i + 16 * configuration] -= delta;
-
-            std::vector<double> rp(16);
-            std::vector<double> rm(16);
-
-            deformation.getNetConfiguration(std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-            deformation.getNetConfiguration(std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                answer[NUM_INPUTS * j + i] = (rp[j] - rm[j]) / (2 * delta);
+            static void checkdF1dF(hydraBase &hydra, DeformationBase &deformation) {
+                auto iterationData = tardigradeHydra::unit_test::hydraBaseTester::getIterationData(hydra);
+                BOOST_CHECK(std::find(iterationData.begin(), iterationData.end(), &deformation._dF1dF) !=
+                            iterationData.end());
             }
-        }
 
-        BOOST_TEST(jacobian == answer, CHECK_PER_ELEMENT);
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_getNetConfigurationJacobian, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    double eps = 1e-6;
-
-    for (unsigned int c = 0; c < 5; ++c) {
-        std::vector<double> jacobian(256, 0);
-
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-        deformation.getNetConfigurationJacobian(std::begin(configurations), std::end(configurations), c,
-                                                std::begin(jacobian), std::end(jacobian));
-
-        {
-            constexpr unsigned int NUM_INPUTS  = 16;
-            constexpr unsigned int NUM_OUTPUTS = 16;
-            std::vector<double>    x(std::begin(configurations), std::end(configurations));
-
-            for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-                double delta = eps * std::fabs(x[i + 16 * c]) + eps;
-
-                std::vector<double> xp = x;
-                std::vector<double> xm = x;
-
-                xp[i + 16 * c] += delta;
-                xm[i + 16 * c] -= delta;
-
-                std::vector<double> rp(16);
-                std::vector<double> rm(16);
-
-                deformation.getNetConfiguration(std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-                deformation.getNetConfiguration(std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-                for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                    BOOST_TEST(jacobian[NUM_INPUTS * j + i] == (rp[j] - rm[j]) / (2 * delta));
-                }
+            static void checkdF1dFn(hydraBase &hydra, DeformationBase &deformation) {
+                auto iterationData = tardigradeHydra::unit_test::hydraBaseTester::getIterationData(hydra);
+                BOOST_CHECK(std::find(iterationData.begin(), iterationData.end(), &deformation._dF1dFn) !=
+                            iterationData.end());
             }
-        }
-    }
+        };
+
+    }  // namespace unit_test
+
+}  // namespace tardigradeHydra
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_configurations, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::DeformationBase deformation;
+
+    tardigradeHydra::unit_test::DeformationBaseTester::checkConfigurations(deformation);
 }
 
-BOOST_AUTO_TEST_CASE(test_getNetConfigurationGradient, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> configuration_gradients = {
-        -6.977450953e-01, -2.022474145e-01, -5.182882046e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, -7.382100987e-01, -3.560387871e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, -2.303243774e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        -3.226583082e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +9.766908386e-01,
-        +8.106831513e-01, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +9.672617698e-01,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +4.621460717e-01, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, -8.412684192e-01, -1.433054506e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, -4.062784490e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +4.837243037e-01, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +5.619958760e-01, -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01,
-        +3.297448976e-01, +7.757135854e-01, +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01,
-        +1.312840025e-01, -8.301916736e-01, +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01,
-        +5.014340007e-01, +1.481276503e-01, +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01,
-        +8.197433192e-01, -7.427376050e-01, -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01,
-        +1.244367575e-01, -7.555129007e-01, -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01,
-        -9.851472429e-01, +1.031854520e-01, +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01,
-        -2.420283006e-01, +3.367678945e-01, -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01,
-        -5.417399552e-02, -7.564912891e-01, +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01,
-        +5.387946741e-01, +1.475482273e-01, -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01,
-        +5.845986037e-01, +3.743318178e-02, -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02,
-        -6.367423147e-01, -3.573622010e-01, +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01,
-        -5.268003766e-01, +8.336646659e-01, +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03,
-        -3.726620999e-01, -9.053209255e-01, -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01,
-        +7.899565758e-01, -9.135542158e-01, -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01,
-        -9.889091832e-01, -3.018111311e-02, +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02,
-        +9.260089320e-01, -3.163387729e-01, +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01,
-        +4.312025503e-01, -1.789604292e-01, -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01,
-        -9.495152844e-01, -4.661883704e-01, +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01,
-        -2.514156353e-01, -5.719761702e-01, -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01,
-        -4.375304371e-01, -2.754464780e-01, -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01,
-        +1.948662167e-01, -4.136950627e-01, +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01,
-        -7.460839379e-01, +5.543249231e-01, -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01,
-        +4.203233026e-01, +9.170194860e-01, -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01,
-        -7.024446875e-01, +8.800580299e-01, +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01,
-        -9.672150382e-01, +4.423687321e-01, -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01,
-        -2.728473640e-01, +7.991987043e-02, +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01,
-        -4.035092134e-01, -1.627462820e-01, -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01,
-        +1.120695075e-01, +1.122841698e-03, -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01,
-        -8.958177312e-01, -1.864422131e-01, -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01,
-        +3.618059980e-01, +8.084519881e-01, +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01,
-        -2.202515393e-01, +5.095941631e-01, -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01,
-        -3.024053678e-01, +2.692761405e-01, -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01,
-        +7.645522024e-01, +6.446076294e-01, +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01,
-        -7.652031256e-01, -3.978932836e-01, -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01,
-        +1.291406852e-01, -6.173285586e-01, +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01,
-        +1.194757913e-01, -3.303271743e-01, +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01,
-        -5.346272422e-01, +4.933952616e-01, +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02,
-        +5.595333242e-01, -5.250435600e-01, -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01,
-        +3.767486864e-01, -5.913917643e-01, -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01,
-        -8.251845147e-01, -3.064105596e-01, +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01,
-        -5.786947449e-01, -1.575998857e-01, -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01,
-        +8.657832963e-01, -3.712972927e-01, +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02,
-        -1.115578773e-01, -9.273533113e-01, -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01,
-        -2.622503166e-01, +2.239540781e-01, -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01,
-        +1.880345470e-02, -4.061969679e-01, +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01,
-        +9.747021957e-01, -1.826797325e-01, +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01,
-        -4.727793078e-01, -4.570402930e-01, -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01,
-        +2.504170663e-01, -1.166052239e-01, -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01,
-        -9.588476852e-01, +8.361940319e-01, +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01,
-        -8.131458625e-01, +6.749322169e-01, -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01,
-        -9.736803374e-01, -9.517031884e-01, +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01,
-        +8.572084935e-02, +7.178336752e-01, +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01,
-        -6.688800585e-01, +2.253645656e-01, -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01,
-        +9.978368119e-01, -9.187677509e-01, +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01,
-        -8.203362659e-01, +2.968994238e-01, +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01,
-        -9.782330756e-02, -4.257934205e-01, +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01,
-        +8.051130772e-01, -5.556858750e-01, -9.998362248e-01, +9.611946841e-01};
-
-    std::vector<double> answer = {
-        -2.246488458e+00, +1.189641809e+00, -4.542592245e+00, +4.130347837e+00, +4.129308627e-01, +5.220168887e+00,
-        -1.660984521e+00, -5.104953810e+00, +4.983800617e+00, -3.934579456e+00, -2.239067339e+00, +7.828734593e-01,
-        +1.836224125e+00, +1.697160422e+00, +1.991285554e+00, -8.108430394e+00, -2.957088291e+00, +2.218123922e+00,
-        -3.558051508e+00, -1.788021839e+00, +3.286356513e+00, -4.079528782e+00, +1.183893983e+00, -8.225512633e+00,
-        +1.956545582e+00, -9.722432917e+00, -2.437548746e+00, +3.681820619e+00, -1.262774931e+01, +1.465512160e+01,
-        +7.459231468e+00, +4.508476315e+00, -8.275848578e-02, -3.967031100e+00, -6.709365531e+00, +7.910815297e+00,
-        +9.958720414e-01, +1.323299553e+01, +1.268830064e+00, -4.419026704e+00, -7.425681361e-01, +1.938718304e+00,
-        +3.246815410e+00, +8.691899968e-01, +4.859829767e+00, -7.245423660e-01, +1.705173024e+00, +5.724107160e+00,
-        +2.432365225e+00, +4.175430812e+00, +5.155883135e-01, -8.846418449e-01, -4.211389415e+00, +4.428342808e-01,
-        -8.546780959e-01, -4.064017414e+00, -9.450908084e+00, -6.703095619e+00, +9.299485632e+00, -1.255584161e+01,
-        -6.058420144e-01, +1.490372046e+00, -7.416480233e+00, -1.209072834e+00, -6.754699378e-01, +1.606109737e+00,
-        +7.155530170e+00, -1.263933559e+01, -4.200435689e+00, +5.822333697e+00, -7.949707080e-01, -2.849386260e+00,
-        +8.870459768e+00, -5.537585098e-01, -2.097399723e+00, +2.585515371e+00, +9.355380328e+00, +1.080471373e+01,
-        -6.920151425e+00, +5.214986221e-01};
-
-    std::vector<double> result(80, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.getNetConfigurationGradient(std::begin(configurations), std::end(configurations),
-                                            std::begin(configuration_gradients), std::end(configuration_gradients),
-                                            std::begin(result), std::end(result));
-
-    BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
-}
-
-BOOST_AUTO_TEST_CASE(test_getLeadingNetConfigurationGradientConfigurationJacobian, *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> configuration_gradients = {
-        -6.977450953e-01, -2.022474145e-01, -5.182882046e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, -7.382100987e-01, -3.560387871e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, -2.303243774e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        -3.226583082e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +9.766908386e-01,
-        +8.106831513e-01, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +9.672617698e-01,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +4.621460717e-01, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, -8.412684192e-01, -1.433054506e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, -4.062784490e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +4.837243037e-01, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +5.619958760e-01, -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01,
-        +3.297448976e-01, +7.757135854e-01, +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01,
-        +1.312840025e-01, -8.301916736e-01, +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01,
-        +5.014340007e-01, +1.481276503e-01, +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01,
-        +8.197433192e-01, -7.427376050e-01, -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01,
-        +1.244367575e-01, -7.555129007e-01, -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01,
-        -9.851472429e-01, +1.031854520e-01, +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01,
-        -2.420283006e-01, +3.367678945e-01, -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01,
-        -5.417399552e-02, -7.564912891e-01, +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01,
-        +5.387946741e-01, +1.475482273e-01, -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01,
-        +5.845986037e-01, +3.743318178e-02, -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02,
-        -6.367423147e-01, -3.573622010e-01, +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01,
-        -5.268003766e-01, +8.336646659e-01, +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03,
-        -3.726620999e-01, -9.053209255e-01, -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01,
-        +7.899565758e-01, -9.135542158e-01, -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01,
-        -9.889091832e-01, -3.018111311e-02, +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02,
-        +9.260089320e-01, -3.163387729e-01, +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01,
-        +4.312025503e-01, -1.789604292e-01, -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01,
-        -9.495152844e-01, -4.661883704e-01, +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01,
-        -2.514156353e-01, -5.719761702e-01, -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01,
-        -4.375304371e-01, -2.754464780e-01, -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01,
-        +1.948662167e-01, -4.136950627e-01, +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01,
-        -7.460839379e-01, +5.543249231e-01, -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01,
-        +4.203233026e-01, +9.170194860e-01, -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01,
-        -7.024446875e-01, +8.800580299e-01, +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01,
-        -9.672150382e-01, +4.423687321e-01, -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01,
-        -2.728473640e-01, +7.991987043e-02, +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01,
-        -4.035092134e-01, -1.627462820e-01, -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01,
-        +1.120695075e-01, +1.122841698e-03, -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01,
-        -8.958177312e-01, -1.864422131e-01, -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01,
-        +3.618059980e-01, +8.084519881e-01, +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01,
-        -2.202515393e-01, +5.095941631e-01, -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01,
-        -3.024053678e-01, +2.692761405e-01, -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01,
-        +7.645522024e-01, +6.446076294e-01, +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01,
-        -7.652031256e-01, -3.978932836e-01, -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01,
-        +1.291406852e-01, -6.173285586e-01, +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01,
-        +1.194757913e-01, -3.303271743e-01, +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01,
-        -5.346272422e-01, +4.933952616e-01, +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02,
-        +5.595333242e-01, -5.250435600e-01, -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01,
-        +3.767486864e-01, -5.913917643e-01, -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01,
-        -8.251845147e-01, -3.064105596e-01, +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01,
-        -5.786947449e-01, -1.575998857e-01, -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01,
-        +8.657832963e-01, -3.712972927e-01, +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02,
-        -1.115578773e-01, -9.273533113e-01, -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01,
-        -2.622503166e-01, +2.239540781e-01, -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01,
-        +1.880345470e-02, -4.061969679e-01, +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01,
-        +9.747021957e-01, -1.826797325e-01, +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01,
-        -4.727793078e-01, -4.570402930e-01, -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01,
-        +2.504170663e-01, -1.166052239e-01, -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01,
-        -9.588476852e-01, +8.361940319e-01, +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01,
-        -8.131458625e-01, +6.749322169e-01, -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01,
-        -9.736803374e-01, -9.517031884e-01, +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01,
-        +8.572084935e-02, +7.178336752e-01, +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01,
-        -6.688800585e-01, +2.253645656e-01, -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01,
-        +9.978368119e-01, -9.187677509e-01, +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01,
-        -8.203362659e-01, +2.968994238e-01, +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01,
-        -9.782330756e-02, -4.257934205e-01, +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01,
-        +8.051130772e-01, -5.556858750e-01, -9.998362248e-01, +9.611946841e-01};
-
-    std::vector<double> jacobian(1280, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.getLeadingNetConfigurationGradientConfigurationJacobian(std::begin(configurations),
-                                                                        std::end(configurations),
-                                                                        std::begin(configuration_gradients),
-                                                                        std::end(configuration_gradients),
-                                                                        std::begin(jacobian), std::end(jacobian));
-
-    double       eps = 1e-6;
-    unsigned int c   = 0;
-
-    {
-        constexpr unsigned int NUM_INPUT  = 16;
-        constexpr unsigned int NUM_OUTPUT = 80;
-        std::vector<double>    x          = configurations;
-
-        for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-            double delta = eps * std::fabs(x[i + 16 * c]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i + 16 * c] += delta;
-            xm[i + 16 * c] -= delta;
-
-            std::vector<double> rp(80);
-            std::vector<double> rm(80);
-
-            deformation.getNetConfigurationGradient(std::begin(xp), std::end(xp), std::begin(configuration_gradients),
-                                                    std::end(configuration_gradients), std::begin(rp), std::end(rp));
-
-            deformation.getNetConfigurationGradient(std::begin(xm), std::end(xm), std::begin(configuration_gradients),
-                                                    std::end(configuration_gradients), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                BOOST_TEST(jacobian[NUM_INPUT * j + i] == (rp[j] - rm[j]) / (2 * delta));
-            }
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_getTrailingNetConfigurationGradientConfigurationJacobian,
-                     *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> configuration_gradients = {
-        -6.977450953e-01, -2.022474145e-01, -5.182882046e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, -7.382100987e-01, -3.560387871e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, -2.303243774e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        -3.226583082e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +9.766908386e-01,
-        +8.106831513e-01, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +9.672617698e-01,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +4.621460717e-01, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, -8.412684192e-01, -1.433054506e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, -4.062784490e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +4.837243037e-01, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +5.619958760e-01, -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01,
-        +3.297448976e-01, +7.757135854e-01, +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01,
-        +1.312840025e-01, -8.301916736e-01, +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01,
-        +5.014340007e-01, +1.481276503e-01, +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01,
-        +8.197433192e-01, -7.427376050e-01, -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01,
-        +1.244367575e-01, -7.555129007e-01, -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01,
-        -9.851472429e-01, +1.031854520e-01, +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01,
-        -2.420283006e-01, +3.367678945e-01, -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01,
-        -5.417399552e-02, -7.564912891e-01, +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01,
-        +5.387946741e-01, +1.475482273e-01, -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01,
-        +5.845986037e-01, +3.743318178e-02, -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02,
-        -6.367423147e-01, -3.573622010e-01, +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01,
-        -5.268003766e-01, +8.336646659e-01, +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03,
-        -3.726620999e-01, -9.053209255e-01, -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01,
-        +7.899565758e-01, -9.135542158e-01, -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01,
-        -9.889091832e-01, -3.018111311e-02, +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02,
-        +9.260089320e-01, -3.163387729e-01, +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01,
-        +4.312025503e-01, -1.789604292e-01, -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01,
-        -9.495152844e-01, -4.661883704e-01, +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01,
-        -2.514156353e-01, -5.719761702e-01, -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01,
-        -4.375304371e-01, -2.754464780e-01, -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01,
-        +1.948662167e-01, -4.136950627e-01, +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01,
-        -7.460839379e-01, +5.543249231e-01, -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01,
-        +4.203233026e-01, +9.170194860e-01, -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01,
-        -7.024446875e-01, +8.800580299e-01, +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01,
-        -9.672150382e-01, +4.423687321e-01, -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01,
-        -2.728473640e-01, +7.991987043e-02, +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01,
-        -4.035092134e-01, -1.627462820e-01, -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01,
-        +1.120695075e-01, +1.122841698e-03, -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01,
-        -8.958177312e-01, -1.864422131e-01, -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01,
-        +3.618059980e-01, +8.084519881e-01, +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01,
-        -2.202515393e-01, +5.095941631e-01, -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01,
-        -3.024053678e-01, +2.692761405e-01, -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01,
-        +7.645522024e-01, +6.446076294e-01, +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01,
-        -7.652031256e-01, -3.978932836e-01, -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01,
-        +1.291406852e-01, -6.173285586e-01, +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01,
-        +1.194757913e-01, -3.303271743e-01, +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01,
-        -5.346272422e-01, +4.933952616e-01, +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02,
-        +5.595333242e-01, -5.250435600e-01, -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01,
-        +3.767486864e-01, -5.913917643e-01, -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01,
-        -8.251845147e-01, -3.064105596e-01, +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01,
-        -5.786947449e-01, -1.575998857e-01, -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01,
-        +8.657832963e-01, -3.712972927e-01, +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02,
-        -1.115578773e-01, -9.273533113e-01, -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01,
-        -2.622503166e-01, +2.239540781e-01, -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01,
-        +1.880345470e-02, -4.061969679e-01, +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01,
-        +9.747021957e-01, -1.826797325e-01, +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01,
-        -4.727793078e-01, -4.570402930e-01, -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01,
-        +2.504170663e-01, -1.166052239e-01, -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01,
-        -9.588476852e-01, +8.361940319e-01, +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01,
-        -8.131458625e-01, +6.749322169e-01, -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01,
-        -9.736803374e-01, -9.517031884e-01, +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01,
-        +8.572084935e-02, +7.178336752e-01, +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01,
-        -6.688800585e-01, +2.253645656e-01, -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01,
-        +9.978368119e-01, -9.187677509e-01, +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01,
-        -8.203362659e-01, +2.968994238e-01, +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01,
-        -9.782330756e-02, -4.257934205e-01, +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01,
-        +8.051130772e-01, -5.556858750e-01, -9.998362248e-01, +9.611946841e-01};
-
-    std::vector<double> jacobian(1280, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.getTrailingNetConfigurationGradientConfigurationJacobian(std::begin(configurations),
-                                                                         std::end(configurations),
-                                                                         std::begin(configuration_gradients),
-                                                                         std::end(configuration_gradients),
-                                                                         std::begin(jacobian), std::end(jacobian));
-
-    double       eps = 1e-6;
-    unsigned int c   = 4;
-
-    {
-        constexpr unsigned int NUM_INPUT  = 16;
-        constexpr unsigned int NUM_OUTPUT = 80;
-        std::vector<double>    x          = configurations;
-
-        for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-            double delta = eps * std::fabs(x[i + 16 * c]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i + 16 * c] += delta;
-            xm[i + 16 * c] -= delta;
-
-            std::vector<double> rp(80);
-            std::vector<double> rm(80);
-
-            deformation.getNetConfigurationGradient(std::begin(xp), std::end(xp), std::begin(configuration_gradients),
-                                                    std::end(configuration_gradients), std::begin(rp), std::end(rp));
-
-            deformation.getNetConfigurationGradient(std::begin(xm), std::end(xm), std::begin(configuration_gradients),
-                                                    std::end(configuration_gradients), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                BOOST_TEST(jacobian[NUM_INPUT * j + i] == (rp[j] - rm[j]) / (2 * delta));
-            }
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_getNetConfigurationGradientConfigurationJacobian, *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> configuration_gradients = {
-        -6.977450953e-01, -2.022474145e-01, -5.182882046e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, -7.382100987e-01, -3.560387871e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, -2.303243774e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        -3.226583082e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +9.766908386e-01,
-        +8.106831513e-01, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +9.672617698e-01,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +4.621460717e-01, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, -8.412684192e-01, -1.433054506e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, -4.062784490e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +4.837243037e-01, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +5.619958760e-01, -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01,
-        +3.297448976e-01, +7.757135854e-01, +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01,
-        +1.312840025e-01, -8.301916736e-01, +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01,
-        +5.014340007e-01, +1.481276503e-01, +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01,
-        +8.197433192e-01, -7.427376050e-01, -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01,
-        +1.244367575e-01, -7.555129007e-01, -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01,
-        -9.851472429e-01, +1.031854520e-01, +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01,
-        -2.420283006e-01, +3.367678945e-01, -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01,
-        -5.417399552e-02, -7.564912891e-01, +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01,
-        +5.387946741e-01, +1.475482273e-01, -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01,
-        +5.845986037e-01, +3.743318178e-02, -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02,
-        -6.367423147e-01, -3.573622010e-01, +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01,
-        -5.268003766e-01, +8.336646659e-01, +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03,
-        -3.726620999e-01, -9.053209255e-01, -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01,
-        +7.899565758e-01, -9.135542158e-01, -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01,
-        -9.889091832e-01, -3.018111311e-02, +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02,
-        +9.260089320e-01, -3.163387729e-01, +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01,
-        +4.312025503e-01, -1.789604292e-01, -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01,
-        -9.495152844e-01, -4.661883704e-01, +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01,
-        -2.514156353e-01, -5.719761702e-01, -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01,
-        -4.375304371e-01, -2.754464780e-01, -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01,
-        +1.948662167e-01, -4.136950627e-01, +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01,
-        -7.460839379e-01, +5.543249231e-01, -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01,
-        +4.203233026e-01, +9.170194860e-01, -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01,
-        -7.024446875e-01, +8.800580299e-01, +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01,
-        -9.672150382e-01, +4.423687321e-01, -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01,
-        -2.728473640e-01, +7.991987043e-02, +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01,
-        -4.035092134e-01, -1.627462820e-01, -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01,
-        +1.120695075e-01, +1.122841698e-03, -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01,
-        -8.958177312e-01, -1.864422131e-01, -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01,
-        +3.618059980e-01, +8.084519881e-01, +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01,
-        -2.202515393e-01, +5.095941631e-01, -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01,
-        -3.024053678e-01, +2.692761405e-01, -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01,
-        +7.645522024e-01, +6.446076294e-01, +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01,
-        -7.652031256e-01, -3.978932836e-01, -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01,
-        +1.291406852e-01, -6.173285586e-01, +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01,
-        +1.194757913e-01, -3.303271743e-01, +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01,
-        -5.346272422e-01, +4.933952616e-01, +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02,
-        +5.595333242e-01, -5.250435600e-01, -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01,
-        +3.767486864e-01, -5.913917643e-01, -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01,
-        -8.251845147e-01, -3.064105596e-01, +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01,
-        -5.786947449e-01, -1.575998857e-01, -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01,
-        +8.657832963e-01, -3.712972927e-01, +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02,
-        -1.115578773e-01, -9.273533113e-01, -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01,
-        -2.622503166e-01, +2.239540781e-01, -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01,
-        +1.880345470e-02, -4.061969679e-01, +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01,
-        +9.747021957e-01, -1.826797325e-01, +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01,
-        -4.727793078e-01, -4.570402930e-01, -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01,
-        +2.504170663e-01, -1.166052239e-01, -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01,
-        -9.588476852e-01, +8.361940319e-01, +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01,
-        -8.131458625e-01, +6.749322169e-01, -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01,
-        -9.736803374e-01, -9.517031884e-01, +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01,
-        +8.572084935e-02, +7.178336752e-01, +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01,
-        -6.688800585e-01, +2.253645656e-01, -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01,
-        +9.978368119e-01, -9.187677509e-01, +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01,
-        -8.203362659e-01, +2.968994238e-01, +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01,
-        -9.782330756e-02, -4.257934205e-01, +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01,
-        +8.051130772e-01, -5.556858750e-01, -9.998362248e-01, +9.611946841e-01};
-
-    std::vector<double> jacobian(1280, 0);
-
-    double eps = 1e-6;
-
-    for (unsigned int c = 0; c < 5; ++c) {
-        {
-            tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-            deformation.getNetConfigurationGradientConfigurationJacobian(std::begin(configurations),
-                                                                         std::end(configurations),
-                                                                         std::begin(configuration_gradients),
-                                                                         std::end(configuration_gradients), c,
-                                                                         std::begin(jacobian), std::end(jacobian));
-
-            constexpr unsigned int NUM_INPUT  = 16;
-            constexpr unsigned int NUM_OUTPUT = 80;
-            std::vector<double>    x          = configurations;
-
-            for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-                double delta = eps * std::fabs(x[i + 16 * c]) + eps;
-
-                std::vector<double> xp = x;
-                std::vector<double> xm = x;
-
-                xp[i + 16 * c] += delta;
-                xm[i + 16 * c] -= delta;
-
-                std::vector<double> rp(80);
-                std::vector<double> rm(80);
-
-                deformation.getNetConfigurationGradient(std::begin(xp), std::end(xp),
-                                                        std::begin(configuration_gradients),
-                                                        std::end(configuration_gradients), std::begin(rp),
-                                                        std::end(rp));
-
-                deformation.getNetConfigurationGradient(std::begin(xm), std::end(xm),
-                                                        std::begin(configuration_gradients),
-                                                        std::end(configuration_gradients), std::begin(rm),
-                                                        std::end(rm));
-
-                for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                    BOOST_TEST(jacobian[NUM_INPUT * j + i] == (rp[j] - rm[j]) / (2 * delta));
-                }
-            }
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_getLeadingNetConfigurationGradientConfigurationGradientJacobian,
-                     *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> configuration_gradients = {
-        -6.977450953e-01, -2.022474145e-01, -5.182882046e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, -7.382100987e-01, -3.560387871e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, -2.303243774e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        -3.226583082e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +9.766908386e-01,
-        +8.106831513e-01, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +9.672617698e-01,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +4.621460717e-01, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, -8.412684192e-01, -1.433054506e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, -4.062784490e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +4.837243037e-01, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +5.619958760e-01, -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01,
-        +3.297448976e-01, +7.757135854e-01, +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01,
-        +1.312840025e-01, -8.301916736e-01, +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01,
-        +5.014340007e-01, +1.481276503e-01, +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01,
-        +8.197433192e-01, -7.427376050e-01, -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01,
-        +1.244367575e-01, -7.555129007e-01, -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01,
-        -9.851472429e-01, +1.031854520e-01, +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01,
-        -2.420283006e-01, +3.367678945e-01, -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01,
-        -5.417399552e-02, -7.564912891e-01, +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01,
-        +5.387946741e-01, +1.475482273e-01, -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01,
-        +5.845986037e-01, +3.743318178e-02, -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02,
-        -6.367423147e-01, -3.573622010e-01, +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01,
-        -5.268003766e-01, +8.336646659e-01, +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03,
-        -3.726620999e-01, -9.053209255e-01, -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01,
-        +7.899565758e-01, -9.135542158e-01, -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01,
-        -9.889091832e-01, -3.018111311e-02, +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02,
-        +9.260089320e-01, -3.163387729e-01, +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01,
-        +4.312025503e-01, -1.789604292e-01, -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01,
-        -9.495152844e-01, -4.661883704e-01, +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01,
-        -2.514156353e-01, -5.719761702e-01, -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01,
-        -4.375304371e-01, -2.754464780e-01, -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01,
-        +1.948662167e-01, -4.136950627e-01, +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01,
-        -7.460839379e-01, +5.543249231e-01, -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01,
-        +4.203233026e-01, +9.170194860e-01, -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01,
-        -7.024446875e-01, +8.800580299e-01, +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01,
-        -9.672150382e-01, +4.423687321e-01, -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01,
-        -2.728473640e-01, +7.991987043e-02, +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01,
-        -4.035092134e-01, -1.627462820e-01, -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01,
-        +1.120695075e-01, +1.122841698e-03, -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01,
-        -8.958177312e-01, -1.864422131e-01, -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01,
-        +3.618059980e-01, +8.084519881e-01, +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01,
-        -2.202515393e-01, +5.095941631e-01, -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01,
-        -3.024053678e-01, +2.692761405e-01, -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01,
-        +7.645522024e-01, +6.446076294e-01, +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01,
-        -7.652031256e-01, -3.978932836e-01, -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01,
-        +1.291406852e-01, -6.173285586e-01, +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01,
-        +1.194757913e-01, -3.303271743e-01, +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01,
-        -5.346272422e-01, +4.933952616e-01, +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02,
-        +5.595333242e-01, -5.250435600e-01, -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01,
-        +3.767486864e-01, -5.913917643e-01, -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01,
-        -8.251845147e-01, -3.064105596e-01, +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01,
-        -5.786947449e-01, -1.575998857e-01, -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01,
-        +8.657832963e-01, -3.712972927e-01, +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02,
-        -1.115578773e-01, -9.273533113e-01, -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01,
-        -2.622503166e-01, +2.239540781e-01, -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01,
-        +1.880345470e-02, -4.061969679e-01, +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01,
-        +9.747021957e-01, -1.826797325e-01, +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01,
-        -4.727793078e-01, -4.570402930e-01, -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01,
-        +2.504170663e-01, -1.166052239e-01, -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01,
-        -9.588476852e-01, +8.361940319e-01, +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01,
-        -8.131458625e-01, +6.749322169e-01, -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01,
-        -9.736803374e-01, -9.517031884e-01, +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01,
-        +8.572084935e-02, +7.178336752e-01, +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01,
-        -6.688800585e-01, +2.253645656e-01, -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01,
-        +9.978368119e-01, -9.187677509e-01, +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01,
-        -8.203362659e-01, +2.968994238e-01, +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01,
-        -9.782330756e-02, -4.257934205e-01, +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01,
-        +8.051130772e-01, -5.556858750e-01, -9.998362248e-01, +9.611946841e-01};
-
-    std::vector<double> jacobian(6400, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.getLeadingNetConfigurationGradientConfigurationGradientJacobian(
-        std::begin(configurations), std::end(configurations), std::begin(configuration_gradients),
-        std::end(configuration_gradients), std::begin(jacobian), std::end(jacobian));
-
-    double       eps = 1e-6;
-    unsigned int c   = 0;
-
-    {
-        constexpr unsigned int NUM_INPUT  = 80;
-        constexpr unsigned int NUM_OUTPUT = 80;
-        std::vector<double>    x          = configuration_gradients;
-
-        for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-            double delta = eps * std::fabs(x[i + 80 * c]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i + 80 * c] += delta;
-            xm[i + 80 * c] -= delta;
-
-            std::vector<double> rp(80);
-            std::vector<double> rm(80);
-
-            deformation.getNetConfigurationGradient(std::begin(configurations), std::end(configurations),
-                                                    std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-
-            deformation.getNetConfigurationGradient(std::begin(configurations), std::end(configurations),
-                                                    std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                BOOST_TEST(jacobian[NUM_INPUT * j + i] == (rp[j] - rm[j]) / (2 * delta));
-            }
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_getTrailingNetConfigurationGradientConfigurationGradientJacobian,
-                     *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> configuration_gradients = {
-        -6.977450953e-01, -2.022474145e-01, -5.182882046e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, -7.382100987e-01, -3.560387871e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, -2.303243774e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        -3.226583082e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +9.766908386e-01,
-        +8.106831513e-01, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +9.672617698e-01,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +4.621460717e-01, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, -8.412684192e-01, -1.433054506e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, -4.062784490e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +4.837243037e-01, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +5.619958760e-01, -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01,
-        +3.297448976e-01, +7.757135854e-01, +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01,
-        +1.312840025e-01, -8.301916736e-01, +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01,
-        +5.014340007e-01, +1.481276503e-01, +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01,
-        +8.197433192e-01, -7.427376050e-01, -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01,
-        +1.244367575e-01, -7.555129007e-01, -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01,
-        -9.851472429e-01, +1.031854520e-01, +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01,
-        -2.420283006e-01, +3.367678945e-01, -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01,
-        -5.417399552e-02, -7.564912891e-01, +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01,
-        +5.387946741e-01, +1.475482273e-01, -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01,
-        +5.845986037e-01, +3.743318178e-02, -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02,
-        -6.367423147e-01, -3.573622010e-01, +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01,
-        -5.268003766e-01, +8.336646659e-01, +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03,
-        -3.726620999e-01, -9.053209255e-01, -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01,
-        +7.899565758e-01, -9.135542158e-01, -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01,
-        -9.889091832e-01, -3.018111311e-02, +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02,
-        +9.260089320e-01, -3.163387729e-01, +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01,
-        +4.312025503e-01, -1.789604292e-01, -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01,
-        -9.495152844e-01, -4.661883704e-01, +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01,
-        -2.514156353e-01, -5.719761702e-01, -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01,
-        -4.375304371e-01, -2.754464780e-01, -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01,
-        +1.948662167e-01, -4.136950627e-01, +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01,
-        -7.460839379e-01, +5.543249231e-01, -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01,
-        +4.203233026e-01, +9.170194860e-01, -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01,
-        -7.024446875e-01, +8.800580299e-01, +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01,
-        -9.672150382e-01, +4.423687321e-01, -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01,
-        -2.728473640e-01, +7.991987043e-02, +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01,
-        -4.035092134e-01, -1.627462820e-01, -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01,
-        +1.120695075e-01, +1.122841698e-03, -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01,
-        -8.958177312e-01, -1.864422131e-01, -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01,
-        +3.618059980e-01, +8.084519881e-01, +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01,
-        -2.202515393e-01, +5.095941631e-01, -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01,
-        -3.024053678e-01, +2.692761405e-01, -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01,
-        +7.645522024e-01, +6.446076294e-01, +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01,
-        -7.652031256e-01, -3.978932836e-01, -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01,
-        +1.291406852e-01, -6.173285586e-01, +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01,
-        +1.194757913e-01, -3.303271743e-01, +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01,
-        -5.346272422e-01, +4.933952616e-01, +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02,
-        +5.595333242e-01, -5.250435600e-01, -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01,
-        +3.767486864e-01, -5.913917643e-01, -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01,
-        -8.251845147e-01, -3.064105596e-01, +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01,
-        -5.786947449e-01, -1.575998857e-01, -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01,
-        +8.657832963e-01, -3.712972927e-01, +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02,
-        -1.115578773e-01, -9.273533113e-01, -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01,
-        -2.622503166e-01, +2.239540781e-01, -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01,
-        +1.880345470e-02, -4.061969679e-01, +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01,
-        +9.747021957e-01, -1.826797325e-01, +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01,
-        -4.727793078e-01, -4.570402930e-01, -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01,
-        +2.504170663e-01, -1.166052239e-01, -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01,
-        -9.588476852e-01, +8.361940319e-01, +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01,
-        -8.131458625e-01, +6.749322169e-01, -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01,
-        -9.736803374e-01, -9.517031884e-01, +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01,
-        +8.572084935e-02, +7.178336752e-01, +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01,
-        -6.688800585e-01, +2.253645656e-01, -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01,
-        +9.978368119e-01, -9.187677509e-01, +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01,
-        -8.203362659e-01, +2.968994238e-01, +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01,
-        -9.782330756e-02, -4.257934205e-01, +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01,
-        +8.051130772e-01, -5.556858750e-01, -9.998362248e-01, +9.611946841e-01};
-
-    std::vector<double> jacobian(6400, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.getTrailingNetConfigurationGradientConfigurationGradientJacobian(
-        std::begin(configurations), std::end(configurations), std::begin(configuration_gradients),
-        std::end(configuration_gradients), std::begin(jacobian), std::end(jacobian));
-
-    double       eps = 1e-6;
-    unsigned int c   = 4;
-
-    {
-        constexpr unsigned int NUM_INPUT  = 80;
-        constexpr unsigned int NUM_OUTPUT = 80;
-        std::vector<double>    x          = configuration_gradients;
-
-        for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-            double delta = eps * std::fabs(x[i + 80 * c]) + eps;
-
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
-
-            xp[i + 80 * c] += delta;
-            xm[i + 80 * c] -= delta;
-
-            std::vector<double> rp(80);
-            std::vector<double> rm(80);
-
-            deformation.getNetConfigurationGradient(std::begin(configurations), std::end(configurations),
-                                                    std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-
-            deformation.getNetConfigurationGradient(std::begin(configurations), std::end(configurations),
-                                                    std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                BOOST_TEST(jacobian[NUM_INPUT * j + i] == (rp[j] - rm[j]) / (2 * delta));
-            }
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_getNetConfigurationGradientConfigurationGradientJacobian,
-                     *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> configuration_gradients = {
-        -6.977450953e-01, -2.022474145e-01, -5.182882046e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, -7.382100987e-01, -3.560387871e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, -2.303243774e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        -3.226583082e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +9.766908386e-01,
-        +8.106831513e-01, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +9.672617698e-01,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +4.621460717e-01, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, -8.412684192e-01, -1.433054506e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, -4.062784490e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +4.837243037e-01, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +5.619958760e-01, -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01,
-        +3.297448976e-01, +7.757135854e-01, +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01,
-        +1.312840025e-01, -8.301916736e-01, +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01,
-        +5.014340007e-01, +1.481276503e-01, +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01,
-        +8.197433192e-01, -7.427376050e-01, -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01,
-        +1.244367575e-01, -7.555129007e-01, -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01,
-        -9.851472429e-01, +1.031854520e-01, +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01,
-        -2.420283006e-01, +3.367678945e-01, -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01,
-        -5.417399552e-02, -7.564912891e-01, +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01,
-        +5.387946741e-01, +1.475482273e-01, -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01,
-        +5.845986037e-01, +3.743318178e-02, -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02,
-        -6.367423147e-01, -3.573622010e-01, +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01,
-        -5.268003766e-01, +8.336646659e-01, +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03,
-        -3.726620999e-01, -9.053209255e-01, -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01,
-        +7.899565758e-01, -9.135542158e-01, -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01,
-        -9.889091832e-01, -3.018111311e-02, +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02,
-        +9.260089320e-01, -3.163387729e-01, +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01,
-        +4.312025503e-01, -1.789604292e-01, -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01,
-        -9.495152844e-01, -4.661883704e-01, +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01,
-        -2.514156353e-01, -5.719761702e-01, -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01,
-        -4.375304371e-01, -2.754464780e-01, -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01,
-        +1.948662167e-01, -4.136950627e-01, +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01,
-        -7.460839379e-01, +5.543249231e-01, -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01,
-        +4.203233026e-01, +9.170194860e-01, -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01,
-        -7.024446875e-01, +8.800580299e-01, +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01,
-        -9.672150382e-01, +4.423687321e-01, -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01,
-        -2.728473640e-01, +7.991987043e-02, +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01,
-        -4.035092134e-01, -1.627462820e-01, -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01,
-        +1.120695075e-01, +1.122841698e-03, -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01,
-        -8.958177312e-01, -1.864422131e-01, -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01,
-        +3.618059980e-01, +8.084519881e-01, +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01,
-        -2.202515393e-01, +5.095941631e-01, -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01,
-        -3.024053678e-01, +2.692761405e-01, -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01,
-        +7.645522024e-01, +6.446076294e-01, +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01,
-        -7.652031256e-01, -3.978932836e-01, -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01,
-        +1.291406852e-01, -6.173285586e-01, +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01,
-        +1.194757913e-01, -3.303271743e-01, +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01,
-        -5.346272422e-01, +4.933952616e-01, +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02,
-        +5.595333242e-01, -5.250435600e-01, -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01,
-        +3.767486864e-01, -5.913917643e-01, -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01,
-        -8.251845147e-01, -3.064105596e-01, +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01,
-        -5.786947449e-01, -1.575998857e-01, -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01,
-        +8.657832963e-01, -3.712972927e-01, +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02,
-        -1.115578773e-01, -9.273533113e-01, -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01,
-        -2.622503166e-01, +2.239540781e-01, -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01,
-        +1.880345470e-02, -4.061969679e-01, +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01,
-        +9.747021957e-01, -1.826797325e-01, +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01,
-        -4.727793078e-01, -4.570402930e-01, -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01,
-        +2.504170663e-01, -1.166052239e-01, -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01,
-        -9.588476852e-01, +8.361940319e-01, +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01,
-        -8.131458625e-01, +6.749322169e-01, -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01,
-        -9.736803374e-01, -9.517031884e-01, +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01,
-        +8.572084935e-02, +7.178336752e-01, +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01,
-        -6.688800585e-01, +2.253645656e-01, -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01,
-        +9.978368119e-01, -9.187677509e-01, +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01,
-        -8.203362659e-01, +2.968994238e-01, +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01,
-        -9.782330756e-02, -4.257934205e-01, +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01,
-        +8.051130772e-01, -5.556858750e-01, -9.998362248e-01, +9.611946841e-01};
-
-    std::vector<double> jacobian(6400, 0);
-
-    double eps = 1e-6;
-    for (unsigned int c = 0; c < 5; ++c) {
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-        deformation.getNetConfigurationGradientConfigurationGradientJacobian(std::begin(configurations),
-                                                                             std::end(configurations),
-                                                                             std::begin(configuration_gradients),
-                                                                             std::end(configuration_gradients), c,
-                                                                             std::begin(jacobian), std::end(jacobian));
-
-        {
-            constexpr unsigned int NUM_INPUT  = 80;
-            constexpr unsigned int NUM_OUTPUT = 80;
-            std::vector<double>    x          = configuration_gradients;
-
-            for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-                double delta = eps * std::fabs(x[i + 80 * c]) + eps;
-
-                std::vector<double> xp = x;
-                std::vector<double> xm = x;
-
-                xp[i + 80 * c] += delta;
-                xm[i + 80 * c] -= delta;
-
-                std::vector<double> rp(80);
-                std::vector<double> rm(80);
-
-                deformation.getNetConfigurationGradient(std::begin(configurations), std::end(configurations),
-                                                        std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-
-                deformation.getNetConfigurationGradient(std::begin(configurations), std::end(configurations),
-                                                        std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-                for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                    BOOST_TEST(jacobian[NUM_INPUT * j + i] == (rp[j] - rm[j]) / (2 * delta));
-                }
-            }
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_solveForLeadingConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> total_configuration{+7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-                                            -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01,
-                                            +7.877307357e-01, -6.984055250e-03, -1.478086893e-01, -3.887072238e-01};
-
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    std::vector<double> answer = {+1.707506651e+00, +1.043497814e+00, +4.536064017e-01, +1.019627772e-01,
-                                  -8.116248958e+00, -2.215355689e+00, +1.211242115e+01, +8.359391529e+00,
-                                  +8.221322972e+00, +2.277488663e+00, -1.201195236e+01, -8.607501047e+00};
-
-    std::vector<double> result(12, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.solveForLeadingConfiguration(std::begin(total_configuration), std::end(total_configuration),
-                                             std::begin(configurations), std::end(configurations), std::begin(result),
-                                             std::end(result));
-
-    BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
-}
-
-BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationTotalConfigurationJacobian,
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_previousConfigurations,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> total_configuration{+7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-                                            -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01,
-                                            +7.877307357e-01, -6.984055250e-03, -1.478086893e-01, -3.887072238e-01};
+    tardigradeHydra::DeformationBase deformation;
 
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-    std::vector<double>                       jacobian(144, 0);
-    deformation.solveForLeadingConfigurationTotalConfigurationJacobian(std::begin(total_configuration),
-                                                                       std::end(total_configuration),
-                                                                       std::begin(configurations),
-                                                                       std::end(configurations), std::begin(jacobian),
-                                                                       std::end(jacobian));
-
-    double eps = 1e-6;
-
-    {
-        constexpr unsigned int NUM_INPUT  = 12;
-        constexpr unsigned int NUM_OUTPUT = 12;
-        std::vector<double>    x(std::begin(total_configuration), std::end(total_configuration));
-
-        for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-            double              delta = eps * std::fabs(x[i]) + eps;
-            std::vector<double> xp    = x;
-            std::vector<double> xm    = x;
-
-            xp[i] += delta;
-            xm[i] -= delta;
-
-            std::vector<double> rp(12, 0);
-            std::vector<double> rm(12, 0);
-
-            deformation.solveForLeadingConfiguration(std::begin(xp), std::end(xp), std::begin(configurations),
-                                                     std::end(configurations), std::begin(rp), std::end(rp));
-            deformation.solveForLeadingConfiguration(std::begin(xm), std::end(xm), std::begin(configurations),
-                                                     std::end(configurations), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                BOOST_TEST(jacobian[NUM_INPUT * j + i] == (rp[j] - rm[j]) / (2 * delta));
-            }
-        }
-    }
+    tardigradeHydra::unit_test::DeformationBaseTester::checkPreviousConfigurations(deformation);
 }
 
-BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationConfigurationJacobian, *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> total_configuration{+7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-                                            -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01,
-                                            +7.877307357e-01, -6.984055250e-03, -1.478086893e-01, -3.887072238e-01};
-
-    std::vector<double> configurations = {
-        +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +1.698863588e+00,
-        +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, +7.235773112e-01, -5.434735382e-01,
-        -4.125719072e-01, +2.619522477e-01, -8.157901201e-01, +8.674023454e-01, +8.617255267e-01, -1.262980470e-02,
-        -1.483394194e-01, -3.754775541e-01, -1.472973861e-01, +1.786778326e+00, +8.883200364e-01, +3.673351769e-03,
-        +2.479059036e-01, -7.687632098e-01, +6.345709636e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01,
-        -3.393147147e-02, +1.971119571e+00, +1.038970239e+00, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01,
-        +2.061202568e-01, +1.090136013e+00, -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01,
-        +1.750913684e+00, +2.084467496e-02, +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +1.349378102e+00,
-        +1.684684875e+00, -8.336100233e-01, +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.144913915e+00,
-        -8.085749668e-01, +7.706536526e-01, +2.544979441e-01, +4.468327164e-01, +3.225841339e-02, +1.888637589e-01,
-        +1.135703848e-01, -6.820807117e-01, -6.938589698e-01, +1.391059058e+00, +6.375328528e-01, +3.839405911e-01,
-        +1.087664994e-01, -2.220988518e-01, +8.502649792e-01, +1.683339994e+00, -2.852048666e-01, -9.128170724e-01,
-        -3.904638532e-01, -2.036286362e-01, +1.409917661e+00, +9.907169641e-01, -2.881702686e-01, +5.250956276e-01,
-        +1.863538331e-01, +1.383403597e+00};
-
-    double eps = 1e-5;
-
-    for (unsigned int c = 0; c < 5; ++c) {
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-        std::vector<double>                       jacobian(192, 0);
-        deformation.solveForLeadingConfigurationConfigurationJacobian(std::begin(total_configuration),
-                                                                      std::end(total_configuration),
-                                                                      std::begin(configurations),
-                                                                      std::end(configurations), c, std::begin(jacobian),
-                                                                      std::end(jacobian));
-
-        {
-            constexpr unsigned int NUM_INPUT  = 16;
-            constexpr unsigned int NUM_OUTPUT = 12;
-            std::vector<double>    x(std::begin(configurations), std::end(configurations));
-
-            for (unsigned int i = 0; i < NUM_INPUT; ++i) {
-                double              delta = eps * std::fabs(x[16 * c + i]) + eps;
-                std::vector<double> xp    = x;
-                std::vector<double> xm    = x;
-
-                xp[16 * c + i] += delta;
-                xm[16 * c + i] -= delta;
-
-                std::vector<double> rp(12, 0);
-                std::vector<double> rm(12, 0);
-
-                deformation.solveForLeadingConfiguration(std::begin(total_configuration), std::end(total_configuration),
-                                                         std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
-                deformation.solveForLeadingConfiguration(std::begin(total_configuration), std::end(total_configuration),
-                                                         std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
-
-                for (unsigned int j = 0; j < NUM_OUTPUT; ++j) {
-                    BOOST_TEST(jacobian[NUM_INPUT * j + i] == (rp[j] - rm[j]) / (2 * delta));
-                }
-            }
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradient, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> total_configuration_gradient{
-        -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01, -6.490964877e-01,
-        +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01, +4.489106497e-01, +2.220470214e-01,
-        +4.448867651e-01, -3.540821723e-01, -2.764226888e-01, -5.434735382e-01, -4.125719072e-01, +2.619522477e-01,
-        -8.157901201e-01, -1.325976546e-01, -1.382744733e-01, -1.262980470e-02, -1.483394194e-01, -3.754775541e-01,
-        -1.472973861e-01, +7.867783262e-01, +8.883200364e-01, +3.673351769e-03, +2.479059036e-01, -7.687632098e-01,
-        -3.654290364e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01, -3.393147147e-02, +9.711195712e-01,
-        +3.897023852e-02, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01, +2.061202568e-01, +9.013601293e-02,
-        -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01, +7.509136836e-01, +2.084467496e-02,
-        +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +3.493781020e-01, +6.846848752e-01, -8.336100233e-01,
-        +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.449139150e-01, -8.085749668e-01, +7.706536526e-01};
-
-    std::vector<double> leading_configuration{-7.022300491e+00, -1.500281471e+00, -5.141938262e+00, +8.191629373e+00,
-                                              -4.391425474e+01, -1.082177341e+01, -3.243914208e+01, +5.243458245e+01,
-                                              -2.210418937e+01, -5.243760411e+00, -1.595593935e+01, +2.628414361e+01};
-
-    std::vector<double> configurations = {
-        +1.254497944e+00, +4.468327164e-01, -9.677415866e-01, +1.888637589e-01, +1.135703848e-01, +3.179192883e-01,
-        -6.938589698e-01, +3.910590575e-01, -3.624671472e-01, +3.839405911e-01, +1.108766499e+00, -2.220988518e-01,
-        +8.502649792e-01, +6.833399938e-01, -2.852048666e-01, +8.718292760e-02, +6.095361468e-01, -2.036286362e-01,
-        +4.099176609e-01, +9.907169641e-01, -2.881702686e-01, +1.525095628e+00, +1.863538331e-01, +3.834035974e-01,
-        -6.977450953e-01, -2.022474145e-01, +4.817117954e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, +2.617899013e-01, +6.439612129e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, +7.696756226e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        +6.773416918e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +1.976690839e+00,
-        +1.810683151e+00, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +1.967261770e+00,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +1.462146072e+00, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, +1.587315808e-01, +8.566945494e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, +5.937215510e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +1.483724304e+00, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +1.561995876e+00};
-
-    std::vector<double> configuration_gradients = {
-        -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01, +3.297448976e-01, +7.757135854e-01,
-        +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01, +1.312840025e-01, -8.301916736e-01,
-        +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01, +5.014340007e-01, +1.481276503e-01,
-        +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01, +8.197433192e-01, -7.427376050e-01,
-        -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01, +1.244367575e-01, -7.555129007e-01,
-        -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01, -9.851472429e-01, +1.031854520e-01,
-        +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01, -2.420283006e-01, +3.367678945e-01,
-        -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01, -5.417399552e-02, -7.564912891e-01,
-        +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01, +5.387946741e-01, +1.475482273e-01,
-        -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01, +5.845986037e-01, +3.743318178e-02,
-        -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02, -6.367423147e-01, -3.573622010e-01,
-        +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01, -5.268003766e-01, +8.336646659e-01,
-        +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03, -3.726620999e-01, -9.053209255e-01,
-        -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01, +7.899565758e-01, -9.135542158e-01,
-        -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01, -9.889091832e-01, -3.018111311e-02,
-        +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02, +9.260089320e-01, -3.163387729e-01,
-        +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01, +4.312025503e-01, -1.789604292e-01,
-        -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01, -9.495152844e-01, -4.661883704e-01,
-        +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01, -2.514156353e-01, -5.719761702e-01,
-        -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01, -4.375304371e-01, -2.754464780e-01,
-        -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01, +1.948662167e-01, -4.136950627e-01,
-        +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01, -7.460839379e-01, +5.543249231e-01,
-        -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01, +4.203233026e-01, +9.170194860e-01,
-        -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01, -7.024446875e-01, +8.800580299e-01,
-        +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01, -9.672150382e-01, +4.423687321e-01,
-        -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01, -2.728473640e-01, +7.991987043e-02,
-        +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01, -4.035092134e-01, -1.627462820e-01,
-        -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01, +1.120695075e-01, +1.122841698e-03,
-        -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01, -8.958177312e-01, -1.864422131e-01,
-        -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01, +3.618059980e-01, +8.084519881e-01,
-        +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01, -2.202515393e-01, +5.095941631e-01,
-        -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01, -3.024053678e-01, +2.692761405e-01,
-        -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01, +7.645522024e-01, +6.446076294e-01,
-        +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01, -7.652031256e-01, -3.978932836e-01,
-        -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01, +1.291406852e-01, -6.173285586e-01,
-        +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01, +1.194757913e-01, -3.303271743e-01,
-        +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01, -5.346272422e-01, +4.933952616e-01,
-        +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02, +5.595333242e-01, -5.250435600e-01,
-        -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01, +3.767486864e-01, -5.913917643e-01,
-        -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01, -8.251845147e-01, -3.064105596e-01,
-        +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01, -5.786947449e-01, -1.575998857e-01,
-        -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01, +8.657832963e-01, -3.712972927e-01,
-        +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02, -1.115578773e-01, -9.273533113e-01,
-        -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01, -2.622503166e-01, +2.239540781e-01,
-        -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01, +1.880345470e-02, -4.061969679e-01,
-        +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01, +9.747021957e-01, -1.826797325e-01,
-        +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01, -4.727793078e-01, -4.570402930e-01,
-        -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01, +2.504170663e-01, -1.166052239e-01,
-        -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01, -9.588476852e-01, +8.361940319e-01,
-        +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01, -8.131458625e-01, +6.749322169e-01,
-        -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01, -9.736803374e-01, -9.517031884e-01,
-        +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01, +8.572084935e-02, +7.178336752e-01,
-        +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01, -6.688800585e-01, +2.253645656e-01,
-        -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01, +9.978368119e-01, -9.187677509e-01,
-        +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01, -8.203362659e-01, +2.968994238e-01,
-        +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01, -9.782330756e-02, -4.257934205e-01,
-        +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01, +8.051130772e-01, -5.556858750e-01,
-        -9.998362248e-01, +9.611946841e-01, +7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-        -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01, +7.877307357e-01, -6.984055250e-03,
-        -1.478086893e-01, -3.887072238e-01, +8.336975705e-01, +3.524692152e-02, +6.080527367e-01, +7.153035746e-01,
-        +8.447647092e-01, -3.932385319e-01, -3.203782919e-01, +1.901477527e-01, -1.173517291e-01, +8.656850652e-01,
-        -2.048718967e-01, -4.444390325e-02, +2.343721771e-01, -1.905210281e-01, +9.849568719e-01, -8.022974309e-01,
-        -5.587933644e-01, -3.546897378e-01, -7.045543127e-01, -4.315615309e-01, +5.584905857e-01, +4.578400177e-02,
-        -9.320927277e-01, +9.652451704e-01, +2.320129551e-01, -8.821210428e-01, +3.223375436e-01, -2.432612586e-01,
-        -7.286534057e-01, +1.273291858e-01, +4.541599010e-01, +3.422532089e-01, -5.049736930e-01, +4.973244291e-02,
-        +7.532688814e-02, +4.336067283e-01, -2.802653021e-01, +5.954651904e-01, +2.558436978e-01, -9.233367860e-01,
-        +9.295804334e-02, +7.238241909e-01, +1.351483251e-01, -6.483434691e-01};
-
-    std::vector<double> answer = {
-        +2.427156853e+02, +1.552411284e+02, +8.620458897e+01, +5.875242840e+02, +1.514518289e+02, +7.804714537e+01,
-        +5.341420391e+01, +2.735030690e+01, +1.548334852e+02, +2.984816538e+01, +1.918676947e+02, +1.130783351e+02,
-        +6.288377604e+01, +4.411320207e+02, +9.838984520e+01, -2.888903319e+02, -1.940353344e+02, -1.036896392e+02,
-        -7.042931569e+02, -1.831325602e+02, +1.826390353e+03, +1.573053667e+03, +6.418885124e+02, +3.243237560e+03,
-        +4.592989379e+02, +5.662903302e+02, +4.833553095e+02, +1.973789780e+02, +8.631058930e+02, +7.086722514e+01,
-        +1.429000343e+03, +1.142070798e+03, +4.668497037e+02, +2.447559638e+03, +2.556106289e+02, -2.172271435e+03,
-        -1.931335204e+03, -7.717320986e+02, -3.890335444e+03, -5.692217358e+02, +8.548304863e+02, +7.354474067e+02,
-        +2.590830689e+02, +1.647987690e+03, +2.663301761e+02, +2.675776593e+02, +2.297666463e+02, +8.432329571e+01,
-        +4.384764226e+02, +4.457576392e+01, +6.704797755e+02, +5.337770180e+02, +1.881594692e+02, +1.243560843e+03,
-        +1.550693695e+02, -1.016662982e+03, -9.053208163e+02, -3.123823536e+02, -1.977608936e+03, -3.272763988e+02};
-
-    std::vector<double> result(60, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.solveForLeadingConfigurationGradient(std::begin(total_configuration_gradient),
-                                                     std::end(total_configuration_gradient),
-                                                     std::begin(leading_configuration), std::end(leading_configuration),
-                                                     std::begin(configurations), std::end(configurations),
-                                                     std::begin(configuration_gradients),
-                                                     std::end(configuration_gradients), std::begin(result),
-                                                     std::end(result));
-
-    BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
-}
-
-BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian,
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_inverseConfigurations,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> total_configuration_gradient{
-        -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01, -6.490964877e-01,
-        +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01, +4.489106497e-01, +2.220470214e-01,
-        +4.448867651e-01, -3.540821723e-01, -2.764226888e-01, -5.434735382e-01, -4.125719072e-01, +2.619522477e-01,
-        -8.157901201e-01, -1.325976546e-01, -1.382744733e-01, -1.262980470e-02, -1.483394194e-01, -3.754775541e-01,
-        -1.472973861e-01, +7.867783262e-01, +8.883200364e-01, +3.673351769e-03, +2.479059036e-01, -7.687632098e-01,
-        -3.654290364e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01, -3.393147147e-02, +9.711195712e-01,
-        +3.897023852e-02, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01, +2.061202568e-01, +9.013601293e-02,
-        -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01, +7.509136836e-01, +2.084467496e-02,
-        +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +3.493781020e-01, +6.846848752e-01, -8.336100233e-01,
-        +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.449139150e-01, -8.085749668e-01, +7.706536526e-01};
+    tardigradeHydra::DeformationBase deformation;
 
-    std::vector<double> leading_configuration{-7.022300491e+00, -1.500281471e+00, -5.141938262e+00, +8.191629373e+00,
-                                              -4.391425474e+01, -1.082177341e+01, -3.243914208e+01, +5.243458245e+01,
-                                              -2.210418937e+01, -5.243760411e+00, -1.595593935e+01, +2.628414361e+01};
-
-    std::vector<double> configurations = {
-        +1.254497944e+00, +4.468327164e-01, -9.677415866e-01, +1.888637589e-01, +1.135703848e-01, +3.179192883e-01,
-        -6.938589698e-01, +3.910590575e-01, -3.624671472e-01, +3.839405911e-01, +1.108766499e+00, -2.220988518e-01,
-        +8.502649792e-01, +6.833399938e-01, -2.852048666e-01, +8.718292760e-02, +6.095361468e-01, -2.036286362e-01,
-        +4.099176609e-01, +9.907169641e-01, -2.881702686e-01, +1.525095628e+00, +1.863538331e-01, +3.834035974e-01,
-        -6.977450953e-01, -2.022474145e-01, +4.817117954e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, +2.617899013e-01, +6.439612129e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, +7.696756226e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        +6.773416918e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +1.976690839e+00,
-        +1.810683151e+00, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +1.967261770e+00,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +1.462146072e+00, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, +1.587315808e-01, +8.566945494e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, +5.937215510e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +1.483724304e+00, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +1.561995876e+00};
-
-    std::vector<double> configuration_gradients = {
-        -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01, +3.297448976e-01, +7.757135854e-01,
-        +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01, +1.312840025e-01, -8.301916736e-01,
-        +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01, +5.014340007e-01, +1.481276503e-01,
-        +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01, +8.197433192e-01, -7.427376050e-01,
-        -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01, +1.244367575e-01, -7.555129007e-01,
-        -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01, -9.851472429e-01, +1.031854520e-01,
-        +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01, -2.420283006e-01, +3.367678945e-01,
-        -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01, -5.417399552e-02, -7.564912891e-01,
-        +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01, +5.387946741e-01, +1.475482273e-01,
-        -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01, +5.845986037e-01, +3.743318178e-02,
-        -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02, -6.367423147e-01, -3.573622010e-01,
-        +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01, -5.268003766e-01, +8.336646659e-01,
-        +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03, -3.726620999e-01, -9.053209255e-01,
-        -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01, +7.899565758e-01, -9.135542158e-01,
-        -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01, -9.889091832e-01, -3.018111311e-02,
-        +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02, +9.260089320e-01, -3.163387729e-01,
-        +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01, +4.312025503e-01, -1.789604292e-01,
-        -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01, -9.495152844e-01, -4.661883704e-01,
-        +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01, -2.514156353e-01, -5.719761702e-01,
-        -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01, -4.375304371e-01, -2.754464780e-01,
-        -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01, +1.948662167e-01, -4.136950627e-01,
-        +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01, -7.460839379e-01, +5.543249231e-01,
-        -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01, +4.203233026e-01, +9.170194860e-01,
-        -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01, -7.024446875e-01, +8.800580299e-01,
-        +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01, -9.672150382e-01, +4.423687321e-01,
-        -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01, -2.728473640e-01, +7.991987043e-02,
-        +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01, -4.035092134e-01, -1.627462820e-01,
-        -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01, +1.120695075e-01, +1.122841698e-03,
-        -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01, -8.958177312e-01, -1.864422131e-01,
-        -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01, +3.618059980e-01, +8.084519881e-01,
-        +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01, -2.202515393e-01, +5.095941631e-01,
-        -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01, -3.024053678e-01, +2.692761405e-01,
-        -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01, +7.645522024e-01, +6.446076294e-01,
-        +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01, -7.652031256e-01, -3.978932836e-01,
-        -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01, +1.291406852e-01, -6.173285586e-01,
-        +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01, +1.194757913e-01, -3.303271743e-01,
-        +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01, -5.346272422e-01, +4.933952616e-01,
-        +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02, +5.595333242e-01, -5.250435600e-01,
-        -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01, +3.767486864e-01, -5.913917643e-01,
-        -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01, -8.251845147e-01, -3.064105596e-01,
-        +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01, -5.786947449e-01, -1.575998857e-01,
-        -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01, +8.657832963e-01, -3.712972927e-01,
-        +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02, -1.115578773e-01, -9.273533113e-01,
-        -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01, -2.622503166e-01, +2.239540781e-01,
-        -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01, +1.880345470e-02, -4.061969679e-01,
-        +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01, +9.747021957e-01, -1.826797325e-01,
-        +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01, -4.727793078e-01, -4.570402930e-01,
-        -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01, +2.504170663e-01, -1.166052239e-01,
-        -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01, -9.588476852e-01, +8.361940319e-01,
-        +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01, -8.131458625e-01, +6.749322169e-01,
-        -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01, -9.736803374e-01, -9.517031884e-01,
-        +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01, +8.572084935e-02, +7.178336752e-01,
-        +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01, -6.688800585e-01, +2.253645656e-01,
-        -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01, +9.978368119e-01, -9.187677509e-01,
-        +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01, -8.203362659e-01, +2.968994238e-01,
-        +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01, -9.782330756e-02, -4.257934205e-01,
-        +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01, +8.051130772e-01, -5.556858750e-01,
-        -9.998362248e-01, +9.611946841e-01, +7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-        -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01, +7.877307357e-01, -6.984055250e-03,
-        -1.478086893e-01, -3.887072238e-01, +8.336975705e-01, +3.524692152e-02, +6.080527367e-01, +7.153035746e-01,
-        +8.447647092e-01, -3.932385319e-01, -3.203782919e-01, +1.901477527e-01, -1.173517291e-01, +8.656850652e-01,
-        -2.048718967e-01, -4.444390325e-02, +2.343721771e-01, -1.905210281e-01, +9.849568719e-01, -8.022974309e-01,
-        -5.587933644e-01, -3.546897378e-01, -7.045543127e-01, -4.315615309e-01, +5.584905857e-01, +4.578400177e-02,
-        -9.320927277e-01, +9.652451704e-01, +2.320129551e-01, -8.821210428e-01, +3.223375436e-01, -2.432612586e-01,
-        -7.286534057e-01, +1.273291858e-01, +4.541599010e-01, +3.422532089e-01, -5.049736930e-01, +4.973244291e-02,
-        +7.532688814e-02, +4.336067283e-01, -2.802653021e-01, +5.954651904e-01, +2.558436978e-01, -9.233367860e-01,
-        +9.295804334e-02, +7.238241909e-01, +1.351483251e-01, -6.483434691e-01};
-
-    std::vector<double> jacobian(3600, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
-        std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
-        std::begin(leading_configuration), std::end(leading_configuration), std::begin(configurations),
-        std::end(configurations), std::begin(configuration_gradients), std::end(configuration_gradients),
-        std::begin(jacobian), std::end(jacobian));
-
-    {
-        constexpr double       eps         = 1e-5;
-        constexpr unsigned int NUM_INPUTS  = 60;
-        constexpr unsigned int NUM_OUTPUTS = 60;
-        std::vector<double>    x           = total_configuration_gradient;
-        std::vector<double>    answer(NUM_OUTPUTS * NUM_INPUTS);
-
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double              delta = eps * std::fabs(x[i]) + eps;
-            std::vector<double> xp    = x;
-            std::vector<double> xm    = x;
-
-            xp[i] += delta;
-            xm[i] -= delta;
-
-            std::vector<double> rp(NUM_OUTPUTS, 0);
-            std::vector<double> rm(NUM_OUTPUTS, 0);
-
-            deformation.solveForLeadingConfigurationGradient(
-                std::begin(xp), std::end(xp), std::begin(leading_configuration), std::end(leading_configuration),
-                std::begin(configurations), std::end(configurations), std::begin(configuration_gradients),
-                std::end(configuration_gradients), std::begin(rp), std::end(rp));
-
-            deformation.solveForLeadingConfigurationGradient(
-                std::begin(xm), std::end(xm), std::begin(leading_configuration), std::end(leading_configuration),
-                std::begin(configurations), std::end(configurations), std::begin(configuration_gradients),
-                std::end(configuration_gradients), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                answer[NUM_INPUTS * j + i] = (rp[j] - rm[j]) / (2 * delta);
-            }
-        }
-
-        BOOST_TEST(jacobian == answer, CHECK_PER_ELEMENT);
-    }
+    tardigradeHydra::unit_test::DeformationBaseTester::checkInverseConfigurations(deformation);
 }
 
-BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradientLeadingConfigurationJacobian,
+BOOST_AUTO_TEST_CASE(test_DeformationBase_get_previousInverseConfigurations,
                      *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> total_configuration_gradient{
-        -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01, -6.490964877e-01,
-        +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01, +4.489106497e-01, +2.220470214e-01,
-        +4.448867651e-01, -3.540821723e-01, -2.764226888e-01, -5.434735382e-01, -4.125719072e-01, +2.619522477e-01,
-        -8.157901201e-01, -1.325976546e-01, -1.382744733e-01, -1.262980470e-02, -1.483394194e-01, -3.754775541e-01,
-        -1.472973861e-01, +7.867783262e-01, +8.883200364e-01, +3.673351769e-03, +2.479059036e-01, -7.687632098e-01,
-        -3.654290364e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01, -3.393147147e-02, +9.711195712e-01,
-        +3.897023852e-02, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01, +2.061202568e-01, +9.013601293e-02,
-        -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01, +7.509136836e-01, +2.084467496e-02,
-        +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +3.493781020e-01, +6.846848752e-01, -8.336100233e-01,
-        +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.449139150e-01, -8.085749668e-01, +7.706536526e-01};
+    tardigradeHydra::DeformationBase deformation;
 
-    std::vector<double> leading_configuration{-7.022300491e+00, -1.500281471e+00, -5.141938262e+00, +8.191629373e+00,
-                                              -4.391425474e+01, -1.082177341e+01, -3.243914208e+01, +5.243458245e+01,
-                                              -2.210418937e+01, -5.243760411e+00, -1.595593935e+01, +2.628414361e+01};
-
-    std::vector<double> configurations = {
-        +1.254497944e+00, +4.468327164e-01, -9.677415866e-01, +1.888637589e-01, +1.135703848e-01, +3.179192883e-01,
-        -6.938589698e-01, +3.910590575e-01, -3.624671472e-01, +3.839405911e-01, +1.108766499e+00, -2.220988518e-01,
-        +8.502649792e-01, +6.833399938e-01, -2.852048666e-01, +8.718292760e-02, +6.095361468e-01, -2.036286362e-01,
-        +4.099176609e-01, +9.907169641e-01, -2.881702686e-01, +1.525095628e+00, +1.863538331e-01, +3.834035974e-01,
-        -6.977450953e-01, -2.022474145e-01, +4.817117954e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, +2.617899013e-01, +6.439612129e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, +7.696756226e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        +6.773416918e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +1.976690839e+00,
-        +1.810683151e+00, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +1.967261770e+00,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +1.462146072e+00, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, +1.587315808e-01, +8.566945494e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, +5.937215510e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +1.483724304e+00, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +1.561995876e+00};
-
-    std::vector<double> configuration_gradients = {
-        -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01, +3.297448976e-01, +7.757135854e-01,
-        +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01, +1.312840025e-01, -8.301916736e-01,
-        +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01, +5.014340007e-01, +1.481276503e-01,
-        +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01, +8.197433192e-01, -7.427376050e-01,
-        -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01, +1.244367575e-01, -7.555129007e-01,
-        -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01, -9.851472429e-01, +1.031854520e-01,
-        +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01, -2.420283006e-01, +3.367678945e-01,
-        -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01, -5.417399552e-02, -7.564912891e-01,
-        +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01, +5.387946741e-01, +1.475482273e-01,
-        -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01, +5.845986037e-01, +3.743318178e-02,
-        -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02, -6.367423147e-01, -3.573622010e-01,
-        +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01, -5.268003766e-01, +8.336646659e-01,
-        +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03, -3.726620999e-01, -9.053209255e-01,
-        -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01, +7.899565758e-01, -9.135542158e-01,
-        -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01, -9.889091832e-01, -3.018111311e-02,
-        +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02, +9.260089320e-01, -3.163387729e-01,
-        +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01, +4.312025503e-01, -1.789604292e-01,
-        -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01, -9.495152844e-01, -4.661883704e-01,
-        +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01, -2.514156353e-01, -5.719761702e-01,
-        -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01, -4.375304371e-01, -2.754464780e-01,
-        -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01, +1.948662167e-01, -4.136950627e-01,
-        +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01, -7.460839379e-01, +5.543249231e-01,
-        -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01, +4.203233026e-01, +9.170194860e-01,
-        -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01, -7.024446875e-01, +8.800580299e-01,
-        +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01, -9.672150382e-01, +4.423687321e-01,
-        -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01, -2.728473640e-01, +7.991987043e-02,
-        +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01, -4.035092134e-01, -1.627462820e-01,
-        -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01, +1.120695075e-01, +1.122841698e-03,
-        -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01, -8.958177312e-01, -1.864422131e-01,
-        -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01, +3.618059980e-01, +8.084519881e-01,
-        +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01, -2.202515393e-01, +5.095941631e-01,
-        -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01, -3.024053678e-01, +2.692761405e-01,
-        -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01, +7.645522024e-01, +6.446076294e-01,
-        +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01, -7.652031256e-01, -3.978932836e-01,
-        -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01, +1.291406852e-01, -6.173285586e-01,
-        +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01, +1.194757913e-01, -3.303271743e-01,
-        +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01, -5.346272422e-01, +4.933952616e-01,
-        +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02, +5.595333242e-01, -5.250435600e-01,
-        -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01, +3.767486864e-01, -5.913917643e-01,
-        -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01, -8.251845147e-01, -3.064105596e-01,
-        +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01, -5.786947449e-01, -1.575998857e-01,
-        -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01, +8.657832963e-01, -3.712972927e-01,
-        +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02, -1.115578773e-01, -9.273533113e-01,
-        -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01, -2.622503166e-01, +2.239540781e-01,
-        -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01, +1.880345470e-02, -4.061969679e-01,
-        +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01, +9.747021957e-01, -1.826797325e-01,
-        +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01, -4.727793078e-01, -4.570402930e-01,
-        -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01, +2.504170663e-01, -1.166052239e-01,
-        -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01, -9.588476852e-01, +8.361940319e-01,
-        +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01, -8.131458625e-01, +6.749322169e-01,
-        -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01, -9.736803374e-01, -9.517031884e-01,
-        +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01, +8.572084935e-02, +7.178336752e-01,
-        +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01, -6.688800585e-01, +2.253645656e-01,
-        -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01, +9.978368119e-01, -9.187677509e-01,
-        +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01, -8.203362659e-01, +2.968994238e-01,
-        +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01, -9.782330756e-02, -4.257934205e-01,
-        +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01, +8.051130772e-01, -5.556858750e-01,
-        -9.998362248e-01, +9.611946841e-01, +7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-        -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01, +7.877307357e-01, -6.984055250e-03,
-        -1.478086893e-01, -3.887072238e-01, +8.336975705e-01, +3.524692152e-02, +6.080527367e-01, +7.153035746e-01,
-        +8.447647092e-01, -3.932385319e-01, -3.203782919e-01, +1.901477527e-01, -1.173517291e-01, +8.656850652e-01,
-        -2.048718967e-01, -4.444390325e-02, +2.343721771e-01, -1.905210281e-01, +9.849568719e-01, -8.022974309e-01,
-        -5.587933644e-01, -3.546897378e-01, -7.045543127e-01, -4.315615309e-01, +5.584905857e-01, +4.578400177e-02,
-        -9.320927277e-01, +9.652451704e-01, +2.320129551e-01, -8.821210428e-01, +3.223375436e-01, -2.432612586e-01,
-        -7.286534057e-01, +1.273291858e-01, +4.541599010e-01, +3.422532089e-01, -5.049736930e-01, +4.973244291e-02,
-        +7.532688814e-02, +4.336067283e-01, -2.802653021e-01, +5.954651904e-01, +2.558436978e-01, -9.233367860e-01,
-        +9.295804334e-02, +7.238241909e-01, +1.351483251e-01, -6.483434691e-01};
-
-    std::vector<double> jacobian(720, 0);
-
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
-
-    deformation.solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
-        std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
-        std::begin(leading_configuration), std::end(leading_configuration), std::begin(configurations),
-        std::end(configurations), std::begin(configuration_gradients), std::end(configuration_gradients),
-        std::begin(jacobian), std::end(jacobian));
-
-    {
-        constexpr double       eps         = 1e-5;
-        constexpr unsigned int NUM_INPUTS  = 12;
-        constexpr unsigned int NUM_OUTPUTS = 60;
-        std::vector<double>    x           = leading_configuration;
-
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double              delta = eps * std::fabs(x[i]) + eps;
-            std::vector<double> xp    = x;
-            std::vector<double> xm    = x;
-
-            xp[i] += delta;
-            xm[i] -= delta;
-
-            std::vector<double> rp(NUM_OUTPUTS, 0);
-            std::vector<double> rm(NUM_OUTPUTS, 0);
-
-            deformation.solveForLeadingConfigurationGradient(
-                std::begin(total_configuration_gradient), std::end(total_configuration_gradient), std::begin(xp),
-                std::end(xp), std::begin(configurations), std::end(configurations), std::begin(configuration_gradients),
-                std::end(configuration_gradients), std::begin(rp), std::end(rp));
-
-            deformation.solveForLeadingConfigurationGradient(
-                std::begin(total_configuration_gradient), std::end(total_configuration_gradient), std::begin(xm),
-                std::end(xm), std::begin(configurations), std::end(configurations), std::begin(configuration_gradients),
-                std::end(configuration_gradients), std::begin(rm), std::end(rm));
-
-            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                BOOST_TEST(jacobian[NUM_INPUTS * j + i] == (rp[j] - rm[j]) / (2 * delta));
-            }
-        }
-    }
+    tardigradeHydra::unit_test::DeformationBaseTester::checkPreviousInverseConfigurations(deformation);
 }
 
-BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradientConfigurationJacobian,
-                     *boost::unit_test::tolerance(1e-4)) {
-    std::vector<double> total_configuration_gradient{
-        -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01, -6.490964877e-01,
-        +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01, +4.489106497e-01, +2.220470214e-01,
-        +4.448867651e-01, -3.540821723e-01, -2.764226888e-01, -5.434735382e-01, -4.125719072e-01, +2.619522477e-01,
-        -8.157901201e-01, -1.325976546e-01, -1.382744733e-01, -1.262980470e-02, -1.483394194e-01, -3.754775541e-01,
-        -1.472973861e-01, +7.867783262e-01, +8.883200364e-01, +3.673351769e-03, +2.479059036e-01, -7.687632098e-01,
-        -3.654290364e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01, -3.393147147e-02, +9.711195712e-01,
-        +3.897023852e-02, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01, +2.061202568e-01, +9.013601293e-02,
-        -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01, +7.509136836e-01, +2.084467496e-02,
-        +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +3.493781020e-01, +6.846848752e-01, -8.336100233e-01,
-        +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.449139150e-01, -8.085749668e-01, +7.706536526e-01};
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfiguration, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
 
-    std::vector<double> leading_configuration{-7.022300491e+00, -1.500281471e+00, -5.141938262e+00, +8.191629373e+00,
-                                              -4.391425474e+01, -1.082177341e+01, -3.243914208e+01, +5.243458245e+01,
-                                              -2.210418937e+01, -5.243760411e+00, -1.595593935e+01, +2.628414361e+01};
+    tardigradeHydra::floatType deltaTime = 2.2;
 
-    std::vector<double> configurations = {
-        +1.254497944e+00, +4.468327164e-01, -9.677415866e-01, +1.888637589e-01, +1.135703848e-01, +3.179192883e-01,
-        -6.938589698e-01, +3.910590575e-01, -3.624671472e-01, +3.839405911e-01, +1.108766499e+00, -2.220988518e-01,
-        +8.502649792e-01, +6.833399938e-01, -2.852048666e-01, +8.718292760e-02, +6.095361468e-01, -2.036286362e-01,
-        +4.099176609e-01, +9.907169641e-01, -2.881702686e-01, +1.525095628e+00, +1.863538331e-01, +3.834035974e-01,
-        -6.977450953e-01, -2.022474145e-01, +4.817117954e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, +2.617899013e-01, +6.439612129e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, +7.696756226e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        +6.773416918e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +1.976690839e+00,
-        +1.810683151e+00, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +1.967261770e+00,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +1.462146072e+00, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, +1.587315808e-01, +8.566945494e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, +5.937215510e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +1.483724304e+00, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +1.561995876e+00};
+    tardigradeHydra::floatType temperature = 5.3;
 
-    std::vector<double> configuration_gradients = {
-        -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01, +3.297448976e-01, +7.757135854e-01,
-        +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01, +1.312840025e-01, -8.301916736e-01,
-        +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01, +5.014340007e-01, +1.481276503e-01,
-        +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01, +8.197433192e-01, -7.427376050e-01,
-        -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01, +1.244367575e-01, -7.555129007e-01,
-        -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01, -9.851472429e-01, +1.031854520e-01,
-        +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01, -2.420283006e-01, +3.367678945e-01,
-        -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01, -5.417399552e-02, -7.564912891e-01,
-        +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01, +5.387946741e-01, +1.475482273e-01,
-        -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01, +5.845986037e-01, +3.743318178e-02,
-        -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02, -6.367423147e-01, -3.573622010e-01,
-        +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01, -5.268003766e-01, +8.336646659e-01,
-        +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03, -3.726620999e-01, -9.053209255e-01,
-        -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01, +7.899565758e-01, -9.135542158e-01,
-        -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01, -9.889091832e-01, -3.018111311e-02,
-        +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02, +9.260089320e-01, -3.163387729e-01,
-        +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01, +4.312025503e-01, -1.789604292e-01,
-        -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01, -9.495152844e-01, -4.661883704e-01,
-        +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01, -2.514156353e-01, -5.719761702e-01,
-        -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01, -4.375304371e-01, -2.754464780e-01,
-        -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01, +1.948662167e-01, -4.136950627e-01,
-        +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01, -7.460839379e-01, +5.543249231e-01,
-        -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01, +4.203233026e-01, +9.170194860e-01,
-        -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01, -7.024446875e-01, +8.800580299e-01,
-        +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01, -9.672150382e-01, +4.423687321e-01,
-        -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01, -2.728473640e-01, +7.991987043e-02,
-        +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01, -4.035092134e-01, -1.627462820e-01,
-        -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01, +1.120695075e-01, +1.122841698e-03,
-        -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01, -8.958177312e-01, -1.864422131e-01,
-        -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01, +3.618059980e-01, +8.084519881e-01,
-        +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01, -2.202515393e-01, +5.095941631e-01,
-        -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01, -3.024053678e-01, +2.692761405e-01,
-        -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01, +7.645522024e-01, +6.446076294e-01,
-        +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01, -7.652031256e-01, -3.978932836e-01,
-        -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01, +1.291406852e-01, -6.173285586e-01,
-        +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01, +1.194757913e-01, -3.303271743e-01,
-        +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01, -5.346272422e-01, +4.933952616e-01,
-        +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02, +5.595333242e-01, -5.250435600e-01,
-        -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01, +3.767486864e-01, -5.913917643e-01,
-        -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01, -8.251845147e-01, -3.064105596e-01,
-        +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01, -5.786947449e-01, -1.575998857e-01,
-        -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01, +8.657832963e-01, -3.712972927e-01,
-        +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02, -1.115578773e-01, -9.273533113e-01,
-        -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01, -2.622503166e-01, +2.239540781e-01,
-        -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01, +1.880345470e-02, -4.061969679e-01,
-        +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01, +9.747021957e-01, -1.826797325e-01,
-        +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01, -4.727793078e-01, -4.570402930e-01,
-        -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01, +2.504170663e-01, -1.166052239e-01,
-        -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01, -9.588476852e-01, +8.361940319e-01,
-        +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01, -8.131458625e-01, +6.749322169e-01,
-        -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01, -9.736803374e-01, -9.517031884e-01,
-        +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01, +8.572084935e-02, +7.178336752e-01,
-        +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01, -6.688800585e-01, +2.253645656e-01,
-        -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01, +9.978368119e-01, -9.187677509e-01,
-        +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01, -8.203362659e-01, +2.968994238e-01,
-        +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01, -9.782330756e-02, -4.257934205e-01,
-        +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01, +8.051130772e-01, -5.556858750e-01,
-        -9.998362248e-01, +9.611946841e-01, +7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-        -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01, +7.877307357e-01, -6.984055250e-03,
-        -1.478086893e-01, -3.887072238e-01, +8.336975705e-01, +3.524692152e-02, +6.080527367e-01, +7.153035746e-01,
-        +8.447647092e-01, -3.932385319e-01, -3.203782919e-01, +1.901477527e-01, -1.173517291e-01, +8.656850652e-01,
-        -2.048718967e-01, -4.444390325e-02, +2.343721771e-01, -1.905210281e-01, +9.849568719e-01, -8.022974309e-01,
-        -5.587933644e-01, -3.546897378e-01, -7.045543127e-01, -4.315615309e-01, +5.584905857e-01, +4.578400177e-02,
-        -9.320927277e-01, +9.652451704e-01, +2.320129551e-01, -8.821210428e-01, +3.223375436e-01, -2.432612586e-01,
-        -7.286534057e-01, +1.273291858e-01, +4.541599010e-01, +3.422532089e-01, -5.049736930e-01, +4.973244291e-02,
-        +7.532688814e-02, +4.336067283e-01, -2.802653021e-01, +5.954651904e-01, +2.558436978e-01, -9.233367860e-01,
-        +9.295804334e-02, +7.238241909e-01, +1.351483251e-01, -6.483434691e-01};
+    tardigradeHydra::floatType previousTemperature = 23.4;
 
-    std::vector<double> jacobian(960, 0);
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    for (unsigned int c = 0; c < 5; ++c) {
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
-        deformation.solveForLeadingConfigurationGradientConfigurationJacobian(
-            std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
-            std::begin(leading_configuration), std::end(leading_configuration), std::begin(configurations),
-            std::end(configurations), std::begin(configuration_gradients), std::end(configuration_gradients), c,
-            std::begin(jacobian), std::end(jacobian));
+    tardigradeHydra::floatVector additionalDOF = {};
 
-        {
-            constexpr double       eps         = 1e-5;
-            constexpr unsigned int NUM_INPUTS  = 16;
-            constexpr unsigned int NUM_OUTPUTS = 60;
-            std::vector<double>    x           = configurations;
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
 
-            for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-                double              delta = eps * std::fabs(x[16 * c + i]) + eps;
-                std::vector<double> xp    = x;
-                std::vector<double> xm    = x;
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-                xp[16 * c + i] += delta;
-                xm[16 * c + i] -= delta;
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
 
-                std::vector<double> rp(NUM_OUTPUTS, 0);
-                std::vector<double> rm(NUM_OUTPUTS, 0);
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
 
-                deformation.solveForLeadingConfigurationGradient(std::begin(total_configuration_gradient),
-                                                                 std::end(total_configuration_gradient),
-                                                                 std::begin(leading_configuration),
-                                                                 std::end(leading_configuration), std::begin(xp),
-                                                                 std::end(xp), std::begin(configuration_gradients),
-                                                                 std::end(configuration_gradients), std::begin(rp),
-                                                                 std::end(rp));
+    unsigned int numConfigurations = 4;
 
-                deformation.solveForLeadingConfigurationGradient(std::begin(total_configuration_gradient),
-                                                                 std::end(total_configuration_gradient),
-                                                                 std::begin(leading_configuration),
-                                                                 std::end(leading_configuration), std::begin(xm),
-                                                                 std::end(xm), std::begin(configuration_gradients),
-                                                                 std::end(configuration_gradients), std::begin(rm),
-                                                                 std::end(rm));
+    unsigned int numNonLinearSolveStateVariables = 5;
 
-                for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                    BOOST_TEST(jacobian[NUM_INPUTS * j + i] == (rp[j] - rm[j]) / (2 * delta));
-                }
-            }
-        }
-    }
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    auto result = hydra.deformation->getSubConfiguration(0, 4);
+
+    BOOST_TEST(result == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer1 = {2.24332648, 1.48246714, 2.02801682, 1.50380989, 2.98203598,
+                                            2.08079721, 1.58939152, 1.2551092,  2.38201794};
+
+    auto result1 = hydra.deformation->getSubConfiguration(1, 3);
+
+    BOOST_TEST(result1 == answer1, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_solveForLeadingConfigurationGradientConfigurationGradientJacobian,
-                     *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> total_configuration_gradient{
-        -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01, -6.490964877e-01,
-        +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01, +4.489106497e-01, +2.220470214e-01,
-        +4.448867651e-01, -3.540821723e-01, -2.764226888e-01, -5.434735382e-01, -4.125719072e-01, +2.619522477e-01,
-        -8.157901201e-01, -1.325976546e-01, -1.382744733e-01, -1.262980470e-02, -1.483394194e-01, -3.754775541e-01,
-        -1.472973861e-01, +7.867783262e-01, +8.883200364e-01, +3.673351769e-03, +2.479059036e-01, -7.687632098e-01,
-        -3.654290364e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01, -3.393147147e-02, +9.711195712e-01,
-        +3.897023852e-02, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01, +2.061202568e-01, +9.013601293e-02,
-        -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01, +7.509136836e-01, +2.084467496e-02,
-        +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +3.493781020e-01, +6.846848752e-01, -8.336100233e-01,
-        +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.449139150e-01, -8.085749668e-01, +7.706536526e-01};
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfiguration,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
 
-    std::vector<double> leading_configuration{-7.022300491e+00, -1.500281471e+00, -5.141938262e+00, +8.191629373e+00,
-                                              -4.391425474e+01, -1.082177341e+01, -3.243914208e+01, +5.243458245e+01,
-                                              -2.210418937e+01, -5.243760411e+00, -1.595593935e+01, +2.628414361e+01};
+    tardigradeHydra::floatType deltaTime = 2.2;
 
-    std::vector<double> configurations = {
-        +1.254497944e+00, +4.468327164e-01, -9.677415866e-01, +1.888637589e-01, +1.135703848e-01, +3.179192883e-01,
-        -6.938589698e-01, +3.910590575e-01, -3.624671472e-01, +3.839405911e-01, +1.108766499e+00, -2.220988518e-01,
-        +8.502649792e-01, +6.833399938e-01, -2.852048666e-01, +8.718292760e-02, +6.095361468e-01, -2.036286362e-01,
-        +4.099176609e-01, +9.907169641e-01, -2.881702686e-01, +1.525095628e+00, +1.863538331e-01, +3.834035974e-01,
-        -6.977450953e-01, -2.022474145e-01, +4.817117954e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, +2.617899013e-01, +6.439612129e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, +7.696756226e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        +6.773416918e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +1.976690839e+00,
-        +1.810683151e+00, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +1.967261770e+00,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +1.462146072e+00, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, +1.587315808e-01, +8.566945494e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, +5.937215510e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +1.483724304e+00, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +1.561995876e+00};
+    tardigradeHydra::floatType temperature = 5.3;
 
-    std::vector<double> configuration_gradients = {
-        -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01, +3.297448976e-01, +7.757135854e-01,
-        +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01, +1.312840025e-01, -8.301916736e-01,
-        +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01, +5.014340007e-01, +1.481276503e-01,
-        +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01, +8.197433192e-01, -7.427376050e-01,
-        -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01, +1.244367575e-01, -7.555129007e-01,
-        -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01, -9.851472429e-01, +1.031854520e-01,
-        +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01, -2.420283006e-01, +3.367678945e-01,
-        -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01, -5.417399552e-02, -7.564912891e-01,
-        +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01, +5.387946741e-01, +1.475482273e-01,
-        -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01, +5.845986037e-01, +3.743318178e-02,
-        -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02, -6.367423147e-01, -3.573622010e-01,
-        +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01, -5.268003766e-01, +8.336646659e-01,
-        +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03, -3.726620999e-01, -9.053209255e-01,
-        -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01, +7.899565758e-01, -9.135542158e-01,
-        -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01, -9.889091832e-01, -3.018111311e-02,
-        +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02, +9.260089320e-01, -3.163387729e-01,
-        +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01, +4.312025503e-01, -1.789604292e-01,
-        -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01, -9.495152844e-01, -4.661883704e-01,
-        +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01, -2.514156353e-01, -5.719761702e-01,
-        -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01, -4.375304371e-01, -2.754464780e-01,
-        -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01, +1.948662167e-01, -4.136950627e-01,
-        +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01, -7.460839379e-01, +5.543249231e-01,
-        -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01, +4.203233026e-01, +9.170194860e-01,
-        -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01, -7.024446875e-01, +8.800580299e-01,
-        +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01, -9.672150382e-01, +4.423687321e-01,
-        -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01, -2.728473640e-01, +7.991987043e-02,
-        +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01, -4.035092134e-01, -1.627462820e-01,
-        -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01, +1.120695075e-01, +1.122841698e-03,
-        -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01, -8.958177312e-01, -1.864422131e-01,
-        -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01, +3.618059980e-01, +8.084519881e-01,
-        +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01, -2.202515393e-01, +5.095941631e-01,
-        -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01, -3.024053678e-01, +2.692761405e-01,
-        -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01, +7.645522024e-01, +6.446076294e-01,
-        +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01, -7.652031256e-01, -3.978932836e-01,
-        -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01, +1.291406852e-01, -6.173285586e-01,
-        +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01, +1.194757913e-01, -3.303271743e-01,
-        +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01, -5.346272422e-01, +4.933952616e-01,
-        +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02, +5.595333242e-01, -5.250435600e-01,
-        -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01, +3.767486864e-01, -5.913917643e-01,
-        -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01, -8.251845147e-01, -3.064105596e-01,
-        +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01, -5.786947449e-01, -1.575998857e-01,
-        -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01, +8.657832963e-01, -3.712972927e-01,
-        +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02, -1.115578773e-01, -9.273533113e-01,
-        -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01, -2.622503166e-01, +2.239540781e-01,
-        -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01, +1.880345470e-02, -4.061969679e-01,
-        +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01, +9.747021957e-01, -1.826797325e-01,
-        +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01, -4.727793078e-01, -4.570402930e-01,
-        -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01, +2.504170663e-01, -1.166052239e-01,
-        -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01, -9.588476852e-01, +8.361940319e-01,
-        +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01, -8.131458625e-01, +6.749322169e-01,
-        -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01, -9.736803374e-01, -9.517031884e-01,
-        +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01, +8.572084935e-02, +7.178336752e-01,
-        +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01, -6.688800585e-01, +2.253645656e-01,
-        -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01, +9.978368119e-01, -9.187677509e-01,
-        +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01, -8.203362659e-01, +2.968994238e-01,
-        +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01, -9.782330756e-02, -4.257934205e-01,
-        +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01, +8.051130772e-01, -5.556858750e-01,
-        -9.998362248e-01, +9.611946841e-01, +7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-        -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01, +7.877307357e-01, -6.984055250e-03,
-        -1.478086893e-01, -3.887072238e-01, +8.336975705e-01, +3.524692152e-02, +6.080527367e-01, +7.153035746e-01,
-        +8.447647092e-01, -3.932385319e-01, -3.203782919e-01, +1.901477527e-01, -1.173517291e-01, +8.656850652e-01,
-        -2.048718967e-01, -4.444390325e-02, +2.343721771e-01, -1.905210281e-01, +9.849568719e-01, -8.022974309e-01,
-        -5.587933644e-01, -3.546897378e-01, -7.045543127e-01, -4.315615309e-01, +5.584905857e-01, +4.578400177e-02,
-        -9.320927277e-01, +9.652451704e-01, +2.320129551e-01, -8.821210428e-01, +3.223375436e-01, -2.432612586e-01,
-        -7.286534057e-01, +1.273291858e-01, +4.541599010e-01, +3.422532089e-01, -5.049736930e-01, +4.973244291e-02,
-        +7.532688814e-02, +4.336067283e-01, -2.802653021e-01, +5.954651904e-01, +2.558436978e-01, -9.233367860e-01,
-        +9.295804334e-02, +7.238241909e-01, +1.351483251e-01, -6.483434691e-01};
+    tardigradeHydra::floatType previousTemperature = 23.4;
 
-    std::vector<double> jacobian(4800, 0);
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    for (unsigned int c = 0; c < 5; ++c) {
-        tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
-        deformation.solveForLeadingConfigurationGradientConfigurationGradientJacobian(
-            std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
-            std::begin(leading_configuration), std::end(leading_configuration), std::begin(configurations),
-            std::end(configurations), std::begin(configuration_gradients), std::end(configuration_gradients), c,
-            std::begin(jacobian), std::end(jacobian));
+    tardigradeHydra::floatVector additionalDOF = {};
 
-        {
-            constexpr double       eps         = 1e-5;
-            constexpr unsigned int NUM_INPUTS  = 80;
-            constexpr unsigned int NUM_OUTPUTS = 60;
-            std::vector<double>    x           = configuration_gradients;
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
 
-            for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-                double              delta = eps * std::fabs(x[80 * c + i]) + eps;
-                std::vector<double> xp    = x;
-                std::vector<double> xm    = x;
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-                xp[80 * c + i] += delta;
-                xm[80 * c + i] -= delta;
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
 
-                std::vector<double> rp(NUM_OUTPUTS, 0);
-                std::vector<double> rm(NUM_OUTPUTS, 0);
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
 
-                deformation.solveForLeadingConfigurationGradient(
-                    std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
-                    std::begin(leading_configuration), std::end(leading_configuration), std::begin(configurations),
-                    std::end(configurations), std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
+    unsigned int numConfigurations = 4;
 
-                deformation.solveForLeadingConfigurationGradient(
-                    std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
-                    std::begin(leading_configuration), std::end(leading_configuration), std::begin(configurations),
-                    std::end(configurations), std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
+    unsigned int numNonLinearSolveStateVariables = 5;
 
-                for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
-                    BOOST_TEST(jacobian[NUM_INPUTS * j + i] == (rp[j] - rm[j]) / (2 * delta));
-                }
-            }
-        }
-    }
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    BOOST_TEST(hydra.deformation->getPrecedingConfiguration(4) == *hydra.getDeformationGradient(), CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer1 = {0.73947165, -0.24328161, -0.68904986, 0.04049558, 0.25403825,
+                                            -0.1748363, 0.97015752,  -0.04452644, -0.77301275};
+
+    BOOST_TEST(hydra.deformation->getPrecedingConfiguration(2) == answer1, CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer2 = {0.54568475,  -0.42501821, -0.54244544, -0.01317666, 0.30165847,
+                                            -0.09442353, 0.80588282,  -0.10806097, -0.42143322};
+
+    BOOST_TEST(hydra.deformation->getPrecedingConfiguration(3) == answer2, CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer3 = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+
+    BOOST_TEST(hydra.deformation->getPrecedingConfiguration(0) == answer3, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_solveForAllLeading, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-    std::vector<double> total_configuration{+3.929383660e-01, -4.277213271e-01, -5.462970898e-01, +1.026295332e-01,
-                                            +4.389379168e-01, -1.537870599e-01, +9.615284261e-01, +3.696594532e-01,
-                                            -3.813621624e-02, -2.157649518e-01, -3.136439606e-01, +4.580994100e-01};
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfiguration,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
 
-    std::vector<double> total_configuration_gradient{
-        -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01, -6.490964877e-01,
-        +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01, +4.489106497e-01, +2.220470214e-01,
-        +4.448867651e-01, -3.540821723e-01, -2.764226888e-01, -5.434735382e-01, -4.125719072e-01, +2.619522477e-01,
-        -8.157901201e-01, -1.325976546e-01, -1.382744733e-01, -1.262980470e-02, -1.483394194e-01, -3.754775541e-01,
-        -1.472973861e-01, +7.867783262e-01, +8.883200364e-01, +3.673351769e-03, +2.479059036e-01, -7.687632098e-01,
-        -3.654290364e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01, -3.393147147e-02, +9.711195712e-01,
-        +3.897023852e-02, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01, +2.061202568e-01, +9.013601293e-02,
-        -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01, +7.509136836e-01, +2.084467496e-02,
-        +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +3.493781020e-01, +6.846848752e-01, -8.336100233e-01,
-        +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.449139150e-01, -8.085749668e-01, +7.706536526e-01};
+    tardigradeHydra::floatType deltaTime = 2.2;
 
-    std::vector<double> leading_configuration_answer{
-        -7.022300491e+00, -1.500281471e+00, -5.141938262e+00, +8.191629373e+00, -4.391425474e+01, -1.082177341e+01,
-        -3.243914208e+01, +5.243458245e+01, -2.210418937e+01, -5.243760411e+00, -1.595593935e+01, +2.628414361e+01};
+    tardigradeHydra::floatType temperature = 5.3;
 
-    std::vector<double> configurations = {
-        +1.254497944e+00, +4.468327164e-01, -9.677415866e-01, +1.888637589e-01, +1.135703848e-01, +3.179192883e-01,
-        -6.938589698e-01, +3.910590575e-01, -3.624671472e-01, +3.839405911e-01, +1.108766499e+00, -2.220988518e-01,
-        +8.502649792e-01, +6.833399938e-01, -2.852048666e-01, +8.718292760e-02, +6.095361468e-01, -2.036286362e-01,
-        +4.099176609e-01, +9.907169641e-01, -2.881702686e-01, +1.525095628e+00, +1.863538331e-01, +3.834035974e-01,
-        -6.977450953e-01, -2.022474145e-01, +4.817117954e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, +2.617899013e-01, +6.439612129e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, +7.696756226e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        +6.773416918e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +1.976690839e+00,
-        +1.810683151e+00, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +1.967261770e+00,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +1.462146072e+00, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, +1.587315808e-01, +8.566945494e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, +5.937215510e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +1.483724304e+00, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +1.561995876e+00};
+    tardigradeHydra::floatType previousTemperature = 23.4;
 
-    std::vector<double> configuration_gradients = {
-        -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01, +3.297448976e-01, +7.757135854e-01,
-        +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01, +1.312840025e-01, -8.301916736e-01,
-        +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01, +5.014340007e-01, +1.481276503e-01,
-        +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01, +8.197433192e-01, -7.427376050e-01,
-        -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01, +1.244367575e-01, -7.555129007e-01,
-        -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01, -9.851472429e-01, +1.031854520e-01,
-        +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01, -2.420283006e-01, +3.367678945e-01,
-        -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01, -5.417399552e-02, -7.564912891e-01,
-        +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01, +5.387946741e-01, +1.475482273e-01,
-        -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01, +5.845986037e-01, +3.743318178e-02,
-        -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02, -6.367423147e-01, -3.573622010e-01,
-        +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01, -5.268003766e-01, +8.336646659e-01,
-        +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03, -3.726620999e-01, -9.053209255e-01,
-        -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01, +7.899565758e-01, -9.135542158e-01,
-        -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01, -9.889091832e-01, -3.018111311e-02,
-        +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02, +9.260089320e-01, -3.163387729e-01,
-        +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01, +4.312025503e-01, -1.789604292e-01,
-        -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01, -9.495152844e-01, -4.661883704e-01,
-        +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01, -2.514156353e-01, -5.719761702e-01,
-        -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01, -4.375304371e-01, -2.754464780e-01,
-        -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01, +1.948662167e-01, -4.136950627e-01,
-        +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01, -7.460839379e-01, +5.543249231e-01,
-        -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01, +4.203233026e-01, +9.170194860e-01,
-        -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01, -7.024446875e-01, +8.800580299e-01,
-        +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01, -9.672150382e-01, +4.423687321e-01,
-        -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01, -2.728473640e-01, +7.991987043e-02,
-        +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01, -4.035092134e-01, -1.627462820e-01,
-        -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01, +1.120695075e-01, +1.122841698e-03,
-        -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01, -8.958177312e-01, -1.864422131e-01,
-        -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01, +3.618059980e-01, +8.084519881e-01,
-        +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01, -2.202515393e-01, +5.095941631e-01,
-        -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01, -3.024053678e-01, +2.692761405e-01,
-        -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01, +7.645522024e-01, +6.446076294e-01,
-        +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01, -7.652031256e-01, -3.978932836e-01,
-        -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01, +1.291406852e-01, -6.173285586e-01,
-        +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01, +1.194757913e-01, -3.303271743e-01,
-        +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01, -5.346272422e-01, +4.933952616e-01,
-        +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02, +5.595333242e-01, -5.250435600e-01,
-        -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01, +3.767486864e-01, -5.913917643e-01,
-        -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01, -8.251845147e-01, -3.064105596e-01,
-        +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01, -5.786947449e-01, -1.575998857e-01,
-        -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01, +8.657832963e-01, -3.712972927e-01,
-        +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02, -1.115578773e-01, -9.273533113e-01,
-        -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01, -2.622503166e-01, +2.239540781e-01,
-        -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01, +1.880345470e-02, -4.061969679e-01,
-        +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01, +9.747021957e-01, -1.826797325e-01,
-        +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01, -4.727793078e-01, -4.570402930e-01,
-        -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01, +2.504170663e-01, -1.166052239e-01,
-        -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01, -9.588476852e-01, +8.361940319e-01,
-        +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01, -8.131458625e-01, +6.749322169e-01,
-        -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01, -9.736803374e-01, -9.517031884e-01,
-        +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01, +8.572084935e-02, +7.178336752e-01,
-        +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01, -6.688800585e-01, +2.253645656e-01,
-        -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01, +9.978368119e-01, -9.187677509e-01,
-        +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01, -8.203362659e-01, +2.968994238e-01,
-        +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01, -9.782330756e-02, -4.257934205e-01,
-        +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01, +8.051130772e-01, -5.556858750e-01,
-        -9.998362248e-01, +9.611946841e-01, +7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-        -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01, +7.877307357e-01, -6.984055250e-03,
-        -1.478086893e-01, -3.887072238e-01, +8.336975705e-01, +3.524692152e-02, +6.080527367e-01, +7.153035746e-01,
-        +8.447647092e-01, -3.932385319e-01, -3.203782919e-01, +1.901477527e-01, -1.173517291e-01, +8.656850652e-01,
-        -2.048718967e-01, -4.444390325e-02, +2.343721771e-01, -1.905210281e-01, +9.849568719e-01, -8.022974309e-01,
-        -5.587933644e-01, -3.546897378e-01, -7.045543127e-01, -4.315615309e-01, +5.584905857e-01, +4.578400177e-02,
-        -9.320927277e-01, +9.652451704e-01, +2.320129551e-01, -8.821210428e-01, +3.223375436e-01, -2.432612586e-01,
-        -7.286534057e-01, +1.273291858e-01, +4.541599010e-01, +3.422532089e-01, -5.049736930e-01, +4.973244291e-02,
-        +7.532688814e-02, +4.336067283e-01, -2.802653021e-01, +5.954651904e-01, +2.558436978e-01, -9.233367860e-01,
-        +9.295804334e-02, +7.238241909e-01, +1.351483251e-01, -6.483434691e-01};
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    std::vector<double> leading_configuration_gradient_answer = {
-        +2.427156859e+02, +1.552411296e+02, +8.620458960e+01, +5.875242877e+02, +1.514518301e+02, +7.804714544e+01,
-        +5.341420414e+01, +2.735030703e+01, +1.548334860e+02, +2.984816564e+01, +1.918676951e+02, +1.130783360e+02,
-        +6.288377649e+01, +4.411320234e+02, +9.838984608e+01, -2.888903326e+02, -1.940353358e+02, -1.036896399e+02,
-        -7.042931613e+02, -1.831325617e+02, +1.826390362e+03, +1.573053681e+03, +6.418885175e+02, +3.243237582e+03,
-        +4.592989410e+02, +5.662903319e+02, +4.833553125e+02, +1.973789790e+02, +8.631058976e+02, +7.086722582e+01,
-        +1.429000350e+03, +1.142070808e+03, +4.668497074e+02, +2.447559655e+03, +2.556106312e+02, -2.172271446e+03,
-        -1.931335220e+03, -7.717321046e+02, -3.890335470e+03, -5.692217396e+02, +8.548304889e+02, +7.354474123e+02,
-        +2.590830701e+02, +1.647987701e+03, +2.663301782e+02, +2.675776596e+02, +2.297666475e+02, +8.432329594e+01,
-        +4.384764250e+02, +4.457576440e+01, +6.704797775e+02, +5.337770222e+02, +1.881594701e+02, +1.243560851e+03,
-        +1.550693710e+02, -1.016662985e+03, -9.053208230e+02, -3.123823550e+02, -1.977608950e+03, -3.272764013e+02};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
-    std::vector<double> leading_configuration_result(12, 0);
-    std::vector<double> leading_configuration_gradient_result(60, 0);
+    tardigradeHydra::floatVector additionalDOF = {};
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
 
-    deformation.solveForAllLeading(std::begin(total_configuration), std::end(total_configuration),
-                                   std::begin(total_configuration_gradient), std::end(total_configuration_gradient),
-                                   std::begin(configurations), std::end(configurations),
-                                   std::begin(configuration_gradients), std::end(configuration_gradients),
-                                   std::begin(leading_configuration_result), std::end(leading_configuration_result),
-                                   std::begin(leading_configuration_gradient_result),
-                                   std::end(leading_configuration_gradient_result));
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-    BOOST_TEST(leading_configuration_result == leading_configuration_answer, CHECK_PER_ELEMENT);
-    BOOST_TEST(leading_configuration_gradient_result == leading_configuration_gradient_answer, CHECK_PER_ELEMENT);
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector answer1 = {2.09953091, 1.83604029, 2.3712323,  0.98756433, 2.58928197,
+                                            1.05684715, 1.33422708, 1.67694162, 2.96443669};
+
+    BOOST_TEST(hydra.deformation->getFollowingConfiguration(1) == answer1, CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer2 = {1.42635131, 0.89338916, 0.94416002, 0.50183668, 1.62395295,
+                                            0.1156184,  0.31728548, 0.41482621, 1.86630916};
+
+    BOOST_TEST(hydra.deformation->getFollowingConfiguration(2) == answer2, CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer3 = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+
+    BOOST_TEST(hydra.deformation->getFollowingConfiguration(3) == answer3, CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_solveForAllLeadingJacobians, *boost::unit_test::tolerance(1e-5)) {
-    std::vector<double> total_configuration{+3.929383660e-01, -4.277213271e-01, -5.462970898e-01, +1.026295332e-01,
-                                            +4.389379168e-01, -1.537870599e-01, +9.615284261e-01, +3.696594532e-01,
-                                            -3.813621624e-02, -2.157649518e-01, -3.136439606e-01, +4.580994100e-01};
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfiguration,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
 
-    std::vector<double> total_configuration_gradient{
-        -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01, -6.490964877e-01,
-        +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01, +4.489106497e-01, +2.220470214e-01,
-        +4.448867651e-01, -3.540821723e-01, -2.764226888e-01, -5.434735382e-01, -4.125719072e-01, +2.619522477e-01,
-        -8.157901201e-01, -1.325976546e-01, -1.382744733e-01, -1.262980470e-02, -1.483394194e-01, -3.754775541e-01,
-        -1.472973861e-01, +7.867783262e-01, +8.883200364e-01, +3.673351769e-03, +2.479059036e-01, -7.687632098e-01,
-        -3.654290364e-01, -1.703475761e-01, +7.326183158e-01, -4.990892692e-01, -3.393147147e-02, +9.711195712e-01,
-        +3.897023852e-02, +2.257890515e-01, -7.587426680e-01, +6.526816010e-01, +2.061202568e-01, +9.013601293e-02,
-        -3.144723325e-01, -3.917584219e-01, -1.659555780e-01, +3.626015316e-01, +7.509136836e-01, +2.084467496e-02,
-        +3.386275659e-01, +1.718731051e-01, +2.498070042e-01, +3.493781020e-01, +6.846848752e-01, -8.336100233e-01,
-        +5.273656829e-01, -5.126672509e-01, -6.115540788e-01, +1.449139150e-01, -8.085749668e-01, +7.706536526e-01};
+    tardigradeHydra::floatType deltaTime = 2.2;
 
-    std::vector<double> leading_configuration_answer{
-        -7.022300491e+00, -1.500281471e+00, -5.141938262e+00, +8.191629373e+00, -4.391425474e+01, -1.082177341e+01,
-        -3.243914208e+01, +5.243458245e+01, -2.210418937e+01, -5.243760411e+00, -1.595593935e+01, +2.628414361e+01};
+    tardigradeHydra::floatType temperature = 5.3;
 
-    std::vector<double> configurations = {
-        +1.254497944e+00, +4.468327164e-01, -9.677415866e-01, +1.888637589e-01, +1.135703848e-01, +3.179192883e-01,
-        -6.938589698e-01, +3.910590575e-01, -3.624671472e-01, +3.839405911e-01, +1.108766499e+00, -2.220988518e-01,
-        +8.502649792e-01, +6.833399938e-01, -2.852048666e-01, +8.718292760e-02, +6.095361468e-01, -2.036286362e-01,
-        +4.099176609e-01, +9.907169641e-01, -2.881702686e-01, +1.525095628e+00, +1.863538331e-01, +3.834035974e-01,
-        -6.977450953e-01, -2.022474145e-01, +4.817117954e-01, -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
-        -7.881830299e-01, +2.617899013e-01, +6.439612129e-01, +3.231286733e-01, +6.930124505e-01, +1.065146896e-01,
-        +7.089049750e-01, +7.696756226e-01, -3.664242058e-01, -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
-        +6.773416918e-01, +1.047401506e-01, +1.571029362e-01, +4.306611879e-02, -9.946238709e-01, +1.976690839e+00,
-        +1.810683151e+00, -5.847282776e-01, -4.150211744e-01, +4.002030614e-02, +8.038227453e-01, +1.967261770e+00,
-        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01, -2.112598921e-01, +1.462146072e+00, -6.778619711e-01,
-        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01, +1.587315808e-01, +8.566945494e-01, -5.909142809e-01,
-        -9.872701896e-02, +9.552714526e-02, -8.133465793e-01, +5.937215510e-01, +8.551684803e-01, +1.380074629e-01,
-        -8.517600495e-02, +5.070519816e-01, +1.483724304e+00, -9.028419343e-01, +4.173947909e-01, +6.784866956e-01,
-        -6.681242316e-01, +1.561995876e+00};
+    tardigradeHydra::floatType previousTemperature = 23.4;
 
-    std::vector<double> configuration_gradients = {
-        -4.269267665e-01, -3.870604933e-01, +3.305229307e-01, -7.772156568e-01, +3.297448976e-01, +7.757135854e-01,
-        +3.926225365e-01, -1.193442467e-01, -1.235712312e-01, +5.301921905e-01, +1.312840025e-01, -8.301916736e-01,
-        +1.653421757e-01, +6.296874058e-01, -3.258672331e-01, +8.551531592e-01, +5.014340007e-01, +1.481276503e-01,
-        +5.032879776e-01, -8.417020785e-01, +7.187781514e-01, +6.430082264e-01, +8.197433192e-01, -7.427376050e-01,
-        -8.364398258e-01, -7.231688544e-01, -2.012425798e-01, -1.513862778e-01, +1.244367575e-01, -7.555129007e-01,
-        -5.972009972e-01, +6.232886966e-01, -6.402485189e-02, +6.158764190e-01, -9.851472429e-01, +1.031854520e-01,
-        +8.638642962e-01, +1.643509183e-01, -5.878085451e-01, +4.355151246e-01, -2.420283006e-01, +3.367678945e-01,
-        -9.413605542e-01, +2.718007187e-01, -9.356041301e-01, +4.895613103e-01, -5.417399552e-02, -7.564912891e-01,
-        +8.527185158e-02, -8.664511135e-01, +3.067297427e-01, +9.921726547e-01, +5.387946741e-01, +1.475482273e-01,
-        -7.947294816e-01, +3.996681495e-01, +3.223357347e-01, -9.018057388e-01, +5.845986037e-01, +3.743318178e-02,
-        -1.482646116e-01, +5.763743472e-01, -1.768615536e-01, -3.794744899e-02, -6.367423147e-01, -3.573622010e-01,
-        +6.910659931e-01, -6.261925021e-01, -1.654178782e-01, +9.780690148e-01, -5.268003766e-01, +8.336646659e-01,
-        +8.367949356e-01, -8.174073156e-01, -7.269455023e-02, +4.432670646e-03, -3.726620999e-01, -9.053209255e-01,
-        -5.166287255e-01, -8.089407169e-01, -5.235001886e-01, +6.155821726e-01, +7.899565758e-01, -9.135542158e-01,
-        -3.961063275e-01, +9.611643972e-01, +7.900964511e-02, +2.526187234e-01, -9.889091832e-01, -3.018111311e-02,
-        +9.766570692e-01, -2.496289450e-01, -8.059236827e-01, -7.618247686e-02, +9.260089320e-01, -3.163387729e-01,
-        +5.978454664e-01, +5.976926624e-01, -5.835034065e-01, -1.132645964e-01, +4.312025503e-01, -1.789604292e-01,
-        -6.179860893e-01, +9.349886136e-01, +3.015007330e-01, +7.309197030e-01, -9.495152844e-01, -4.661883704e-01,
-        +4.142200653e-03, -8.651027297e-01, +9.860665222e-01, -5.270752076e-01, -2.514156353e-01, -5.719761702e-01,
-        -7.891082678e-01, -5.350404288e-01, -3.987797290e-01, +2.688845358e-01, -4.375304371e-01, -2.754464780e-01,
-        -9.881143126e-01, -2.685617481e-01, +6.777196340e-02, -6.759683259e-01, +1.948662167e-01, -4.136950627e-01,
-        +2.641009896e-01, -9.476067895e-01, +7.751869209e-01, -9.677627392e-01, -7.460839379e-01, +5.543249231e-01,
-        -9.082095356e-01, +4.219973872e-01, +9.420922810e-01, +7.433658663e-01, +4.203233026e-01, +9.170194860e-01,
-        -1.403733242e-01, +7.457578286e-01, -2.880846641e-01, +8.595273058e-01, -7.024446875e-01, +8.800580299e-01,
-        +6.654323946e-01, +6.921096764e-01, -7.521539802e-01, +1.929737967e-01, -9.672150382e-01, +4.423687321e-01,
-        -9.845249717e-01, -8.303554451e-01, -5.490031791e-01, +7.502490677e-01, -2.728473640e-01, +7.991987043e-02,
-        +1.362064276e-01, -5.490732794e-01, +1.442935360e-01, +3.219035901e-01, -4.035092134e-01, -1.627462820e-01,
-        -9.382215091e-02, +8.647013231e-01, +1.749874950e-01, +8.965047432e-01, +1.120695075e-01, +1.122841698e-03,
-        -9.929355781e-01, -3.822191225e-02, +8.549099971e-01, -6.032686219e-01, -8.958177312e-01, -1.864422131e-01,
-        -2.552070388e-01, +7.143061157e-01, -9.467777689e-01, +8.402984595e-01, +3.618059980e-01, +8.084519881e-01,
-        +2.150581416e-01, +6.239066249e-01, -3.289122529e-01, -3.008675439e-01, -2.202515393e-01, +5.095941631e-01,
-        -2.614176511e-01, -5.155603870e-01, +8.753367136e-01, +8.160221673e-01, -3.024053678e-01, +2.692761405e-01,
-        -4.523155767e-01, -5.877697426e-01, -3.273209420e-01, -3.458002148e-01, +7.645522024e-01, +6.446076294e-01,
-        +4.192464571e-01, +9.186904505e-01, -1.549132938e-01, -5.099339229e-01, -7.652031256e-01, -3.978932836e-01,
-        -7.094725321e-01, -8.156278053e-01, +2.058643934e-01, -2.716251005e-01, +1.291406852e-01, -6.173285586e-01,
-        +3.538117193e-01, -5.689891054e-01, -4.439528125e-01, +4.835208443e-01, +1.194757913e-01, -3.303271743e-01,
-        +8.597756509e-02, +3.879694057e-01, +8.242642430e-01, +1.614264268e-01, -5.346272422e-01, +4.933952616e-01,
-        +5.555380351e-01, -5.991973701e-01, +6.411484394e-01, -7.013029055e-02, +5.595333242e-01, -5.250435600e-01,
-        -3.348394606e-01, +9.073942386e-01, +3.156301463e-01, +5.457556610e-01, +3.767486864e-01, -5.913917643e-01,
-        -5.862250311e-02, +6.179277454e-01, +3.500702538e-01, -9.879442287e-01, -8.251845147e-01, -3.064105596e-01,
-        +8.887310792e-01, -1.761903805e-02, -4.596474651e-01, -2.791525611e-01, -5.786947449e-01, -1.575998857e-01,
-        -5.639291209e-01, +6.915050146e-01, -8.745880192e-02, -4.403959631e-01, +8.657832963e-01, -3.712972927e-01,
-        +8.194293241e-01, -9.131638181e-01, +4.142301205e-01, -3.222192193e-02, -1.115578773e-01, -9.273533113e-01,
-        -9.186336190e-01, -3.344927659e-01, +8.942390798e-01, +2.353199542e-01, -2.622503166e-01, +2.239540781e-01,
-        -5.877369274e-01, -6.698671143e-01, -2.763654689e-01, +7.267067031e-01, +1.880345470e-02, -4.061969679e-01,
-        +9.005032501e-01, +6.319321793e-01, -3.540521144e-01, +9.441964905e-01, +9.747021957e-01, -1.826797325e-01,
-        +3.118462058e-01, -1.886936031e-01, -4.853037885e-01, -8.346946480e-01, -4.727793078e-01, -4.570402930e-01,
-        -2.027218406e-01, -6.302279379e-01, +9.076368066e-01, -7.942402292e-01, +2.504170663e-01, -1.166052239e-01,
-        -1.529639020e-01, -2.560164342e-01, +7.366294203e-01, -4.390460387e-01, -9.588476852e-01, +8.361940319e-01,
-        +7.289605551e-01, -4.461964199e-01, +4.697509665e-02, -7.818236055e-01, -8.131458625e-01, +6.749322169e-01,
-        -1.794685649e-01, +3.234330804e-01, +8.864011170e-01, -5.097388169e-01, -9.736803374e-01, -9.517031884e-01,
-        +4.187713848e-01, +8.491037696e-01, -6.533945397e-02, -2.497817038e-01, +8.572084935e-02, +7.178336752e-01,
-        +3.043077476e-01, -5.340402066e-01, +5.491604090e-01, -7.307730053e-01, -6.688800585e-01, +2.253645656e-01,
-        -5.224331877e-01, +4.095570951e-01, -3.009629452e-01, -4.451520800e-01, +9.978368119e-01, -9.187677509e-01,
-        +2.916450434e-01, -9.226008300e-01, +5.204205158e-01, -5.398200850e-01, -8.203362659e-01, +2.968994238e-01,
-        +4.652024346e-01, +3.561906298e-01, -8.961981057e-01, -4.113861089e-01, -9.782330756e-02, -4.257934205e-01,
-        +6.210269125e-01, -7.377697897e-01, +2.243587234e-01, +9.764298873e-01, +8.051130772e-01, -5.556858750e-01,
-        -9.998362248e-01, +9.611946841e-01, +7.654259694e-01, +8.389449327e-01, -1.689928983e-01, +4.892309243e-01,
-        -5.743370029e-01, -2.153918578e-01, +7.030961028e-01, -7.447755516e-01, +7.877307357e-01, -6.984055250e-03,
-        -1.478086893e-01, -3.887072238e-01, +8.336975705e-01, +3.524692152e-02, +6.080527367e-01, +7.153035746e-01,
-        +8.447647092e-01, -3.932385319e-01, -3.203782919e-01, +1.901477527e-01, -1.173517291e-01, +8.656850652e-01,
-        -2.048718967e-01, -4.444390325e-02, +2.343721771e-01, -1.905210281e-01, +9.849568719e-01, -8.022974309e-01,
-        -5.587933644e-01, -3.546897378e-01, -7.045543127e-01, -4.315615309e-01, +5.584905857e-01, +4.578400177e-02,
-        -9.320927277e-01, +9.652451704e-01, +2.320129551e-01, -8.821210428e-01, +3.223375436e-01, -2.432612586e-01,
-        -7.286534057e-01, +1.273291858e-01, +4.541599010e-01, +3.422532089e-01, -5.049736930e-01, +4.973244291e-02,
-        +7.532688814e-02, +4.336067283e-01, -2.802653021e-01, +5.954651904e-01, +2.558436978e-01, -9.233367860e-01,
-        +9.295804334e-02, +7.238241909e-01, +1.351483251e-01, -6.483434691e-01};
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    std::vector<double> leading_configuration_gradient_answer = {
-        +2.427156859e+02, +1.552411296e+02, +8.620458960e+01, +5.875242877e+02, +1.514518301e+02, +7.804714544e+01,
-        +5.341420414e+01, +2.735030703e+01, +1.548334860e+02, +2.984816564e+01, +1.918676951e+02, +1.130783360e+02,
-        +6.288377649e+01, +4.411320234e+02, +9.838984608e+01, -2.888903326e+02, -1.940353358e+02, -1.036896399e+02,
-        -7.042931613e+02, -1.831325617e+02, +1.826390362e+03, +1.573053681e+03, +6.418885175e+02, +3.243237582e+03,
-        +4.592989410e+02, +5.662903319e+02, +4.833553125e+02, +1.973789790e+02, +8.631058976e+02, +7.086722582e+01,
-        +1.429000350e+03, +1.142070808e+03, +4.668497074e+02, +2.447559655e+03, +2.556106312e+02, -2.172271446e+03,
-        -1.931335220e+03, -7.717321046e+02, -3.890335470e+03, -5.692217396e+02, +8.548304889e+02, +7.354474123e+02,
-        +2.590830701e+02, +1.647987701e+03, +2.663301782e+02, +2.675776596e+02, +2.297666475e+02, +8.432329594e+01,
-        +4.384764250e+02, +4.457576440e+01, +6.704797775e+02, +5.337770222e+02, +1.881594701e+02, +1.243560851e+03,
-        +1.550693710e+02, -1.016662985e+03, -9.053208230e+02, -3.123823550e+02, -1.977608950e+03, -3.272764013e+02};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
-    std::vector<double> leading_configuration_total_J_result(12 * 3 * 4, 0);
-    std::vector<double> leading_configuration_total_gradient_J_result(12 * 3 * 4 * 5, 0);  // Expect to be zero
-    std::vector<double> leading_configuration_configurations_J_result(12 * 5 * 4 * 4, 0);
-    std::vector<double> leading_configuration_configuration_gradients_J_result(12 * 5 * 4 * 4 * 5, 0);
-    std::vector<double> leading_configuration_gradient_total_J_result(60 * 3 * 4, 0);
-    std::vector<double> leading_configuration_gradient_total_gradient_J_result(60 * 3 * 4 * 5, 0);
-    std::vector<double> leading_configuration_gradient_configurations_J_result(60 * 5 * 4 * 4, 0);
-    std::vector<double> leading_configuration_gradient_configuration_gradients_J_result(60 * 5 * 4 * 4 * 5, 0);
+    tardigradeHydra::floatVector additionalDOF = {};
 
-    tardigradeHydra::DeformationBase<3, 4, 5> deformation;
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
 
-    deformation.solveForAllLeadingJacobians(std::begin(total_configuration), std::end(total_configuration),
-                                            std::begin(total_configuration_gradient),
-                                            std::end(total_configuration_gradient), std::begin(configurations),
-                                            std::end(configurations), std::begin(configuration_gradients),
-                                            std::end(configuration_gradients),
-                                            std::begin(leading_configuration_total_J_result),
-                                            std::end(leading_configuration_total_J_result),
-                                            std::begin(leading_configuration_configurations_J_result),
-                                            std::end(leading_configuration_configurations_J_result),
-                                            std::begin(leading_configuration_gradient_total_J_result),
-                                            std::end(leading_configuration_gradient_total_J_result),
-                                            std::begin(leading_configuration_gradient_total_gradient_J_result),
-                                            std::end(leading_configuration_gradient_total_gradient_J_result),
-                                            std::begin(leading_configuration_gradient_configurations_J_result),
-                                            std::end(leading_configuration_gradient_configurations_J_result),
-                                            std::begin(leading_configuration_gradient_configuration_gradients_J_result),
-                                            std::end(leading_configuration_gradient_configuration_gradients_J_result));
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-    {
-        double                 eps             = 1e-6;
-        constexpr unsigned int NUM_INPUTS      = 3 * 4;
-        constexpr unsigned int NUM_OUTPUTS_LC  = 3 * 4;
-        constexpr unsigned int NUM_OUTPUTS_LCG = 3 * 4 * 5;
-        std::vector<double>    x               = total_configuration;
-        std::vector<double>    jacobian_lc(NUM_OUTPUTS_LC * NUM_INPUTS, 0);
-        std::vector<double>    jacobian_lcg(NUM_OUTPUTS_LCG * NUM_INPUTS, 0);
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
 
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double delta = eps * std::fabs(x[i]) + eps;
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
 
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
+    unsigned int numConfigurations = 4;
 
-            xp[i] += delta;
-            xm[i] -= delta;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
-            std::vector<double> lc_rp(NUM_OUTPUTS_LC);
-            std::vector<double> lc_rm(NUM_OUTPUTS_LC);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
-            std::vector<double> lcg_rp(NUM_OUTPUTS_LCG);
-            std::vector<double> lcg_rm(NUM_OUTPUTS_LCG);
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
 
-            deformation.solveForAllLeading(std::begin(xp), std::end(xp), std::begin(total_configuration_gradient),
-                                           std::end(total_configuration_gradient), std::begin(configurations),
-                                           std::end(configurations), std::begin(configuration_gradients),
-                                           std::end(configuration_gradients), std::begin(lc_rp), std::end(lc_rp),
-                                           std::begin(lcg_rp), std::end(lcg_rp));
+    hydra.initialize();
 
-            deformation.solveForAllLeading(std::begin(xm), std::end(xm), std::begin(total_configuration_gradient),
-                                           std::end(total_configuration_gradient), std::begin(configurations),
-                                           std::end(configurations), std::begin(configuration_gradients),
-                                           std::end(configuration_gradients), std::begin(lc_rm), std::end(lc_rm),
-                                           std::begin(lcg_rm), std::end(lcg_rm));
+    BOOST_TEST(hydra.deformation->getPreviousSubConfiguration(0, 4) == *hydra.getPreviousDeformationGradient(),
+               CHECK_PER_ELEMENT);
 
-            for (unsigned int j = 0; j < NUM_OUTPUTS_LC; ++j) {
-                jacobian_lc[NUM_INPUTS * j + i] = (lc_rp[j] - lc_rm[j]) / (2 * delta);
-            }
-            for (unsigned int j = 0; j < NUM_OUTPUTS_LCG; ++j) {
-                jacobian_lcg[NUM_INPUTS * j + i] = (lcg_rp[j] - lcg_rm[j]) / (2 * delta);
-            }
+    tardigradeHydra::floatVector answer1 = {2.24332648, 1.48246714, 2.02801682, 1.50380989, 2.98203598,
+                                            2.08079721, 1.58939152, 1.2551092,  2.38201794};
+
+    BOOST_TEST(hydra.deformation->getPreviousSubConfiguration(1, 3) == answer1, CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfiguration,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(4) == *hydra.getPreviousDeformationGradient(),
+               CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer1 = {-0.30350143, -0.21223491, 0.47296395,  0.18299993, -0.42974886,
+                                            -0.06195712, 0.92470041,  -0.36418391, -0.8287879};
+
+    BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(2) == answer1, CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer2 = {-0.15883228, -0.1920217, 0.33770597,  0.15460279, -0.58876502,
+                                            -0.15099813, 0.69307214, -0.60345639, -0.66103563};
+
+    BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(3) == answer2, CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer3 = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+
+    BOOST_TEST(hydra.deformation->getPreviousPrecedingConfiguration(0) == answer3, CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfiguration,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector answer1 = {2.09953091, 1.83604029, 2.3712323,  0.98756433, 2.58928197,
+                                            1.05684715, 1.33422708, 1.67694162, 2.96443669};
+
+    BOOST_TEST(hydra.deformation->getPreviousFollowingConfiguration(1) == answer1, CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer2 = {1.42635131, 0.89338916, 0.94416002, 0.50183668, 1.62395295,
+                                            0.1156184,  0.31728548, 0.41482621, 1.86630916};
+
+    BOOST_TEST(hydra.deformation->getPreviousFollowingConfiguration(2) == answer2, CHECK_PER_ELEMENT);
+
+    tardigradeHydra::floatVector answer3 = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+
+    BOOST_TEST(hydra.deformation->getPreviousFollowingConfiguration(3) == answer3, CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector configurations = *hydra.deformation->get_configurations();
+
+    tardigradeHydra::floatVector x = configurations;
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    const unsigned int dimension = 3;
+
+    tardigradeHydra::floatMatrix gradient(dimension * dimension, tardigradeHydra::floatVector(x.size(), 0));
+
+    unsigned int lower = 0;
+
+    unsigned int upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
-
-        BOOST_TEST(jacobian_lc == leading_configuration_total_J_result, CHECK_PER_ELEMENT);
-        BOOST_TEST(jacobian_lcg == leading_configuration_gradient_total_J_result, CHECK_PER_ELEMENT);
     }
 
-    {
-        double                 eps             = 1e-6;
-        constexpr unsigned int NUM_INPUTS      = 3 * 4 * 5;
-        constexpr unsigned int NUM_OUTPUTS_LC  = 3 * 4;
-        constexpr unsigned int NUM_OUTPUTS_LCG = 3 * 4 * 5;
-        std::vector<double>    x               = total_configuration_gradient;
-        std::vector<double>    jacobian_lc(NUM_OUTPUTS_LC * NUM_INPUTS, 0);
-        std::vector<double>    jacobian_lcg(NUM_OUTPUTS_LCG * NUM_INPUTS, 0);
+    auto result = hydra.deformation->getSubConfigurationJacobian<3, 3, 3>(configurations, lower, upper);
 
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double delta = eps * std::fabs(x[i]) + eps;
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == result, CHECK_PER_ELEMENT);
 
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
+    lower = 1;
+    upper = 3;
 
-            xp[i] += delta;
-            xm[i] -= delta;
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
 
-            std::vector<double> lc_rp(NUM_OUTPUTS_LC);
-            std::vector<double> lc_rm(NUM_OUTPUTS_LC);
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
 
-            std::vector<double> lcg_rp(NUM_OUTPUTS_LCG);
-            std::vector<double> lcg_rm(NUM_OUTPUTS_LCG);
+        tardigradeHydra::floatVector Fscp;
 
-            deformation.solveForAllLeading(std::begin(total_configuration), std::end(total_configuration),
-                                           std::begin(xp), std::end(xp), std::begin(configurations),
-                                           std::end(configurations), std::begin(configuration_gradients),
-                                           std::end(configuration_gradients), std::begin(lc_rp), std::end(lc_rp),
-                                           std::begin(lcg_rp), std::end(lcg_rp));
+        tardigradeHydra::floatVector Fscm;
 
-            deformation.solveForAllLeading(std::begin(total_configuration), std::end(total_configuration),
-                                           std::begin(xm), std::end(xm), std::begin(configurations),
-                                           std::end(configurations), std::begin(configuration_gradients),
-                                           std::end(configuration_gradients), std::begin(lc_rm), std::end(lc_rm),
-                                           std::begin(lcg_rm), std::end(lcg_rm));
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-            for (unsigned int j = 0; j < NUM_OUTPUTS_LC; ++j) {
-                jacobian_lc[NUM_INPUTS * j + i] = (lc_rp[j] - lc_rm[j]) / (2 * delta);
-            }
-            for (unsigned int j = 0; j < NUM_OUTPUTS_LCG; ++j) {
-                jacobian_lcg[NUM_INPUTS * j + i] = (lcg_rp[j] - lcg_rm[j]) / (2 * delta);
-            }
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
-
-        BOOST_TEST(jacobian_lc == leading_configuration_total_gradient_J_result, CHECK_PER_ELEMENT);
-        BOOST_TEST(jacobian_lcg == leading_configuration_gradient_total_gradient_J_result, CHECK_PER_ELEMENT);
     }
 
-    {
-        double                 eps             = 9e-6;
-        constexpr unsigned int NUM_INPUTS      = 4 * 4 * 5;
-        constexpr unsigned int NUM_OUTPUTS_LC  = 3 * 4;
-        constexpr unsigned int NUM_OUTPUTS_LCG = 3 * 4 * 5;
-        std::vector<double>    x               = configurations;
-        std::vector<double>    jacobian_lc(NUM_OUTPUTS_LC * NUM_INPUTS, 0);
-        std::vector<double>    jacobian_lcg(NUM_OUTPUTS_LCG * NUM_INPUTS, 0);
+    result = hydra.deformation->getSubConfigurationJacobian<3, 3, 3>(configurations, lower, upper);
 
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double delta = eps * std::fabs(x[i]) + eps;
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) == result, CHECK_PER_ELEMENT);
+}
 
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getSubConfigurationJacobian2,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
 
-            xp[i] += delta;
-            xm[i] -= delta;
+    tardigradeHydra::floatType deltaTime = 2.2;
 
-            std::vector<double> lc_rp(NUM_OUTPUTS_LC);
-            std::vector<double> lc_rm(NUM_OUTPUTS_LC);
+    tardigradeHydra::floatType temperature = 5.3;
 
-            std::vector<double> lcg_rp(NUM_OUTPUTS_LCG);
-            std::vector<double> lcg_rm(NUM_OUTPUTS_LCG);
+    tardigradeHydra::floatType previousTemperature = 23.4;
 
-            deformation.solveForAllLeading(std::begin(total_configuration), std::end(total_configuration),
-                                           std::begin(total_configuration_gradient),
-                                           std::end(total_configuration_gradient), std::begin(xp), std::end(xp),
-                                           std::begin(configuration_gradients), std::end(configuration_gradients),
-                                           std::begin(lc_rp), std::end(lc_rp), std::begin(lcg_rp), std::end(lcg_rp));
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-            deformation.solveForAllLeading(std::begin(total_configuration), std::end(total_configuration),
-                                           std::begin(total_configuration_gradient),
-                                           std::end(total_configuration_gradient), std::begin(xm), std::end(xm),
-                                           std::begin(configuration_gradients), std::end(configuration_gradients),
-                                           std::begin(lc_rm), std::end(lc_rm), std::begin(lcg_rm), std::end(lcg_rm));
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
-            for (unsigned int j = 0; j < NUM_OUTPUTS_LC; ++j) {
-                jacobian_lc[NUM_INPUTS * j + i] = (lc_rp[j] - lc_rm[j]) / (2 * delta);
-            }
-            for (unsigned int j = 0; j < NUM_OUTPUTS_LCG; ++j) {
-                jacobian_lcg[NUM_INPUTS * j + i] = (lcg_rp[j] - lcg_rm[j]) / (2 * delta);
-            }
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector configurations = *hydra.deformation->get_configurations();
+
+    tardigradeHydra::floatVector x = configurations;
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    const unsigned int dimension = 3;
+
+    tardigradeHydra::floatMatrix gradient(dimension * dimension, tardigradeHydra::floatVector(x.size(), 0));
+
+    unsigned int lower = 0;
+
+    unsigned int upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
-
-        BOOST_TEST(jacobian_lc == leading_configuration_configurations_J_result, CHECK_PER_ELEMENT);
-        BOOST_TEST(jacobian_lcg == leading_configuration_gradient_configurations_J_result, CHECK_PER_ELEMENT);
     }
 
-    {
-        double                 eps             = 1e-5;
-        constexpr unsigned int NUM_INPUTS      = 4 * 4 * 5 * 5;
-        constexpr unsigned int NUM_OUTPUTS_LC  = 3 * 4;
-        constexpr unsigned int NUM_OUTPUTS_LCG = 3 * 4 * 5;
-        std::vector<double>    x               = configuration_gradients;
-        std::vector<double>    jacobian_lc(NUM_OUTPUTS_LC * NUM_INPUTS, 0);
-        std::vector<double>    jacobian_lcg(NUM_OUTPUTS_LCG * NUM_INPUTS, 0);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getSubConfigurationJacobian(lower, upper),
+               CHECK_PER_ELEMENT);
 
-        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
-            double delta = eps * std::fabs(x[i]) + eps;
+    lower = 1;
+    upper = 3;
 
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
 
-            xp[i] += delta;
-            xm[i] -= delta;
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
 
-            std::vector<double> lc_rp(NUM_OUTPUTS_LC);
-            std::vector<double> lc_rm(NUM_OUTPUTS_LC);
+        tardigradeHydra::floatVector Fscp;
 
-            std::vector<double> lcg_rp(NUM_OUTPUTS_LCG);
-            std::vector<double> lcg_rm(NUM_OUTPUTS_LCG);
+        tardigradeHydra::floatVector Fscm;
 
-            deformation.solveForAllLeading(std::begin(total_configuration), std::end(total_configuration),
-                                           std::begin(total_configuration_gradient),
-                                           std::end(total_configuration_gradient), std::begin(configurations),
-                                           std::end(configurations), std::begin(xp), std::end(xp), std::begin(lc_rp),
-                                           std::end(lc_rp), std::begin(lcg_rp), std::end(lcg_rp));
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
 
-            deformation.solveForAllLeading(std::begin(total_configuration), std::end(total_configuration),
-                                           std::begin(total_configuration_gradient),
-                                           std::end(total_configuration_gradient), std::begin(configurations),
-                                           std::end(configurations), std::begin(xm), std::end(xm), std::begin(lc_rm),
-                                           std::end(lc_rm), std::begin(lcg_rm), std::end(lcg_rm));
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
 
-            for (unsigned int j = 0; j < NUM_OUTPUTS_LC; ++j) {
-                jacobian_lc[NUM_INPUTS * j + i] = (lc_rp[j] - lc_rm[j]) / (2 * delta);
-            }
-            for (unsigned int j = 0; j < NUM_OUTPUTS_LCG; ++j) {
-                jacobian_lcg[NUM_INPUTS * j + i] = (lcg_rp[j] - lcg_rm[j]) / (2 * delta);
-            }
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
         }
-
-        BOOST_TEST(jacobian_lc == leading_configuration_configuration_gradients_J_result, CHECK_PER_ELEMENT);
-        BOOST_TEST(jacobian_lcg == leading_configuration_gradient_configuration_gradients_J_result, CHECK_PER_ELEMENT);
     }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getSubConfigurationJacobian(lower, upper),
+               CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPrecedingConfigurationJacobian,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector configurations = *hydra.deformation->get_configurations();
+
+    tardigradeHydra::floatVector x = configurations;
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    const unsigned int dimension = 3;
+
+    tardigradeHydra::floatMatrix gradient(dimension * dimension, tardigradeHydra::floatVector(x.size(), 0));
+
+    unsigned int lower = 0;
+
+    unsigned int upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPrecedingConfigurationJacobian(upper),
+               CHECK_PER_ELEMENT);
+
+    lower = 0;
+    upper = 3;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPrecedingConfigurationJacobian(upper),
+               CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getFollowingConfigurationJacobian,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector configurations = *hydra.deformation->get_configurations();
+
+    tardigradeHydra::floatVector x = configurations;
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    const unsigned int dimension = 3;
+
+    tardigradeHydra::floatMatrix gradient(dimension * dimension, tardigradeHydra::floatVector(x.size(), 0));
+
+    unsigned int lower = 1;
+
+    unsigned int upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower + 1, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower + 1, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getFollowingConfigurationJacobian(lower),
+               CHECK_PER_ELEMENT);
+
+    lower = 2;
+    upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower + 1, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower + 1, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getFollowingConfigurationJacobian(lower),
+               CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousSubConfigurationJacobian,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector configurations = *hydra.deformation->get_previousConfigurations();
+
+    tardigradeHydra::floatVector x = configurations;
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    const unsigned int dimension = 3;
+
+    tardigradeHydra::floatMatrix gradient(dimension * dimension, tardigradeHydra::floatVector(x.size(), 0));
+
+    unsigned int lower = 0;
+
+    unsigned int upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousSubConfigurationJacobian(lower, upper),
+               CHECK_PER_ELEMENT);
+
+    lower = 1;
+    upper = 3;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousSubConfigurationJacobian(lower, upper),
+               CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousPrecedingConfigurationJacobian,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector configurations = *hydra.deformation->get_previousConfigurations();
+
+    tardigradeHydra::floatVector x = configurations;
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    const unsigned int dimension = 3;
+
+    tardigradeHydra::floatMatrix gradient(dimension * dimension, tardigradeHydra::floatVector(x.size(), 0));
+
+    unsigned int lower = 0;
+
+    unsigned int upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousPrecedingConfigurationJacobian(upper),
+               CHECK_PER_ELEMENT);
+
+    lower = 0;
+    upper = 3;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension, 0);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousPrecedingConfigurationJacobian(upper),
+               CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_getPreviousFollowingConfigurationJacobian,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatVector configurations = *hydra.deformation->get_previousConfigurations();
+
+    tardigradeHydra::floatVector x = configurations;
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    const unsigned int dimension = 3;
+
+    tardigradeHydra::floatMatrix gradient(dimension * dimension, tardigradeHydra::floatVector(x.size(), 0));
+
+    unsigned int lower = 1;
+
+    unsigned int upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower + 1, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower + 1, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousFollowingConfigurationJacobian(lower),
+               CHECK_PER_ELEMENT);
+
+    lower = 2;
+    upper = 4;
+
+    for (unsigned int i = 0; i < x.size(); i++) {
+        tardigradeHydra::floatVector delta(numConfigurations * dimension * dimension);
+
+        delta[i] = std::fabs(eps * configurations[i]) + eps;
+
+        tardigradeHydra::floatVector Fscp;
+
+        tardigradeHydra::floatVector Fscm;
+
+        Fscp = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations + delta, lower + 1, upper);
+
+        Fscm = hydra.deformation->getSubConfiguration<3, 3, 3>(configurations - delta, lower + 1, upper);
+
+        for (unsigned int j = 0; j < (dimension * dimension); j++) {
+            gradient[j][i] = (Fscp[j] - Fscm[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(gradient) ==
+                   hydra.deformation->getPreviousFollowingConfigurationJacobian(lower),
+               CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_setPreviousFirstConfigurationGradients,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    tardigradeHydra::floatMatrix previousdF1dF_answer(deformationGradient.size(),
+                                                      tardigradeHydra::floatVector(deformationGradient.size(), 0));
+
+    tardigradeHydra::floatMatrix previousdF1dFn_answer(
+        deformationGradient.size(),
+        tardigradeHydra::floatVector(deformationGradient.size() * (numConfigurations - 1), 0));
+
+    for (unsigned int i = 0; i < previousDeformationGradient.size(); i++) {
+        tardigradeHydra::floatVector delta(previousDeformationGradient.size(), 0);
+
+        delta[i] = eps * std::fabs(previousDeformationGradient[i]) + eps;
+
+        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                             previousDeformationGradient + delta, additionalDOF, previousAdditionalDOF);
+
+        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                             previousDeformationGradient - delta, additionalDOF, previousAdditionalDOF);
+
+        tardigradeHydra::hydraBase hydra_p(dofp, model_configuration);
+
+        tardigradeHydra::hydraBase hydra_m(dofm, model_configuration);
+
+        hydra_p.initialize();
+
+        hydra_m.initialize();
+
+        tardigradeHydra::floatVector F1_p, F1_m;
+
+        F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_previousConfigurations()->begin(),
+                                            hydra_p.deformation->get_previousConfigurations()->begin() + 9);
+
+        F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_previousConfigurations()->begin(),
+                                            hydra_m.deformation->get_previousConfigurations()->begin() + 9);
+
+        for (unsigned int j = 0; j < F1_p.size(); j++) {
+            previousdF1dF_answer[j][i] = (F1_p[j] - F1_m[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(previousdF1dF_answer) == *hydra.deformation->get_previousdF1dF(),
+               CHECK_PER_ELEMENT);
+
+    for (unsigned int i = 0; i < (numConfigurations - 1) * deformationGradient.size(); i++) {
+        tardigradeHydra::floatVector delta(previousStateVariables.size(), 0);
+
+        delta[i] += eps * std::fabs(previousStateVariables[i]) + eps;
+
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
+
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
+
+        tardigradeHydra::hydraBase hydra_p(dof, model_configurationp);
+
+        tardigradeHydra::hydraBase hydra_m(dof, model_configurationm);
+
+        hydra_p.initialize();
+
+        hydra_m.initialize();
+
+        tardigradeHydra::floatVector F1_p, F1_m;
+
+        F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_previousConfigurations()->begin(),
+                                            hydra_p.deformation->get_previousConfigurations()->begin() + 9);
+
+        F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_previousConfigurations()->begin(),
+                                            hydra_m.deformation->get_previousConfigurations()->begin() + 9);
+
+        for (unsigned int j = 0; j < F1_p.size(); j++) {
+            previousdF1dFn_answer[j][i] = (F1_p[j] - F1_m[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(previousdF1dFn_answer) == *hydra.deformation->get_previousdF1dFn(),
+               CHECK_PER_ELEMENT);
+}
+
+BOOST_AUTO_TEST_CASE(test_DeformationBase_setFirstConfigurationGradients,
+                     *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
+        0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
+        0.42583029, 0.31226122, 0.42635131, 0.89338916, 0.94416002, 0.50183668, 0.62395295, 0.1156184,
+        0.31728548, 0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453,
+        0.12062867, 0.8263408,  0.60306013, 0.54506801, 0.34276383, 0.30412079};
+
+    tardigradeHydra::floatVector parameters = {1, 2, 3, 4, 5};
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatType eps = 1e-6;
+
+    tardigradeHydra::floatMatrix dF1dF_answer(deformationGradient.size(),
+                                              tardigradeHydra::floatVector(deformationGradient.size(), 0));
+
+    tardigradeHydra::floatMatrix dF1dFn_answer(
+        deformationGradient.size(),
+        tardigradeHydra::floatVector(deformationGradient.size() * (numConfigurations - 1), 0));
+
+    for (unsigned int i = 0; i < deformationGradient.size(); i++) {
+        tardigradeHydra::floatVector delta(deformationGradient.size(), 0);
+
+        delta[i] = eps * std::fabs(deformationGradient[i]) + eps;
+
+        tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature,
+                                             deformationGradient + delta, previousDeformationGradient, additionalDOF,
+                                             previousAdditionalDOF);
+
+        tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature,
+                                             deformationGradient - delta, previousDeformationGradient, additionalDOF,
+                                             previousAdditionalDOF);
+
+        tardigradeHydra::hydraBase hydra_p(dofp, model_configuration);
+
+        tardigradeHydra::hydraBase hydra_m(dofm, model_configuration);
+
+        hydra_p.initialize();
+
+        hydra_m.initialize();
+
+        tardigradeHydra::floatVector F1_p, F1_m;
+
+        F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_configurations()->begin(),
+                                            hydra_p.deformation->get_configurations()->begin() + 9);
+
+        F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_configurations()->begin(),
+                                            hydra_m.deformation->get_configurations()->begin() + 9);
+
+        for (unsigned int j = 0; j < F1_p.size(); j++) {
+            dF1dF_answer[j][i] = (F1_p[j] - F1_m[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dF1dF_answer) == *hydra.deformation->get_dF1dF(),
+               CHECK_PER_ELEMENT);
+
+    tardigradeHydra::unit_test::DeformationBaseTester::checkdF1dF(hydra, *hydra.deformation);
+
+    for (unsigned int i = 0; i < (numConfigurations - 1) * deformationGradient.size(); i++) {
+        tardigradeHydra::floatVector delta(previousStateVariables.size(), 0);
+
+        delta[i] += eps * std::fabs(previousStateVariables[i]) + eps;
+
+        tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables + delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
+
+        tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables - delta, parameters,
+                                                                     numConfigurations,
+                                                                     numNonLinearSolveStateVariables);
+
+        tardigradeHydra::hydraBase hydra_p(dof, model_configurationp);
+
+        tardigradeHydra::hydraBase hydra_m(dof, model_configurationm);
+
+        hydra_p.initialize();
+
+        hydra_m.initialize();
+
+        tardigradeHydra::floatVector F1_p, F1_m;
+
+        F1_p = tardigradeHydra::floatVector(hydra_p.deformation->get_configurations()->begin(),
+                                            hydra_p.deformation->get_configurations()->begin() + 9);
+
+        F1_m = tardigradeHydra::floatVector(hydra_m.deformation->get_configurations()->begin(),
+                                            hydra_m.deformation->get_configurations()->begin() + 9);
+
+        for (unsigned int j = 0; j < F1_p.size(); j++) {
+            dF1dFn_answer[j][i] = (F1_p[j] - F1_m[j]) / (2 * delta[i]);
+        }
+    }
+
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dF1dFn_answer) == *hydra.deformation->get_dF1dFn(),
+               CHECK_PER_ELEMENT);
+
+    tardigradeHydra::unit_test::DeformationBaseTester::checkdF1dFn(hydra, *hydra.deformation);
 }

@@ -770,4 +770,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraPerzynaViscoplasticity.tpp"
+
 #endif

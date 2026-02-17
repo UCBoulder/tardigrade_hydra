@@ -80,11 +80,12 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 auto precedingDeformationGradient = get_SetDataStorage_previousPrecedingDeformationGradient();
                 *precedingDeformationGradient.value =
-                    hydra->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
+                    hydra->deformation->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
 
             } else {
-                auto precedingDeformationGradient   = get_SetDataStorage_precedingDeformationGradient();
-                *precedingDeformationGradient.value = hydra->getPrecedingConfiguration(getDOFConfigurationIndex());
+                auto precedingDeformationGradient = get_SetDataStorage_precedingDeformationGradient();
+                *precedingDeformationGradient.value =
+                    hydra->deformation->getPrecedingConfiguration(getDOFConfigurationIndex());
             }
         }
 
@@ -114,31 +115,32 @@ namespace tardigradeHydra {
             SetDataStorageBase<floatVector> dpFdFn;
 
             if (isPrevious) {
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->get_previousdF1dF())
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->deformation->get_previousdF1dF())
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->get_previousdF1dFn())
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->deformation->get_previousdF1dFn())
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian(getDOFConfigurationIndex()))
+                    dpFdFs = hydra->deformation->getPreviousPrecedingConfigurationJacobian(getDOFConfigurationIndex()))
 
                 auto precedingDeformationGradient = get_SetDataStorage_previousPrecedingDeformationGradient();
                 *precedingDeformationGradient.value =
-                    hydra->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
+                    hydra->deformation->getPreviousPrecedingConfiguration(getDOFConfigurationIndex());
 
                 dpFdF = get_SetDataStorage_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient();
 
                 dpFdFn = get_SetDataStorage_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients();
 
             } else {
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->get_dF1dF())
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dF = hydra->deformation->get_dF1dF())
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->get_dF1dFn())
+                TARDIGRADE_ERROR_TOOLS_CATCH(dF1dFn = hydra->deformation->get_dF1dFn())
 
-                TARDIGRADE_ERROR_TOOLS_CATCH(dpFdFs =
-                                                 hydra->getPrecedingConfigurationJacobian(getDOFConfigurationIndex()))
+                TARDIGRADE_ERROR_TOOLS_CATCH(
+                    dpFdFs = hydra->deformation->getPrecedingConfigurationJacobian(getDOFConfigurationIndex()))
 
-                auto precedingDeformationGradient   = get_SetDataStorage_precedingDeformationGradient();
-                *precedingDeformationGradient.value = hydra->getPrecedingConfiguration(getDOFConfigurationIndex());
+                auto precedingDeformationGradient = get_SetDataStorage_precedingDeformationGradient();
+                *precedingDeformationGradient.value =
+                    hydra->deformation->getPrecedingConfiguration(getDOFConfigurationIndex());
 
                 dpFdF = get_SetDataStorage_dPrecedingDeformationGradientdDeformationGradient();
 
@@ -421,7 +423,7 @@ namespace tardigradeHydra {
                 get_previousDOFIntermediateVelocityGradient();
 
             const secondOrderTensor previousDOFDeformationGradient =
-                hydra->getPreviousConfiguration(getDOFConfigurationIndex());
+                hydra->deformation->getPreviousConfiguration(getDOFConfigurationIndex());
 
             auto dofDeformationGradient = get_SetDataStorage_dofDeformationGradient();
 
@@ -466,7 +468,7 @@ namespace tardigradeHydra {
                 get_previousDOFIntermediateVelocityGradient();
 
             const secondOrderTensor previousDOFDeformationGradient =
-                hydra->getPreviousConfiguration(getDOFConfigurationIndex());
+                hydra->deformation->getPreviousConfiguration(getDOFConfigurationIndex());
 
             auto dofDeformationGradient = get_SetDataStorage_dofDeformationGradient();
 
@@ -640,8 +642,8 @@ namespace tardigradeHydra {
             residual.zero(sot_dim + 2);
 
             std::transform(std::begin(*get_dofDeformationGradient()), std::end(*get_dofDeformationGradient()),
-                           hydra->get_configurations()->begin() + dofConfigurationIndex * sot_dim, residual.begin(),
-                           std::minus<>());
+                           hydra->deformation->get_configurations()->begin() + dofConfigurationIndex * sot_dim,
+                           residual.begin(), std::minus<>());
 
             TARDIGRADE_ERROR_TOOLS_CHECK(getStateVariableIndices()->size() == 2,
                                          "The state variable indices must have a size of 2 instead of " +

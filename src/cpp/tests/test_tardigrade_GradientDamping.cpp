@@ -100,6 +100,13 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
         0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
@@ -112,8 +119,6 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
     unsigned int numConfigurations = 4;
 
     unsigned int numNonLinearSolveStateVariables = 5;
-
-    unsigned int dimension = 3;
 
     class GradientDampingMock : public tardigradeHydra::GradientDamping {
        public:
@@ -169,9 +174,10 @@ BOOST_AUTO_TEST_CASE(test_GradientDamping_setBaseQuantities, *boost::unit_test::
 
     tardigradeHydra::floatType answer1 = 0.5 * 1e-8 * 10.3;
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
 
     GradientDampingMock             damping;
     tardigradeHydra::SolverStepBase step;

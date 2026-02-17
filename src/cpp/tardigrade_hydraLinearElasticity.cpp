@@ -46,14 +46,15 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 auto previousFe = get_SetDataStorage_previousFe();
 
-                *previousFe.value = secondOrderTensor(hydra->get_previousConfigurations()->begin(),
-                                                      hydra->get_previousConfigurations()->begin() + sot_dim);
+                *previousFe.value =
+                    secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin(),
+                                      hydra->deformation->get_previousConfigurations()->begin() + sot_dim);
 
             } else {
                 auto Fe = get_SetDataStorage_Fe();
 
-                *Fe.value = secondOrderTensor(hydra->get_configurations()->begin(),
-                                              hydra->get_configurations()->begin() + sot_dim);
+                *Fe.value = secondOrderTensor(hydra->deformation->get_configurations()->begin(),
+                                              hydra->deformation->get_configurations()->begin() + sot_dim);
             }
         }
 
@@ -83,18 +84,18 @@ namespace tardigradeHydra {
 
                 auto previousdFedFn = get_SetDataStorage_previousdFedFn();
 
-                *previousdFedF.value = *hydra->get_previousdF1dF();
+                *previousdFedF.value = *hydra->deformation->get_previousdF1dF();
 
-                *previousdFedFn.value = *hydra->get_previousdF1dFn();
+                *previousdFedFn.value = *hydra->deformation->get_previousdF1dFn();
 
             } else {
                 auto dFedF = get_SetDataStorage_dFedF();
 
                 auto dFedFn = get_SetDataStorage_dFedFn();
 
-                *dFedF.value = *hydra->get_dF1dF();
+                *dFedF.value = *hydra->deformation->get_dF1dF();
 
-                *dFedFn.value = *hydra->get_dF1dFn();
+                *dFedFn.value = *hydra->deformation->get_dF1dFn();
             }
         }
 

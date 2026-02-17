@@ -9,57 +9,27 @@
 
 #include "tardigrade_hydra.h"
 
-#include "tardigrade_SolverStepBase.h"
+#include "tardigrade_DeformationDecompositionBase.h"  //TEMP
 
 namespace tardigradeHydra {
 
     /*!
      * The main constructor for the hydra base class. Inputs are all the required values for most solves.
      *
-     * \param &time: The current time
-     * \param &deltaTime: The change in time
-     * \param &temperature: The current temperature
-     * \param &previousTemperature: The previous temperature
-     * \param &deformationGradient: The current deformation gradient
-     * \param &additionalDOF: Any additional degrees of freedom required for the model
-     * \param &previousAdditionalDOF: Any previous additional degrees of freedom required for the model
-     * \param &previousDeformationGradient The previous deformation gradient
-     * \param &previousStateVariables: The previous state variables
-     * \param &parameters: The model parameters
-     * \param &numConfigurations: The number of configurations
-     * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
-     * non-linear solve's residual \param &dimension: The dimension of the problem (defaults to 3) \param
-     * &configuration_unknown_count: The number of unknowns in each configuration (defaults to 9) \param &tolr: The
-     * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9)
+     * \param &DOFStorage: The degrees of freedom storage object
+     * \param &ModelConfiguration: The model configuration object
+      \param &_hydra_configuration: Class which defines the hydra configuration
      */
-    hydraBase::hydraBase(const floatType &time, const floatType &deltaTime, const floatType &temperature,
-                         const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
-                         const secondOrderTensor &previousDeformationGradient, const floatVector &additionalDOF,
-                         const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
-                         const floatVector &parameters, const unsigned int numConfigurations,
-                         const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
-                         const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola)
-        : _dimension(dimension),
-          _configuration_unknown_count(configuration_unknown_count),
-          _stress_size(configuration_unknown_count),
-          _time(time),
-          _deltaTime(deltaTime),
-          _temperature(temperature),
-          _previousTemperature(previousTemperature),
-          _deformationGradient(deformationGradient),
-          _previousDeformationGradient(previousDeformationGradient),
-          _additionalDOF(additionalDOF),
-          _previousAdditionalDOF(previousAdditionalDOF),
-          _previousStateVariables(previousStateVariables),
-          _parameters(parameters),
-          _numConfigurations(numConfigurations),
-          _numNonLinearSolveStateVariables(numNonLinearSolveStateVariables),
-          _tolr(tolr),
-          _tola(tola) {
+    hydraBase::hydraBase(const DOFStorageBase &DOFStorage, const ModelConfigurationBase &ModelConfiguration,
+                         HydraConfigurationBase _hydra_configuration)
+        : hydra_configuration(_hydra_configuration),
+          dof(&DOFStorage),
+          model_configuration(&ModelConfiguration),
+          _stress_size(_hydra_configuration.configuration_unknown_count) {
         // TEMP
         _solver.hydra                  = this;
         _solver.internal_solver->hydra = this;
-        auto local_internal_solver     = dynamic_cast<tardigradeHydra::RelaxedSolver *>(_solver.internal_solver);
+        auto local_internal_solver     = dynamic_cast<tardigradeHydra::RelaxedSolverBase *>(_solver.internal_solver);
         local_internal_solver->internal_solver->hydra = this;
         // END TEMP
     }
@@ -71,12 +41,173 @@ namespace tardigradeHydra {
      */
     void hydraBase::setStress(const floatVector &stress) { setIterationData(stress, _stress); }
 
+    /*!
+     * Get a SetDataStorage object for the stress
+     */
     hydraBase::SetDataStorageIteration<secondOrderTensor> hydraBase::get_SetDataStorage_stress() {
-        /*!
-         * Get a SetDataStorage object for the stress
-         */
-
         return hydraBase::SetDataStorageIteration<secondOrderTensor>(&_stress, this);
+    }
+
+    //! Get the number of terms in the unknown vector
+    const unsigned int hydraBase::getNumUnknowns() {
+        return getNumConfigurations() * getConfigurationUnknownCount() + getNumNonLinearSolveStateVariables();
+    }
+
+    //! Get the number of additional degrees of freedom
+    const unsigned int hydraBase::getNumAdditionalDOF() { return getAdditionalDOF()->size(); }
+
+    //! Get the current residual index
+    const unsigned int hydraBase::getCurrentResidualIndex() {
+        TARDIGRADE_ERROR_TOOLS_CHECK(currentResidualIndexMeaningful(), "The current residual index isn't meaningful");
+        return _current_residual_index;
+    }
+
+    /*!
+     * Set the verbosity level for failures
+     *
+     * \param &value: The verbosity level of the failure (defaults to zero)
+     */
+    void hydraBase::setFailureVerbosityLevel(const unsigned int &value) { _failure_verbosity_level = value; }
+
+    /*!
+     * Add a string to the failure output string
+     *
+     * \param &value: The string to append to the output
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const std::string &value, bool add_endline) {
+        addToFailureOutput<std::string>(value, add_endline);
+    }
+
+    /*!
+     * Add a floatVector to the output string
+     *
+     * \param &value: The vector to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const floatVector &value, bool add_endline) {
+        addToFailureOutput(std::begin(value), std::end(value), add_endline);
+    }
+
+    /*!
+     * Add a vector of booleans to the output string
+     *
+     * \param &value: The vector to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const std::vector<bool> &value, bool add_endline) {
+        addToFailureOutput(std::begin(value), std::end(value), add_endline);
+    }
+
+    /*!
+     * Add a floating point value to the output string
+     *
+     * \param &value: The value to add to the output string
+     * \param add_endline: A boolean for if the endline character should be added after the value
+     */
+    void hydraBase::addToFailureOutput(const floatType &value, bool add_endline) {
+        addToFailureOutput<floatType>(value, add_endline);
+    }
+
+    /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobalResidual methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutableResidual() {
+        if (_allow_modify_global_residual) {
+            return &_residual.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full jacobian that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobalJacobian methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutableJacobian() {
+        if (_allow_modify_global_jacobian) {
+            return &_jacobian.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdT that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdT methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdT() {
+        if (_allow_modify_global_dRdT) {
+            return &_dRdT.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdF that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdF methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdF() {
+        if (_allow_modify_global_dRdF) {
+            return &_dRdF.second;
+        }
+
+        return NULL;
+    }
+
+    /*! Get a reference to the full dRdAdditionalDOF that is mutable. Returns NULL if it's not allowed.
+     *
+     * This should only be called in residual classes that need to modify the full residual in their
+     * modifyGlobaldRdAdditionalDOF methods.
+     *
+     * Be careful!
+     */
+    floatVector *hydraBase::getMutabledRdAdditionalDOF() {
+        if (_allow_modify_global_dRdAdditionalDOF) {
+            return &_dRdAdditionalDOF.second;
+        }
+
+        return NULL;
+    }
+
+    /*!
+     * Return if the current residual index is meaningful or not
+     */
+    const bool hydraBase::currentResidualIndexMeaningful() { return _current_residual_index_set; }
+
+    /*!
+     * Loosen the convergence tolerance for the next iteration
+     * Useful if a Residual's form is changing in a non-smooth way
+     *
+     * \param factor: The scale factor to be applied to the current tolerance
+     */
+    void hydraBase::setToleranceScaleFactor(floatType factor) {
+        if (factor > _residual_scale_factor) {
+            _residual_scale_factor = factor;
+        }
+    }
+
+    /*!
+     * Update the additional state variable vector
+     */
+    void hydraBase::updateAdditionalStateVariables() {
+        for (auto v = std::begin(*getResidualClasses()); v != std::end(*getResidualClasses()); ++v) {
+            (*v)->updateAdditionalStateVariables(_additionalStateVariables.second);
+        }
     }
 
     /*!
@@ -178,9 +309,9 @@ namespace tardigradeHydra {
         const floatVector *unknownVector = getUnknownVector();
 
         // Set the configurations
-        auto configurations = get_SetDataStorage_configurations();
+        auto configurations = deformation->get_SetDataStorage_configurations();
 
-        auto inverseConfigurations = get_SetDataStorage_inverseConfigurations();
+        auto inverseConfigurations = deformation->get_SetDataStorage_inverseConfigurations();
 
         computeConfigurations(unknownVector, getStressSize(), *getDeformationGradient(), *configurations.value,
                               *inverseConfigurations.value);
@@ -245,13 +376,13 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error(message));
         }
 
-        auto configurations = get_SetDataStorage_configurations();
+        auto configurations = deformation->get_SetDataStorage_configurations();
 
-        auto previousConfigurations = get_SetDataStorage_previousConfigurations();
+        auto previousConfigurations = deformation->get_SetDataStorage_previousConfigurations();
 
-        auto inverseConfigurations = get_SetDataStorage_inverseConfigurations();
+        auto inverseConfigurations = deformation->get_SetDataStorage_inverseConfigurations();
 
-        auto previousInverseConfigurations = get_SetDataStorage_previousInverseConfigurations();
+        auto previousInverseConfigurations = deformation->get_SetDataStorage_previousInverseConfigurations();
 
         // Compute the configurations
         computeConfigurations(getPreviousStateVariables(), 0, *getDeformationGradient(), *configurations.value,
@@ -316,350 +447,6 @@ namespace tardigradeHydra {
         message += "  upperIndex: " + std::to_string(upperIndex) + "\n";
 
         return message;
-    }
-
-    /*!
-     * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
-     *
-     * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
-     * F^{\text{upperIndex-1}}_{\bar{I}I} \f$ \param &configurations: The configurations to operate on \param
-     * &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1) \param
-     * &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations) Note, the
-     * configuration indicated by the index is NOT included in the sub-configuration
-     */
-    floatVector hydraBase::getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
-                                               const unsigned int &upperIndex) {
-        const unsigned int dim     = getDimension();
-        const unsigned int sot_dim = getSOTDimension();
-
-        TARDIGRADE_ERROR_TOOLS_EVAL(const unsigned int local_num_configurations = configurations.size() / sot_dim;)
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            configurations.size() % sot_dim == 0,
-            "The configurations vector must be a multiple of the size of a second order tensor")
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(upperIndex <= local_num_configurations,
-                                     build_upper_index_out_of_range_error_string(upperIndex, local_num_configurations))
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(lowerIndex <= upperIndex,
-                                     build_lower_index_out_of_range_error_string(lowerIndex, upperIndex))
-
-        secondOrderTensor Fsc(sot_dim, 0);
-        for (unsigned int i = 0; i < 3; i++) {
-            Fsc[dim * i + i] = 1.;
-        }
-
-#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-        floatVector temp;
-        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0);
-#else
-        auto Fsc_mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(Fsc.data());
-        auto mat     = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(configurations.data());
-#endif
-
-        for (unsigned int i = lowerIndex; i < upperIndex; i++) {
-#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-            temp = Fsc;
-
-            kernel(&configurations[sot_dim * i], &temp[0], &Fsc[0]);
-#else
-            new (&mat)
-                Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(configurations.data() + sot_dim * i,
-                                                                                   3, 3);
-            Fsc_mat *= mat;
-#endif
-        }
-
-        return Fsc;
-    }
-
-    /*!
-     * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
-     *
-     * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
-     * F^{\text{upperIndex-1}}_{\bar{I}I} \f$
-     *
-     * with respect to all of the configurations. The returned matrix will be of size ( dimensions**2,
-     * configurations.size( ) * dimensions**2 )
-     *
-     * \param &configurations: The configurations to operate on
-     * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
-     * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
-     *   Note, the configuration indicated by the index is NOT included in the sub-configuration
-     */
-    floatVector hydraBase::getSubConfigurationJacobian(const floatVector  &configurations,
-                                                       const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        const unsigned int dim                  = getDimension();
-        const unsigned int sot_dim              = getSOTDimension();
-        const unsigned int num_incoming_configs = configurations.size() / sot_dim;
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            configurations.size() % sot_dim == 0,
-            "The configurations vector must be a scalar multiple of the second order tensor size (9 for 3D)")
-
-        floatVector gradient(sot_dim * sot_dim * num_incoming_configs, 0);
-
-        secondOrderTensor Fm, FpT;
-
-        auto map = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(FpT.data());
-
-        for (unsigned int index = lowerIndex; index < upperIndex; index++) {
-            TARDIGRADE_ERROR_TOOLS_CATCH(Fm = getSubConfiguration(configurations, lowerIndex, index));
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(FpT = getSubConfiguration(configurations, index + 1, upperIndex));
-            new (&map) Eigen::Map<Eigen::Matrix<floatType, 3, 3> >(FpT.data(), 3, 3);
-            map = map.transpose().eval();
-
-            for (unsigned int i = 0; i < dim; i++) {
-                for (unsigned int I = 0; I < dim; I++) {
-                    for (unsigned int a = 0; a < dim; a++) {
-                        for (unsigned int A = 0; A < dim; A++) {
-                            gradient[dim * num_incoming_configs * sot_dim * i + num_incoming_configs * sot_dim * I +
-                                     sot_dim * index + dim * a + A] = Fm[dim * i + a] * FpT[dim * I + A];
-                        }
-                    }
-                }
-            }
-        }
-
-        return gradient;
-    }
-
-    /*!
-     * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
-     *
-     * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
-     * F^{\text{upperIndex-1}}_{\bar{I}I} \f$ \param &lowerIndex: The index of the lower configuration (starts at 0
-     * and goes to numConfigurations - 1) \param &upperIndex: The index of the upper configuration (starts at 0 and
-     * goes to numConfigurations) Note, the configuration indicated by the index is NOT included in the
-     * sub-configuration
-     */
-    secondOrderTensor hydraBase::getSubConfiguration(const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        return getSubConfiguration(*get_configurations(), lowerIndex, upperIndex);
-    }
-
-    /*!
-     * Get the sub-configuration preceding but not including the index
-     *
-     * \param &index: The index of the configuration immediately following the sub-configuration
-     */
-    secondOrderTensor hydraBase::getPrecedingConfiguration(const unsigned int &index) {
-        return getSubConfiguration(0, index);
-    }
-
-    /*!
-     * Get the sub-configuration following but not including the index
-     *
-     * \param &index: The index of the current configuration immediately before the sub-configuration
-     */
-    secondOrderTensor hydraBase::getFollowingConfiguration(const unsigned int &index) {
-        return getSubConfiguration(index + 1, getNumConfigurations());
-    }
-
-    /*!
-     * Get the configuration indicated by the provided index
-     *
-     * \param &index: The index of the current configuration to be extracted
-     */
-    secondOrderTensor hydraBase::getConfiguration(const unsigned int &index) {
-        return getSubConfiguration(index, index + 1);
-    }
-
-    /*!
-     * Get a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
-     *
-     * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
-     * F^{\text{upperIndex-1}}_{\bar{I}I} \f$ \param &lowerIndex: The index of the lower configuration (starts at 0
-     * and goes to numConfigurations - 1) \param &upperIndex: The index of the upper configuration (starts at 0 and
-     * goes to numConfigurations) Note, the configuration indicated by the index is NOT included in the
-     * sub-configuration
-     */
-    secondOrderTensor hydraBase::getPreviousSubConfiguration(const unsigned int &lowerIndex,
-                                                             const unsigned int &upperIndex) {
-        return getSubConfiguration(*get_previousConfigurations(), lowerIndex, upperIndex);
-    }
-
-    /*!
-     * Get the previous sub-configuration preceding but not including the index
-     *
-     * \param &index: The index of the configuration immediately following the sub-configuration
-     */
-    secondOrderTensor hydraBase::getPreviousPrecedingConfiguration(const unsigned int &index) {
-        return getPreviousSubConfiguration(0, index);
-    }
-
-    /*!
-     * Get the previous sub-configuration following but not including the index
-     *
-     * \param &index: The index of the current configuration immediately before the sub-configuration
-     */
-    secondOrderTensor hydraBase::getPreviousFollowingConfiguration(const unsigned int &index) {
-        return getPreviousSubConfiguration(index + 1, getNumConfigurations());
-    }
-
-    /*!
-     * Get the previous configuration indicated by the provided index
-     *
-     * \param &index: The index of the current configuration to be extracted
-     */
-    secondOrderTensor hydraBase::getPreviousConfiguration(const unsigned int &index) {
-        return getPreviousSubConfiguration(index, index + 1);
-    }
-
-    /*!
-     * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
-     *
-     * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
-     * F^{\text{upperIndex-1}}_{\bar{I}I} \f$
-     *
-     * with respect to the current configurations.
-     *
-     * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
-     * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
-     *   Note, the configuration indicated by the index is NOT included in the sub-configuration
-     */
-    floatVector hydraBase::getSubConfigurationJacobian(const unsigned int &lowerIndex, const unsigned int &upperIndex) {
-        return getSubConfigurationJacobian(*get_configurations(), lowerIndex, upperIndex);
-    }
-
-    /*!
-     * Get the jacobian of the sub-configuration preceding but not including the index with respect to the current
-     * configurations.
-     *
-     * \param &index: The index of the configuration immediately following the sub-configuration
-     */
-    floatVector hydraBase::getPrecedingConfigurationJacobian(const unsigned int &index) {
-        return getSubConfigurationJacobian(0, index);
-    }
-
-    /*!
-     * Get the jacobian of the sub-configuration following but not including the index with respect to the current
-     * configurations.
-     *
-     * \param &index: The index of the current configuration immediately before the sub-configuration
-     */
-    floatVector hydraBase::getFollowingConfigurationJacobian(const unsigned int &index) {
-        return getSubConfigurationJacobian(index + 1, getNumConfigurations());
-    }
-
-    /*!
-     * Get the jacobian of a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
-     *
-     * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots
-     * F^{\text{upperIndex-1}}_{\bar{I}I} \f$
-     *
-     * with respect to the previous configurations.
-     *
-     * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
-     * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
-     *   Note, the configuration indicated by the index is NOT included in the sub-configuration
-     */
-    floatVector hydraBase::getPreviousSubConfigurationJacobian(const unsigned int &lowerIndex,
-                                                               const unsigned int &upperIndex) {
-        return getSubConfigurationJacobian(*get_previousConfigurations(), lowerIndex, upperIndex);
-    }
-
-    /*!
-     * Get the jacobian of the previous sub-configuration preceding but not including the index with
-     * respect to the previous configurations.
-     *
-     * \param &index: The index of the configuration immediately following the sub-configuration
-     */
-    floatVector hydraBase::getPreviousPrecedingConfigurationJacobian(const unsigned int &index) {
-        return getPreviousSubConfigurationJacobian(0, index);
-    }
-
-    /*!
-     * Get the jacobian of the previous sub-configuration following but not including the index with
-     * respect to the previous configurations
-     *
-     * \param &index: The index of the current configuration immediately before the sub-configuration
-     */
-    floatVector hydraBase::getPreviousFollowingConfigurationJacobian(const unsigned int &index) {
-        return getPreviousSubConfigurationJacobian(index + 1, getNumConfigurations());
-    }
-
-    /*!
-     * Get the Jacobian of the first configuration w.r.t. the total mapping and the remaining configurations.
-     *
-     * \param &configurations: The configurations which describe the mapping from the current to the reference
-     * configuration \param &dC1dC: The Jacobian of the first entry w.r.t. the total \param &dC1dCn: The Jacobian of
-     * the first entry w.r.t. the remaining terms
-     *
-     * whre \f$C^n = C^2, C^3, \cdots \f$
-     */
-    void hydraBase::calculateFirstConfigurationJacobians(const floatVector &configurations, fourthOrderTensor &dC1dC,
-                                                         floatVector &dC1dCn) {
-        constexpr unsigned int dim         = 3;
-        constexpr unsigned int sot_dim     = dim * dim;
-        auto                   num_configs = getNumConfigurations();
-
-        dC1dC = secondOrderTensor(sot_dim * sot_dim, 0);
-
-        dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
-
-        secondOrderTensor fullConfiguration = getSubConfiguration(configurations, 0, num_configs);
-
-        secondOrderTensor invCsc = getSubConfiguration(configurations, 1, num_configs);
-        auto              mat    = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(invCsc.data());
-        mat                      = mat.inverse().eval();
-
-        fourthOrderTensor dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA(invCsc, dim, dim);
-        auto map_dInvCscdCsc = tardigradeHydra::getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dInvCscdCsc.data());
-
-        floatVector dCscdCs = getSubConfigurationJacobian(configurations, 1, num_configs);
-        auto map_dCscdCs    = tardigradeHydra::getDynamicSizeMatrixMap(dCscdCs.data(), sot_dim, num_configs * sot_dim);
-
-        floatVector dInvCscdCs(sot_dim * num_configs * sot_dim, 0);
-        auto        map_dInvCscdCs =
-            tardigradeHydra::getDynamicSizeMatrixMap(dInvCscdCs.data(), sot_dim, num_configs * sot_dim);
-
-        map_dInvCscdCs = (map_dInvCscdCsc * map_dCscdCs).eval();
-
-        // Compute the gradients
-        for (unsigned int i = 0; i < dim; i++) {
-            for (unsigned int barI = 0; barI < dim; barI++) {
-                for (unsigned int A = 0; A < dim; A++) {
-                    dC1dC[dim * sot_dim * i + sot_dim * barI + dim * i + A] += invCsc[dim * A + barI];
-                }
-            }
-        }
-        for (unsigned int i = 0; i < dim; i++) {
-            for (unsigned int J = 0; J < dim; J++) {
-                for (unsigned int barI = 0; barI < dim; barI++) {
-                    for (unsigned int indexaA = 0; indexaA < (num_configs - 1) * sot_dim; indexaA++) {
-                        dC1dCn[dim * (num_configs - 1) * sot_dim * i + (num_configs - 1) * sot_dim * barI + indexaA] +=
-                            fullConfiguration[dim * i + J] *
-                            dInvCscdCs[dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + indexaA +
-                                       sot_dim];
-                    }
-                }
-            }
-        }
-    }
-
-    /*!
-     * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining
-     * sub-configurations
-     */
-    void hydraBase::setFirstConfigurationJacobians() {
-        auto dF1dF = get_SetDataStorage_dF1dF();
-
-        auto dF1dFn = get_SetDataStorage_dF1dFn();
-
-        calculateFirstConfigurationJacobians(*get_configurations(), *dF1dF.value, *dF1dFn.value);
-    }
-
-    /*!
-     * Set the Jacobians of the previous first configuration w.r.t. the total configuration and the remaining
-     * sub-configurations
-     */
-    void hydraBase::setPreviousFirstConfigurationJacobians() {
-        auto dF1dF = get_SetDataStorage_previousdF1dF();
-
-        auto dF1dFn = get_SetDataStorage_previousdF1dFn();
-
-        calculateFirstConfigurationJacobians(*get_previousConfigurations(), *dF1dF.value, *dF1dFn.value);
     }
 
     /*!
@@ -1182,7 +969,7 @@ namespace tardigradeHydra {
         const floatVector *cauchyStress;
         TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = getStress());
 
-        const floatVector *configurations = get_configurations();
+        const floatVector *configurations = deformation->get_configurations();
 
         const unsigned int num_local_configs = configurations->size() / sot_dim;
 
@@ -1298,16 +1085,19 @@ namespace tardigradeHydra {
      * Set the scaled quantities
      */
     void hydraBase::setScaledQuantities() {
-        _scaled_time = (_scale_factor - 1) * _deltaTime + _time;
+        _scaled_time = (_scale_factor - 1) * dof->_deltaTime + dof->_time;
 
-        _scaled_deltaTime = _scale_factor * _deltaTime;
+        _scaled_deltaTime = _scale_factor * dof->_deltaTime;
 
-        _scaled_temperature = _scale_factor * (_temperature - _previousTemperature) + _previousTemperature;
+        _scaled_temperature =
+            _scale_factor * (dof->_temperature - dof->_previous_temperature) + dof->_previous_temperature;
 
         _scaled_deformationGradient =
-            _scale_factor * (_deformationGradient - _previousDeformationGradient) + _previousDeformationGradient;
+            _scale_factor * (dof->_deformation_gradient - dof->_previous_deformation_gradient) +
+            dof->_previous_deformation_gradient;
 
-        _scaled_additionalDOF = _scale_factor * (_additionalDOF - _previousAdditionalDOF) + _previousAdditionalDOF;
+        _scaled_additionalDOF =
+            _scale_factor * (dof->_additional_dof - dof->_previous_additional_dof) + dof->_previous_additional_dof;
     }
 
     /*!
@@ -1593,4 +1383,70 @@ namespace tardigradeHydra {
         return parameterization_info;
     }
 
+    /*!
+     * Function to throw for an unexpected error. A user should never get here!
+     */
+    void hydraBase::unexpectedError() {
+        TARDIGRADE_ERROR_TOOLS_CATCH(
+            throw std::runtime_error("You shouldn't have gotten here. If you aren't developing the code then "
+                                     "contact a developer with the stack trace."))
+    }
+
+    /*!
+     * Set the value of the unknown vector
+     *
+     * \param &X: The unknown vector
+     */
+    void hydraBase::setX(const floatVector &X) {
+        _X.second = X;
+
+        _X.first = true;
+    }
+
+    /*!
+     * Set a flag for if the global residual can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobalResidual(const bool value) { _allow_modify_global_residual = value; }
+
+    /*!
+     * Set a flag for if the global jacobian can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobalJacobian(const bool value) { _allow_modify_global_jacobian = value; }
+
+    /*!
+     * Set a flag for if the global dRdT can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdT(const bool value) { _allow_modify_global_dRdT = value; }
+
+    /*!
+     * Set a flag for if the global dRdF can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdF(const bool value) { _allow_modify_global_dRdF = value; }
+
+    /*!
+     * Set a flag for if the global dRdAdditionalDOF can be modified
+     *
+     * \param value: The updated value
+     */
+    void hydraBase::setAllowModifyGlobaldRdAdditionalDOF(const bool value) {
+        _allow_modify_global_dRdAdditionalDOF = value;
+    }
+
+    /*!
+     * Set the value of the previously converged stress.
+     *
+     * \param &value: The incoming value
+     */
+    void hydraBase::setPreviouslyConvergedStress(const floatVector &value) {
+        _previouslyConvergedStress.second = value;
+        _previouslyConvergedStress.first  = true;
+    }
 }  // namespace tardigradeHydra

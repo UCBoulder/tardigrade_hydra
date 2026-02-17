@@ -74,9 +74,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
-             * \f$ F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * \f$ F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0 \f$
              *
-             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             * \f$ || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
              *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
              * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
              * elasticRightCauchyGreen_{IJ}^{-1} \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ}
@@ -124,23 +124,23 @@ namespace tardigradeHydra {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
-             * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * \f$ F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0 \f$
              *
-             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             * \f$ || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
              *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
              * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
              * elasticRightCauchyGreen_{IJ}^{-1}\f$
              *
              *  Also compute the Jacobians
-             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev (
-             * stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ \partial ||dev ( stressMeasure )||
+             * }{\partial dev ( stressMeasure )_{AB} } \frac{ \partial dev( stressMeasure )_{AB} }{
              * \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} } \frac{
-             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev (
-             * stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{
+             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ \partial
+             * ||dev ( stressMeasure )||}{\partial dev ( stressMeasure )_{AB} } \frac{
              * \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial
-             * C_{IJ} }
+             * C_{IJ} }\f$
              *
-             *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
+             *  \f$ \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
              *  A^{angle} = \beta^{angle} \cos( frictionAngle )
              *  B^{angle} = \beta^{angle} \sin( frictionAngle )
              *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
@@ -231,9 +231,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
-             * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0\f$
              *
-             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             * \f$|| dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
              *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev(
              * referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p}
              * elasticRightCauchyGreen_{IJ}^{-1} \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ}
@@ -241,14 +241,15 @@ namespace tardigradeHydra {
              * \sin( frictionAngle ) \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
              *
              *  Also compute the Jacobians
-             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev (
-             * stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ \partial ||dev ( stressMeasure )||
+             * }{\partial dev ( stressMeasure )_{AB} } \frac{ \partial dev( stressMeasure )_{AB} }{
              * \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} } \frac{
-             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev (
-             * stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure )_{AB} }{
-             * \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial C_{IJ} }\f$
+             * \partial F }{ \partial \bar{c} } = -A^{\phi} \frac{ \partial F }{ \partial C_{IJ} } = \frac{ \partial
+             * ||dev ( stressMeasure )||}{\partial dev ( stressMeasure )_{AB} } \frac{
+             * \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial
+             * C_{IJ} }\f$
              *
-             *  The second deriatives of \f$\frac{ \partial F }{ \partial \stressMeasure_{IJ}  }\f$ are
+             *  The second deriatives of \f$\frac{ \partial F }{ \partial stressMeasure_{IJ}  }\f$ are
              *  \f$\frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} } = \frac{ \partial^2
              * || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} }
              * \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev(
@@ -404,9 +405,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
-             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
+             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0\f$
              *
-             * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
+             * \f$|| dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              *  \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
              *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} M_{IJK}
@@ -455,9 +456,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
-             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
+             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0\f$
              *
-             * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
+             * \f$|| dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              *  \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
              *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} M_{IJK}
@@ -567,9 +568,9 @@ namespace tardigradeHydra {
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
-             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0
+             * \f$F_K = ||dev ( M ) ||_K - \left( A^{\phi} \bar{c}_K - B^{\phi} \bar{p}_K \right) \leq 0\f$
              *
-             * || dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
+             * \f$|| dev ( stressMeasure ) ||_K = \sqrt{ dev( M )_{IJK} : dev( M )_{IJK} }\f$
              * where the K's aren't summed.
              * \f$dev( M )_{IJK} = M_{IJK} - \bar{p}_K elasticRightCauchyGreen_{IJ}^{-1}
              *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} M_{IJK}
@@ -768,8 +769,8 @@ namespace tardigradeHydra {
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
              * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -816,8 +817,8 @@ namespace tardigradeHydra {
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
              * \f$ \bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right] \f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right] \f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -866,8 +867,8 @@ namespace tardigradeHydra {
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
              * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              * \param &macroGamma: The macro plastic multiplier.
              * \param &microGamma: The micro plastic multiplier.
@@ -929,8 +930,8 @@ namespace tardigradeHydra {
              * Compute the plastic micro velocity gradient
              *
              *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
              * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
@@ -1008,8 +1009,8 @@ namespace tardigradeHydra {
              * Compute the plastic micro velocity gradient
              *
              *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
              * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
@@ -1089,8 +1090,8 @@ namespace tardigradeHydra {
              * Compute the plastic micro velocity gradient
              *
              *  \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }
-             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma }
-             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
+             * \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } } + \dot{ \bar{ \gamma }
+             * }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } } \right]\f$
              *
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must
              * guarantee that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked
@@ -1189,7 +1190,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \dot{
              * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
              * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -1222,7 +1223,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \dot{
              * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
              * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -1336,7 +1337,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$ \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[
+             * \f$ \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1}
              * \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{
              * M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -1377,7 +1378,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \dot{
              * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
              * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -1453,7 +1454,7 @@ namespace tardigradeHydra {
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
-             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \dot{
              * \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{
              * \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{
              * \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K}
@@ -3182,7 +3183,7 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 stress = hydra->getPreviousStress();
 
-                Fp = hydra->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getPreviousFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -3195,7 +3196,7 @@ namespace tardigradeHydra {
             } else {
                 stress = hydra->getStress();
 
-                Fp = hydra->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -3523,11 +3524,12 @@ namespace tardigradeHydra {
             if (isPrevious) {
                 stress = hydra->getPreviousStress();
 
-                dF1dF = hydra->get_previousdF1dF();
+                dF1dF = hydra->deformation->get_previousdF1dF();
 
-                dF1dFn = hydra->get_previousdF1dFn();
+                dF1dFn = hydra->deformation->get_previousdF1dFn();
 
-                dFpdSubFs = hydra->getPreviousFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
+                dFpdSubFs =
+                    hydra->deformation->getPreviousFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
                 dChi1dChi = hydra->get_previousdChi1dChi();
 
@@ -3536,7 +3538,7 @@ namespace tardigradeHydra {
                 dChipdSubChis =
                     hydra->getPreviousFollowingMicroConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                Fp = hydra->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getPreviousFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getPreviousFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -3571,11 +3573,11 @@ namespace tardigradeHydra {
             } else {
                 stress = hydra->getStress();
 
-                dF1dF = hydra->get_dF1dF();
+                dF1dF = hydra->deformation->get_dF1dF();
 
-                dF1dFn = hydra->get_dF1dFn();
+                dF1dFn = hydra->deformation->get_dF1dFn();
 
-                dFpdSubFs = hydra->getFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
+                dFpdSubFs = hydra->deformation->getFollowingConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
                 dChi1dChi = hydra->get_dChi1dChi();
 
@@ -3583,7 +3585,7 @@ namespace tardigradeHydra {
 
                 dChipdSubChis = hydra->getFollowingMicroConfigurationJacobian(getPlasticConfigurationIndex() - 1);
 
-                Fp = hydra->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
+                Fp = hydra->deformation->getFollowingConfiguration(getPlasticConfigurationIndex() - 1);
 
                 chip = hydra->getFollowingMicroConfiguration(getPlasticConfigurationIndex() - 1);
 
@@ -6139,10 +6141,11 @@ namespace tardigradeHydra {
 
             if (isPrevious) {
                 set_previousPrecedingDeformationGradient(
-                    hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
+                    hydra->deformation->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
             } else {
-                set_precedingDeformationGradient(hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
+                set_precedingDeformationGradient(
+                    hydra->deformation->getPrecedingConfiguration(getPlasticConfigurationIndex()));
             }
         }
 
@@ -6201,26 +6204,29 @@ namespace tardigradeHydra {
 
             if (isPrevious) {
                 set_previousPrecedingDeformationGradient(
-                    hydra->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
+                    hydra->deformation->getPreviousPrecedingConfiguration(getPlasticConfigurationIndex()));
 
-                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
+                dPrecedingFdSubFs =
+                    hydra->deformation->getPreviousPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
 
-                dF1dF = hydra->get_previousdF1dF();
+                dF1dF = hydra->deformation->get_previousdF1dF();
 
-                dF1dFn = hydra->get_previousdF1dFn();
+                dF1dFn = hydra->deformation->get_previousdF1dFn();
 
                 dPrecedingFdF = get_SetDataStorage_previousdPrecedingDeformationGradientdF();
 
                 dPrecedingFdFn = get_SetDataStorage_previousdPrecedingDeformationGradientdFn();
 
             } else {
-                set_precedingDeformationGradient(hydra->getPrecedingConfiguration(getPlasticConfigurationIndex()));
+                set_precedingDeformationGradient(
+                    hydra->deformation->getPrecedingConfiguration(getPlasticConfigurationIndex()));
 
-                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
+                dPrecedingFdSubFs =
+                    hydra->deformation->getPrecedingConfigurationJacobian(getPlasticConfigurationIndex());
 
-                dF1dF = hydra->get_dF1dF();
+                dF1dF = hydra->deformation->get_dF1dF();
 
-                dF1dFn = hydra->get_dF1dFn();
+                dF1dFn = hydra->deformation->get_dF1dFn();
 
                 dPrecedingFdF = get_SetDataStorage_dPrecedingDeformationGradientdF();
 
@@ -7831,10 +7837,9 @@ namespace tardigradeHydra {
 
             auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
-            const secondOrderTensor previousPlasticDeformationGradient =
-                secondOrderTensor(hydra->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_previousConfigurations()->begin() +
-                                      sot_dim * (plasticConfigurationIndex + 1));
+            const secondOrderTensor previousPlasticDeformationGradient = secondOrderTensor(
+                hydra->deformation->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                hydra->deformation->get_previousConfigurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
                 hydra->get_previousMicroConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
@@ -8225,10 +8230,9 @@ namespace tardigradeHydra {
 
             auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
-            const secondOrderTensor previousPlasticDeformationGradient =
-                secondOrderTensor(hydra->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_previousConfigurations()->begin() +
-                                      sot_dim * (plasticConfigurationIndex + 1));
+            const secondOrderTensor previousPlasticDeformationGradient = secondOrderTensor(
+                hydra->deformation->get_previousConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
+                hydra->deformation->get_previousConfigurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
                 hydra->get_previousMicroConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
@@ -9481,9 +9485,9 @@ namespace tardigradeHydra {
             // Get the trial plastic deformation measures
             auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
-            const secondOrderTensor plasticDeformationGradient =
-                secondOrderTensor(hydra->get_configurations()->begin() + sot_dim * plasticConfigurationIndex,
-                                  hydra->get_configurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
+            const secondOrderTensor plasticDeformationGradient = secondOrderTensor(
+                hydra->deformation->get_configurations()->begin() + sot_dim * plasticConfigurationIndex,
+                hydra->deformation->get_configurations()->begin() + sot_dim * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor plasticMicroDeformation =
                 secondOrderTensor(hydra->get_microConfigurations()->begin() + sot_dim * plasticConfigurationIndex,
@@ -9930,7 +9934,7 @@ namespace tardigradeHydra {
 
             floatType a = rc * c0 - c;
 
-            floatType tol = hydra->getRelativeTolerance() * std::fabs(c) + hydra->getAbsoluteTolerance();
+            floatType tol = hydra->hydra_configuration.tolr * std::fabs(c) + hydra->hydra_configuration.tola;
 
             floatType b;
             if (a < tol) {
@@ -9968,7 +9972,7 @@ namespace tardigradeHydra {
 
             floatType a = rc * c0 - c;
 
-            floatType tol = hydra->getRelativeTolerance() * std::fabs(c) + hydra->getAbsoluteTolerance();
+            floatType tol = hydra->hydra_configuration.tolr * std::fabs(c) + hydra->hydra_configuration.tola;
 
             floatType b;
             if (a < tol) {
@@ -10004,17 +10008,17 @@ namespace tardigradeHydra {
             computeBaseCohesion(baseMacroCohesion, baseMicroCohesion, baseMicroGradientCohesion);
 
             floatType tol =
-                hydra->getRelativeTolerance() * std::fabs(baseMacroCohesion) + hydra->getAbsoluteTolerance();
+                hydra->hydra_configuration.tolr * std::fabs(baseMacroCohesion) + hydra->hydra_configuration.tola;
 
             isConverged = (isConverged) && (std::fabs(baseMacroCohesion - *get_macroCohesion()) <= tol);
 
-            tol = hydra->getRelativeTolerance() * std::fabs(baseMicroCohesion) + hydra->getAbsoluteTolerance();
+            tol = hydra->hydra_configuration.tolr * std::fabs(baseMicroCohesion) + hydra->hydra_configuration.tola;
 
             isConverged = (isConverged) && (std::fabs(baseMicroCohesion - *get_microCohesion()) <= tol);
 
             for (unsigned int i = 0; i < dim; i++) {
-                tol = hydra->getRelativeTolerance() * std::fabs(baseMicroGradientCohesion[i]) +
-                      hydra->getAbsoluteTolerance();
+                tol = hydra->hydra_configuration.tolr * std::fabs(baseMicroGradientCohesion[i]) +
+                      hydra->hydra_configuration.tola;
 
                 isConverged = (isConverged) &&
                               (std::fabs(baseMicroGradientCohesion[i] - (*get_microGradientCohesion())[i]) <= tol);

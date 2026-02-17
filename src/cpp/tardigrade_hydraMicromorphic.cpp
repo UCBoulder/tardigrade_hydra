@@ -11,47 +11,18 @@
 
 namespace tardigradeHydra {
 
-    hydraBaseMicromorphic::hydraBaseMicromorphic(
-        const floatType &time, const floatType &deltaTime, const floatType &temperature,
-        const floatType &previousTemperature, const secondOrderTensor &deformationGradient,
-        const secondOrderTensor &previousDeformationGradient, const secondOrderTensor &microDeformation,
-        const secondOrderTensor &previousMicroDeformation, const thirdOrderTensor &gradientMicroDeformation,
-        const thirdOrderTensor &previousGradientMicroDeformation, const floatVector &additionalDOF,
-        const floatVector &previousAdditionalDOF, const floatVector &previousStateVariables,
-        const floatVector &parameters, const unsigned int numConfigurations,
-        const unsigned int numNonLinearSolveStateVariables, const unsigned int dimension,
-        const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola)
-        : hydraBase(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                    additionalDOF, previousAdditionalDOF, previousStateVariables, parameters, numConfigurations,
-                    numNonLinearSolveStateVariables, dimension, configuration_unknown_count, tolr, tola),
-          _microDeformation(microDeformation),
-          _previousMicroDeformation(previousMicroDeformation),
-          _gradientMicroDeformation(gradientMicroDeformation),
-          _previousGradientMicroDeformation(previousGradientMicroDeformation) {
-        /*!
-         * The main constructor for the micromorphic hydra base class. Inputs are all the required values for most
-         * solves.
-         *
-         * \param &time: The current time
-         * \param &deltaTime: The change in time
-         * \param &temperature: The current temperature
-         * \param &previousTemperature: The previous temperature
-         * \param &deformationGradient: The current deformation gradient
-         * \param &previousDeformationGradient The previous deformation gradient
-         * \param &microDeformation: The current micro-deformation \f$ \chi \f$
-         * \param &previousMicroDeformation: The previous micro-deformation \f$ \chi \f$
-         * \param &gradientMicroDeformation: The current reference spatial gradient of the micro-deformation \f$
-         * \frac{\partial}{\partial X} \chi \f$ \param &previousGradientMicroDeformation: The previous reference spatial
-         * gradient of the micro-deformation \f$ \frac{\partial}{\partial X} \chi \f$ \param &additionalDOF: Additional
-         * degrees of freedom used in the material models \param &previousAdditionalDOF: The previous values of the
-         * additional degrees of freedom used in the material models \param &previousStateVariables: The previous state
-         * variables \param &parameters: The model parameters \param &numConfigurations: The number of configurations
-         * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the
-         * non-linear solve's residual \param &dimension: The dimension of the problem (defaults to 3) \param
-         * &configuration_unknown_count: The number of unknowns in each configuration (defaults to 27) \param &tolr: The
-         * relative tolerance (defaults to 1e-9) \param &tola: The absolute tolerance (defaults to 1e-9)
-         */
-    }
+    /*!
+     * The main constructor for the micromorphic hydra base class. Inputs are all the required values for most
+     * solves.
+     *
+     * \param &DOFStorage: The degree of freedom storage class
+     * \param &ModelConfiguration: The model configuration class
+      \param &_hydra_configuration: Class which defines the hydra configuration
+     */
+    hydraBaseMicromorphic::hydraBaseMicromorphic(const MicromorphicDOFStorage &DOFStorage,
+                                                 const ModelConfigurationBase &ModelConfiguration,
+                                                 HydraConfigurationBase        _hydra_configuration)
+        : hydraBase(DOFStorage, ModelConfiguration, _hydra_configuration) {}
 
     /*!
      * Initialize the hydra object
@@ -69,14 +40,18 @@ namespace tardigradeHydra {
          * Scale the current values by the scale factor
          */
 
+        auto local_dof =
+            static_cast<const tardigradeHydra::MicromorphicDOFStorage *>(dof);  // TODO: Avoid this static cast
+
         hydraBase::hydraBase::setScaledQuantities();
 
         _scaled_microDeformation =
-            getScaleFactor() * (_microDeformation - _previousMicroDeformation) + _previousMicroDeformation;
+            getScaleFactor() * (local_dof->_micro_deformation - local_dof->_previous_micro_deformation) +
+            local_dof->_previous_micro_deformation;
 
-        _scaled_gradientMicroDeformation =
-            getScaleFactor() * (_gradientMicroDeformation - _previousGradientMicroDeformation) +
-            _previousGradientMicroDeformation;
+        _scaled_gradientMicroDeformation = getScaleFactor() * (local_dof->_gradient_micro_deformation -
+                                                               local_dof->_previous_gradient_micro_deformation) +
+                                           local_dof->_previous_gradient_micro_deformation;
     }
 
     void hydraBaseMicromorphic::initializeUnknownVector() {
@@ -84,7 +59,7 @@ namespace tardigradeHydra {
          * Initialize the unknown vector for the non-linear solve.
          *
          * \f$X = \left\{ \bf{\sigma}, \bf{F}^2, \bf{F}^3, ..., \bf{F}n, \bf{\chi}^2, \bf{\chi}^3, ...,
-         * \frac{\partial}{\partial \bm{X}^2} \bf{\chi}^2, \frac{\partial}{\partial \bm{X}^3} \bf{\chi}^3, ..., \xi^1,
+         * \frac{\partial}{\partial \bf{X}^2} \bf{\chi}^2, \frac{\partial}{\partial \bf{X}^3} \bf{\chi}^3, ..., \xi^1,
          * \xi^2, ..., \xi^m \right\} \f$
          *
          * It is assumed that the first residual calculation also has a method `void getStress( )`
@@ -97,7 +72,7 @@ namespace tardigradeHydra {
         const floatVector *stress;
         TARDIGRADE_ERROR_TOOLS_CATCH(stress = getStress());
 
-        const floatVector *configurations = get_configurations();
+        const floatVector *configurations = deformation->get_configurations();
 
         const floatVector *microConfigurations = get_microConfigurations();
 
@@ -307,7 +282,7 @@ namespace tardigradeHydra {
 
         start_index += (num_configs - 1) * sot_dim;
 
-        computeGradientMicroConfigurations(getUnknownVector(), start_index, *get_configurations(),
+        computeGradientMicroConfigurations(getUnknownVector(), start_index, *deformation->get_configurations(),
                                            *microConfigurations.value, *getGradientMicroDeformation(),
                                            *gradientMicroConfigurations.value);
     }
@@ -344,11 +319,12 @@ namespace tardigradeHydra {
 
         start_index += (num_configs - 1) * sot_dim;
 
-        computeGradientMicroConfigurations(getPreviousStateVariables(), start_index, *get_configurations(),
+        computeGradientMicroConfigurations(getPreviousStateVariables(), start_index, *deformation->get_configurations(),
                                            *microConfigurations.value, *getGradientMicroDeformation(),
                                            *gradientMicroConfigurations.value);
 
-        computeGradientMicroConfigurations(getPreviousStateVariables(), start_index, *get_previousConfigurations(),
+        computeGradientMicroConfigurations(getPreviousStateVariables(), start_index,
+                                           *deformation->get_previousConfigurations(),
                                            *previousMicroConfigurations.value, *getPreviousGradientMicroDeformation(),
                                            *previousGradientMicroConfigurations.value);
     }
@@ -365,7 +341,7 @@ namespace tardigradeHydra {
          * the sub-configuration
          */
 
-        return getSubConfiguration(*get_microConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfiguration<3, 3, 3>(*get_microConfigurations(), lowerIndex, upperIndex);
     }
 
     secondOrderTensor hydraBaseMicromorphic::getPrecedingMicroConfiguration(const unsigned int &index) {
@@ -410,7 +386,7 @@ namespace tardigradeHydra {
          * the sub-configuration
          */
 
-        return getSubConfiguration(*get_previousMicroConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfiguration<3, 3, 3>(*get_previousMicroConfigurations(), lowerIndex, upperIndex);
     }
 
     secondOrderTensor hydraBaseMicromorphic::getPreviousPrecedingMicroConfiguration(const unsigned int &index) {
@@ -458,7 +434,7 @@ namespace tardigradeHydra {
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationJacobian(*get_microConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfigurationJacobian<3, 3, 3>(*get_microConfigurations(), lowerIndex, upperIndex);
     }
 
     floatVector hydraBaseMicromorphic::getPrecedingMicroConfigurationJacobian(const unsigned int &index) {
@@ -498,7 +474,8 @@ namespace tardigradeHydra {
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationJacobian(*get_previousMicroConfigurations(), lowerIndex, upperIndex);
+        return deformation->getSubConfigurationJacobian<3, 3, 3>(*get_previousMicroConfigurations(), lowerIndex,
+                                                                 upperIndex);
     }
 
     floatVector hydraBaseMicromorphic::getPreviousPrecedingMicroConfigurationJacobian(const unsigned int &index) {
@@ -533,7 +510,8 @@ namespace tardigradeHydra {
 
         auto dChi1dChin = get_SetDataStorage_dChi1dChin();
 
-        calculateFirstConfigurationJacobians(*get_microConfigurations(), *dChi1dChi.value, *dChi1dChin.value);
+        deformation->calculateFirstConfigurationJacobians(*get_microConfigurations(), *dChi1dChi.value,
+                                                          *dChi1dChin.value);
     }
 
     void hydraBaseMicromorphic::setPreviousFirstMicroConfigurationJacobians() {
@@ -546,8 +524,8 @@ namespace tardigradeHydra {
 
         auto previousdChi1dChin = get_SetDataStorage_previousdChi1dChin();
 
-        calculateFirstConfigurationJacobians(*get_previousMicroConfigurations(), *previousdChi1dChi.value,
-                                             *previousdChi1dChin.value);
+        deformation->calculateFirstConfigurationJacobians(*get_previousMicroConfigurations(), *previousdChi1dChi.value,
+                                                          *previousdChi1dChin.value);
     }
 
     void hydraBaseMicromorphic::setFirstGradientMicroConfigurationJacobians() {
@@ -566,7 +544,7 @@ namespace tardigradeHydra {
 
         auto dGradChi1dGradChin = get_SetDataStorage_dGradChi1dGradChin();
 
-        calculateFirstConfigurationGradChiJacobian(*get_configurations(), *get_microConfigurations(),
+        calculateFirstConfigurationGradChiJacobian(*deformation->get_configurations(), *get_microConfigurations(),
                                                    *getGradientMicroDeformation(), *get_gradientMicroConfigurations(),
                                                    *get_dChi1dChi(), *get_dChi1dChin(), *dGradChi1dFn.value,
                                                    *dGradChi1dChi.value, *dGradChi1dChin.value,
@@ -589,7 +567,8 @@ namespace tardigradeHydra {
 
         auto previousdGradChi1dGradChin = get_SetDataStorage_previousdGradChi1dGradChin();
 
-        calculateFirstConfigurationGradChiJacobian(*get_previousConfigurations(), *get_previousMicroConfigurations(),
+        calculateFirstConfigurationGradChiJacobian(*deformation->get_previousConfigurations(),
+                                                   *get_previousMicroConfigurations(),
                                                    *getPreviousGradientMicroDeformation(),
                                                    *get_previousGradientMicroConfigurations(), *get_previousdChi1dChi(),
                                                    *get_previousdChi1dChin(), *previousdGradChi1dFn.value,
@@ -659,7 +638,8 @@ namespace tardigradeHydra {
             //            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
             std::fill(temp_tot1.begin(), temp_tot1.end(), 0);
 
-            secondOrderTensor chiFollow = getSubConfiguration(microConfigurations, index + 1, getNumConfigurations());
+            secondOrderTensor chiFollow =
+                deformation->getSubConfiguration<3, 3, 3>(microConfigurations, index + 1, getNumConfigurations());
 
             for (unsigned int i = 0; i < dim; i++) {
                 for (unsigned int I = 0; I < dim; I++) {
@@ -675,7 +655,8 @@ namespace tardigradeHydra {
             //            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
             std::fill(gradientChi1Reference.begin(), gradientChi1Reference.end(), 0);
 
-            secondOrderTensor FFollow = getSubConfiguration(configurations, index + 1, getNumConfigurations());
+            secondOrderTensor FFollow =
+                deformation->getSubConfiguration<3, 3, 3>(configurations, index + 1, getNumConfigurations());
 
             for (unsigned int i = 0; i < dim; i++) {
                 for (unsigned int I = 0; I < dim; I++) {
@@ -692,11 +673,11 @@ namespace tardigradeHydra {
         gradientChi1Reference += gradientMicroConfiguration;
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        secondOrderTensor invChiFollow = getSubConfiguration(microConfigurations, 1, num_configs);
+        secondOrderTensor invChiFollow = deformation->getSubConfiguration<3, 3, 3>(microConfigurations, 1, num_configs);
         Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> > mat(invChiFollow.data(), 3, 3);
         mat = mat.inverse().eval();
 
-        secondOrderTensor invFFollow = getSubConfiguration(configurations, 1, num_configs);
+        secondOrderTensor invFFollow = deformation->getSubConfiguration<3, 3, 3>(configurations, 1, num_configs);
         new (&mat) Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(invFFollow.data(), 3, 3);
         mat = mat.inverse().eval();
 
@@ -783,12 +764,14 @@ namespace tardigradeHydra {
         secondOrderTensor chiPrecede(sot_dim, 0), chiFollow(sot_dim, 0), FFollow(sot_dim, 0);
 
         for (unsigned int index = 1; index < num_configs; index++) {
-            chiPrecede = getSubConfiguration(microConfigurations, 0, index);
+            chiPrecede = deformation->getSubConfiguration<3, 3, 3>(microConfigurations, 0, index);
 
             // Set the Jacobians of the mapping terms
-            floatVector dFFollowdCs = getSubConfigurationJacobian(configurations, index + 1, num_configs);
+            floatVector dFFollowdCs =
+                deformation->getSubConfigurationJacobian<3, 3, 3>(configurations, index + 1, num_configs);
 
-            floatVector dChiPrecededChis = getSubConfigurationJacobian(microConfigurations, 0, index);
+            floatVector dChiPrecededChis =
+                deformation->getSubConfigurationJacobian<3, 3, 3>(microConfigurations, 0, index);
 
             fourthOrderTensor dChiPrecededChi(sot_dim * sot_dim, 0);
 
@@ -813,7 +796,8 @@ namespace tardigradeHydra {
                 }
             }
 
-            floatVector dChiFollowdChis = getSubConfigurationJacobian(microConfigurations, index + 1, num_configs);
+            floatVector dChiFollowdChis =
+                deformation->getSubConfigurationJacobian<3, 3, 3>(microConfigurations, index + 1, num_configs);
 
             // Add the contribution of the term
             for (unsigned int i = 0; i < dim; i++) {
@@ -835,7 +819,8 @@ namespace tardigradeHydra {
                 std::fill(gradientChi1Reference.begin(), gradientChi1Reference.end(), 0);
                 std::fill(temp_tot2.begin(), temp_tot2.end(), 0);
 
-                chiFollow = getSubConfiguration(microConfigurations, index + 1, getNumConfigurations());
+                chiFollow =
+                    deformation->getSubConfiguration<3, 3, 3>(microConfigurations, index + 1, getNumConfigurations());
 
                 for (unsigned int i = 0; i < dim; i++) {
                     for (unsigned int I = 0; I < dim; I++) {
@@ -856,7 +841,7 @@ namespace tardigradeHydra {
                 std::fill(temp_tot2a.begin(), temp_tot2a.end(), 0);
                 std::fill(temp_tot3a.begin(), temp_tot3a.end(), 0);
 
-                FFollow = getSubConfiguration(configurations, index + 1, getNumConfigurations());
+                FFollow = deformation->getSubConfiguration<3, 3, 3>(configurations, index + 1, getNumConfigurations());
 
                 for (unsigned int i = 0; i < dim; i++) {
                     for (unsigned int I = 0; I < dim; I++) {
@@ -960,9 +945,9 @@ namespace tardigradeHydra {
         gradientChi1Reference += gradientMicroConfiguration;
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        chiFollow = getSubConfiguration(microConfigurations, 1, num_configs);
+        chiFollow = deformation->getSubConfiguration<3, 3, 3>(microConfigurations, 1, num_configs);
 
-        FFollow = getSubConfiguration(configurations, 1, num_configs);
+        FFollow = deformation->getSubConfiguration<3, 3, 3>(configurations, 1, num_configs);
 
         secondOrderTensor                                            invChiFollow = chiFollow;
         Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> > mat(invChiFollow.data(), 3, 3);
@@ -978,9 +963,10 @@ namespace tardigradeHydra {
         new (&mat) Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(invFFollow_T.data(), 3, 3);
         mat = mat.transpose().eval();
 
-        floatVector dChiFollowdChis = getSubConfigurationJacobian(microConfigurations, 1, num_configs);
+        floatVector dChiFollowdChis =
+            deformation->getSubConfigurationJacobian<3, 3, 3>(microConfigurations, 1, num_configs);
 
-        floatVector dFFollowdFs = getSubConfigurationJacobian(configurations, 1, num_configs);
+        floatVector dFFollowdFs = deformation->getSubConfigurationJacobian<3, 3, 3>(configurations, 1, num_configs);
 
         fourthOrderTensor dInvChiFollowdChiFollow = tardigradeVectorTools::computeFlatDInvADA(invChiFollow, dim, dim);
 

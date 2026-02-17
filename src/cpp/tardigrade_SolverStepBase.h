@@ -112,7 +112,6 @@ namespace tardigradeHydra {
         void incrementNumUndamped() { _NUM_UNDAMPED++; }
 
        private:
-        friend class tardigradeHydra::hydraBase;                        //!< TEMP REMOVE THIS
         friend class tardigradeHydra::unit_test::SolverStepBaseTester;  //!< The unit tester for the class
 
         bool _rank_deficient_error = false;  //!< Flag for whether a rank-deficient Jacobian should cause an error
@@ -121,5 +120,7 @@ namespace tardigradeHydra {
     };
 
 }  // namespace tardigradeHydra
+
+#include "tardigrade_SolverStepBase.tpp"
 
 #endif

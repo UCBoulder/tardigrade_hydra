@@ -370,6 +370,13 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
         0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
@@ -383,12 +390,11 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
-
     test_SolverBase_solve_in_gradient_convergence = 0;
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
 
     IterativeSolverBaseMock   solver;
     SolverStepBaseMock        step;
@@ -435,9 +441,7 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_solve, *boost::unit_test::toleranc
     BOOST_TEST(hydra.num_derivative_calls == 3);  // 3 because we initialize the jacobian
 
     test_SolverBase_solve_in_gradient_convergence = 0;
-    hydraBaseMock hydra_pre(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                            previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                            numNonLinearSolveStateVariables, dimension, 9, 1e-9, 1e-9);
+    hydraBaseMock hydra_pre(dof, model_configuration);
 
     IterativeSolverBaseMock   solver_pre;
     SolverStepBaseMock        step_pre;
@@ -560,6 +564,13 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulIterativeSte
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
         0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
@@ -573,11 +584,10 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualSuccessfulIterativeSte
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    hydraBaseMock hydra(dof, model_configuration);
 
     IterativeSolverBaseMock solver;
 
@@ -665,6 +675,13 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
         0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
@@ -678,11 +695,10 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPreIterativeSolve,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    hydraBaseMock hydra(dof, model_configuration);
 
     IterativeSolverBaseMock solver;
     solver.hydra = &hydra;
@@ -769,6 +785,13 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostIterativeSolve,
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
         0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
@@ -782,11 +805,10 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_callResidualPostIterativeSolve,
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    hydraBaseMock hydra(dof, model_configuration);
 
     IterativeSolverBaseMock solver;
     hydra.solver = &solver;
@@ -822,6 +844,13 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_checkConvergence, *boost::unit_tes
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
         0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
@@ -835,11 +864,10 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_checkConvergence, *boost::unit_tes
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    hydraBaseMock hydra(dof, model_configuration);
 
     tardigradeHydra::IterativeSolverBase solver;
 
@@ -890,6 +918,13 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_setTolerance, *boost::unit_test::t
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
         0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
@@ -903,11 +938,10 @@ BOOST_AUTO_TEST_CASE(test_IterativeSolverBase_setTolerance, *boost::unit_test::t
 
     unsigned int numNonLinearSolveStateVariables = 5;
 
-    unsigned int dimension = 3;
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    hydraBaseMock hydra(dof, model_configuration);
 
     tardigradeHydra::IterativeSolverBase solver;
 

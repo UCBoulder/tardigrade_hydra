@@ -210,4 +210,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity.tpp"
+
 #endif

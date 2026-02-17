@@ -123,6 +123,13 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
                                                                 -0.12285551, -0.88064421, -0.20391149,
                                                                 0.47599081,  -0.63501654, -0.64909649};
 
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
     tardigradeHydra::floatVector previousStateVariables = {
         0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532, 0.61102351, 0.72244338, 0.32295891,
         0.36178866, 0.22826323, 0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276, 0.4936851,
@@ -135,8 +142,6 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
     unsigned int numConfigurations = 4;
 
     unsigned int numNonLinearSolveStateVariables = 5;
-
-    unsigned int dimension = 3;
 
     class MaxRowPreconditionerMock
         : public tardigradeHydra::MaxRowPreconditioner {  // Change the parent class to MaxRowPreconditioner when that
@@ -170,9 +175,10 @@ BOOST_AUTO_TEST_CASE(test_MaxRowPreconditioner_formMaxRowPreconditioner,
         virtual const unsigned int getNumUnknowns() override { return 5; }
     };
 
-    hydraBaseMock hydra(time, deltaTime, temperature, previousTemperature, deformationGradient,
-                        previousDeformationGradient, {}, {}, previousStateVariables, parameters, numConfigurations,
-                        numNonLinearSolveStateVariables, dimension);
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
 
     tardigradeHydra::IterativeSolverBase solver(&hydra);
     tardigradeHydra::SolverStepBase      step(&solver);

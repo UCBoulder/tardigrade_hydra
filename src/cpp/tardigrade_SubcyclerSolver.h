@@ -11,8 +11,8 @@
 #define TARDIGRADE_SUBCYCLERSOLVER_H
 
 #include "tardigrade_CoreDefinitions.h"
-#include "tardigrade_RelaxedSolver.h"  //#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_RelaxedSolver.h"
+#include "tardigrade_RelaxedSolverBase.h"  //#include "tardigrade_IterativeSolverBase.h"
 #include "tardigrade_SolverBase.h"
 
 namespace tardigradeHydra {
@@ -95,7 +95,6 @@ namespace tardigradeHydra {
         unsigned int num_good = 0;  //!< The number of good subcycler steps
 
        private:
-        friend class tardigradeHydra::hydraBase;  //!< The base class for hydra TEMP THIS SHOULD BE REMOVED
         friend class tardigradeHydra::unit_test::SubcyclerSolverTester;  //!< The unit tester for the class
 
         floatType _cutback_factor = 0.5;  //!< The factor by which the pseudo-time will be scaled if a solve fails
@@ -110,5 +109,7 @@ namespace tardigradeHydra {
     };
 
 }  // namespace tardigradeHydra
+
+#include "tardigrade_SubcyclerSolver.tpp"
 
 #endif

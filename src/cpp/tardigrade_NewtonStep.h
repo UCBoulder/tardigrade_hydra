@@ -32,4 +32,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
+#include "tardigrade_NewtonStep.tpp"
+
 #endif
