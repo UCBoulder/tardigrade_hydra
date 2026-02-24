@@ -40,6 +40,30 @@ namespace tardigradeHydra {
 
             virtual void setPreviousdFedFn();
 
+            virtual void setStrainEnergy(const bool isPrevious);
+
+            virtual void setStrainEnergy();
+
+            virtual void setPreviousStrainEnergy();
+
+            virtual void setStrainEnergyJacobians(const bool isPrevious);
+
+            virtual void setStrainEnergyJacobians();
+
+            virtual void setPreviousStrainEnergyJacobians();
+
+            virtual void setStrainEnergyHessians(const bool isPrevious);
+
+            virtual void setStrainEnergyHessians();
+
+            virtual void setPreviousStrainEnergyHessians();
+
+            virtual void setCauchyStress(const bool isPrevious);
+
+            virtual void setCauchyStress();
+
+            virtual void setPreviousCauchyStress();
+
         private:
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Fe, secondOrderTensor, setFe)
@@ -53,6 +77,26 @@ namespace tardigradeHydra {
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousdFedF, fourthOrderTensor, setPreviousdFedF)
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousdFedFn, floatVector, setPreviousdFedFn)
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, strainEnergy, floatType, setStrainEnergy);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousStrainEnergy, floatType, setPreviousStrainEnergy);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dStrainEnergydFe, secondOrderTensor, setStrainEnergyJacobians);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousStrainEnergydPreviousFe, secondOrderTensor, setPreviousStrainEnergyJacobians);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2StrainEnergydFe2, fourthOrderTensor, setStrainEnergyHessians);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2StrainEnergydFedT, secondOrderTensor, setStrainEnergyHessians);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousStrainEnergydPreviousFe2, fourthOrderTensor, setPreviousStrainEnergyHessians);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousStrainEnergydPreviousFedPreviousT, secondOrderTensor, setPreviousStrainEnergyHessians);
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, cauchyStress, secondOrderTensor, setCauchyStress);
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, previousCauchyStress, secondOrderTensor, setPreviousCauchyStress);
 
     };
 
