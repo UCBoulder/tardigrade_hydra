@@ -530,4 +530,97 @@ namespace tardigradeHydra {
 
         }
 
+        void HyperelasticBase::setStress() {
+            /*!
+             * Set the stress
+             *
+             * Currently uses the Cauchy stress
+             */
+
+            setCauchyStress(false);
+
+            auto stress = get_SetDataStorage_stress();
+
+            *stress.value = *get_cauchyStress();
+        }
+
+        void HyperelasticBase::setPreviousStress() {
+            /*!
+             * Set the previous stress
+             *
+             * Currently uses the Cauchy stress
+             */
+
+            setCauchyStress(true);
+
+            auto previousStress = get_SetDataStorage_previousStress();
+
+            *previousStress.value = *get_previousCauchyStress();
+        }
+
+        void HyperelasticBase::setResidual() {
+            /*!
+             * Set the residual value
+             */
+
+            auto residual = get_SetDataStorage_residual();
+
+            const secondOrderTensor *stress = getStress();
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(*residual.value = *stress - *hydra->getStress());
+        }
+
+        void HyperelasticBase::setJacobian() {
+            /*!
+             * Set the Jacobian value
+             */
+
+            auto dim = hydra->getDimension();
+
+            auto sot_dim = hydra->getSOTDimension();
+
+            auto num_configs = hydra->getNumConfigurations();
+
+            auto num_unknown_config_vars = (num_configs - 1) * sot_dim;
+
+            auto num_unknowns = hydra->getNumUnknowns();
+
+            // Form the Jacobian
+            auto jacobian = get_SetDataStorage_jacobian();
+
+            jacobian.zero(sot_dim * num_unknowns);
+
+            for (unsigned int i = 0; i < dim; i++) {
+                for (unsigned int j = 0; j < dim; j++) {
+                    (*jacobian.value)[num_unknowns * dim * i + num_unknowns * j + dim * i + j] = -1;
+
+                    for (unsigned int I = 0; I < num_unknown_config_vars; I++) {
+                        (*jacobian.value)[num_unknowns * dim * i + num_unknowns * j + getStress()->size() + I] =
+                            (*get_dCauchyStressdFn())[dim * num_unknown_config_vars * i + num_unknown_config_vars * j +
+                                                      I];
+                    }
+                }
+            }
+        }
+
+        void HyperelasticBase::setdRdT() {
+            /*!
+             * Set the derivative of the residual w.r.t. the temperature
+             */
+
+            auto dRdT = get_SetDataStorage_dRdT();
+
+            dRdT.zero(getNumEquations());
+        }
+
+        void HyperelasticBase::setdRdF() {
+            /*!
+             * Set the derivative of the residual w.r.t. the deformation gradient
+             */
+
+            auto dRdF = get_SetDataStorage_dRdF();
+
+            *dRdF.value = *get_dCauchyStressdF();
+        }
+
 }

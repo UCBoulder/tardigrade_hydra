@@ -78,6 +78,18 @@ namespace tardigradeHydra {
 
             virtual void setdPreviousCauchyStressdPreviousFn();
 
+            virtual void setStress() override;
+
+            virtual void setPreviousStress() override;
+
+            virtual void setResidual() override;
+
+            virtual void setJacobian() override;
+
+            virtual void setdRdT() override;
+
+            virtual void setdRdF() override;
+
         private:
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Fe, secondOrderTensor, setFe)
