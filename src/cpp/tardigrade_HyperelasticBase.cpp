@@ -279,4 +279,67 @@ namespace tardigradeHydra {
 
         }
 
+        /*!
+         * Set the Cauchy stress jacobians
+         *
+         * \param isPrevious: Whether we should compute the previous or current Jacobians
+         */
+        void HyperelasticBase::setCauchyStressJacobians(const bool isPrevious){
+
+        }
+
+        /*!
+         * Set the Jacobian of the Cauchy stress w.r.t. the deformation gradient
+         */
+        void HyperelasticBase::setdCauchyStressdF(){
+
+            setCauchyStressJacobians(false);
+
+        }
+
+        /*!
+         * Set the Jacobian of the Cauchy stress w.r.t. the temperature
+         */
+        void HyperelasticBase::setdCauchyStressdT(){
+
+            setCauchyStressJacobians(false);
+
+        }
+
+        /*!
+         * Set the Jacobian of the Cauchy stress w.r.t. the other deformation gradients
+         */
+        void HyperelasticBase::setdCauchyStressdFn(){
+
+            setCauchyStressJacobians(false);
+
+        }
+
+        /*!
+         * Set the previous Jacobian of the Cauchy stress w.r.t. the deformation gradient
+         */
+        void HyperelasticBase::setdPreviousCauchyStressdPreviousF(){
+
+            setCauchyStressJacobians(true);
+
+        }
+
+        /*!
+         * Set the previous Jacobian of the Cauchy stress w.r.t. the temperature
+         */
+        void HyperelasticBase::setdPreviousCauchyStressdPreviousT(){
+
+            setCauchyStressJacobians(true);
+
+        }
+
+        /*!
+         * Set the previous Jacobian of the Cauchy stress w.r.t. the other deformation gradients
+         */
+        void HyperelasticBase::setdPreviousCauchyStressdPreviousFn(){
+
+            setCauchyStressJacobians(true);
+
+        }
+
 }

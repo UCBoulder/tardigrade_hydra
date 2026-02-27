@@ -64,6 +64,20 @@ namespace tardigradeHydra {
 
             virtual void setPreviousCauchyStress();
 
+            virtual void setCauchyStressJacobians(const bool isPrevious);
+
+            virtual void setdCauchyStressdF();
+
+            virtual void setdCauchyStressdT();
+
+            virtual void setdCauchyStressdFn();
+
+            virtual void setdPreviousCauchyStressdPreviousF();
+
+            virtual void setdPreviousCauchyStressdPreviousT();
+
+            virtual void setdPreviousCauchyStressdPreviousFn();
+
         private:
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Fe, secondOrderTensor, setFe)
@@ -96,7 +110,19 @@ namespace tardigradeHydra {
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, cauchyStress, secondOrderTensor, setCauchyStress);
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, previousCauchyStress, secondOrderTensor, setPreviousCauchyStress);
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousCauchyStress, secondOrderTensor, setPreviousCauchyStress);
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dCauchyStressdF, fourthOrderTensor, setdCauchyStressdF);
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dCauchyStressdT, secondOrderTensor, setdCauchyStressdT);
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dCauchyStressdFn, floatVector, setdCauchyStressdFn);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousCauchyStressdPreviousF, fourthOrderTensor, setdPreviousCauchyStressdPreviousF);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousCauchyStressdPreviousT, secondOrderTensor, setdPreviousCauchyStressdPreviousT);
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousCauchyStressdPreviousFn, floatVector, setdPreviousCauchyStressdPreviousFn);
 
     };
 
