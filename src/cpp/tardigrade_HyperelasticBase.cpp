@@ -234,11 +234,14 @@ namespace tardigradeHydra {
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( (std::end( *Fe ) - std::begin( *Fe )) != dim * dim, "The elastic deformation must have a size of " + std::to_string( dim * dim ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK( (std::end( *Fe ) - std::begin( *Fe )) == dim * dim, "The elastic deformation must have a size of " + std::to_string( dim * dim ) );
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( (std::end( *dStrainEnergydFe ) - std::begin( *dStrainEnergydFe )) != dim * dim, "The derivative of the strain energy with respect to the elastic deformation must have a size of " + std::to_string( dim * dim ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK( (std::end( *dStrainEnergydFe ) - std::begin( *dStrainEnergydFe )) == dim * dim, "The derivative of the strain energy with respect to the elastic deformation must have a size of " + std::to_string( dim * dim ) );
 
             cauchyStress.zero(dim*dim);
+            
+            Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> Femat(Fe->data(), dim, dim); //TODO: Change this to a constant size when possible
+            auto Je = Femat.determinant();
 
             for ( unsigned int i = 0; i < dim; ++i ){
 
@@ -246,9 +249,11 @@ namespace tardigradeHydra {
 
                     for ( unsigned int I = 0; I < dim; ++I ){
 
-                        *(cauchyStress.begin() + dim * i + j) += (*dStrainEnergydFe)[dim * i + I] * (*Fe)[dim * j + I];
+                        (*cauchyStress.value)[dim * i + j] += (*dStrainEnergydFe)[dim * i + I] * (*Fe)[dim * j + I];
 
                     }
+
+                    (*cauchyStress.value)[dim * i + j] /= Je;
 
                 }
 
