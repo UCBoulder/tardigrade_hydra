@@ -367,13 +367,6 @@ namespace tardigradeHydra {
             auto Je = Femat.determinant();
             invFemat = Femat.inverse().eval();
 
-//            c_ij = dedfe_iI Fe_jI / Je
-//
-//            dcdF_ijaA  = d2edFedFe_iIbB Fe_jI dFedF_bBaA / Je + dedFe_iI dFedF_jIaA / Je - dedFe_iI Fe_jI / Je**2 dJedF_aA
-//            dcdFn_ijA = d2edFedFe_iIbB Fe_jI dFedFn_bBA / Je + dedFe_iI dFedF_jIA / Je - dedFe_iI Fe_jI / Je**2 dJedFn_A
-//            dcdT_ij = d2edFedT_iI Fe_jI
-
-//            dcdF_ijaA  = d2edFedF_iIaA Fe_jI / Je + dedFe_iI dFedF_jIaA / Je - c_ij invFedFedF_aA
             secondOrderTensor JecauchyStress(dim*dim,0);
             secondOrderTensor invFedFedF(dim*dim,0);
             secondOrderTensor invFedFedFn(dim*dim*(hydra->getNumConfigurations()-1),0);
