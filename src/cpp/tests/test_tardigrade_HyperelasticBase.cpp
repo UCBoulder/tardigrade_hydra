@@ -57,7 +57,7 @@ namespace tardigradeHydra {
 
     }  // namespace unit_test
 
-}
+}  // namespace tardigradeHydra
 
 BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1e-5)) {
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -95,11 +95,12 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1
 
     tardigradeHydra::floatType previousTemperature = 23.4;
 
-    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,  2.70156033e-02, 9.77585948e-01,
-                                       4.76270457e-04, 4.42875587e-02,  -4.95172679e-02, 9.54139963e-01};
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375,
-                                               0.0038319,  0.07107588,  0.0013805,   0.98514977};
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -109,7 +110,7 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1
                                         previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
     tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
-                                          0.01110235, 0.02224434, -0.01770411, -0.01382113};
+                                                           0.01110235, 0.02224434, -0.01770411, -0.01382113};
 
     tardigradeHydra::floatVector parameters = {123.4, 56.7};
 
@@ -118,10 +119,10 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1
     unsigned int numNonLinearSolveStateVariables = 0;
 
     tardigradeHydra::floatVector FeAnswer = {0.98921175,  -0.0156822, 0.02290497,  -0.00614278, 0.95596779,
-                            -0.01019557, 0.02379954, -0.03175083, 0.96754518};
+                                             -0.01019557, 0.02379954, -0.03175083, 0.96754518};
 
     tardigradeHydra::floatVector previousFeAnswer = {1.01964692,  -0.02138607, -0.02731485, 0.00513148, 1.0219469,
-                                    -0.00768935, 0.04807642,  0.01848297,  0.99809319};
+                                                     -0.00768935, 0.04807642,  0.01848297,  0.99809319};
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
                                                                 numNonLinearSolveStateVariables);
@@ -146,7 +147,8 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1
 
     // Test the Jacobians
     tardigradeHydra::floatType   eps = 1e-6;
-    tardigradeHydra::floatMatrix jac(deformationGradient.size(), tardigradeHydra::floatVector(deformationGradient.size(), 0));
+    tardigradeHydra::floatMatrix jac(deformationGradient.size(),
+                                     tardigradeHydra::floatVector(deformationGradient.size(), 0));
     for (unsigned int i = 0; i < deformationGradient.size(); i++) {
         tardigradeHydra::floatVector delta(deformationGradient.size(), 0);
 
@@ -183,7 +185,8 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(jac) == *R.get_dFedF(), CHECK_PER_ELEMENT);
 
-    jac = tardigradeHydra::floatMatrix(deformationGradient.size(), tardigradeHydra::floatVector(deformationGradient.size(), 0));
+    jac = tardigradeHydra::floatMatrix(deformationGradient.size(),
+                                       tardigradeHydra::floatVector(deformationGradient.size(), 0));
     for (unsigned int i = 0; i < deformationGradient.size(); i++) {
         tardigradeHydra::floatVector delta(deformationGradient.size(), 0);
 
@@ -218,7 +221,8 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(jac) == *R.get_previousdFedF(), CHECK_PER_ELEMENT);
 
-    jac = tardigradeHydra::floatMatrix(deformationGradient.size(), tardigradeHydra::floatVector(previousStateVariables.size(), 0));
+    jac = tardigradeHydra::floatMatrix(deformationGradient.size(),
+                                       tardigradeHydra::floatVector(previousStateVariables.size(), 0));
     for (unsigned int i = 0; i < previousStateVariables.size(); i++) {
         tardigradeHydra::floatVector delta(previousStateVariables.size(), 0);
 
@@ -255,7 +259,8 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1
 
     BOOST_TEST(tardigradeVectorTools::appendVectors(jac) == *R.get_dFedFn(), CHECK_PER_ELEMENT);
 
-    jac = tardigradeHydra::floatMatrix(deformationGradient.size(), tardigradeHydra::floatVector(previousStateVariables.size(), 0));
+    jac = tardigradeHydra::floatMatrix(deformationGradient.size(),
+                                       tardigradeHydra::floatVector(previousStateVariables.size(), 0));
     for (unsigned int i = 0; i < previousStateVariables.size(); i++) {
         tardigradeHydra::floatVector delta(previousStateVariables.size(), 0);
 
@@ -294,55 +299,41 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setFe, *boost::unit_test::tolerance(1
 }
 
 BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStress, *boost::unit_test::tolerance(1e-6)) {
-
     class HyperelasticBaseMock : public tardigradeHydra::HyperelasticBase {
+       public:
+        using tardigradeHydra::HyperelasticBase::HyperelasticBase;
 
-        public:
-            using tardigradeHydra::HyperelasticBase::HyperelasticBase;
+        tardigradeHydra::floatVector Fe = {2, 2, 3, 4, 6, 6, 7, 8, 10};
 
-            tardigradeHydra::floatVector Fe = {2, 2, 3, 4, 6, 6, 7, 8, 10};
+        tardigradeHydra::floatVector previousFe = {1.1, 0.2, 0.3, 0.4, 1.5, 0.6, 0.7, 0.8, 1.9};
 
-            tardigradeHydra::floatVector previousFe = {1.1, 0.2, 0.3, 0.4, 1.5, 0.6, 0.7, 0.8, 1.9};
+        tardigradeHydra::floatVector dStrainEnergydFe = {.11, .22, .33, .44, .55, .66, .77, .88, .99};
 
-            tardigradeHydra::floatVector dStrainEnergydFe = {.11, .22, .33, .44, .55, .66, .77, .88, .99};
+        tardigradeHydra::floatVector dPreviousStrainEnergydPreviousFe = {-.11, -.22, -.33, -.44, -.55,
+                                                                         -.66, -.77, -.88, -.99};
 
-            tardigradeHydra::floatVector dPreviousStrainEnergydPreviousFe = {-.11, -.22, -.33, -.44, -.55, -.66, -.77, -.88, -.99};
+       protected:
+        virtual void setFe(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousFe();
+                *v.value = previousFe;
 
-        protected:
-            virtual void setFe(const bool isPrevious) override {
-
-                if ( isPrevious ){
-
-                    auto v = get_SetDataStorage_previousFe();
-                    *v.value = previousFe;
-
-                }
-                else{
-
-                    auto v = get_SetDataStorage_Fe();
-                    *v.value = Fe;
-
-                }
-
+            } else {
+                auto v   = get_SetDataStorage_Fe();
+                *v.value = Fe;
             }
+        }
 
-            virtual void setStrainEnergyJacobians(const bool isPrevious) override {
+        virtual void setStrainEnergyJacobians(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
+                *v.value = dPreviousStrainEnergydPreviousFe;
 
-                if ( isPrevious ){
-
-                    auto v = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
-                    *v.value = dPreviousStrainEnergydPreviousFe;
-
-                }
-                else{
-
-                    auto v = get_SetDataStorage_dStrainEnergydFe();
-                    *v.value = dStrainEnergydFe;
-
-                }
-
+            } else {
+                auto v   = get_SetDataStorage_dStrainEnergydFe();
+                *v.value = dStrainEnergydFe;
             }
-
+        }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -380,11 +371,12 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStress, *boost::unit_test::t
 
     tardigradeHydra::floatType previousTemperature = 23.4;
 
-    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,  2.70156033e-02, 9.77585948e-01,
-                                       4.76270457e-04, 4.42875587e-02,  -4.95172679e-02, 9.54139963e-01};
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375,
-                                               0.0038319,  0.07107588,  0.0013805,   0.98514977};
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -394,7 +386,7 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStress, *boost::unit_test::t
                                         previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
     tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
-                                          0.01110235, 0.02224434, -0.01770411, -0.01382113};
+                                                           0.01110235, 0.02224434, -0.01770411, -0.01382113};
 
     tardigradeHydra::floatVector parameters = {123.4, 56.7};
 
@@ -409,112 +401,84 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStress, *boost::unit_test::t
 
     hydra.initialize();
 
-    tardigradeHydra::floatVector answer = { -0.825,  -1.87 ,  -2.915,
-                                            -1.98 ,  -4.51 ,  -7.04 ,
-                                            -3.135,  -7.15 , -11.165 };
+    tardigradeHydra::floatVector answer = {-0.825, -1.87, -2.915, -1.98, -4.51, -7.04, -3.135, -7.15, -11.165};
 
-    tardigradeHydra::floatVector previousAnswer = { -0.1137931 , -0.24655172, -0.37931034,
-                                                    -0.34137931, -0.60215517, -0.86293103,
-                                                    -0.56896552, -0.95775862, -1.34655172 };
+    tardigradeHydra::floatVector previousAnswer = {-0.1137931,  -0.24655172, -0.37931034, -0.34137931, -0.60215517,
+                                                   -0.86293103, -0.56896552, -0.95775862, -1.34655172};
 
     HyperelasticBaseMock R(&hydra, 9);
 
     BOOST_TEST(answer == *R.get_cauchyStress(), CHECK_PER_ELEMENT);
 
     BOOST_TEST(previousAnswer == *R.get_previousCauchyStress(), CHECK_PER_ELEMENT);
-
 }
 
 BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::unit_test::tolerance(1e-6)) {
-
     class HyperelasticBaseMock : public tardigradeHydra::HyperelasticBase {
+       public:
+        using tardigradeHydra::HyperelasticBase::HyperelasticBase;
 
-        public:
-            using tardigradeHydra::HyperelasticBase::HyperelasticBase;
+        tardigradeHydra::floatVector _d2StrainEnergydFe2 = {
+            1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+            28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54,
+            55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81};
 
-            tardigradeHydra::floatVector _d2StrainEnergydFe2 = { 1,  2,  3,  4,  5,  6,  7,  8,  9,
-                                                                10, 11, 12, 13, 14, 15, 16, 17, 18,
-                                                                19, 20, 21, 22, 23, 24, 25, 26, 27,
-                                                                28, 29, 30, 31, 32, 33, 34, 35, 36,
-                                                                37, 38, 39, 40, 41, 42, 43, 44, 45,
-                                                                46, 47, 48, 49, 50, 51, 52, 53, 54,
-                                                                55, 56, 57, 58, 59, 60, 61, 62, 63,
-                                                                64, 65, 66, 67, 68, 69, 70, 71, 72,
-                                                                73, 74, 75, 76, 77, 78, 79, 80, 81};
+        tardigradeHydra::floatVector _d2StrainEnergydFedT = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
 
-            tardigradeHydra::floatVector _d2StrainEnergydFedT = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+       protected:
+        virtual void setStrainEnergyJacobians(const bool isPrevious) override {
+            const tardigradeHydra::floatVector *Fe;
 
-        protected:
+            tardigradeHydra::floatType T;
 
-            virtual void setStrainEnergyJacobians(const bool isPrevious) override{
+            tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> dStrainEnergydFe;
 
-                const tardigradeHydra::floatVector *Fe;
+            if (isPrevious) {
+                Fe = get_previousFe();
 
-                tardigradeHydra::floatType T;
+                T = hydra->getPreviousTemperature();
 
-                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> dStrainEnergydFe;
+                dStrainEnergydFe = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
 
-                if ( isPrevious ){
+            } else {
+                Fe = get_Fe();
 
-                    Fe = get_previousFe();
+                T = hydra->getTemperature();
 
-                    T = hydra->getPreviousTemperature();
-
-                    dStrainEnergydFe = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
-
-                }
-                else{
-
-                    Fe = get_Fe();
-
-                    T = hydra->getTemperature();
-
-                    dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
-
-                }
-
-                dStrainEnergydFe.zero(9);
-
-                for (unsigned int I = 0; I < 9; ++I){
-
-                    (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFedT[I] * T;
-
-                    for ( unsigned int J = 0; J < 9; ++J){
-
-                        (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFe2[9*I+J] * (*Fe)[J];
-
-                    }
-
-                }
-
+                dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
             }
 
-            virtual void setStrainEnergyHessians(const bool isPrevious) override{
+            dStrainEnergydFe.zero(9);
 
-                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFe2;
+            for (unsigned int I = 0; I < 9; ++I) {
+                (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFedT[I] * T;
 
-                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFedT;
-
-                if ( isPrevious ){
-
-                    d2StrainEnergydFe2 = get_SetDataStorage_d2PreviousStrainEnergydPreviousFe2();
-
-                    d2StrainEnergydFedT = get_SetDataStorage_d2PreviousStrainEnergydPreviousFedPreviousT();
-
+                for (unsigned int J = 0; J < 9; ++J) {
+                    (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFe2[9 * I + J] * (*Fe)[J];
                 }
-                else{
+            }
+        }
 
-                    d2StrainEnergydFe2 = get_SetDataStorage_d2StrainEnergydFe2();
+        virtual void setStrainEnergyHessians(const bool isPrevious) override {
+            tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFe2;
 
-                    d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
-                }
+            tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFedT;
 
-                *d2StrainEnergydFe2.value = _d2StrainEnergydFe2;
+            if (isPrevious) {
+                d2StrainEnergydFe2 = get_SetDataStorage_d2PreviousStrainEnergydPreviousFe2();
 
-                *d2StrainEnergydFedT.value = _d2StrainEnergydFedT;
+                d2StrainEnergydFedT = get_SetDataStorage_d2PreviousStrainEnergydPreviousFedPreviousT();
 
+            } else {
+                d2StrainEnergydFe2 = get_SetDataStorage_d2StrainEnergydFe2();
+
+                d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
             }
 
+            *d2StrainEnergydFe2.value = _d2StrainEnergydFe2;
+
+            *d2StrainEnergydFedT.value = _d2StrainEnergydFedT;
+        }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -552,11 +516,12 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
 
     tardigradeHydra::floatType previousTemperature = 23.4;
 
-    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,  2.70156033e-02, 9.77585948e-01,
-                                       4.76270457e-04, 4.42875587e-02,  -4.95172679e-02, 9.54139963e-01};
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375,
-                                               0.0038319,  0.07107588,  0.0013805,   0.98514977};
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -565,10 +530,9 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-    tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,
-                                                           0.03494318, 0.02244553, 0.01110235,
-                                                           0.02224434, -0.01770411, -0.01382113,
-                                                           0, 0, 0, 0, 0, 0, 0, 0, 0};
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.00315514, 0.00318276, 0.0134401, 0.03494318, 0.02244553, 0.01110235, 0.02224434, -0.01770411, -0.01382113,
+        0,          0,          0,         0,          0,          0,          0,          0,           0};
 
     tardigradeHydra::floatVector parameters = {123.4, 56.7};
 
@@ -576,9 +540,9 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::floatVector unknownVector = {1,    1,    1,   1,    1,    1,     1,     1,    1,
-                                                  1.02, .01,  .00, .00,  1.00, .00,   .00,   .03,  1.00,
-                                                  0.95, -0.2, .01, 0.05, 1.03,  0.02, -0.01, 0.01, 0.99};
+    tardigradeHydra::floatVector unknownVector = {1,    1,    1,   1,    1,    1,    1,     1,    1,
+                                                  1.02, .01,  .00, .00,  1.00, .00,  .00,   .03,  1.00,
+                                                  0.95, -0.2, .01, 0.05, 1.03, 0.02, -0.01, 0.01, 0.99};
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
                                                                 numNonLinearSolveStateVariables);
@@ -586,22 +550,20 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
     hydraBaseMock hydra(dof, model_configuration);
 
     hydra.initialize();
- 
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector);
 
     HyperelasticBaseMock R(&hydra, 9);
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 9;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        std::vector<double> x = deformationGradient;
+        std::vector<double>    x           = deformationGradient;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -610,8 +572,10 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, xp,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
             hydraBaseMock hydrap(dofp, model_configuration);
             hydraBaseMock hydram(dofm, model_configuration);
@@ -628,29 +592,23 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             auto vp = *Rp.get_cauchyStress();
             auto vm = *Rm.get_cauchyStress();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j] - vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dCauchyStressdF(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 1;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        double x = temperature;
+        double                 x           = temperature;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x) + eps;
 
             double xp = x;
@@ -659,8 +617,10 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             xp += delta;
             xm -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, xp, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, xp, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
             hydraBaseMock hydrap(dofp, model_configuration);
             hydraBaseMock hydram(dofm, model_configuration);
@@ -677,39 +637,35 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             auto vp = *Rp.get_cauchyStress();
             auto vm = *Rm.get_cauchyStress();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dCauchyStressdT(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 18;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        std::vector<double> x = unknownVector;
+        std::vector<double>    x           = unknownVector;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
             std::vector<double> xm = x;
 
-            xp[i+9] += delta;
-            xm[i+9] -= delta;
+            xp[i + 9] += delta;
+            xm[i + 9] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
             hydraBaseMock hydrap(dofp, model_configuration);
             hydraBaseMock hydram(dofm, model_configuration);
@@ -726,29 +682,23 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             auto vp = *Rp.get_cauchyStress();
             auto vm = *Rm.get_cauchyStress();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dCauchyStressdFn(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 9;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        std::vector<double> x = previousDeformationGradient;
+        std::vector<double>    x           = previousDeformationGradient;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -757,8 +707,10 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, xp, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, xm, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 xp, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 xm, additionalDOF, previousAdditionalDOF);
 
             hydraBaseMock hydrap(dofp, model_configuration);
             hydraBaseMock hydram(dofm, model_configuration);
@@ -775,29 +727,23 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             auto vp = *Rp.get_previousCauchyStress();
             auto vm = *Rm.get_previousCauchyStress();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j] - vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dPreviousCauchyStressdPreviousF(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 1;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        double x = previousTemperature;
+        double                 x           = previousTemperature;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x) + eps;
 
             double xp = x;
@@ -806,8 +752,10 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             xp += delta;
             xm -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, xp, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, xm, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, xp, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, xm, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
             hydraBaseMock hydrap(dofp, model_configuration);
             hydraBaseMock hydram(dofm, model_configuration);
@@ -824,29 +772,23 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             auto vp = *Rp.get_previousCauchyStress();
             auto vm = *Rm.get_previousCauchyStress();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dPreviousCauchyStressdPreviousT(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 18;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        std::vector<double> x = previousStateVariables;
+        std::vector<double>    x           = previousStateVariables;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -855,15 +797,16 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
             tardigradeHydra::ModelConfigurationBase model_configurationp(xp, parameters, numConfigurations,
-                                                                    numNonLinearSolveStateVariables);
+                                                                         numNonLinearSolveStateVariables);
 
             tardigradeHydra::ModelConfigurationBase model_configurationm(xm, parameters, numConfigurations,
-                                                                    numNonLinearSolveStateVariables);
+                                                                         numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
             hydraBaseMock hydram(dofm, model_configurationm);
@@ -880,49 +823,35 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStressJacobians, *boost::uni
             auto vp = *Rp.get_previousCauchyStress();
             auto vm = *Rm.get_previousCauchyStress();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dPreviousCauchyStressdPreviousFn(), CHECK_PER_ELEMENT);
-
     }
-
 }
 
 BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setStress, *boost::unit_test::tolerance(1e-6)) {
-
     class HyperelasticBaseMock : public tardigradeHydra::HyperelasticBase {
+       public:
+        using tardigradeHydra::HyperelasticBase::HyperelasticBase;
 
-        public:
-            using tardigradeHydra::HyperelasticBase::HyperelasticBase;
+        tardigradeHydra::floatVector cauchyStress = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-            tardigradeHydra::floatVector cauchyStress = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        tardigradeHydra::floatVector previousCauchyStress = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
 
-            tardigradeHydra::floatVector previousCauchyStress = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+       protected:
+        virtual void setCauchyStress(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousCauchyStress();
+                *v.value = previousCauchyStress;
 
-        protected:
-            virtual void setCauchyStress(const bool isPrevious) override {
-
-                if ( isPrevious ){
-
-                    auto v = get_SetDataStorage_previousCauchyStress();
-                    *v.value = previousCauchyStress;
-
-                }
-                else{
-
-                    auto v = get_SetDataStorage_cauchyStress();
-                    *v.value = cauchyStress;
-
-                }
-
+            } else {
+                auto v   = get_SetDataStorage_cauchyStress();
+                *v.value = cauchyStress;
             }
-
+        }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -960,11 +889,12 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setStress, *boost::unit_test::toleran
 
     tardigradeHydra::floatType previousTemperature = 23.4;
 
-    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,  2.70156033e-02, 9.77585948e-01,
-                                       4.76270457e-04, 4.42875587e-02,  -4.95172679e-02, 9.54139963e-01};
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375,
-                                               0.0038319,  0.07107588,  0.0013805,   0.98514977};
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -974,7 +904,7 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setStress, *boost::unit_test::toleran
                                         previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
     tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
-                                          0.01110235, 0.02224434, -0.01770411, -0.01382113};
+                                                           0.01110235, 0.02224434, -0.01770411, -0.01382113};
 
     tardigradeHydra::floatVector parameters = {123.4, 56.7};
 
@@ -994,7 +924,6 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setStress, *boost::unit_test::toleran
     BOOST_TEST(R.cauchyStress == *R.getStress(), CHECK_PER_ELEMENT);
 
     BOOST_TEST(R.previousCauchyStress == *R.getPreviousStress(), CHECK_PER_ELEMENT);
-
 }
 
 BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setResidual, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
@@ -1050,10 +979,11 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setResidual, *boost::unit_test::toler
     tardigradeHydra::floatType previousTemperature = 23.4;
 
     tardigradeHydra::floatVector deformationGradient = {0.39293837,  -0.42772133, -0.54629709, 0.10262954, 0.43893794,
-                                       -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
+                                                        -0.15378708, 0.9615284,   0.36965948,  -0.0381362};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,  -0.12285551, -0.88064421,
-                                               -0.20391149, 0.47599081,  -0.63501654, -0.64909649};
+    tardigradeHydra::floatVector previousDeformationGradient = {-0.21576496, -0.31364397, 0.45809941,
+                                                                -0.12285551, -0.88064421, -0.20391149,
+                                                                0.47599081,  -0.63501654, -0.64909649};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -1063,7 +993,7 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setResidual, *boost::unit_test::toler
                                         previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
     tardigradeHydra::floatVector previousStateVariables = {0.1,  0.2, 0.3, 0.2,  0.4,  -0.2, 0.3, 0.2, -0.1,
-                                          -0.5, 0.4, 0.2, -0.2, -0.1, 0.1,  0.1, 0.3, 0.4};
+                                                           -0.5, 0.4, 0.2, -0.2, -0.1, 0.1,  0.1, 0.3, 0.4};
 
     tardigradeHydra::floatVector parameters = {123.4, 56.7};
 
@@ -1072,7 +1002,7 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setResidual, *boost::unit_test::toler
     unsigned int numNonLinearSolveStateVariables = 0;
 
     tardigradeHydra::floatVector unknownVector = {1,  1,  1,  1,  1,   1,   1,   1,   1,   .1,  .2,  .3,  .4, .5,
-                                 .6, .7, .8, .9, .10, .11, .12, .13, .14, .15, .16, .17, .18};
+                                                  .6, .7, .8, .9, .10, .11, .12, .13, .14, .15, .16, .17, .18};
 
     tardigradeHydra::floatVector residualAnswer = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -1091,95 +1021,71 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setResidual, *boost::unit_test::toler
 }
 
 BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::tolerance(1e-6)) {
-
     class HyperelasticBaseMock : public tardigradeHydra::HyperelasticBase {
+       public:
+        using tardigradeHydra::HyperelasticBase::HyperelasticBase;
 
-        public:
-            using tardigradeHydra::HyperelasticBase::HyperelasticBase;
+        tardigradeHydra::floatVector _d2StrainEnergydFe2 = {
+            1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+            28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54,
+            55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81};
 
-            tardigradeHydra::floatVector _d2StrainEnergydFe2 = { 1,  2,  3,  4,  5,  6,  7,  8,  9,
-                                                                10, 11, 12, 13, 14, 15, 16, 17, 18,
-                                                                19, 20, 21, 22, 23, 24, 25, 26, 27,
-                                                                28, 29, 30, 31, 32, 33, 34, 35, 36,
-                                                                37, 38, 39, 40, 41, 42, 43, 44, 45,
-                                                                46, 47, 48, 49, 50, 51, 52, 53, 54,
-                                                                55, 56, 57, 58, 59, 60, 61, 62, 63,
-                                                                64, 65, 66, 67, 68, 69, 70, 71, 72,
-                                                                73, 74, 75, 76, 77, 78, 79, 80, 81};
+        tardigradeHydra::floatVector _d2StrainEnergydFedT = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
 
-            tardigradeHydra::floatVector _d2StrainEnergydFedT = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+       protected:
+        virtual void setStrainEnergyJacobians(const bool isPrevious) override {
+            const tardigradeHydra::floatVector *Fe;
 
-        protected:
+            tardigradeHydra::floatType T;
 
-            virtual void setStrainEnergyJacobians(const bool isPrevious) override{
+            tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> dStrainEnergydFe;
 
-                const tardigradeHydra::floatVector *Fe;
+            if (isPrevious) {
+                Fe = get_previousFe();
 
-                tardigradeHydra::floatType T;
+                T = hydra->getPreviousTemperature();
 
-                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> dStrainEnergydFe;
+                dStrainEnergydFe = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
 
-                if ( isPrevious ){
+            } else {
+                Fe = get_Fe();
 
-                    Fe = get_previousFe();
+                T = hydra->getTemperature();
 
-                    T = hydra->getPreviousTemperature();
-
-                    dStrainEnergydFe = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
-
-                }
-                else{
-
-                    Fe = get_Fe();
-
-                    T = hydra->getTemperature();
-
-                    dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
-
-                }
-
-                dStrainEnergydFe.zero(9);
-
-                for (unsigned int I = 0; I < 9; ++I){
-
-                    (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFedT[I] * T;
-
-                    for ( unsigned int J = 0; J < 9; ++J){
-
-                        (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFe2[9*I+J] * (*Fe)[J];
-
-                    }
-
-                }
-
+                dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
             }
 
-            virtual void setStrainEnergyHessians(const bool isPrevious) override{
+            dStrainEnergydFe.zero(9);
 
-                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFe2;
+            for (unsigned int I = 0; I < 9; ++I) {
+                (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFedT[I] * T;
 
-                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFedT;
-
-                if ( isPrevious ){
-
-                    d2StrainEnergydFe2 = get_SetDataStorage_d2PreviousStrainEnergydPreviousFe2();
-
-                    d2StrainEnergydFedT = get_SetDataStorage_d2PreviousStrainEnergydPreviousFedPreviousT();
-
+                for (unsigned int J = 0; J < 9; ++J) {
+                    (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFe2[9 * I + J] * (*Fe)[J];
                 }
-                else{
+            }
+        }
 
-                    d2StrainEnergydFe2 = get_SetDataStorage_d2StrainEnergydFe2();
+        virtual void setStrainEnergyHessians(const bool isPrevious) override {
+            tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFe2;
 
-                    d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
-                }
+            tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFedT;
 
-                *d2StrainEnergydFe2.value = _d2StrainEnergydFe2;
+            if (isPrevious) {
+                d2StrainEnergydFe2 = get_SetDataStorage_d2PreviousStrainEnergydPreviousFe2();
 
-                *d2StrainEnergydFedT.value = _d2StrainEnergydFedT;
+                d2StrainEnergydFedT = get_SetDataStorage_d2PreviousStrainEnergydPreviousFedPreviousT();
 
+            } else {
+                d2StrainEnergydFe2 = get_SetDataStorage_d2StrainEnergydFe2();
+
+                d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
             }
 
+            *d2StrainEnergydFe2.value = _d2StrainEnergydFe2;
+
+            *d2StrainEnergydFedT.value = _d2StrainEnergydFedT;
+        }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -1217,11 +1123,12 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
 
     tardigradeHydra::floatType previousTemperature = 23.4;
 
-    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,  2.70156033e-02, 9.77585948e-01,
-                                       4.76270457e-04, 4.42875587e-02,  -4.95172679e-02, 9.54139963e-01};
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
 
-    tardigradeHydra::floatVector previousDeformationGradient = {1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375,
-                                               0.0038319,  0.07107588,  0.0013805,   0.98514977};
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
 
     tardigradeHydra::floatVector additionalDOF = {};
 
@@ -1230,10 +1137,9 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
     tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
                                         previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-    tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,
-                                                           0.03494318, 0.02244553, 0.01110235,
-                                                           0.02224434, -0.01770411, -0.01382113,
-                                                           0, 0, 0, 0, 0, 0, 0, 0, 0};
+    tardigradeHydra::floatVector previousStateVariables = {
+        0.00315514, 0.00318276, 0.0134401, 0.03494318, 0.02244553, 0.01110235, 0.02224434, -0.01770411, -0.01382113,
+        0,          0,          0,         0,          0,          0,          0,          0,           0};
 
     tardigradeHydra::floatVector parameters = {123.4, 56.7};
 
@@ -1241,9 +1147,9 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
 
     unsigned int numNonLinearSolveStateVariables = 0;
 
-    tardigradeHydra::floatVector unknownVector = {1,    1,    1,   1,    1,    1,     1,     1,    1,
-                                                  1.02, .01,  .00, .00,  1.00, .00,   .00,   .03,  1.00,
-                                                  0.95, -0.2, .01, 0.05, 1.03,  0.02, -0.01, 0.01, 0.99};
+    tardigradeHydra::floatVector unknownVector = {1,    1,    1,   1,    1,    1,    1,     1,    1,
+                                                  1.02, .01,  .00, .00,  1.00, .00,  .00,   .03,  1.00,
+                                                  0.95, -0.2, .01, 0.05, 1.03, 0.02, -0.01, 0.01, 0.99};
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
                                                                 numNonLinearSolveStateVariables);
@@ -1251,22 +1157,20 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
     hydraBaseMock hydra(dof, model_configuration);
 
     hydra.initialize();
- 
+
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector);
 
     HyperelasticBaseMock R(&hydra, 9);
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 9;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        std::vector<double> x = deformationGradient;
+        std::vector<double>    x           = deformationGradient;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1275,8 +1179,10 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, xp,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
             hydraBaseMock hydrap(dofp, model_configuration);
             hydraBaseMock hydram(dofm, model_configuration);
@@ -1293,29 +1199,23 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
             auto vp = *Rp.getResidual();
             auto vm = *Rm.getResidual();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j] - vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.getdRdF(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 1;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        double x = temperature;
+        double                 x           = temperature;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x) + eps;
 
             double xp = x;
@@ -1324,8 +1224,10 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
             xp += delta;
             xm -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, xp, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, xp, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
             hydraBaseMock hydrap(dofp, model_configuration);
             hydraBaseMock hydram(dofm, model_configuration);
@@ -1342,29 +1244,23 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
             auto vp = *Rp.getResidual();
             auto vm = *Rm.getResidual();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.getdRdT(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps         = 1e-6;
         constexpr unsigned int NUM_INPUTS  = 27;
         constexpr unsigned int NUM_OUTPUTS = 9;
-        std::vector<double> x = unknownVector;
+        std::vector<double>    x           = unknownVector;
 
-        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+        std::vector<double> answer(NUM_INPUTS * NUM_OUTPUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
-
+        for (unsigned int i = 0; i < NUM_INPUTS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1373,8 +1269,10 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
             hydraBaseMock hydrap(dofp, model_configuration);
             hydraBaseMock hydram(dofm, model_configuration);
@@ -1391,16 +1289,11 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::toleran
             auto vp = *Rp.getResidual();
             auto vm = *Rm.getResidual();
 
-            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
-
-                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTPUTS; ++j) {
+                answer[NUM_INPUTS * j + i] += (vp[j] - vm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.getJacobian(), CHECK_PER_ELEMENT);
-
     }
-
 }
