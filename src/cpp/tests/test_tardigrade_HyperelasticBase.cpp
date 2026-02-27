@@ -738,4 +738,158 @@ BOOST_AUTO_TEST_CASE(test_residual_setCauchyStressJacobians, *boost::unit_test::
 
     }
 
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_INPUTS  = 9;
+        constexpr unsigned int NUM_OUTPUTS = 9;
+        std::vector<double> x = previousDeformationGradient;
+
+        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, xp, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, xm, additionalDOF, previousAdditionalDOF);
+
+            hydraBaseMock hydrap(dofp, model_configuration);
+            hydraBaseMock hydram(dofm, model_configuration);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector);
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector);
+
+            HyperelasticBaseMock Rp(&hydrap, 9);
+            HyperelasticBaseMock Rm(&hydram, 9);
+
+            auto vp = *Rp.get_previousCauchyStress();
+            auto vm = *Rm.get_previousCauchyStress();
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
+
+                answer[NUM_INPUTS*j+i] += (vp[j] - vm[j])/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(answer == *R.get_dPreviousCauchyStressdPreviousF(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_INPUTS  = 1;
+        constexpr unsigned int NUM_OUTPUTS = 9;
+        double x = previousTemperature;
+
+        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
+
+            double delta = eps * std::fabs(x) + eps;
+
+            double xp = x;
+            double xm = x;
+
+            xp += delta;
+            xm -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, xp, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, xm, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            hydraBaseMock hydrap(dofp, model_configuration);
+            hydraBaseMock hydram(dofm, model_configuration);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector);
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector);
+
+            HyperelasticBaseMock Rp(&hydrap, 9);
+            HyperelasticBaseMock Rm(&hydram, 9);
+
+            auto vp = *Rp.get_previousCauchyStress();
+            auto vm = *Rm.get_previousCauchyStress();
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
+
+                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(answer == *R.get_dPreviousCauchyStressdPreviousT(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_INPUTS  = 18;
+        constexpr unsigned int NUM_OUTPUTS = 9;
+        std::vector<double> x = previousStateVariables;
+
+        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+
+            tardigradeHydra::ModelConfigurationBase model_configurationp(xp, parameters, numConfigurations,
+                                                                    numNonLinearSolveStateVariables);
+
+            tardigradeHydra::ModelConfigurationBase model_configurationm(xm, parameters, numConfigurations,
+                                                                    numNonLinearSolveStateVariables);
+
+            hydraBaseMock hydrap(dofp, model_configurationp);
+            hydraBaseMock hydram(dofm, model_configurationm);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector);
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector);
+
+            HyperelasticBaseMock Rp(&hydrap, 9);
+            HyperelasticBaseMock Rm(&hydram, 9);
+
+            auto vp = *Rp.get_previousCauchyStress();
+            auto vm = *Rm.get_previousCauchyStress();
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
+
+                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(answer == *R.get_dPreviousCauchyStressdPreviousFn(), CHECK_PER_ELEMENT);
+
+    }
+
 }
