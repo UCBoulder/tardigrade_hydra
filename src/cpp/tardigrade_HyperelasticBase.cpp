@@ -286,6 +286,201 @@ namespace tardigradeHydra {
          */
         void HyperelasticBase::setCauchyStressJacobians(const bool isPrevious){
 
+            auto dim = hydra->deformation->dimension;
+
+            const secondOrderTensor *Fe;
+
+            const secondOrderTensor *dStrainEnergydFe;
+
+            const fourthOrderTensor *dFedF;
+
+            const floatVector *dFedFn;
+
+            const fourthOrderTensor *d2StrainEnergydFe2;
+
+            const secondOrderTensor *d2StrainEnergydFedT;
+
+            SetDataStorageBase<fourthOrderTensor> dCauchyStressdF;
+
+            SetDataStorageBase<floatVector> dCauchyStressdFn;
+
+            SetDataStorageBase<secondOrderTensor> dCauchyStressdT;
+
+            if ( isPrevious ){
+
+                Fe = get_previousFe();
+
+                dStrainEnergydFe = get_dPreviousStrainEnergydPreviousFe();
+
+                dFedF = get_previousdFedF();
+
+                dFedFn = get_previousdFedFn();
+
+                d2StrainEnergydFe2 = get_d2PreviousStrainEnergydPreviousFe2();
+
+                d2StrainEnergydFedT  = get_d2PreviousStrainEnergydPreviousFedPreviousT();
+
+                dCauchyStressdF = get_SetDataStorage_dPreviousCauchyStressdPreviousF();
+
+                dCauchyStressdFn = get_SetDataStorage_dPreviousCauchyStressdPreviousFn();
+
+                dCauchyStressdT = get_SetDataStorage_dPreviousCauchyStressdPreviousT();
+
+            }
+            else{
+
+                Fe = get_Fe();
+
+                dStrainEnergydFe = get_dStrainEnergydFe();
+
+                dFedF = get_dFedF();
+
+                dFedFn = get_dFedFn();
+
+                d2StrainEnergydFe2 = get_d2StrainEnergydFe2();
+
+                d2StrainEnergydFedT  = get_d2StrainEnergydFedT();
+
+                dCauchyStressdF = get_SetDataStorage_dCauchyStressdF();
+
+                dCauchyStressdFn = get_SetDataStorage_dCauchyStressdFn();
+
+                dCauchyStressdT = get_SetDataStorage_dCauchyStressdT();
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( (std::end( *Fe ) - std::begin( *Fe )) == dim * dim, "The elastic deformation must have a size of " + std::to_string( dim * dim ) );
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( (std::end( *dStrainEnergydFe ) - std::begin( *dStrainEnergydFe )) == dim * dim, "The derivative of the strain energy with respect to the elastic deformation must have a size of " + std::to_string( dim * dim ) );
+
+            dCauchyStressdF.zero(dim*dim*dim*dim);
+
+            dCauchyStressdFn.zero(dim*dim*dim*dim*(hydra->getNumConfigurations() - 1));
+
+            dCauchyStressdT.zero(dim*dim);
+
+            
+            secondOrderTensor invFe(dim*dim,0);
+
+            Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> Femat(Fe->data(), dim, dim); //TODO: Change this to a constant size when possible
+            Eigen::Map<Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> invFemat(invFe.data(), dim, dim); //TODO: Change this to a constant size when possible
+            auto Je = Femat.determinant();
+            invFemat = Femat.inverse().eval();
+
+//            c_ij = dedfe_iI Fe_jI / Je
+//
+//            dcdF_ijaA  = d2edFedFe_iIbB Fe_jI dFedF_bBaA / Je + dedFe_iI dFedF_jIaA / Je - dedFe_iI Fe_jI / Je**2 dJedF_aA
+//            dcdFn_ijA = d2edFedFe_iIbB Fe_jI dFedFn_bBA / Je + dedFe_iI dFedF_jIA / Je - dedFe_iI Fe_jI / Je**2 dJedFn_A
+//            dcdT_ij = d2edFedT_iI Fe_jI
+
+//            dcdF_ijaA  = d2edFedF_iIaA Fe_jI / Je + dedFe_iI dFedF_jIaA / Je - c_ij invFedFedF_aA
+            secondOrderTensor JecauchyStress(dim*dim,0);
+            secondOrderTensor invFedFedF(dim*dim,0);
+            secondOrderTensor invFedFedFn(dim*dim*(hydra->getNumConfigurations()-1),0);
+            fourthOrderTensor d2StrainEnergydFedF(dim*dim*dim*dim,0);
+            fourthOrderTensor d2StrainEnergydFedFn(dim*dim*dim*dim*(hydra->getNumConfigurations()-1),0);
+
+            for ( unsigned int iI = 0; iI < dim*dim; ++iI ){
+
+                for ( unsigned int aA = 0; aA < dim*dim; ++aA ){
+
+                    for ( unsigned int bB = 0; bB < dim*dim; ++bB ){
+
+                        d2StrainEnergydFedF[dim*dim*iI+bB] += (*d2StrainEnergydFe2)[dim*dim*iI+aA] * (*dFedF)[dim*dim*aA+bB];
+
+                    }
+                    for ( unsigned int bB = 0; bB < dim*dim*(hydra->getNumConfigurations()-1); ++bB ){
+
+                        d2StrainEnergydFedFn[dim*dim*(hydra->getNumConfigurations()-1)*iI+bB] += (*d2StrainEnergydFe2)[dim*dim*iI+aA] * (*dFedFn)[dim*dim*(hydra->getNumConfigurations()-1)*aA+bB];
+
+                    }
+
+
+                }
+
+            }
+
+            for ( unsigned int i = 0; i < dim; ++i ){
+
+                for ( unsigned int I = 0; I < dim; ++I ){
+
+                    for ( unsigned int aA = 0; aA < dim * dim; ++aA ){
+
+                        invFedFedF[aA] += invFe[dim*I+i] * (*dFedF)[dim*dim*dim*i+dim*dim*I+aA];
+
+                    }
+
+                    for ( unsigned int aA = 0; aA < dim * dim * (hydra->getNumConfigurations()-1); ++aA ){
+
+                        invFedFedFn[aA] += invFe[dim*I+i] * (*dFedFn)[dim*dim*dim*(hydra->getNumConfigurations()-1)*i+dim*dim*(hydra->getNumConfigurations()-1)*I+aA];
+
+                    }
+
+                }
+
+            }
+
+            for ( unsigned int i = 0; i < dim; ++i ){
+
+                for ( unsigned int j = 0; j < dim; ++j ){
+
+                    for ( unsigned int I = 0; I < dim; ++I ){
+
+                        (*dCauchyStressdT.value)[dim * i + j] += (*d2StrainEnergydFedT)[dim * i + I] * (*Fe)[dim * j + I];
+                        JecauchyStress[dim * i + j] += (*dStrainEnergydFe)[dim * i + I] * (*Fe)[dim * j + I];
+
+                    }
+
+                    (*dCauchyStressdT.value)[dim * i + j] /= Je;
+
+                }
+
+            }
+
+            for ( unsigned int i = 0; i < dim; ++i ){
+
+                for ( unsigned int j = 0; j < dim; ++j ){
+
+                    for ( unsigned int I = 0; I < dim; ++I ){
+
+                        for ( unsigned int aA = 0; aA < dim * dim; ++aA ){
+
+                            (*dCauchyStressdF.value)[dim*dim*dim*i+dim*dim*j+aA] += d2StrainEnergydFedF[dim*dim*dim*i+dim*dim*I+aA] * (*Fe)[dim*j+I]
+                                                                                  + (*dStrainEnergydFe)[dim*i+I] * (*dFedF)[dim*dim*dim*j+dim*dim*I+aA];
+
+                        }
+
+                        for ( unsigned int aA = 0; aA < dim * dim * ( hydra->getNumConfigurations()-1); ++aA ){
+
+                            (*dCauchyStressdFn.value)[dim*dim*dim*(hydra->getNumConfigurations()-1)*i+dim*dim*(hydra->getNumConfigurations()-1)*j+aA] += d2StrainEnergydFedFn[dim*dim*dim*(hydra->getNumConfigurations()-1)*i+dim*dim*(hydra->getNumConfigurations()-1)*I+aA] * (*Fe)[dim*j+I]
+                                                                                  + (*dStrainEnergydFe)[dim*i+I] * (*dFedFn)[dim*dim*dim*(hydra->getNumConfigurations()-1)*j+dim*dim*(hydra->getNumConfigurations()-1)*I+aA];
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            for ( unsigned int ij = 0; ij < dim*dim; ++ij ){
+
+                for ( unsigned int aA = 0; aA < dim * dim; ++aA ){
+
+                    (*dCauchyStressdF.value)[dim*dim*ij+aA] -= JecauchyStress[ij] * invFedFedF[aA];
+                    (*dCauchyStressdF.value)[dim*dim*ij+aA] /= Je;
+
+                }
+
+                for ( unsigned int aA = 0; aA < dim * dim * (hydra->getNumConfigurations()-1); ++aA ){
+
+                    (*dCauchyStressdFn.value)[dim*dim*(hydra->getNumConfigurations() - 1) * ij+aA] -= JecauchyStress[ij] * invFedFedFn[aA];
+                    (*dCauchyStressdFn.value)[dim*dim*(hydra->getNumConfigurations() - 1) * ij+aA] /= Je;
+
+                }
+
+            }
+
         }
 
         /*!
