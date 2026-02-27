@@ -1090,3 +1090,317 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setResidual, *boost::unit_test::toler
     BOOST_TEST(residualAnswer == *R.getResidual(), CHECK_PER_ELEMENT);
 }
 
+BOOST_AUTO_TEST_CASE(test_HyperelasticBase_Jacobians, *boost::unit_test::tolerance(1e-6)) {
+
+    class HyperelasticBaseMock : public tardigradeHydra::HyperelasticBase {
+
+        public:
+            using tardigradeHydra::HyperelasticBase::HyperelasticBase;
+
+            tardigradeHydra::floatVector _d2StrainEnergydFe2 = { 1,  2,  3,  4,  5,  6,  7,  8,  9,
+                                                                10, 11, 12, 13, 14, 15, 16, 17, 18,
+                                                                19, 20, 21, 22, 23, 24, 25, 26, 27,
+                                                                28, 29, 30, 31, 32, 33, 34, 35, 36,
+                                                                37, 38, 39, 40, 41, 42, 43, 44, 45,
+                                                                46, 47, 48, 49, 50, 51, 52, 53, 54,
+                                                                55, 56, 57, 58, 59, 60, 61, 62, 63,
+                                                                64, 65, 66, 67, 68, 69, 70, 71, 72,
+                                                                73, 74, 75, 76, 77, 78, 79, 80, 81};
+
+            tardigradeHydra::floatVector _d2StrainEnergydFedT = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+
+        protected:
+
+            virtual void setStrainEnergyJacobians(const bool isPrevious) override{
+
+                const tardigradeHydra::floatVector *Fe;
+
+                tardigradeHydra::floatType T;
+
+                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> dStrainEnergydFe;
+
+                if ( isPrevious ){
+
+                    Fe = get_previousFe();
+
+                    T = hydra->getPreviousTemperature();
+
+                    dStrainEnergydFe = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
+
+                }
+                else{
+
+                    Fe = get_Fe();
+
+                    T = hydra->getTemperature();
+
+                    dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
+
+                }
+
+                dStrainEnergydFe.zero(9);
+
+                for (unsigned int I = 0; I < 9; ++I){
+
+                    (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFedT[I] * T;
+
+                    for ( unsigned int J = 0; J < 9; ++J){
+
+                        (*dStrainEnergydFe.value)[I] += _d2StrainEnergydFe2[9*I+J] * (*Fe)[J];
+
+                    }
+
+                }
+
+            }
+
+            virtual void setStrainEnergyHessians(const bool isPrevious) override{
+
+                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFe2;
+
+                tardigradeHydra::SetDataStorageBase<tardigradeHydra::floatVector> d2StrainEnergydFedT;
+
+                if ( isPrevious ){
+
+                    d2StrainEnergydFe2 = get_SetDataStorage_d2PreviousStrainEnergydPreviousFe2();
+
+                    d2StrainEnergydFedT = get_SetDataStorage_d2PreviousStrainEnergydPreviousFedPreviousT();
+
+                }
+                else{
+
+                    d2StrainEnergydFe2 = get_SetDataStorage_d2StrainEnergydFe2();
+
+                    d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
+                }
+
+                *d2StrainEnergydFe2.value = _d2StrainEnergydFe2;
+
+                *d2StrainEnergydFedT.value = _d2StrainEnergydFedT;
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+       public:
+        HyperelasticBaseMock elasticity;
+
+        tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
+
+        unsigned int elasticitySize = 9;
+
+        using tardigradeHydra::hydraBase::hydraBase;
+
+        using tardigradeHydra::hydraBase::setResidualClasses;
+
+        virtual void setResidualClasses() {
+            elasticity = HyperelasticBaseMock(this, elasticitySize);
+
+            remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>(this, 18);
+
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
+
+            residuals[0] = &elasticity;
+
+            residuals[1] = &remainder;
+
+            setResidualClasses(residuals);
+        }
+    };
+
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,  2.70156033e-02, 9.77585948e-01,
+                                       4.76270457e-04, 4.42875587e-02,  -4.95172679e-02, 9.54139963e-01};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375,
+                                               0.0038319,  0.07107588,  0.0013805,   0.98514977};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,
+                                                           0.03494318, 0.02244553, 0.01110235,
+                                                           0.02224434, -0.01770411, -0.01382113,
+                                                           0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    tardigradeHydra::floatVector parameters = {123.4, 56.7};
+
+    unsigned int numConfigurations = 3;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    tardigradeHydra::floatVector unknownVector = {1,    1,    1,   1,    1,    1,     1,     1,    1,
+                                                  1.02, .01,  .00, .00,  1.00, .00,   .00,   .03,  1.00,
+                                                  0.95, -0.2, .01, 0.05, 1.03,  0.02, -0.01, 0.01, 0.99};
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
+
+    hydra.initialize();
+ 
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector);
+
+    HyperelasticBaseMock R(&hydra, 9);
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_INPUTS  = 9;
+        constexpr unsigned int NUM_OUTPUTS = 9;
+        std::vector<double> x = deformationGradient;
+
+        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            hydraBaseMock hydrap(dofp, model_configuration);
+            hydraBaseMock hydram(dofm, model_configuration);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector);
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector);
+
+            HyperelasticBaseMock Rp(&hydrap, 9);
+            HyperelasticBaseMock Rm(&hydram, 9);
+
+            auto vp = *Rp.getResidual();
+            auto vm = *Rm.getResidual();
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
+
+                answer[NUM_INPUTS*j+i] += (vp[j] - vm[j])/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(answer == *R.getdRdF(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_INPUTS  = 1;
+        constexpr unsigned int NUM_OUTPUTS = 9;
+        double x = temperature;
+
+        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
+
+            double delta = eps * std::fabs(x) + eps;
+
+            double xp = x;
+            double xm = x;
+
+            xp += delta;
+            xm -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, xp, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            hydraBaseMock hydrap(dofp, model_configuration);
+            hydraBaseMock hydram(dofm, model_configuration);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector);
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector);
+
+            HyperelasticBaseMock Rp(&hydrap, 9);
+            HyperelasticBaseMock Rm(&hydram, 9);
+
+            auto vp = *Rp.getResidual();
+            auto vm = *Rm.getResidual();
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
+
+                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(answer == *R.getdRdT(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_INPUTS  = 27;
+        constexpr unsigned int NUM_OUTPUTS = 9;
+        std::vector<double> x = unknownVector;
+
+        std::vector<double> answer(NUM_INPUTS*NUM_OUTPUTS,0);
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            hydraBaseMock hydrap(dofp, model_configuration);
+            hydraBaseMock hydram(dofm, model_configuration);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, xp);
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, xm);
+
+            HyperelasticBaseMock Rp(&hydrap, 9);
+            HyperelasticBaseMock Rm(&hydram, 9);
+
+            auto vp = *Rp.getResidual();
+            auto vm = *Rm.getResidual();
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
+
+                answer[NUM_INPUTS*j+i] += (vp[j]-vm[j])/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(answer == *R.getJacobian(), CHECK_PER_ELEMENT);
+
+    }
+
+}

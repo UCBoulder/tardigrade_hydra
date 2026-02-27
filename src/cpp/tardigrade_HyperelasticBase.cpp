@@ -610,7 +610,8 @@ namespace tardigradeHydra {
 
             auto dRdT = get_SetDataStorage_dRdT();
 
-            dRdT.zero(getNumEquations());
+            *dRdT.value = *get_dCauchyStressdT();
+
         }
 
         void HyperelasticBase::setdRdF() {
