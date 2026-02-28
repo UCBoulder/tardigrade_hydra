@@ -337,9 +337,9 @@ namespace tardigradeHydra {
             Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > dGammadGradChi_map(
                 dGammadGradChi.data(), tot_dim, tot_dim);
 
-            dPK2StressdF_map = (dPK2StressdRCG_map * dRCGdF_map + dPK2StressdPsi_map * dPsidF_map +
-                                dPK2StressdGamma_map * dGammadF_map)
-                                   .eval();
+            dPK2StressdF_map       = (dPK2StressdRCG_map * dRCGdF_map + dPK2StressdPsi_map * dPsidF_map +
+                                      dPK2StressdGamma_map * dGammadF_map)
+                                         .eval();
             dPK2StressdChi_map     = (dPK2StressdPsi_map * dPsidChi_map).eval();
             dPK2StressdGradChi_map = (dPK2StressdGamma_map * dGammadGradChi_map).eval();
 
