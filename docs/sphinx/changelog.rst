@@ -12,6 +12,11 @@ Changelog
 New Features
 ============
 - Added hyperelastic material base (:pull:`263`). By `Nathan Miller`_.
+- Added CHIPFoam strain-energy potential (:pull:`264`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.8.1 (:pull:`265`). By `Nathan Miller`_.
 
 ******************
 0.8.0 (02-17-2026)
