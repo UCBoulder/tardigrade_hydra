@@ -451,4 +451,113 @@ namespace tardigradeHydra {
      */
     void CHIPFoamStrainEnergy::setPreviousWLB(){ setWLB(true); }
 
+    /*!
+     * Set the derivatives of the buckling strain-energy with respect to
+     * the deformation measures
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWLBDerivatives(bool isPrevious){
+
+        const floatType *Je;
+
+        auto Jb = get_Jb();
+
+        auto Khat = get_Khat();
+
+        auto Ghat = get_Ghat();
+
+        SetDataStorageBase<floatVector> dWLBdD;
+
+        if ( isPrevious ){
+
+            Je = get_previousJe();
+
+            dWLBdD = get_SetDataStorage_dPreviousWLBdPreviousD();
+
+        } else {
+
+            Je = get_Je();
+
+            dWLBdD = get_SetDataStorage_dWLBdD();
+
+        }
+
+        dWLBdD.zero(2);
+
+        (*dWLBdD.value)[0] = Khat*(Jb - 1);
+        (*dWLBdD.value)[1] = 0.5 * Ghat;
+
+        if ( *Je >= Jb ){
+
+            (*dWLBdD.value)[0] += Khat*(*Je - Jb);
+
+        }
+
+    }
+
+    /*!
+     * Set the derivatives of the buckling strain-energy with respect to
+     * the deformation measures
+     */
+    void CHIPFoamStrainEnergy::setWLBDerivatives(){ setWLBDerivatives(false); }
+
+    /*!
+     * Set the previous derivatives of the buckling strain-energy with respect to
+     * the deformation measures
+     */
+    void CHIPFoamStrainEnergy::setPreviousWLBDerivatives(){ setWLBDerivatives(true); }
+
+    /*!
+     * Set the Hessians of the buckling strain-energy with respect to
+     * the deformation measures
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWLBHessians(bool isPrevious){
+
+        const floatType *Je;
+
+        auto Jb = get_Jb();
+
+        auto Khat = get_Khat();
+
+        SetDataStorageBase<floatVector> d2WLBdD2;
+
+        if ( isPrevious ){
+
+            Je = get_previousJe();
+
+            d2WLBdD2 = get_SetDataStorage_d2PreviousWLBdPreviousD2();
+
+        } else {
+
+            Je = get_Je();
+
+            d2WLBdD2 = get_SetDataStorage_d2WLBdD2();
+
+        }
+
+        d2WLBdD2.zero(4);
+
+        if ( *Je >= Jb ){
+
+            (*d2WLBdD2.value)[0] += Khat;
+
+        }
+
+    }
+
+    /*!
+     * Set the Hessians of the buckling strain-energy with respect to
+     * the deformation measures
+     */
+    void CHIPFoamStrainEnergy::setWLBHessians(){ setWLBHessians(false); }
+
+    /*!
+     * Set the previous Hessians of the buckling strain-energy with respect to
+     * the deformation measures
+     */
+    void CHIPFoamStrainEnergy::setPreviousWLBHessians(){ setWLBHessians(true); }
+
 }  // namespace tardigradeHydra

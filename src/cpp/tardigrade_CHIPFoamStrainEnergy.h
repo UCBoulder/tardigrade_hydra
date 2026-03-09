@@ -92,6 +92,18 @@ namespace tardigradeHydra {
 
         virtual void setPreviousWLB();
 
+        virtual void setWLBDerivatives(bool isPrevious);
+
+        virtual void setWLBDerivatives();
+
+        virtual void setPreviousWLBDerivatives();
+
+        virtual void setWLBHessians(bool isPrevious);
+
+        virtual void setWLBHessians();
+
+        virtual void setPreviousWLBHessians();
+
         //! Check if the class has been initialized
         const bool isInitialized(){ return is_initialized; }
 
@@ -126,6 +138,14 @@ namespace tardigradeHydra {
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WLB, floatType, setWLB);
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWLB, floatType, setPreviousWLB);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWLBdD, floatVector, setWLBDerivatives);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWLBdPreviousD, floatVector, setPreviousWLBDerivatives);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WLBdD2, floatVector, setWLBHessians);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWLBdPreviousD2, floatVector, setPreviousWLBHessians);
 
         //! Whether the class has been initialized or not
         bool is_initialized = false;
