@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe, *boost::unit_test::toleran
     tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
                                                            0.01110235, 0.02224434, -0.01770411, -0.01382113};
 
-    tardigradeHydra::floatVector parameters = {123.4, 56.7};
+    tardigradeHydra::floatVector parameters = {100.0, 60.0, 0.94};
 
     unsigned int numConfigurations = 2;
 
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
     tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
                                                            0.01110235, 0.02224434, -0.01770411, -0.01382113};
 
-    tardigradeHydra::floatVector parameters = {123.4, 56.7};
+    tardigradeHydra::floatVector parameters = {100.0, 60.0, 0.94};
 
     unsigned int numConfigurations = 2;
 
@@ -536,7 +536,7 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1, *boost::unit_test::tole
     tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
                                                            0.01110235, 0.02224434, -0.01770411, -0.01382113};
 
-    tardigradeHydra::floatVector parameters = {123.4, 56.7};
+    tardigradeHydra::floatVector parameters = {100.0, 60.0, 0.94};
 
     unsigned int numConfigurations = 2;
 
@@ -635,7 +635,7 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
     tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
                                                            0.01110235, 0.02224434, -0.01770411, -0.01382113};
 
-    tardigradeHydra::floatVector parameters = {123.4, 56.7};
+    tardigradeHydra::floatVector parameters = {100.0, 60.0, 0.94};
 
     unsigned int numConfigurations = 2;
 

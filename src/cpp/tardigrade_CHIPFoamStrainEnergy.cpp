@@ -11,6 +11,30 @@
 namespace tardigradeHydra {
 
     /*!
+     * Get the bulk modulus
+     */
+    const floatType CHIPFoamStrainEnergy::get_Khat(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
+        return _parameters[0];
+    }
+
+    /*!
+     * Get the shear modulus
+     */
+    const floatType CHIPFoamStrainEnergy::get_Ghat(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
+        return _parameters[1];
+    }
+
+    /*!
+     * Get the buckling relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::get_Jb(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
+        return _parameters[2];
+    }
+
+    /*!
      * Compute the Jacobian of the elastic deformation
      *
      * \param isPrevious: A flag for of the current (false) or previous (true) value should be computed
@@ -369,5 +393,62 @@ namespace tardigradeHydra {
      * with respect to the elastic deformation
      */
     void CHIPFoamStrainEnergy::setd2PreviousIbar1dPreviousFe2(){ setd2Ibar1dFe2(true); }
+
+    /*!
+     * Set the buckling Neo-Hookean strain energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWLB(bool isPrevious){
+
+        const floatType *Je;
+
+        const floatType *Ibar1;
+
+        auto Jb = get_Jb();
+
+        auto Khat = get_Khat();
+
+        auto Ghat = get_Ghat();
+
+        SetDataStorageBase<floatType> WLB;
+
+        if ( isPrevious ){
+
+            Je = get_previousJe();
+
+            Ibar1 = get_previousIbar1();
+
+            WLB = get_SetDataStorage_previousWLB();
+
+        } else {
+
+            Je = get_Je();
+
+            Ibar1 = get_Ibar1();
+
+            WLB = get_SetDataStorage_WLB();
+
+        }
+
+        *WLB.value = Ghat * (*Ibar1 - 3)/2. + Khat * (Jb - 1) * (*Je - Jb/2. - 0.5);
+
+        if ( *Je >= Jb ){
+
+            *WLB.value += Khat * ((*Je - 1) * (*Je - 1)/2. - (Jb - 1) * (*Je - Jb/2. - 0.5));
+
+        }
+
+    }
+
+    /*!
+     * Set the buckling Neo-Hookean strain energy
+     */
+    void CHIPFoamStrainEnergy::setWLB(){ setWLB(false); }
+
+    /*!
+     * Set the previous buckling Neo-Hookean strain energy
+     */
+    void CHIPFoamStrainEnergy::setPreviousWLB(){ setWLB(true); }
 
 }  // namespace tardigradeHydra

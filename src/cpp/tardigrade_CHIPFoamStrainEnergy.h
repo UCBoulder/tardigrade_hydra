@@ -28,10 +28,23 @@ namespace tardigradeHydra {
          *
          * \param *_hydra: A pointer to a hydraBase object
          * \param &_numEquations: The number of equations defined by the residual
-         * \param &parameters: The parameter vector
+         * \param &parameters: The parameter vector organized as
+         *    Khat, Ghat, Jb
          */
         CHIPFoamStrainEnergy(hydraBase *_hydra, const unsigned int &_numEquations, const floatVector &parameters)
-            : HyperelasticBase(_hydra, _numEquations), _parameters(parameters) {}
+            : HyperelasticBase(_hydra, _numEquations), _parameters(parameters){
+
+            TARDIGRADE_ERROR_TOOLS_CHECK(_parameters.size() == 3, "The parameters vector must have a size of 3");
+
+            setInitialized();
+
+        }
+
+        const floatType get_Khat();
+
+        const floatType get_Ghat();
+
+        const floatType get_Jb();
 
        protected:
         //! The model parameters
@@ -73,6 +86,18 @@ namespace tardigradeHydra {
 
         virtual void setd2PreviousIbar1dPreviousFe2();
 
+        virtual void setWLB(bool isPrevious);
+
+        virtual void setWLB();
+
+        virtual void setPreviousWLB();
+
+        //! Check if the class has been initialized
+        const bool isInitialized(){ return is_initialized; }
+
+        //! Set that the class has been initialized
+        void setInitialized(){ is_initialized = true; };
+
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Je, floatType, setJe)
 
@@ -97,6 +122,13 @@ namespace tardigradeHydra {
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2Ibar1dFe2, fourthOrderTensor, setd2Ibar1dFe2)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousIbar1dPreviousFe2, fourthOrderTensor, setd2PreviousIbar1dPreviousFe2)
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WLB, floatType, setWLB);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWLB, floatType, setPreviousWLB);
+
+        //! Whether the class has been initialized or not
+        bool is_initialized = false;
 
     };
 
