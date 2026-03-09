@@ -11,17 +11,17 @@
 namespace tardigradeHydra {
 
     /*!
-     * Get the bulk modulus
+     * Get the shear modulus
      */
-    const floatType CHIPFoamStrainEnergy::get_Khat(){
+    const floatType CHIPFoamStrainEnergy::get_Ghat(){
         TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
         return _parameters[0];
     }
 
     /*!
-     * Get the shear modulus
+     * Get the bulk modulus
      */
-    const floatType CHIPFoamStrainEnergy::get_Ghat(){
+    const floatType CHIPFoamStrainEnergy::get_Khat(){
         TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
         return _parameters[1];
     }
