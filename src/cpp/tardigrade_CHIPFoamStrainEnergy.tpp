@@ -129,5 +129,109 @@ namespace tardigradeHydra {
 
     }
 
-}
+    /*!
+     * Compute the gas pressure
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_pg(const floatType &Jbar, const floatType &Je){
 
+        auto p0 = get_p0();
+
+        auto Jg = compute_Jg(Jbar, Je);
+
+        auto gamma = get_gamma();
+
+        return p0 * (std::pow(Jg, -gamma) - 1);
+
+    }
+
+    /*!
+     * Compute the derivative of the gas pressure with respect to the volume-conserving compression
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_dpgdJbar(const floatType &Jbar, const floatType &Je){
+
+        auto p0 = get_p0();
+
+        auto Jg = compute_Jg(Jbar, Je);
+
+        auto gamma = get_gamma();
+
+        auto dJgdJbar = compute_dJgdJbar(Jbar, Je);
+
+        return p0 * (-gamma * std::pow(Jg, -(gamma+1)) * dJgdJbar);
+
+    }
+
+    /*!
+     * Compute the derivative of the gas pressure with respect to the elastic relative volume
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_dpgdJe(const floatType &Jbar, const floatType &Je){
+
+        auto p0 = get_p0();
+
+        auto Jg = compute_Jg(Jbar, Je);
+
+        auto gamma = get_gamma();
+
+        auto dJgdJe = compute_dJgdJe(Jbar, Je);
+
+        return p0 * (-gamma * std::pow(Jg, -(gamma+1)) * dJgdJe);
+
+    }
+
+    /*!
+     * Compute the second derivative of the gas pressure with respect to the net elastic relative volume
+     * and the volume-conserving compression.
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2pgdJedJbar(const floatType &Jbar, const floatType &Je){
+
+        auto p0 = get_p0();
+
+        auto Jg = compute_Jg(Jbar, Je);
+
+        auto gamma = get_gamma();
+
+        auto dJgdJe = compute_dJgdJe(Jbar, Je);
+
+        auto dJgdJbar = compute_dJgdJbar(Jbar, Je);
+
+        auto d2JgdJedJbar = compute_d2JgdJedJbar(Jbar, Je);
+
+        return p0 * (gamma * (gamma + 1) * std::pow(Jg, -(gamma+2)) * dJgdJe * dJgdJbar - gamma * std::pow(Jg, -(gamma+1)) * d2JgdJedJbar);
+
+    }
+
+    /*!
+     * Compute the second derivative of the gas pressure with respect to the volume-conserving compression
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2pgdJbar2(const floatType &Jbar, const floatType &Je){
+
+        auto p0 = get_p0();
+
+        auto Jg = compute_Jg(Jbar, Je);
+
+        auto gamma = get_gamma();
+
+        auto dJgdJbar = compute_dJgdJbar(Jbar, Je);
+
+        auto d2JgdJbar2 = compute_d2JgdJbar2(Jbar, Je);
+
+        return p0 * (gamma * (gamma + 1) * std::pow(Jg, -(gamma+2)) * dJgdJbar * dJgdJbar - gamma * std::pow(Jg, -(gamma+1)) * d2JgdJbar2);
+
+    }
+
+}
