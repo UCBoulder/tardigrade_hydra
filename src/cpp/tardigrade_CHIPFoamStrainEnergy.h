@@ -34,7 +34,7 @@ namespace tardigradeHydra {
         CHIPFoamStrainEnergy(hydraBase *_hydra, const unsigned int &_numEquations, const floatVector &parameters)
             : HyperelasticBase(_hydra, _numEquations), _parameters(parameters){
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(_parameters.size() == 3, "The parameters vector must have a size of 3");
+            TARDIGRADE_ERROR_TOOLS_CHECK(_parameters.size() == 8, "The parameters vector must have a size of 8");
 
             setInitialized();
 
@@ -45,6 +45,22 @@ namespace tardigradeHydra {
         const floatType get_Ghat();
 
         const floatType get_Jb();
+
+        const floatType get_C10();
+
+        const floatType get_phi0();
+
+        const floatType get_K();
+
+        const floatType get_p0();
+
+        const floatType get_gamma();
+
+        const floatType compute_f(const floatType J);
+
+        const floatType compute_dfdJ(const floatType J);
+
+        const floatType compute_d2fdJ2(const floatType J);
 
        protected:
         //! The model parameters

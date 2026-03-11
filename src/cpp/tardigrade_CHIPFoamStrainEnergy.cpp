@@ -35,6 +35,46 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Get the effective Neo-Hookean modulus
+     */
+    const floatType CHIPFoamStrainEnergy::get_C10(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
+        return _parameters[3];
+    }
+
+    /*!
+     * Get the initial porosity
+     */
+    const floatType CHIPFoamStrainEnergy::get_phi0(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
+        return _parameters[4];
+    }
+
+    /*!
+     * Get the parent material effective bulk modulus
+     */
+    const floatType CHIPFoamStrainEnergy::get_K(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
+        return _parameters[5];
+    }
+
+    /*!
+     * Get the initial gas pressure
+     */
+    const floatType CHIPFoamStrainEnergy::get_p0(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
+        return _parameters[6];
+    }
+
+    /*!
+     * Get the ratio of gas specific heats
+     */
+    const floatType CHIPFoamStrainEnergy::get_gamma(){
+        TARDIGRADE_ERROR_TOOLS_CHECK(isInitialized(), "The parameter vector has not been initialized");
+        return _parameters[7];
+    }
+
+    /*!
      * Compute the Jacobian of the elastic deformation
      *
      * \param isPrevious: A flag for of the current (false) or previous (true) value should be computed
