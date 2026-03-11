@@ -1549,3 +1549,346 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_f, *boost::unit_test::tol
     }
 
 }
+
+BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jg, *boost::unit_test::tolerance(1e-6)) {
+    class CHIPFoamStrainEnergyMock : public tardigradeHydra::CHIPFoamStrainEnergy {
+       public:
+        using tardigradeHydra::CHIPFoamStrainEnergy::CHIPFoamStrainEnergy;
+
+        tardigradeHydra::floatType Je = 0.9;
+
+        tardigradeHydra::floatType Ibar1 = 1.2;
+
+        tardigradeHydra::floatType previousJe = 0.98;
+
+        tardigradeHydra::floatType previousIbar1 = 2.2;
+
+       protected:
+        virtual void setJe(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousJe();
+                *v.value = previousJe;
+
+            } else {
+                auto v   = get_SetDataStorage_Je();
+                *v.value = Je;
+            }
+        }
+
+        virtual void setIbar1(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousIbar1();
+                *v.value = previousIbar1;
+
+            } else {
+                auto v   = get_SetDataStorage_Ibar1();
+                *v.value = Ibar1;
+            }
+        }
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+       public:
+        CHIPFoamStrainEnergyMock elasticity;
+
+        tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
+
+        unsigned int elasticitySize = 9;
+
+        using tardigradeHydra::hydraBase::hydraBase;
+
+        using tardigradeHydra::hydraBase::setResidualClasses;
+
+        virtual void setResidualClasses() {
+            elasticity = CHIPFoamStrainEnergyMock(this, elasticitySize, *getParameters());
+
+            remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>(this, 9);
+
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
+
+            residuals[0] = &elasticity;
+
+            residuals[1] = &remainder;
+
+            setResidualClasses(residuals);
+        }
+    };
+
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
+                                                           0.01110235, 0.02224434, -0.01770411, -0.01382113};
+
+    tardigradeHydra::floatVector parameters = {60., 100.0, 0.94, 50., 0.7, 1e3, 1.2, 1.4};
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatType answer = 0.875379939209726;
+
+    tardigradeHydra::floatType Jbar = 0.94;
+
+    CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
+
+    BOOST_TEST( answer == R.compute_Jg(Jbar, R.Je) );
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_VARS = 1;
+        constexpr unsigned int NUM_OUTS = 1;
+        std::vector<double> x = {Jbar};
+        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+
+        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            auto rp = R.compute_Jg(xp[i], R.Je);
+            auto rm = R.compute_Jg(xm[i], R.Je);
+
+            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
+
+                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(jacobian[0]==R.compute_dJgdJbar(Jbar,R.Je));
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_VARS = 1;
+        constexpr unsigned int NUM_OUTS = 1;
+        std::vector<double> x = {R.Je};
+        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+
+        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            auto rp = R.compute_Jg(Jbar, xp[i]);
+            auto rm = R.compute_Jg(Jbar, xm[i]);
+
+            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
+
+                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(jacobian[0]==R.compute_dJgdJe(Jbar,R.Je));
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_VARS = 1;
+        constexpr unsigned int NUM_OUTS = 1;
+        std::vector<double> x = {Jbar};
+        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+
+        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            auto rp = R.compute_dJgdJbar(xp[i], R.Je);
+            auto rm = R.compute_dJgdJbar(xm[i], R.Je);
+
+            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
+
+                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(jacobian[0]==R.compute_d2JgdJbar2(Jbar,R.Je));
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_VARS = 1;
+        constexpr unsigned int NUM_OUTS = 1;
+        std::vector<double> x = {Jbar};
+        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+
+        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            auto rp = R.compute_dJgdJe(xp[i], R.Je);
+            auto rm = R.compute_dJgdJe(xm[i], R.Je);
+
+            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
+
+                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
+
+            }
+
+        }
+
+        BOOST_TEST(jacobian[0]==R.compute_d2JgdJedJbar(Jbar,R.Je));
+
+    }
+
+//    {
+//
+//        double eps = 1e-6;
+//        constexpr unsigned int NUM_VARS = 1;
+//        constexpr unsigned int NUM_OUTS = 1;
+//        std::vector<double> x = {R.Je};
+//        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+//
+//        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
+//
+//            double delta = eps * std::fabs(x[i]) + eps;
+//
+//            std::vector<double> xp = x;
+//            std::vector<double> xm = x;
+//
+//            xp[i] += delta;
+//            xm[i] -= delta;
+//
+//            auto rp = R.compute_dfdJ(xp[i]);
+//            auto rm = R.compute_dfdJ(xm[i]);
+//
+//            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
+//
+//                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
+//
+//            }
+//
+//        }
+//
+//        BOOST_TEST(jacobian[0]==R.compute_d2fdJ2(R.Je));
+//
+//    }
+//
+//    {
+//
+//        double eps = 1e-6;
+//        constexpr unsigned int NUM_VARS = 1;
+//        constexpr unsigned int NUM_OUTS = 1;
+//        std::vector<double> x = {R.previousJe};
+//        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+//
+//        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
+//
+//            double delta = eps * std::fabs(x[i]) + eps;
+//
+//            std::vector<double> xp = x;
+//            std::vector<double> xm = x;
+//
+//            xp[i] += delta;
+//            xm[i] -= delta;
+//
+//            auto rp = R.compute_f(xp[i]);
+//            auto rm = R.compute_f(xm[i]);
+//
+//            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
+//
+//                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
+//
+//            }
+//
+//        }
+//
+//        BOOST_TEST(jacobian[0]==R.compute_dfdJ(R.previousJe));
+//
+//    }
+//
+//    {
+//
+//        double eps = 1e-6;
+//        constexpr unsigned int NUM_VARS = 1;
+//        constexpr unsigned int NUM_OUTS = 1;
+//        std::vector<double> x = {R.previousJe};
+//        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+//
+//        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
+//
+//            double delta = eps * std::fabs(x[i]) + eps;
+//
+//            std::vector<double> xp = x;
+//            std::vector<double> xm = x;
+//
+//            xp[i] += delta;
+//            xm[i] -= delta;
+//
+//            auto rp = R.compute_dfdJ(xp[i]);
+//            auto rm = R.compute_dfdJ(xm[i]);
+//
+//            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
+//
+//                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
+//
+//            }
+//
+//        }
+//
+//        BOOST_TEST(jacobian[0]==R.compute_d2fdJ2(R.previousJe));
+//
+//    }
+
+}

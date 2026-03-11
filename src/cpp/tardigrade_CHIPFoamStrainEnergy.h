@@ -56,11 +56,21 @@ namespace tardigradeHydra {
 
         const floatType get_gamma();
 
-        const floatType compute_f(const floatType J);
+        const floatType compute_f(const floatType &J);
 
-        const floatType compute_dfdJ(const floatType J);
+        const floatType compute_dfdJ(const floatType &J);
 
-        const floatType compute_d2fdJ2(const floatType J);
+        const floatType compute_d2fdJ2(const floatType &J);
+
+        const floatType compute_Jg(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_dJgdJbar(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_dJgdJe(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_d2JgdJedJbar(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_d2JgdJbar2(const floatType &Jbar, const floatType &Je);
 
        protected:
         //! The model parameters
