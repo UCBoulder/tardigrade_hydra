@@ -173,8 +173,7 @@ namespace tardigradeHydra {
      * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
-    const floatType CHIPFoamStrainEnergy::compute_d2pgdJe2(const floatType &Jbar, const floatType &Je){
-
+    const floatType CHIPFoamStrainEnergy::compute_d2pgdJe2(const floatType &Jbar, const floatType &Je) {
         auto p0 = get_p0();
 
         auto Jg = compute_Jg(Jbar, Je);
@@ -184,7 +183,6 @@ namespace tardigradeHydra {
         auto dJgdJe = compute_dJgdJe(Jbar, Je);
 
         return p0 * (gamma * (gamma + 1) * std::pow(Jg, -(gamma + 2)) * dJgdJe * dJgdJe);
-
     }
 
     /*!
@@ -289,10 +287,8 @@ namespace tardigradeHydra {
      * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
-    const floatType CHIPFoamStrainEnergy::compute_d2ptildedJe2(const floatType &Jbar, const floatType &Je){
-
+    const floatType CHIPFoamStrainEnergy::compute_d2ptildedJe2(const floatType &Jbar, const floatType &Je) {
         return compute_d2pgdJe2(Jbar, Je);
-
     }
 
     /*!
@@ -351,8 +347,7 @@ namespace tardigradeHydra {
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
      */
-    const floatType CHIPFoamStrainEnergy::compute_dJmdJbar(const floatType &Jbar, const floatType &Je) { 
-
+    const floatType CHIPFoamStrainEnergy::compute_dJmdJbar(const floatType &Jbar, const floatType &Je) {
         auto K = get_K();
 
         auto Jm = compute_Jm(Jbar, Je);
@@ -360,7 +355,6 @@ namespace tardigradeHydra {
         auto dptildedJbar = compute_dptildedJbar(Jbar, Je);
 
         return -Jm * dptildedJbar / K;
-
     }
 
     /*!
@@ -370,8 +364,7 @@ namespace tardigradeHydra {
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
      */
-    const floatType CHIPFoamStrainEnergy::compute_dJmdJe(const floatType &Jbar, const floatType &Je) { 
-
+    const floatType CHIPFoamStrainEnergy::compute_dJmdJe(const floatType &Jbar, const floatType &Je) {
         auto K = get_K();
 
         auto Jm = compute_Jm(Jbar, Je);
@@ -379,7 +372,6 @@ namespace tardigradeHydra {
         auto dptildedJe = compute_dptildedJe(Jbar, Je);
 
         return -Jm * dptildedJe / K;
-
     }
 
     /*!
@@ -389,8 +381,7 @@ namespace tardigradeHydra {
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
      */
-    const floatType CHIPFoamStrainEnergy::compute_d2JmdJe2(const floatType &Jbar, const floatType &Je) { 
-
+    const floatType CHIPFoamStrainEnergy::compute_d2JmdJe2(const floatType &Jbar, const floatType &Je) {
         auto K = get_K();
 
         auto Jm = compute_Jm(Jbar, Je);
@@ -402,7 +393,6 @@ namespace tardigradeHydra {
         auto d2ptildedJe2 = compute_d2ptildedJe2(Jbar, Je);
 
         return -dJmdJe * dptildedJe / K - Jm * d2ptildedJe2 / K;
-
     }
 
     /*!
@@ -414,7 +404,6 @@ namespace tardigradeHydra {
      * \param &Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_d2JmdJedJbar(const floatType &Jbar, const floatType &Je) {
-
         auto K = get_K();
 
         auto Jm = compute_Jm(Jbar, Je);
@@ -426,7 +415,6 @@ namespace tardigradeHydra {
         auto d2ptildedJedJbar = compute_d2ptildedJedJbar(Jbar, Je);
 
         return -dJmdJbar * dptildedJe / K - Jm * d2ptildedJedJbar / K;
-
     }
 
     /*!
@@ -437,7 +425,6 @@ namespace tardigradeHydra {
      * \param &Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_d2JmdJbar2(const floatType &Jbar, const floatType &Je) {
-
         auto K = get_K();
 
         auto Jm = compute_Jm(Jbar, Je);
@@ -449,7 +436,6 @@ namespace tardigradeHydra {
         auto d2ptildedJbar2 = compute_d2ptildedJbar2(Jbar, Je);
 
         return -dJmdJbar * dptildedJbar / K - Jm * d2ptildedJbar2 / K;
-        
     }
 
 }  // namespace tardigradeHydra

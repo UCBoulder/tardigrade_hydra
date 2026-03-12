@@ -2203,7 +2203,6 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_ptilde, *boost::unit_test
 
         BOOST_TEST(jacobian[0] == R.compute_d2ptildedJe2(Jbar, R.Je));
     }
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jm, *boost::unit_test::tolerance(1e-6)) {
