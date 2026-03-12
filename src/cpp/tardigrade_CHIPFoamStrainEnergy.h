@@ -120,13 +120,28 @@ namespace tardigradeHydra {
 
         const floatType Jbar_bisection(const floatType &lb, const floatType &ub, floatType tol_R = -1, floatType tol_dx = -1);
 
-//        const floatType Jbar_newton();
+        const floatType Jbar_newton();
 
-        // The besection method's relative tolerance
+        //! The bisection method's relative tolerance
         floatType bisection_tolr = 1e-3;
 
-        // The bisection method's absolute tolerance
+        //! The bisection method's absolute tolerance
         floatType bisection_tola = 1e-3;
+
+        //! The Newton method's relative tolerance
+        floatType newton_tolr = 1e-9;
+
+        //! The Newton method's absolute tolerance
+        floatType newton_tola = 1e-9;
+
+        //! The Newton method's maximum number of iterations
+        floatType newton_maxiter = 10;
+
+        //! The Newton method's line search alpha parameter
+        floatType newton_lsalpha = 1e-4;
+
+        //! The Newton method's maximum number of line-search iterations
+        floatType newton_maxlsiter = 5;
 
        protected:
         //! The model parameters

@@ -529,6 +529,7 @@ namespace tardigradeHydra {
 
     /*!
      * A simple bisection algorithm to initialize the solve for Jbar
+     *
      * \param &lb: The lower bound
      * \param &ub: The upper bound
      * \param &tol_R: The tolerance on the residual
@@ -565,5 +566,57 @@ namespace tardigradeHydra {
         }
 
     }
+
+    /*!
+     * A Newton-Raphson algorithm to solve for the value of Jbar
+     */
+    const floatType CHIPFoamStrainEnergy::Jbar_newton(){
+
+        floatType Jbar = Jbar_bisection(1 - get_phi0() + 1e-9, std::fmax(*get_Je(), 1.0) + 1e-9);
+
+        floatType R = compute_Jbar_residual(Jbar, *get_Je());
+
+        floatType Rp = std::fabs(R);
+
+        floatType tol = newton_tolr * Rp + newton_tola;
+
+        unsigned int niter = 0;
+
+        while ( (Rp > tol) && (niter < newton_maxiter)){
+
+            floatType J = compute_Jbar_dRdJbar(Jbar, *get_Je());
+
+            floatType dx = -R/J;
+
+            floatType l = 1.0;
+
+            R = compute_Jbar_residual(Jbar + dx, *get_Je());
+
+            unsigned int lsiter = 0;
+
+            while ((std::fabs(R) > (1 - newton_lsalpha)*Rp ) && (lsiter < newton_maxlsiter)){
+
+                l *= 0.5;
+
+                R = compute_Jbar_residual(Jbar + l * dx, *get_Je());
+
+                lsiter++;
+
+            }
+
+            Jbar += l * dx;
+
+            Rp = std::fabs(R);
+
+            niter++;
+
+        }
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(Rp <= tol, "The Jbar Newton algorithm did not converge")
+
+        return Jbar;
+
+    }
+ 
 
 }  // namespace tardigradeHydra
