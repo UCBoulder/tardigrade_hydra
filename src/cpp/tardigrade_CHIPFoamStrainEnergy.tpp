@@ -234,4 +234,91 @@ namespace tardigradeHydra {
 
     }
 
+    /*!
+     * Compute the ptilde term
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_ptilde(const floatType &Jbar, const floatType &Je){
+
+        auto pg = compute_pg(Jbar, Je);
+
+        auto C10 = get_C10();
+
+        auto phi0 = get_phi0();
+
+        return pg + C10 * ( std::pow(phi0,1./3) * (4. * Jbar - 4. + 5. * phi0) * std::pow(Jbar - 1. + phi0,-4./3.) - (4. * Jbar - 1.)*(4.*Jbar + 1.) * std::pow(Jbar, -4./3.) / 3.);
+
+    }
+
+    /*!
+     * Compute the derivative of the ptilde term with respect to the volume-conserving compression
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_dptildedJbar(const floatType &Jbar, const floatType &Je){
+
+        auto dpgdJbar = compute_dpgdJbar(Jbar, Je);
+
+        auto C10 = get_C10();
+
+        auto phi0 = get_phi0();
+
+        auto phi0_13 = std::pow(phi0,1./3);
+        auto phi0_43 = std::pow(phi0,4./3);
+        auto Jbar_13 = std::pow(Jbar,1./3);
+        auto Jbar_73 = std::pow(Jbar,7./3);
+
+        return dpgdJbar + ((-4*C10*Jbar*phi0_13 - 8*C10*phi0_43 + 4*C10*phi0_13) * std::pow((Jbar + phi0 - 1),-7./3.) / 3 - 32*C10/(9*Jbar_13) - 4*C10/(9*Jbar_73));
+
+    }
+
+    /*!
+     * Compute the derivative of the ptilde term with respect to the elastic relative volume
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_dptildedJe(const floatType &Jbar, const floatType &Je){
+
+        return compute_dpgdJe(Jbar, Je);
+
+    }
+
+    /*!
+     * Compute the second derivative of the ptilde term with respect to the net elastic relative volume
+     * and the volume-conserving compression.
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2ptildedJedJbar(const floatType &Jbar, const floatType &Je){
+
+        return compute_d2pgdJedJbar(Jbar,Je);
+
+    }
+
+    /*!
+     * Compute the second derivative of the ptilde term with respect to the volume-conserving compression
+     *
+     * \param Jbar: The matrix volume-conserving compression
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2ptildedJbar2(const floatType &Jbar, const floatType &Je){
+
+        auto d2pgdJbar2 = compute_d2pgdJbar2(Jbar,Je);
+
+        auto C10 = get_C10();
+
+        auto phi0 = get_phi0();
+
+        auto phi0_13 = std::pow(phi0,1./3);
+        auto phi0_43 = std::pow(phi0,4./3);
+
+        return d2pgdJbar2 + 16*C10*Jbar*phi0_13/(9*std::pow(Jbar + phi0 - 1,10./3)) + 44*C10*phi0_43/(9*std::pow(Jbar + phi0 - 1,10./3)) - 16*C10*phi0_13/(9*std::pow(Jbar + phi0 - 1,10./3)) + 32*C10/(27*std::pow(Jbar,4./3)) + 28*C10/(27*std::pow(Jbar,10./3));
+
+    }
+
 }
