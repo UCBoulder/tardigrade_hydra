@@ -314,10 +314,12 @@ namespace tardigradeHydra {
 
         auto phi0 = get_phi0();
 
-        auto phi0_13 = std::pow(phi0,1./3);
-        auto phi0_43 = std::pow(phi0,4./3);
+        auto phi0_13  = std::pow(phi0,1./3);
+        auto phi0_43  = std::pow(phi0,4./3);
+        auto Jbar_43  = std::pow(Jbar,4./3);
+        auto Jbar_103 = std::pow(Jbar,10./3);
 
-        return d2pgdJbar2 + 16*C10*Jbar*phi0_13/(9*std::pow(Jbar + phi0 - 1,10./3)) + 44*C10*phi0_43/(9*std::pow(Jbar + phi0 - 1,10./3)) - 16*C10*phi0_13/(9*std::pow(Jbar + phi0 - 1,10./3)) + 32*C10/(27*std::pow(Jbar,4./3)) + 28*C10/(27*std::pow(Jbar,10./3));
+        return d2pgdJbar2 + (16*C10*Jbar*phi0_13 + 44*C10*phi0_43 - 16*C10*phi0_13)/(9*std::pow(Jbar + phi0 - 1,10./3)) + 32*C10/(27*Jbar_43) + 28*C10/(27*Jbar_103);
 
     }
 
