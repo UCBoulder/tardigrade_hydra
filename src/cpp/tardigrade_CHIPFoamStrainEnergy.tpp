@@ -48,7 +48,7 @@ namespace tardigradeHydra {
     /*!
      * Compute the gas relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_Jg(const floatType &Jbar, const floatType &Je) {
@@ -59,9 +59,9 @@ namespace tardigradeHydra {
 
     /*!
      * Compute the derivative of the gas relative volume with respect to
-     * the matrix volume-conserving compression
+     * the matrix volume-conserving relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_dJgdJbar(const floatType &Jbar, const floatType &Je) {
@@ -74,9 +74,9 @@ namespace tardigradeHydra {
 
     /*!
      * Compute the derivative of the gas relative volume with respect to
-     * the net elastic compression
+     * the net elastic relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_dJgdJe(const floatType &Jbar, const floatType &Je) {
@@ -87,9 +87,9 @@ namespace tardigradeHydra {
 
     /*!
      * Compute the second derivative of the gas relative volume with respect to
-     * the matrix volume-conserving compression and the net elastic compression
+     * the matrix volume-conserving relative volume and the net elastic relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_d2JgdJedJbar(const floatType &Jbar, const floatType &Je) {
@@ -100,9 +100,9 @@ namespace tardigradeHydra {
 
     /*!
      * Compute the second derivative of the gas relative volume with respect to
-     * the matrix volume-conserving compression
+     * the matrix volume-conserving relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_d2JgdJbar2(const floatType &Jbar, const floatType &Je) {
@@ -118,7 +118,7 @@ namespace tardigradeHydra {
     /*!
      * Compute the gas pressure
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_pg(const floatType &Jbar, const floatType &Je) {
@@ -132,9 +132,9 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Compute the derivative of the gas pressure with respect to the volume-conserving compression
+     * Compute the derivative of the gas pressure with respect to the volume-conserving relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_dpgdJbar(const floatType &Jbar, const floatType &Je) {
@@ -152,7 +152,7 @@ namespace tardigradeHydra {
     /*!
      * Compute the derivative of the gas pressure with respect to the elastic relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_dpgdJe(const floatType &Jbar, const floatType &Je) {
@@ -169,9 +169,29 @@ namespace tardigradeHydra {
 
     /*!
      * Compute the second derivative of the gas pressure with respect to the net elastic relative volume
-     * and the volume-conserving compression.
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2pgdJe2(const floatType &Jbar, const floatType &Je){
+
+        auto p0 = get_p0();
+
+        auto Jg = compute_Jg(Jbar, Je);
+
+        auto gamma = get_gamma();
+
+        auto dJgdJe = compute_dJgdJe(Jbar, Je);
+
+        return p0 * (gamma * (gamma + 1) * std::pow(Jg, -(gamma + 2)) * dJgdJe * dJgdJe);
+
+    }
+
+    /*!
+     * Compute the second derivative of the gas pressure with respect to the net elastic relative volume
+     * and the volume-conserving relative volume.
+     *
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_d2pgdJedJbar(const floatType &Jbar, const floatType &Je) {
@@ -192,9 +212,9 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Compute the second derivative of the gas pressure with respect to the volume-conserving compression
+     * Compute the second derivative of the gas pressure with respect to the volume-conserving relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_d2pgdJbar2(const floatType &Jbar, const floatType &Je) {
@@ -215,7 +235,7 @@ namespace tardigradeHydra {
     /*!
      * Compute the ptilde term
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_ptilde(const floatType &Jbar, const floatType &Je) {
@@ -231,9 +251,9 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Compute the derivative of the ptilde term with respect to the volume-conserving compression
+     * Compute the derivative of the ptilde term with respect to the volume-conserving relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_dptildedJbar(const floatType &Jbar, const floatType &Je) {
@@ -256,7 +276,7 @@ namespace tardigradeHydra {
     /*!
      * Compute the derivative of the ptilde term with respect to the elastic relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_dptildedJe(const floatType &Jbar, const floatType &Je) {
@@ -264,10 +284,22 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Compute the second derivative of the ptilde term with respect to the net elastic relative volume
-     * and the volume-conserving compression.
+     * Compute the second derivative of the ptilde term with respect to the net elastic relative volume.
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
+     * \param Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2ptildedJe2(const floatType &Jbar, const floatType &Je){
+
+        return compute_d2pgdJe2(Jbar, Je);
+
+    }
+
+    /*!
+     * Compute the second derivative of the ptilde term with respect to the net elastic relative volume
+     * and the volume-conserving relative volume.
+     *
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_d2ptildedJedJbar(const floatType &Jbar, const floatType &Je) {
@@ -275,9 +307,9 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Compute the second derivative of the ptilde term with respect to the volume-conserving compression
+     * Compute the second derivative of the ptilde term with respect to the volume-conserving relative volume
      *
-     * \param Jbar: The matrix volume-conserving compression
+     * \param Jbar: The matrix volume-conserving relative volume
      * \param Je: The net elastic relative volume
      */
     const floatType CHIPFoamStrainEnergy::compute_d2ptildedJbar2(const floatType &Jbar, const floatType &Je) {
@@ -296,6 +328,128 @@ namespace tardigradeHydra {
                (16 * C10 * Jbar * phi0_13 + 44 * C10 * phi0_43 - 16 * C10 * phi0_13) /
                    (9 * std::pow(Jbar + phi0 - 1, 10. / 3)) +
                32 * C10 / (27 * Jbar_43) + 28 * C10 / (27 * Jbar_103);
+    }
+
+    /*!
+     * Compute the relative volume of the parent material
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_Jm(const floatType &Jbar, const floatType &Je) {
+        auto K = get_K();
+
+        auto ptilde = compute_ptilde(Jbar, Je);
+
+        return std::exp(-ptilde / K);
+    }
+
+    /*!
+     * Compute the derivative of the relative volume of the parent material
+     * with respect to the matrix volume-conserving relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_dJmdJbar(const floatType &Jbar, const floatType &Je) { 
+
+        auto K = get_K();
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dptildedJbar = compute_dptildedJbar(Jbar, Je);
+
+        return -Jm * dptildedJbar / K;
+
+    }
+
+    /*!
+     * Compute the derivative of the relative volume of the parent material
+     * with respect to the net elastic relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_dJmdJe(const floatType &Jbar, const floatType &Je) { 
+
+        auto K = get_K();
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dptildedJe = compute_dptildedJe(Jbar, Je);
+
+        return -Jm * dptildedJe / K;
+
+    }
+
+    /*!
+     * Compute the second derivative of the relative volume of the parent material
+     * with respect to the net elastic relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2JmdJe2(const floatType &Jbar, const floatType &Je) { 
+
+        auto K = get_K();
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dJmdJe = compute_dJmdJe(Jbar, Je);
+
+        auto dptildedJe = compute_dptildedJe(Jbar, Je);
+
+        auto d2ptildedJe2 = compute_d2ptildedJe2(Jbar, Je);
+
+        return -dJmdJe * dptildedJe / K - Jm * d2ptildedJe2 / K;
+
+    }
+
+    /*!
+     * Compute the second derivative of the relative volume of the parent material
+     * with respect to the net elastic relative volume and the matrix volume-conserving
+     * relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2JmdJedJbar(const floatType &Jbar, const floatType &Je) {
+
+        auto K = get_K();
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dptildedJe = compute_dptildedJe(Jbar, Je);
+
+        auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
+
+        auto d2ptildedJedJbar = compute_d2ptildedJedJbar(Jbar, Je);
+
+        return -dJmdJbar * dptildedJe / K - Jm * d2ptildedJedJbar / K;
+
+    }
+
+    /*!
+     * Compute the second derivative of the relative volume of the parent material
+     * with respect to the matrix volume-conserving relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */
+    const floatType CHIPFoamStrainEnergy::compute_d2JmdJbar2(const floatType &Jbar, const floatType &Je) {
+
+        auto K = get_K();
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dptildedJbar = compute_dptildedJbar(Jbar, Je);
+
+        auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
+
+        auto d2ptildedJbar2 = compute_d2ptildedJbar2(Jbar, Je);
+
+        return -dJmdJbar * dptildedJbar / K - Jm * d2ptildedJbar2 / K;
+        
     }
 
 }  // namespace tardigradeHydra
