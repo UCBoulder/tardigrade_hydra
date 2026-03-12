@@ -448,7 +448,7 @@ namespace tardigradeHydra {
 
         auto Jm = compute_Jm(Jbar, Je);
 
-        return Je / Jm - Jbar;
+        return Je / Jbar - Jm;
     }
 
     /*!
@@ -460,11 +460,9 @@ namespace tardigradeHydra {
      */ 
     const floatType CHIPFoamStrainEnergy::compute_Jbar_dRdJbar(const floatType &Jbar, const floatType &Je) {
 
-        auto Jm = compute_Jm(Jbar, Je);
-
         auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
 
-        return -Je / (Jm * Jm) * dJmdJbar - 1;
+        return -Je / (Jbar * Jbar) - dJmdJbar;
 
     }
 
@@ -477,11 +475,9 @@ namespace tardigradeHydra {
      */ 
     const floatType CHIPFoamStrainEnergy::compute_Jbar_dRdJe(const floatType &Jbar, const floatType &Je) {
 
-        auto Jm = compute_Jm(Jbar, Je);
-
         auto dJmdJe = compute_dJmdJe(Jbar, Je);
 
-        return 1. / Jm - Je / (Jm * Jm) * dJmdJe;
+        return 1. / Jbar - dJmdJe;
 
     }
 
@@ -494,13 +490,9 @@ namespace tardigradeHydra {
      */ 
     const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJe2(const floatType &Jbar, const floatType &Je) {
 
-        auto Jm = compute_Jm(Jbar, Je);
-
-        auto dJmdJe = compute_dJmdJe(Jbar, Je);
-
         auto d2JmdJe2 = compute_d2JmdJe2(Jbar, Je);
 
-        return -1. / (Jm * Jm) * dJmdJe - 1 / (Jm * Jm) * dJmdJe + 2 * Je / (Jm * Jm * Jm) * dJmdJe * dJmdJe - Je / (Jm * Jm) * d2JmdJe2;
+        return -d2JmdJe2;
 
     }
 
@@ -513,15 +505,11 @@ namespace tardigradeHydra {
      * \param &Je: The net elastic relative volume
      */ 
     const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJedJbar(const floatType &Jbar, const floatType &Je) {
-        auto Jm = compute_Jm(Jbar, Je);
-
-        auto dJmdJe = compute_dJmdJe(Jbar, Je);
-
-        auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
 
         auto d2JmdJedJbar = compute_d2JmdJedJbar(Jbar, Je);
 
-        return -1. / (Jm * Jm) * dJmdJbar + 2 * Je / (Jm * Jm * Jm) * dJmdJe * dJmdJbar - Je / (Jm * Jm) * d2JmdJedJbar;
+        return -1. / (Jbar * Jbar) - d2JmdJedJbar;
+
     }
 
     /*!
@@ -533,13 +521,9 @@ namespace tardigradeHydra {
      */ 
     const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJbar2(const floatType &Jbar, const floatType &Je) {
 
-        auto Jm = compute_Jm(Jbar, Je);
-
-        auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
-
         auto d2JmdJbar2 = compute_d2JmdJbar2(Jbar, Je);
 
-        return 2 * Je / (Jm * Jm * Jm) * dJmdJbar * dJmdJbar - Je / (Jm * Jm) * d2JmdJbar2;
+        return 2 * Je / (Jbar * Jbar * Jbar) - d2JmdJbar2;
 
     }
 

@@ -2553,7 +2553,7 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jbar_residual, *boost::un
 
     hydra.initialize();
 
-    tardigradeHydra::floatType answer = -0.0173406289748890;
+    tardigradeHydra::floatType answer = -0.0179944304376687;
 
     tardigradeHydra::floatType Jbar = 0.94;
 
