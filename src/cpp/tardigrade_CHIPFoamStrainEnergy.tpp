@@ -438,4 +438,109 @@ namespace tardigradeHydra {
         return -dJmdJbar * dptildedJbar / K - Jm * d2ptildedJbar2 / K;
     }
 
+    /*!
+     * Compute the residual for the Jbar iteration
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */ 
+    const floatType CHIPFoamStrainEnergy::compute_Jbar_residual(const floatType &Jbar, const floatType &Je) {
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        return Je / Jm - Jbar;
+    }
+
+    /*!
+     * Compute the derivative of the residual for the Jbar iteration
+     * with respect to the matrix volume-conserving relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */ 
+    const floatType CHIPFoamStrainEnergy::compute_Jbar_dRdJbar(const floatType &Jbar, const floatType &Je) {
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
+
+        return -Je / (Jm * Jm) * dJmdJbar - 1;
+
+    }
+
+    /*!
+     * Compute the derivative of the residual for the Jbar iteration
+     * with respect to the net elastic relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */ 
+    const floatType CHIPFoamStrainEnergy::compute_Jbar_dRdJe(const floatType &Jbar, const floatType &Je) {
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dJmdJe = compute_dJmdJe(Jbar, Je);
+
+        return 1. / Jm - Je / (Jm * Jm) * dJmdJe;
+
+    }
+
+    /*!
+     * Compute the second derivative of the residual for the Jbar iteration
+     * with respect to the net elastic relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */ 
+    const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJe2(const floatType &Jbar, const floatType &Je) {
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dJmdJe = compute_dJmdJe(Jbar, Je);
+
+        auto d2JmdJe2 = compute_d2JmdJe2(Jbar, Je);
+
+        return -1. / (Jm * Jm) * dJmdJe - 1 / (Jm * Jm) * dJmdJe + 2 * Je / (Jm * Jm * Jm) * dJmdJe * dJmdJe - Je / (Jm * Jm) * d2JmdJe2;
+
+    }
+
+    /*!
+     * Compute the second derivative of the residual for the Jbar iteration
+     * with respect to the net elastic relative volume and the matrix volume-conserving
+     * relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */ 
+    const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJedJbar(const floatType &Jbar, const floatType &Je) {
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dJmdJe = compute_dJmdJe(Jbar, Je);
+
+        auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
+
+        auto d2JmdJedJbar = compute_d2JmdJedJbar(Jbar, Je);
+
+        return -1. / (Jm * Jm) * dJmdJbar + 2 * Je / (Jm * Jm * Jm) * dJmdJe * dJmdJbar - Je / (Jm * Jm) * d2JmdJedJbar;
+    }
+
+    /*!
+     * Compute the second derivative of the residual for the Jbar iteration
+     * with respect to the the matrix volume-conserving relative volume
+     *
+     * \param &Jbar: The matrix volume-conserving relative volume
+     * \param &Je: The net elastic relative volume
+     */ 
+    const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJbar2(const floatType &Jbar, const floatType &Je) {
+
+        auto Jm = compute_Jm(Jbar, Je);
+
+        auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
+
+        auto d2JmdJbar2 = compute_d2JmdJbar2(Jbar, Je);
+
+        return 2 * Je / (Jm * Jm * Jm) * dJmdJbar * dJmdJbar - Je / (Jm * Jm) * d2JmdJbar2;
+
+    }
+
 }  // namespace tardigradeHydra

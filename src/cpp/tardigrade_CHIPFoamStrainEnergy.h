@@ -106,6 +106,18 @@ namespace tardigradeHydra {
 
         const floatType compute_d2JmdJbar2(const floatType &Jbar, const floatType &Je);
 
+        const floatType compute_Jbar_residual(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_Jbar_dRdJbar(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_Jbar_dRdJe(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_Jbar_d2RdJe2(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_Jbar_d2RdJedJbar(const floatType &Jbar, const floatType &Je);
+
+        const floatType compute_Jbar_d2RdJbar2(const floatType &Jbar, const floatType &Je);
+
        protected:
         //! The model parameters
         floatVector _parameters;
