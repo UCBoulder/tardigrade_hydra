@@ -527,4 +527,43 @@ namespace tardigradeHydra {
 
     }
 
+    /*!
+     * A simple bisection algorithm to initialize the solve for Jbar
+     * \param &lb: The lower bound
+     * \param &ub: The upper bound
+     * \param &tol_R: The tolerance on the residual
+     * \param &tol_dx: The tolerance on the span betwen the lower and upper bound
+     */
+    const floatType CHIPFoamStrainEnergy::Jbar_bisection(const floatType &lb, const floatType &ub, floatType tol_R, floatType tol_dx){
+
+        auto m = 0.5 * (lb + ub);
+        auto Rlb = compute_Jbar_residual(lb, *get_Je());
+        auto Rub = compute_Jbar_residual(ub, *get_Je());
+
+        if ( sgn(Rlb) == sgn(Rub) ){ throw std::logic_error("The residual at the lower and upper points must have different signs"); }
+
+        if (tol_R < 0){
+
+            tol_R = bisection_tolr * 0.5 * (std::fabs(Rlb) + std::fabs(Rub)) + bisection_tola;
+
+        }
+
+        if (tol_dx < 0){
+
+            tol_dx = bisection_tolr * std::fabs(ub - lb) + bisection_tola;
+
+        }
+
+        auto Rm = compute_Jbar_residual(m, *get_Je());
+
+        if ((std::fabs(Rm) < tol_R) || (std::fabs(ub - lb) < tol_dx)){
+            return m;
+        } else if(sgn(Rlb) == sgn(Rm)){
+            return Jbar_bisection(m,ub,tol_R,tol_dx);
+        } else{
+            return Jbar_bisection(lb,m,tol_R,tol_dx);
+        }
+
+    }
+
 }  // namespace tardigradeHydra

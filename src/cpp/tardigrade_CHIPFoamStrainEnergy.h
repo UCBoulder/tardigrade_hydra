@@ -118,6 +118,16 @@ namespace tardigradeHydra {
 
         const floatType compute_Jbar_d2RdJbar2(const floatType &Jbar, const floatType &Je);
 
+        const floatType Jbar_bisection(const floatType &lb, const floatType &ub, floatType tol_R = -1, floatType tol_dx = -1);
+
+//        const floatType Jbar_newton();
+
+        // The besection method's relative tolerance
+        floatType bisection_tolr = 1e-3;
+
+        // The bisection method's absolute tolerance
+        floatType bisection_tola = 1e-3;
+
        protected:
         //! The model parameters
         floatVector _parameters;
@@ -181,6 +191,9 @@ namespace tardigradeHydra {
 
         //! Set that the class has been initialized
         void setInitialized() { is_initialized = true; };
+
+        //! Get the sign of a floating point number
+        template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
 
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Je, floatType, setJe)
