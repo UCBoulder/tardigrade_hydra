@@ -620,6 +620,36 @@ namespace tardigradeHydra {
      */
     void CHIPFoamStrainEnergy::setdJbardJe(bool isPrevious){
 
+        const floatType *Jbar;
+
+        const floatType *Je;
+
+        SetDataStorageBase<floatType> dJbardJe;
+
+        if ( isPrevious ){
+
+            Jbar = get_previousJbar();
+
+            Je = get_previousJe();
+
+            dJbardJe = get_SetDataStorage_dPreviousJbardPreviousJe();
+
+        }else{
+
+            Jbar = get_Jbar();
+
+            Je = get_Je();
+
+            dJbardJe = get_SetDataStorage_dJbardJe();
+
+        }
+
+        auto jacobian = compute_Jbar_dRdJbar(*Jbar, *Je);
+
+        auto dRdX = compute_Jbar_dRdJe(*Jbar, *Je);
+
+        *dJbardJe.value = -dRdX / jacobian;
+
     }
 
     /*!
@@ -642,6 +672,31 @@ namespace tardigradeHydra {
      *     value
      */
     void CHIPFoamStrainEnergy::setd2JbardJe2(bool isPrevious){
+
+        const floatType *Jbar;
+
+        const floatType *Je;
+
+        const floatType *dJbardJe;
+
+        if ( isPrevious ){
+
+            Jbar = get_previousJbar();
+
+            Je = get_previousJe();
+
+            dJbardJe = get_dPreviousJbardPreviousJe();
+
+        }else{
+
+            Jbar = get_Jbar();
+
+            Je = get_Je();
+
+            dJbardJe = get_dJbardJe();
+        }
+
+
 
     }
 
