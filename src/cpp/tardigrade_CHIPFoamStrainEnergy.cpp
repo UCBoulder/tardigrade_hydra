@@ -728,4 +728,137 @@ namespace tardigradeHydra {
      * net elastic relative volume
      */
     void CHIPFoamStrainEnergy::setd2PreviousJbardPreviousJe2(){ setd2JbardJe2(true); }
+
+    /*!
+     * Set the derivative of Jbar with respect to Je evaluated when Jbar is one
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true)
+     *     value
+     */
+    void CHIPFoamStrainEnergy::setdJbardJe1(bool isPrevious){
+
+        auto K = get_K();
+
+        auto p0 = get_p0();
+
+        auto gamma = get_gamma();
+
+        const floatType *Je;
+
+        SetDataStorageBase<floatType> dJbardJe1;
+
+        if (isPrevious){
+            Je = get_previousJe();
+
+            dJbardJe1 = get_SetDataStorage_previousdJbardJe1();
+        }else{
+            Je = get_Je();
+
+            dJbardJe1 = get_SetDataStorage_dJbardJe1();
+        }
+
+        *dJbardJe1.value = std::exp(p0*(-1 + std::pow(*Je,-gamma))/K) - gamma*p0*std::exp(p0*(-1 + std::pow(*Je,-gamma))/K)/(std::pow(*Je,gamma)*K);
+
+    }
+
+    /*!
+     * Set the current derivative of Jbar with respect to Je evaluated when Jbar is one
+     */
+    void CHIPFoamStrainEnergy::setdJbardJe1(){ setdJbardJe1(false); }
+
+    /*!
+     * Set the previous derivative of Jbar with respect to Je evaluated when Jbar is one
+     */
+    void CHIPFoamStrainEnergy::setPreviousdJbardJe1(){ setdJbardJe1(true); }
+
+
+    /*!
+     * Set the derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
+     * with respect to the net elastic relative volume
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true)
+     *     value
+     */
+    void CHIPFoamStrainEnergy::setddJbardJe1dJe(bool isPrevious){
+
+        auto K = get_K();
+
+        auto p0 = get_p0();
+
+        auto gamma = get_gamma();
+
+        const floatType *Je;
+
+        SetDataStorageBase<floatType> ddJbardJe1dJe;
+
+        if (isPrevious){
+            Je = get_previousJe();
+
+            ddJbardJe1dJe = get_SetDataStorage_dPreviousdJbardJe1dPreviousJe();
+        }else{
+            Je = get_Je();
+
+            ddJbardJe1dJe = get_SetDataStorage_ddJbardJe1dJe();
+        }
+
+        *ddJbardJe1dJe.value = gamma*gamma*p0*std::exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*std::pow(*Je,gamma)*K) - gamma*p0*std::exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*std::pow(*Je,gamma)*K) + gamma*gamma*p0*p0*std::exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*std::pow(*Je,2*gamma)*K*K);
+    }
+
+    /*!
+     * Set the current derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
+     * with respect to the net elastic relative volume
+     */
+    void CHIPFoamStrainEnergy::setddJbardJe1dJe(){ setddJbardJe1dJe(false); }
+
+    /*!
+     * Set the previous derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
+     * with respect to the net elastic relative volume
+     */
+    void CHIPFoamStrainEnergy::setdPreviousdJbardJe1dPreviousJe(){ setddJbardJe1dJe(true); }
+
+    /*!
+     * Set the second derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
+     * with respect to the net elastic relative volume
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true)
+     *     value
+     */
+    void CHIPFoamStrainEnergy::setd2dJbardJe1dJe2(bool isPrevious){
+
+        auto K = get_K();
+
+        auto p0 = get_p0();
+
+        auto gamma = get_gamma();
+
+        const floatType *Je;
+
+        SetDataStorageBase<floatType> d2dJbardJe1dJe2;
+
+        if (isPrevious){
+            Je = get_previousJe();
+
+            d2dJbardJe1dJe2 = get_SetDataStorage_d2PreviousdJbardJe1dPreviousJe2();
+        }else{
+            Je = get_Je();
+
+            d2dJbardJe1dJe2 = get_SetDataStorage_d2dJbardJe1dJe2();
+        }
+
+        *d2dJbardJe1dJe2.value = -gamma*gamma*gamma*p0*exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*(*Je)*std::pow(*Je,gamma)*K) + gamma*p0*exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*(*Je)*std::pow(*Je,gamma)*K) - 3*gamma*gamma*gamma*p0*p0*exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*(*Je)*std::pow(*Je,2*gamma)*K*K) - gamma*gamma*gamma*p0*p0*p0*exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*(*Je)*std::pow(*Je,3*gamma)*K*K*K);
+
+    }
+
+    /*!
+     * Set the current second derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
+     * with respect to the net elastic relative volume
+     */
+    void CHIPFoamStrainEnergy::setd2dJbardJe1dJe2(){ setd2dJbardJe1dJe2(false); }
+
+    /*!
+     * Set the previous second derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
+     * with respect to the net elastic relative volume
+     */
+    void CHIPFoamStrainEnergy::setd2PreviousdJbardJe1dPreviousJe2(){ setd2dJbardJe1dJe2(true); }
+
 }  // namespace tardigradeHydra

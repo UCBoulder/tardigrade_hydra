@@ -219,6 +219,24 @@ namespace tardigradeHydra {
 
         virtual void setd2PreviousJbardPreviousJe2();
 
+        virtual void setdJbardJe1(bool isPrevious);
+
+        virtual void setdJbardJe1();
+
+        virtual void setPreviousdJbardJe1();
+
+        virtual void setddJbardJe1dJe(bool isPrevious);
+
+        virtual void setddJbardJe1dJe();
+
+        virtual void setdPreviousdJbardJe1dPreviousJe();
+
+        virtual void setd2dJbardJe1dJe2(bool isPrevious);
+
+        virtual void setd2dJbardJe1dJe2();
+
+        virtual void setd2PreviousdJbardJe1dPreviousJe2();
+
         //! Check if the class has been initialized
         const bool isInitialized() { return is_initialized; }
 
@@ -282,6 +300,18 @@ namespace tardigradeHydra {
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2JbardJe2, floatType, setd2JbardJe2);
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJbardPreviousJe2, floatType, setd2PreviousJbardPreviousJe2);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dJbardJe1, floatType, setdJbardJe1);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousdJbardJe1, floatType, setPreviousdJbardJe1);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, ddJbardJe1dJe, floatType, setddJbardJe1dJe);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousdJbardJe1dPreviousJe, floatType, setdPreviousdJbardJe1dPreviousJe);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2dJbardJe1dJe2, floatType, setd2dJbardJe1dJe2);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousdJbardJe1dPreviousJe2, floatType, setd2PreviousdJbardJe1dPreviousJe2);
 
         //! Whether the class has been initialized or not
         bool is_initialized = false;
