@@ -207,6 +207,18 @@ namespace tardigradeHydra {
 
         virtual void setPreviousJbar();
 
+        virtual void setdJbardJe(bool isPrevious);
+
+        virtual void setdJbardJe();
+
+        virtual void setdPreviousJbardPreviousJe();
+
+        virtual void setd2JbardJe2(bool isPrevious);
+
+        virtual void setd2JbardJe2();
+
+        virtual void setd2PreviousJbardPreviousJe2();
+
         //! Check if the class has been initialized
         const bool isInitialized() { return is_initialized; }
 

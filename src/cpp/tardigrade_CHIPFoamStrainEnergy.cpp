@@ -611,4 +611,49 @@ namespace tardigradeHydra {
      */
     void CHIPFoamStrainEnergy::setPreviousJbar(){ setJbar(true); }
 
+    /*!
+     * Compute the derivative of Jbar with respect to the
+     * net elastic relative volume
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true)
+     *     value
+     */
+    void CHIPFoamStrainEnergy::setdJbardJe(bool isPrevious){
+
+    }
+
+    /*!
+     * Compute the current derivative of Jbar with respect to the
+     * net elastic relative volume
+     */
+    void CHIPFoamStrainEnergy::setdJbardJe(){ setdJbardJe(false); }
+
+    /*!
+     * Compute the previous derivative of Jbar with respect to the
+     * net elastic relative volume
+     */
+    void CHIPFoamStrainEnergy::setdPreviousJbardPreviousJe(){ setdJbardJe(true); }
+
+    /*!
+     * Compute the second derivative of Jbar with respect to the
+     * net elastic relative volume
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true)
+     *     value
+     */
+    void CHIPFoamStrainEnergy::setd2JbardJe2(bool isPrevious){
+
+    }
+
+    /*!
+     * Compute the current second derivative of Jbar with respect to the
+     * net elastic relative volume
+     */
+    void CHIPFoamStrainEnergy::setd2JbardJe2(){ setd2JbardJe2(false); }
+
+    /*!
+     * Compute the previous second derivative of Jbar with respect to the
+     * net elastic relative volume
+     */
+    void CHIPFoamStrainEnergy::setd2PreviousJbardPreviousJe2(){ setd2JbardJe2(true); }
 }  // namespace tardigradeHydra
