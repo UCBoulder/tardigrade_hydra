@@ -32,12 +32,10 @@ namespace tardigradeHydra {
          *    Khat, Ghat, Jb
          */
         CHIPFoamStrainEnergy(hydraBase *_hydra, const unsigned int &_numEquations, const floatVector &parameters)
-            : HyperelasticBase(_hydra, _numEquations), _parameters(parameters){
-
+            : HyperelasticBase(_hydra, _numEquations), _parameters(parameters) {
             TARDIGRADE_ERROR_TOOLS_CHECK(_parameters.size() == 8, "The parameters vector must have a size of 8");
 
             setInitialized();
-
         }
 
         const floatType get_Khat();
@@ -151,10 +149,10 @@ namespace tardigradeHydra {
         virtual void setPreviousWLBHessians();
 
         //! Check if the class has been initialized
-        const bool isInitialized(){ return is_initialized; }
+        const bool isInitialized() { return is_initialized; }
 
         //! Set that the class has been initialized
-        void setInitialized(){ is_initialized = true; };
+        void setInitialized() { is_initialized = true; };
 
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Je, floatType, setJe)
@@ -163,11 +161,13 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dJedFe, secondOrderTensor, setdJedFe)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousJedPreviousFe, secondOrderTensor, setdPreviousJedPreviousFe)
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousJedPreviousFe, secondOrderTensor,
+                                                  setdPreviousJedPreviousFe)
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2JedFe2, fourthOrderTensor, setd2JedFe2)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJedPreviousFe2, fourthOrderTensor, setd2PreviousJedPreviousFe2)
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJedPreviousFe2, fourthOrderTensor,
+                                                  setd2PreviousJedPreviousFe2)
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Ibar1, floatType, setIbar1)
 
@@ -175,11 +175,13 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dIbar1dFe, secondOrderTensor, setdIbar1dFe)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousIbar1dPreviousFe, secondOrderTensor, setdPreviousIbar1dPreviousFe)
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousIbar1dPreviousFe, secondOrderTensor,
+                                                  setdPreviousIbar1dPreviousFe)
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2Ibar1dFe2, fourthOrderTensor, setd2Ibar1dFe2)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousIbar1dPreviousFe2, fourthOrderTensor, setd2PreviousIbar1dPreviousFe2)
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousIbar1dPreviousFe2, fourthOrderTensor,
+                                                  setd2PreviousIbar1dPreviousFe2)
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WLB, floatType, setWLB);
 
@@ -187,15 +189,16 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWLBdD, floatVector, setWLBDerivatives);
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWLBdPreviousD, floatVector, setPreviousWLBDerivatives);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWLBdPreviousD, floatVector,
+                                                  setPreviousWLBDerivatives);
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WLBdD2, floatVector, setWLBHessians);
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWLBdPreviousD2, floatVector, setPreviousWLBHessians);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWLBdPreviousD2, floatVector,
+                                                  setPreviousWLBHessians);
 
         //! Whether the class has been initialized or not
         bool is_initialized = false;
-
     };
 
 }  // namespace tardigradeHydra

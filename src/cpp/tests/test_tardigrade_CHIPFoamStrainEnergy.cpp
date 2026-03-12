@@ -155,7 +155,6 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe, *boost::unit_test::toleran
     BOOST_TEST(answer == *R.get_Je());
 
     BOOST_TEST(previousAnswer == *R.get_previousJe());
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_test::tolerance(1e-6)) {
@@ -178,7 +177,6 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
                 *v.value = Fe;
             }
         }
-
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
@@ -249,15 +247,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 9;
         constexpr unsigned int OUT_SIZE = 1;
-        std::vector<double> x = R.Fe;
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = R.Fe;
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -266,12 +262,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -289,28 +289,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
             auto rp = *Rp.get_Je();
             auto rm = *Rm.get_Je();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dJedFe(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 9;
         constexpr unsigned int OUT_SIZE = 9;
-        std::vector<double> x = R.Fe;
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = R.Fe;
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -319,12 +313,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -342,28 +340,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
             auto rp = *Rp.get_dJedFe();
             auto rm = *Rm.get_dJedFe();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp[j]-rm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_d2JedFe2(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 9;
         constexpr unsigned int OUT_SIZE = 1;
-        std::vector<double> x = R.previousFe;
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = R.previousFe;
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -372,12 +364,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -395,28 +391,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
             auto rp = *Rp.get_previousJe();
             auto rm = *Rm.get_previousJe();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dPreviousJedPreviousFe(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 9;
         constexpr unsigned int OUT_SIZE = 9;
-        std::vector<double> x = R.previousFe;
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = R.previousFe;
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -425,12 +415,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -448,18 +442,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setJe_derivatives, *boost::unit_t
             auto rp = *Rp.get_dPreviousJedPreviousFe();
             auto rm = *Rm.get_dPreviousJedPreviousFe();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp[j]-rm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_d2PreviousJedPreviousFe2(), CHECK_PER_ELEMENT);
-
     }
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1, *boost::unit_test::tolerance(1e-6)) {
@@ -558,7 +547,6 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1, *boost::unit_test::tole
     BOOST_TEST(answer == *R.get_Ibar1());
 
     BOOST_TEST(previousAnswer == *R.get_previousIbar1());
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::unit_test::tolerance(1e-6)) {
@@ -651,15 +639,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 9;
         constexpr unsigned int OUT_SIZE = 1;
-        std::vector<double> x = R.Fe;
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = R.Fe;
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -668,12 +654,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -691,28 +681,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
             auto rp = *Rp.get_Ibar1();
             auto rm = *Rm.get_Ibar1();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dIbar1dFe(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 9;
         constexpr unsigned int OUT_SIZE = 9;
-        std::vector<double> x = R.Fe;
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = R.Fe;
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -721,12 +705,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -744,28 +732,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
             auto rp = *Rp.get_dIbar1dFe();
             auto rm = *Rm.get_dIbar1dFe();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp[j]-rm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_d2Ibar1dFe2(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 9;
         constexpr unsigned int OUT_SIZE = 1;
-        std::vector<double> x = R.previousFe;
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = R.previousFe;
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -774,12 +756,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -797,28 +783,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
             auto rp = *Rp.get_previousIbar1();
             auto rm = *Rm.get_previousIbar1();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dPreviousIbar1dPreviousFe(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 9;
         constexpr unsigned int OUT_SIZE = 9;
-        std::vector<double> x = R.previousFe;
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = R.previousFe;
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -827,12 +807,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -850,18 +834,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setIbar1_derivatives, *boost::uni
             auto rp = *Rp.get_dPreviousIbar1dPreviousFe();
             auto rm = *Rm.get_dPreviousIbar1dPreviousFe();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp[j]-rm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_d2PreviousIbar1dPreviousFe2(), CHECK_PER_ELEMENT);
-
     }
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB, *boost::unit_test::tolerance(1e-6)) {
@@ -975,7 +954,6 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB, *boost::unit_test::tolera
     BOOST_TEST(answer == *R.get_WLB());
 
     BOOST_TEST(previousAnswer == *R.get_previousWLB());
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_test::tolerance(1e-6)) {
@@ -1083,15 +1061,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 2;
         constexpr unsigned int OUT_SIZE = 1;
-        std::vector<double> x = {R.Je,R.Ibar1};
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = {R.Je, R.Ibar1};
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1100,12 +1076,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -1125,28 +1105,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
             auto rp = *Rp.get_WLB();
             auto rm = *Rm.get_WLB();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dWLBdD(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 2;
         constexpr unsigned int OUT_SIZE = 2;
-        std::vector<double> x = {R.Je, R.Ibar1};
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = {R.Je, R.Ibar1};
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1155,12 +1129,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -1180,28 +1158,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
             auto rp = *Rp.get_dWLBdD();
             auto rm = *Rm.get_dWLBdD();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp[j]-rm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_d2WLBdD2(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 2;
         constexpr unsigned int OUT_SIZE = 1;
-        std::vector<double> x = {R.previousJe,R.previousIbar1};
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = {R.previousJe, R.previousIbar1};
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1210,12 +1182,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -1235,28 +1211,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
             auto rp = *Rp.get_previousWLB();
             auto rm = *Rm.get_previousWLB();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_dPreviousWLBdPreviousD(), CHECK_PER_ELEMENT);
-
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int VAR_SIZE = 2;
         constexpr unsigned int OUT_SIZE = 2;
-        std::vector<double> x = {R.previousJe, R.previousIbar1};
-        std::vector<double> answer(VAR_SIZE*OUT_SIZE,0);
+        std::vector<double>    x        = {R.previousJe, R.previousIbar1};
+        std::vector<double>    answer(VAR_SIZE * OUT_SIZE, 0);
 
-        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
-
+        for (unsigned int i = 0; i < VAR_SIZE; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1265,12 +1235,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
             xp[i] += delta;
             xm[i] -= delta;
 
-            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
-            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
 
-            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
-            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters, numConfigurations,
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
                                                                          numNonLinearSolveStateVariables);
 
             hydraBaseMock hydrap(dofp, model_configurationp);
@@ -1290,18 +1264,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWLB_derivatives, *boost::unit_
             auto rp = *Rp.get_dPreviousWLBdPreviousD();
             auto rm = *Rm.get_dPreviousWLBdPreviousD();
 
-            for ( unsigned int j = 0; j < OUT_SIZE; ++j){
-
-                answer[VAR_SIZE*j + i] = (rp[j]-rm[j])/(2*delta);
-
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
             }
-
         }
 
         BOOST_TEST(answer == *R.get_d2PreviousWLBdPreviousD2(), CHECK_PER_ELEMENT);
-
     }
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_f, *boost::unit_test::tolerance(1e-6)) {
@@ -1412,20 +1381,18 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_f, *boost::unit_test::tol
 
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
-    BOOST_TEST( answer == R.compute_f(R.Je) );
+    BOOST_TEST(answer == R.compute_f(R.Je));
 
-    BOOST_TEST( previousAnswer == R.compute_f(R.previousJe) );
+    BOOST_TEST(previousAnswer == R.compute_f(R.previousJe));
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {R.Je};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {R.Je};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1437,28 +1404,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_f, *boost::unit_test::tol
             auto rp = R.compute_f(xp[i]);
             auto rm = R.compute_f(xm[i]);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_dfdJ(R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_dfdJ(R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {R.Je};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {R.Je};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1470,28 +1431,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_f, *boost::unit_test::tol
             auto rp = R.compute_dfdJ(xp[i]);
             auto rm = R.compute_dfdJ(xm[i]);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_d2fdJ2(R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_d2fdJ2(R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {R.previousJe};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {R.previousJe};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1503,28 +1458,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_f, *boost::unit_test::tol
             auto rp = R.compute_f(xp[i]);
             auto rm = R.compute_f(xm[i]);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_dfdJ(R.previousJe));
-
+        BOOST_TEST(jacobian[0] == R.compute_dfdJ(R.previousJe));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {R.previousJe};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {R.previousJe};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1536,18 +1485,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_f, *boost::unit_test::tol
             auto rp = R.compute_dfdJ(xp[i]);
             auto rm = R.compute_dfdJ(xm[i]);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_d2fdJ2(R.previousJe));
-
+        BOOST_TEST(jacobian[0] == R.compute_d2fdJ2(R.previousJe));
     }
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jg, *boost::unit_test::tolerance(1e-6)) {
@@ -1658,18 +1602,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jg, *boost::unit_test::to
 
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
-    BOOST_TEST( answer == R.compute_Jg(Jbar, R.Je) );
+    BOOST_TEST(answer == R.compute_Jg(Jbar, R.Je));
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1681,28 +1623,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jg, *boost::unit_test::to
             auto rp = R.compute_Jg(xp[i], R.Je);
             auto rm = R.compute_Jg(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_dJgdJbar(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_dJgdJbar(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {R.Je};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {R.Je};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1714,28 +1650,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jg, *boost::unit_test::to
             auto rp = R.compute_Jg(Jbar, xp[i]);
             auto rm = R.compute_Jg(Jbar, xm[i]);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_dJgdJe(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_dJgdJe(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1747,28 +1677,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jg, *boost::unit_test::to
             auto rp = R.compute_dJgdJbar(xp[i], R.Je);
             auto rm = R.compute_dJgdJbar(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_d2JgdJbar2(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_d2JgdJbar2(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1780,18 +1704,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_Jg, *boost::unit_test::to
             auto rp = R.compute_dJgdJe(xp[i], R.Je);
             auto rm = R.compute_dJgdJe(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_d2JgdJedJbar(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_d2JgdJedJbar(Jbar, R.Je));
     }
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_pg, *boost::unit_test::tolerance(1e-6)) {
@@ -1902,18 +1821,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_pg, *boost::unit_test::to
 
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
-    BOOST_TEST( answer == R.compute_pg(Jbar, R.Je) );
+    BOOST_TEST(answer == R.compute_pg(Jbar, R.Je));
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1925,28 +1842,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_pg, *boost::unit_test::to
             auto rp = R.compute_pg(xp[i], R.Je);
             auto rm = R.compute_pg(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_dpgdJbar(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_dpgdJbar(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {R.Je};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {R.Je};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1958,28 +1869,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_pg, *boost::unit_test::to
             auto rp = R.compute_pg(Jbar, xp[i]);
             auto rm = R.compute_pg(Jbar, xm[i]);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_dpgdJe(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_dpgdJe(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -1991,28 +1896,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_pg, *boost::unit_test::to
             auto rp = R.compute_dpgdJbar(xp[i], R.Je);
             auto rm = R.compute_dpgdJbar(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_d2pgdJbar2(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_d2pgdJbar2(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -2024,18 +1923,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_pg, *boost::unit_test::to
             auto rp = R.compute_dpgdJe(xp[i], R.Je);
             auto rm = R.compute_dpgdJe(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_d2pgdJedJbar(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_d2pgdJedJbar(Jbar, R.Je));
     }
-
 }
 
 BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_ptilde, *boost::unit_test::tolerance(1e-6)) {
@@ -2146,18 +2040,16 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_ptilde, *boost::unit_test
 
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
-    BOOST_TEST( answer == R.compute_ptilde(Jbar, R.Je) );
+    BOOST_TEST(answer == R.compute_ptilde(Jbar, R.Je));
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -2169,28 +2061,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_ptilde, *boost::unit_test
             auto rp = R.compute_ptilde(xp[i], R.Je);
             auto rm = R.compute_ptilde(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_dptildedJbar(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_dptildedJbar(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {R.Je};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {R.Je};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -2202,28 +2088,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_ptilde, *boost::unit_test
             auto rp = R.compute_ptilde(Jbar, xp[i]);
             auto rm = R.compute_ptilde(Jbar, xm[i]);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_dptildedJe(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_dptildedJe(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -2235,28 +2115,22 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_ptilde, *boost::unit_test
             auto rp = R.compute_dptildedJbar(xp[i], R.Je);
             auto rm = R.compute_dptildedJbar(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_d2ptildedJbar2(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_d2ptildedJbar2(Jbar, R.Je));
     }
 
     {
-
-        double eps = 1e-6;
+        double                 eps      = 1e-6;
         constexpr unsigned int NUM_VARS = 1;
         constexpr unsigned int NUM_OUTS = 1;
-        std::vector<double> x = {Jbar};
-        std::vector<double> jacobian(NUM_VARS * NUM_OUTS, 0);
+        std::vector<double>    x        = {Jbar};
+        std::vector<double>    jacobian(NUM_VARS * NUM_OUTS, 0);
 
-        for ( unsigned int i = 0; i < NUM_VARS; ++i ){
-
+        for (unsigned int i = 0; i < NUM_VARS; ++i) {
             double delta = eps * std::fabs(x[i]) + eps;
 
             std::vector<double> xp = x;
@@ -2268,16 +2142,11 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_compute_ptilde, *boost::unit_test
             auto rp = R.compute_dptildedJe(xp[i], R.Je);
             auto rm = R.compute_dptildedJe(xm[i], R.Je);
 
-            for ( unsigned int j = 0; j < NUM_OUTS; ++j ){
-
-                jacobian[NUM_VARS*j+i] = (rp-rm)/(2*delta);
-
+            for (unsigned int j = 0; j < NUM_OUTS; ++j) {
+                jacobian[NUM_VARS * j + i] = (rp - rm) / (2 * delta);
             }
-
         }
 
-        BOOST_TEST(jacobian[0]==R.compute_d2ptildedJedJbar(Jbar,R.Je));
-
+        BOOST_TEST(jacobian[0] == R.compute_d2ptildedJedJbar(Jbar, R.Je));
     }
-
 }
