@@ -279,6 +279,10 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousJbardPreviousJe, floatType, setdPreviousJbardPreviousJe);
 
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2JbardJe2, floatType, setd2JbardJe2);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJbardPreviousJe2, floatType, setd2PreviousJbardPreviousJe2);
+
         //! Whether the class has been initialized or not
         bool is_initialized = false;
     };

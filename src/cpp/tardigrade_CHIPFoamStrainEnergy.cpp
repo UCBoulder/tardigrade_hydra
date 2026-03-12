@@ -679,6 +679,8 @@ namespace tardigradeHydra {
 
         const floatType *dJbardJe;
 
+        SetDataStorageBase<floatType> d2JbardJe2;
+
         if ( isPrevious ){
 
             Jbar = get_previousJbar();
@@ -687,6 +689,8 @@ namespace tardigradeHydra {
 
             dJbardJe = get_dPreviousJbardPreviousJe();
 
+            d2JbardJe2 = get_SetDataStorage_d2PreviousJbardPreviousJe2();
+
         }else{
 
             Jbar = get_Jbar();
@@ -694,9 +698,22 @@ namespace tardigradeHydra {
             Je = get_Je();
 
             dJbardJe = get_dJbardJe();
+
+            d2JbardJe2 = get_SetDataStorage_d2JbardJe2();
+
         }
 
+        auto _J = compute_Jbar_dRdJbar(*Jbar, *Je);
 
+        auto _dJdX = compute_Jbar_d2RdJbar2(*Jbar, *Je);
+
+        auto _dJdTheta = compute_Jbar_d2RdJedJbar(*Jbar, *Je);
+
+        auto _d2RdTheta2 = compute_Jbar_d2RdJe2(*Jbar, *Je);
+
+        auto _d2RdThetadX = compute_Jbar_d2RdJedJbar(*Jbar, *Je);
+
+        *d2JbardJe2.value = -(_dJdTheta * (*dJbardJe) + _dJdX * (*dJbardJe) * (*dJbardJe) + _d2RdTheta2 + _d2RdThetadX * (*dJbardJe)) / _J;
 
     }
 
