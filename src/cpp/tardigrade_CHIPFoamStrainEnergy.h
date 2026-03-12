@@ -118,9 +118,9 @@ namespace tardigradeHydra {
 
         const floatType compute_Jbar_d2RdJbar2(const floatType &Jbar, const floatType &Je);
 
-        const floatType Jbar_bisection(const floatType &lb, const floatType &ub, floatType tol_R = -1, floatType tol_dx = -1);
+        const floatType Jbar_bisection(const floatType &Je, const floatType &lb, const floatType &ub, floatType tol_R = -1, floatType tol_dx = -1);
 
-        const floatType Jbar_newton();
+        const floatType Jbar_newton(const floatType &Je);
 
         //! The bisection method's relative tolerance
         floatType bisection_tolr = 1e-3;
@@ -201,6 +201,12 @@ namespace tardigradeHydra {
 
         virtual void setPreviousWLBHessians();
 
+        virtual void setJbar(bool isPrevious);
+
+        virtual void setJbar();
+
+        virtual void setPreviousJbar();
+
         //! Check if the class has been initialized
         const bool isInitialized() { return is_initialized; }
 
@@ -252,6 +258,10 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWLBdPreviousD2, floatVector,
                                                   setPreviousWLBHessians);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Jbar, floatType, setJbar);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousJbar, floatType, setPreviousJbar);
 
         //! Whether the class has been initialized or not
         bool is_initialized = false;

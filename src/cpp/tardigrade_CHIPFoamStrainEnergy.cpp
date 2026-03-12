@@ -577,4 +577,38 @@ namespace tardigradeHydra {
      */
     void CHIPFoamStrainEnergy::setPreviousWLBHessians() { setWLBHessians(true); }
 
+    /*!
+     * Set the value of Jbar
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true)
+     *     value of Jbar
+     */
+    void CHIPFoamStrainEnergy::setJbar(bool isPrevious){
+
+        if (isPrevious){
+
+            auto Jbar = get_SetDataStorage_previousJbar();
+
+            *Jbar.value = Jbar_newton(*get_previousJe());
+
+        }else{
+
+            auto Jbar = get_SetDataStorage_Jbar();
+
+            *Jbar.value = Jbar_newton(*get_Je());
+
+        }
+
+    }
+
+    /*!
+     * Set the current value of Jbar
+     */
+    void CHIPFoamStrainEnergy::setJbar(){ setJbar(false); }
+
+    /*!
+     * Set the previous value of Jbar
+     */
+    void CHIPFoamStrainEnergy::setPreviousJbar(){ setJbar(true); }
+
 }  // namespace tardigradeHydra

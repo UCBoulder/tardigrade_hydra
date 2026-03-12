@@ -2802,9 +2802,13 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_Jbar_bisection, *boost::unit_test
 
     tardigradeHydra::floatType answer = 0.928906251;
 
+    tardigradeHydra::floatType previousAnswer = 0.9863281260000001;
+
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
-    BOOST_TEST(answer == R.Jbar_bisection(1 - 0.7 + 1e-9, 1.0 + 1e-9));
+    BOOST_TEST(answer == R.Jbar_bisection(R.Je, 1 - 0.7 + 1e-9, 1.0 + 1e-9));
+
+    BOOST_TEST(previousAnswer == R.Jbar_bisection(R.previousJe, 1 - 0.7 + 1e-9, 1.0 + 1e-9));
 
 }
 
@@ -2912,10 +2916,12 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_Jbar_newton, *boost::unit_test::t
 
     tardigradeHydra::floatType answer = 0.927658184913594;
 
+    tardigradeHydra::floatType previousAnswer = 0.985624461084172;
+
     CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
 
-    try{
-    BOOST_TEST(answer == R.Jbar_newton());
-    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
+    BOOST_TEST(answer == R.Jbar_newton(R.Je));
+
+    BOOST_TEST(previousAnswer == R.Jbar_newton(R.previousJe));
 
 }

@@ -530,16 +530,17 @@ namespace tardigradeHydra {
     /*!
      * A simple bisection algorithm to initialize the solve for Jbar
      *
+     * \param &Je: The net elastic relative volume
      * \param &lb: The lower bound
      * \param &ub: The upper bound
      * \param &tol_R: The tolerance on the residual
      * \param &tol_dx: The tolerance on the span betwen the lower and upper bound
      */
-    const floatType CHIPFoamStrainEnergy::Jbar_bisection(const floatType &lb, const floatType &ub, floatType tol_R, floatType tol_dx){
+    const floatType CHIPFoamStrainEnergy::Jbar_bisection(const floatType &Je, const floatType &lb, const floatType &ub, floatType tol_R, floatType tol_dx){
 
         auto m = 0.5 * (lb + ub);
-        auto Rlb = compute_Jbar_residual(lb, *get_Je());
-        auto Rub = compute_Jbar_residual(ub, *get_Je());
+        auto Rlb = compute_Jbar_residual(lb, Je);
+        auto Rub = compute_Jbar_residual(ub, Je);
 
         if ( sgn(Rlb) == sgn(Rub) ){ throw std::logic_error("The residual at the lower and upper points must have different signs"); }
 
@@ -555,26 +556,28 @@ namespace tardigradeHydra {
 
         }
 
-        auto Rm = compute_Jbar_residual(m, *get_Je());
+        auto Rm = compute_Jbar_residual(m, Je);
 
         if ((std::fabs(Rm) < tol_R) || (std::fabs(ub - lb) < tol_dx)){
             return m;
         } else if(sgn(Rlb) == sgn(Rm)){
-            return Jbar_bisection(m,ub,tol_R,tol_dx);
+            return Jbar_bisection(Je,m,ub,tol_R,tol_dx);
         } else{
-            return Jbar_bisection(lb,m,tol_R,tol_dx);
+            return Jbar_bisection(Je,lb,m,tol_R,tol_dx);
         }
 
     }
 
     /*!
      * A Newton-Raphson algorithm to solve for the value of Jbar
+     *
+     * \param &Je: The net elastic relative volume
      */
-    const floatType CHIPFoamStrainEnergy::Jbar_newton(){
+    const floatType CHIPFoamStrainEnergy::Jbar_newton(const floatType &Je){
 
-        floatType Jbar = Jbar_bisection(1 - get_phi0() + 1e-9, std::fmax(*get_Je(), 1.0) + 1e-9);
+        floatType Jbar = Jbar_bisection(Je, 1 - get_phi0() + 1e-9, std::fmax(Je, 1.0) + 1e-9);
 
-        floatType R = compute_Jbar_residual(Jbar, *get_Je());
+        floatType R = compute_Jbar_residual(Jbar, Je);
 
         floatType Rp = std::fabs(R);
 
@@ -584,13 +587,13 @@ namespace tardigradeHydra {
 
         while ( (Rp > tol) && (niter < newton_maxiter)){
 
-            floatType J = compute_Jbar_dRdJbar(Jbar, *get_Je());
+            floatType J = compute_Jbar_dRdJbar(Jbar, Je);
 
             floatType dx = -R/J;
 
             floatType l = 1.0;
 
-            R = compute_Jbar_residual(Jbar + dx, *get_Je());
+            R = compute_Jbar_residual(Jbar + dx, Je);
 
             unsigned int lsiter = 0;
 
@@ -598,7 +601,7 @@ namespace tardigradeHydra {
 
                 l *= 0.5;
 
-                R = compute_Jbar_residual(Jbar + l * dx, *get_Je());
+                R = compute_Jbar_residual(Jbar + l * dx, Je);
 
                 lsiter++;
 
