@@ -1095,7 +1095,6 @@ namespace tardigradeHydra {
         d2WDCdD2.zero(4);
 
         (*d2WDCdD2.value)[0] = C10 * (d2JmdJe2 * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) + dJmdJe * (*Ibar1) * dfdJe + dJmdJe * (*Ibar1) * dfdJe + Jm * (*Ibar1) * d2fdJe2 - ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe) - ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*d2dJbardJe1dJe2));
-//        (*d2WDCdD2.value)[0] = C10 * (dJmdJe * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) + Jm * (*Ibar1) * dfdJe - ( (*Ibar1) - 3 )*(1 - phi0) * (*dJbardJe1) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe));
         (*d2WDCdD2.value)[1] = C10 * (dJmdJe * f + Jm * dfdJe - (1 - phi0) * (*dJbardJe1) - (*Je) * (1 - phi0) * (*ddJbardJe1dJe));
         (*d2WDCdD2.value)[2] = (*d2WDCdD2.value)[1];
         (*d2WDCdD2.value)[3] = 0.;
@@ -1111,5 +1110,221 @@ namespace tardigradeHydra {
      * Set the previous Hessians of the modified Danielsson function
      */
     void CHIPFoamStrainEnergy::setPreviousWDCHessians(){ setWDCHessians(true); }
+
+    /*!
+     * Set the value of the gas energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWG(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto p0   = get_p0();
+
+        auto gamma = get_gamma();
+
+        const floatType *Je;
+
+        const floatType *Jbar;
+
+        SetDataStorageBase<floatType> WG;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Jbar = get_previousJbar();
+
+            WG = get_SetDataStorage_previousWG();
+
+        }else{
+
+            Je = get_Je();
+
+            Jbar = get_Jbar();
+
+            WG = get_SetDataStorage_WG();
+
+        }
+
+        auto Jm = (*Je) / (*Jbar);
+
+        auto Jg = Jm * ( (*Jbar) - 1 + phi0 ) / phi0;
+
+        if ( gas_isothermal_compression ){
+            *WG.value = Jg - std::log(Jg) - 1;
+        }else{
+            *WG.value = Jg - 1./(gamma - 1)*(gamma - std::pow(Jg, 1 - gamma));
+        }
+
+        *WG.value *= p0 * phi0;
+
+    }
+
+    /*!
+     * Set the current value of the gas energy
+     */
+    void CHIPFoamStrainEnergy::setWG(){ setWG(false); }
+
+    /*!
+     * Set the previous value of the gas energy
+     */
+    void CHIPFoamStrainEnergy::setPreviousWG(){ setWG(true); }
+
+    /*!
+     * Set the derivatives of the gas energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWGDerivatives(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto p0   = get_p0();
+
+        auto gamma = get_gamma();
+
+        const floatType *Je;
+
+        const floatType *Jbar;
+
+        const floatType *dJbardJe;
+
+        SetDataStorageBase<floatVector> dWGdD;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Jbar = get_previousJbar();
+
+            dJbardJe = get_dPreviousJbardPreviousJe();
+
+            dWGdD = get_SetDataStorage_dPreviousWGdPreviousD();
+
+        }else{
+
+            Je = get_Je();
+
+            Jbar = get_Jbar();
+
+            dJbardJe = get_dJbardJe();
+
+            dWGdD = get_SetDataStorage_dWGdD();
+
+        }
+
+        auto Jm = (*Je) / (*Jbar);
+
+        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar)*(*Jbar)) * (*dJbardJe);
+
+        auto Jg = Jm * ( (*Jbar) - 1 + phi0 ) / phi0;
+
+        auto dJgdJe = dJmdJe * ( (*Jbar) - 1 + phi0 ) / phi0 + Jm * (*dJbardJe) / phi0;
+
+        dWGdD.zero(2);
+
+        if ( gas_isothermal_compression ){
+            (*dWGdD.value)[0] = dJgdJe * ( 1 - 1 / Jg );
+        }else{
+            (*dWGdD.value)[0] = dJgdJe * (1 - std::pow(Jg, -gamma));
+        }
+
+        (*dWGdD.value)[0] *= p0 * phi0;
+
+    }
+
+    /*!
+     * Set the current derivatives of the gas energy
+     */
+    void CHIPFoamStrainEnergy::setWGDerivatives(){ setWGDerivatives(false); }
+
+    /*!
+     * Set the previous derivatives of the gas energy
+     */
+    void CHIPFoamStrainEnergy::setPreviousWGDerivatives(){ setWGDerivatives(true); }
+
+    /*!
+     * Set the Hessians of the gas energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWGHessians(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto p0   = get_p0();
+
+        auto gamma = get_gamma();
+
+        const floatType *Je;
+
+        const floatType *Jbar;
+
+        const floatType *dJbardJe;
+
+        const floatType *d2JbardJe2;
+
+        SetDataStorageBase<floatVector> d2WGdD2;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Jbar = get_previousJbar();
+
+            dJbardJe = get_dPreviousJbardPreviousJe();
+
+            d2JbardJe2 = get_d2PreviousJbardPreviousJe2();
+
+            d2WGdD2 = get_SetDataStorage_d2PreviousWGdPreviousD2();
+
+        }else{
+
+            Je = get_Je();
+
+            Jbar = get_Jbar();
+
+            dJbardJe = get_dJbardJe();
+
+            d2JbardJe2 = get_d2JbardJe2();
+
+            d2WGdD2 = get_SetDataStorage_d2WGdD2();
+
+        }
+
+        auto Jm = (*Je) / (*Jbar);
+
+        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar)*(*Jbar)) * (*dJbardJe);
+
+        auto d2JmdJe2 = -(*dJbardJe) / ((*Jbar)*(*Jbar)) - (*dJbardJe) / ((*Jbar)*(*Jbar)) + 2 * (*Je) / ((*Jbar)*(*Jbar)*(*Jbar)) * (*dJbardJe) * (*dJbardJe) - (*Je) / ((*Jbar)*(*Jbar)) * (*d2JbardJe2);
+
+        auto Jg = Jm * ( (*Jbar) - 1 + phi0 ) / phi0;
+
+        auto dJgdJe = dJmdJe * ( (*Jbar) - 1 + phi0 ) / phi0 + Jm * (*dJbardJe) / phi0;
+
+        auto d2JgdJe2 = d2JmdJe2 * ( (*Jbar) - 1 + phi0 ) / phi0 + dJmdJe * (*dJbardJe) / phi0 + dJmdJe * (*dJbardJe) / phi0 + Jm * (*d2JbardJe2) / phi0;
+
+        d2WGdD2.zero(4);
+
+        if ( gas_isothermal_compression ){
+            (*d2WGdD2.value)[0] = d2JgdJe2 * ( 1 - 1 / Jg ) + dJgdJe * dJgdJe / (Jg * Jg);
+        }else{
+            (*d2WGdD2.value)[0] = d2JgdJe2 * (1 - std::pow(Jg, -gamma)) + dJgdJe * dJgdJe * gamma * std::pow(Jg, -(gamma+1));
+        }
+
+        (*d2WGdD2.value)[0] *= p0 * phi0;
+    }
+
+    /*!
+     * Set the current Hessians of the gas energy
+     */
+    void CHIPFoamStrainEnergy::setWGHessians(){ setWGHessians(false); }
+
+    /*!
+     * Set the previous Hessians of the gas energy
+     */
+    void CHIPFoamStrainEnergy::setPreviousWGHessians(){ setWGHessians(true); }
 
 }  // namespace tardigradeHydra

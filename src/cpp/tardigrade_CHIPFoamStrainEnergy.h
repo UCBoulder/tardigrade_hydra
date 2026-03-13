@@ -143,6 +143,9 @@ namespace tardigradeHydra {
         //! The Newton method's maximum number of line-search iterations
         floatType newton_maxlsiter = 5;
 
+        //! Whether the gas is compressed in an isothermal (true) or adiabatic (false) matter
+        bool gas_isothermal_compression = false;
+
        protected:
         //! The model parameters
         floatVector _parameters;
@@ -255,6 +258,24 @@ namespace tardigradeHydra {
 
         virtual void setPreviousWDCHessians();
 
+        virtual void setWG(bool isPrevious);
+
+        virtual void setWG();
+
+        virtual void setPreviousWG();
+
+        virtual void setWGDerivatives(bool isPrevious);
+
+        virtual void setWGDerivatives();
+
+        virtual void setPreviousWGDerivatives();
+
+        virtual void setWGHessians(bool isPrevious);
+
+        virtual void setWGHessians();
+
+        virtual void setPreviousWGHessians();
+
         //! Check if the class has been initialized
         const bool isInitialized() { return is_initialized; }
 
@@ -344,6 +365,20 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWDCdPreviousD2, floatVector,
                                                   setPreviousWDCHessians);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WG, floatType, setWG);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWG, floatType, setPreviousWG);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWGdD, floatVector, setWGDerivatives);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWGdPreviousD, floatVector,
+                                                  setPreviousWGDerivatives);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WGdD2, floatVector, setWGHessians);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWGdPreviousD2, floatVector,
+                                                  setPreviousWGHessians);
 
 
         //! Whether the class has been initialized or not
