@@ -583,33 +583,28 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true)
      *     value of Jbar
      */
-    void CHIPFoamStrainEnergy::setJbar(bool isPrevious){
-
-        if (isPrevious){
-
+    void CHIPFoamStrainEnergy::setJbar(bool isPrevious) {
+        if (isPrevious) {
             auto Jbar = get_SetDataStorage_previousJbar();
 
             *Jbar.value = Jbar_newton(*get_previousJe());
 
-        }else{
-
+        } else {
             auto Jbar = get_SetDataStorage_Jbar();
 
             *Jbar.value = Jbar_newton(*get_Je());
-
         }
-
     }
 
     /*!
      * Set the current value of Jbar
      */
-    void CHIPFoamStrainEnergy::setJbar(){ setJbar(false); }
+    void CHIPFoamStrainEnergy::setJbar() { setJbar(false); }
 
     /*!
      * Set the previous value of Jbar
      */
-    void CHIPFoamStrainEnergy::setPreviousJbar(){ setJbar(true); }
+    void CHIPFoamStrainEnergy::setPreviousJbar() { setJbar(true); }
 
     /*!
      * Compute the derivative of Jbar with respect to the
@@ -618,30 +613,26 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to compute the current (false) or previous (true)
      *     value
      */
-    void CHIPFoamStrainEnergy::setdJbardJe(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setdJbardJe(bool isPrevious) {
         const floatType *Jbar;
 
         const floatType *Je;
 
         SetDataStorageBase<floatType> dJbardJe;
 
-        if ( isPrevious ){
-
+        if (isPrevious) {
             Jbar = get_previousJbar();
 
             Je = get_previousJe();
 
             dJbardJe = get_SetDataStorage_dPreviousJbardPreviousJe();
 
-        }else{
-
+        } else {
             Jbar = get_Jbar();
 
             Je = get_Je();
 
             dJbardJe = get_SetDataStorage_dJbardJe();
-
         }
 
         auto jacobian = compute_Jbar_dRdJbar(*Jbar, *Je);
@@ -649,20 +640,19 @@ namespace tardigradeHydra {
         auto dRdX = compute_Jbar_dRdJe(*Jbar, *Je);
 
         *dJbardJe.value = -dRdX / jacobian;
-
     }
 
     /*!
      * Compute the current derivative of Jbar with respect to the
      * net elastic relative volume
      */
-    void CHIPFoamStrainEnergy::setdJbardJe(){ setdJbardJe(false); }
+    void CHIPFoamStrainEnergy::setdJbardJe() { setdJbardJe(false); }
 
     /*!
      * Compute the previous derivative of Jbar with respect to the
      * net elastic relative volume
      */
-    void CHIPFoamStrainEnergy::setdPreviousJbardPreviousJe(){ setdJbardJe(true); }
+    void CHIPFoamStrainEnergy::setdPreviousJbardPreviousJe() { setdJbardJe(true); }
 
     /*!
      * Compute the second derivative of Jbar with respect to the
@@ -671,8 +661,7 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to compute the current (false) or previous (true)
      *     value
      */
-    void CHIPFoamStrainEnergy::setd2JbardJe2(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setd2JbardJe2(bool isPrevious) {
         const floatType *Jbar;
 
         const floatType *Je;
@@ -681,8 +670,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatType> d2JbardJe2;
 
-        if ( isPrevious ){
-
+        if (isPrevious) {
             Jbar = get_previousJbar();
 
             Je = get_previousJe();
@@ -691,8 +679,7 @@ namespace tardigradeHydra {
 
             d2JbardJe2 = get_SetDataStorage_d2PreviousJbardPreviousJe2();
 
-        }else{
-
+        } else {
             Jbar = get_Jbar();
 
             Je = get_Je();
@@ -700,7 +687,6 @@ namespace tardigradeHydra {
             dJbardJe = get_dJbardJe();
 
             d2JbardJe2 = get_SetDataStorage_d2JbardJe2();
-
         }
 
         auto _J = compute_Jbar_dRdJbar(*Jbar, *Je);
@@ -713,21 +699,22 @@ namespace tardigradeHydra {
 
         auto _d2RdThetadX = compute_Jbar_d2RdJedJbar(*Jbar, *Je);
 
-        *d2JbardJe2.value = -(_dJdTheta * (*dJbardJe) + _dJdX * (*dJbardJe) * (*dJbardJe) + _d2RdTheta2 + _d2RdThetadX * (*dJbardJe)) / _J;
-
+        *d2JbardJe2.value =
+            -(_dJdTheta * (*dJbardJe) + _dJdX * (*dJbardJe) * (*dJbardJe) + _d2RdTheta2 + _d2RdThetadX * (*dJbardJe)) /
+            _J;
     }
 
     /*!
      * Compute the current second derivative of Jbar with respect to the
      * net elastic relative volume
      */
-    void CHIPFoamStrainEnergy::setd2JbardJe2(){ setd2JbardJe2(false); }
+    void CHIPFoamStrainEnergy::setd2JbardJe2() { setd2JbardJe2(false); }
 
     /*!
      * Compute the previous second derivative of Jbar with respect to the
      * net elastic relative volume
      */
-    void CHIPFoamStrainEnergy::setd2PreviousJbardPreviousJe2(){ setd2JbardJe2(true); }
+    void CHIPFoamStrainEnergy::setd2PreviousJbardPreviousJe2() { setd2JbardJe2(true); }
 
     /*!
      * Set the derivative of Jbar with respect to Je evaluated when Jbar is one
@@ -735,8 +722,7 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to compute the current (false) or previous (true)
      *     value
      */
-    void CHIPFoamStrainEnergy::setdJbardJe1(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setdJbardJe1(bool isPrevious) {
         auto K = get_K();
 
         auto p0 = get_p0();
@@ -747,30 +733,29 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatType> dJbardJe1;
 
-        if (isPrevious){
+        if (isPrevious) {
             Je = get_previousJe();
 
             dJbardJe1 = get_SetDataStorage_previousdJbardJe1();
-        }else{
+        } else {
             Je = get_Je();
 
             dJbardJe1 = get_SetDataStorage_dJbardJe1();
         }
 
-        *dJbardJe1.value = std::exp(p0*(-1 + std::pow(*Je,-gamma))/K) - gamma*p0*std::exp(p0*(-1 + std::pow(*Je,-gamma))/K)/(std::pow(*Je,gamma)*K);
-
+        *dJbardJe1.value = std::exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) -
+                           gamma * p0 * std::exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) / (std::pow(*Je, gamma) * K);
     }
 
     /*!
      * Set the current derivative of Jbar with respect to Je evaluated when Jbar is one
      */
-    void CHIPFoamStrainEnergy::setdJbardJe1(){ setdJbardJe1(false); }
+    void CHIPFoamStrainEnergy::setdJbardJe1() { setdJbardJe1(false); }
 
     /*!
      * Set the previous derivative of Jbar with respect to Je evaluated when Jbar is one
      */
-    void CHIPFoamStrainEnergy::setPreviousdJbardJe1(){ setdJbardJe1(true); }
-
+    void CHIPFoamStrainEnergy::setPreviousdJbardJe1() { setdJbardJe1(true); }
 
     /*!
      * Set the derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
@@ -779,8 +764,7 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to compute the current (false) or previous (true)
      *     value
      */
-    void CHIPFoamStrainEnergy::setddJbardJe1dJe(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setddJbardJe1dJe(bool isPrevious) {
         auto K = get_K();
 
         auto p0 = get_p0();
@@ -791,30 +775,34 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatType> ddJbardJe1dJe;
 
-        if (isPrevious){
+        if (isPrevious) {
             Je = get_previousJe();
 
             ddJbardJe1dJe = get_SetDataStorage_dPreviousdJbardJe1dPreviousJe();
-        }else{
+        } else {
             Je = get_Je();
 
             ddJbardJe1dJe = get_SetDataStorage_ddJbardJe1dJe();
         }
 
-        *ddJbardJe1dJe.value = gamma*gamma*p0*std::exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*std::pow(*Je,gamma)*K) - gamma*p0*std::exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*std::pow(*Je,gamma)*K) + gamma*gamma*p0*p0*std::exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*std::pow(*Je,2*gamma)*K*K);
+        *ddJbardJe1dJe.value =
+            gamma * gamma * p0 * std::exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) / ((*Je) * std::pow(*Je, gamma) * K) -
+            gamma * p0 * std::exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) / ((*Je) * std::pow(*Je, gamma) * K) +
+            gamma * gamma * p0 * p0 * std::exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) /
+                ((*Je) * std::pow(*Je, 2 * gamma) * K * K);
     }
 
     /*!
      * Set the current derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
      * with respect to the net elastic relative volume
      */
-    void CHIPFoamStrainEnergy::setddJbardJe1dJe(){ setddJbardJe1dJe(false); }
+    void CHIPFoamStrainEnergy::setddJbardJe1dJe() { setddJbardJe1dJe(false); }
 
     /*!
      * Set the previous derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
      * with respect to the net elastic relative volume
      */
-    void CHIPFoamStrainEnergy::setdPreviousdJbardJe1dPreviousJe(){ setddJbardJe1dJe(true); }
+    void CHIPFoamStrainEnergy::setdPreviousdJbardJe1dPreviousJe() { setddJbardJe1dJe(true); }
 
     /*!
      * Set the second derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
@@ -823,8 +811,7 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to compute the current (false) or previous (true)
      *     value
      */
-    void CHIPFoamStrainEnergy::setd2dJbardJe1dJe2(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setd2dJbardJe1dJe2(bool isPrevious) {
         auto K = get_K();
 
         auto p0 = get_p0();
@@ -835,39 +822,44 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatType> d2dJbardJe1dJe2;
 
-        if (isPrevious){
+        if (isPrevious) {
             Je = get_previousJe();
 
             d2dJbardJe1dJe2 = get_SetDataStorage_d2PreviousdJbardJe1dPreviousJe2();
-        }else{
+        } else {
             Je = get_Je();
 
             d2dJbardJe1dJe2 = get_SetDataStorage_d2dJbardJe1dJe2();
         }
 
-        *d2dJbardJe1dJe2.value = -gamma*gamma*gamma*p0*exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*(*Je)*std::pow(*Je,gamma)*K) + gamma*p0*exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*(*Je)*std::pow(*Je,gamma)*K) - 3*gamma*gamma*gamma*p0*p0*exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*(*Je)*std::pow(*Je,2*gamma)*K*K) - gamma*gamma*gamma*p0*p0*p0*exp(p0*(-1 + std::pow(*Je,-gamma))/K)/((*Je)*(*Je)*std::pow(*Je,3*gamma)*K*K*K);
-
+        *d2dJbardJe1dJe2.value =
+            -gamma * gamma * gamma * p0 * exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) /
+                ((*Je) * (*Je) * std::pow(*Je, gamma) * K) +
+            gamma * p0 * exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) / ((*Je) * (*Je) * std::pow(*Je, gamma) * K) -
+            3 * gamma * gamma * gamma * p0 * p0 * exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) /
+                ((*Je) * (*Je) * std::pow(*Je, 2 * gamma) * K * K) -
+            gamma * gamma * gamma * p0 * p0 * p0 * exp(p0 * (-1 + std::pow(*Je, -gamma)) / K) /
+                ((*Je) * (*Je) * std::pow(*Je, 3 * gamma) * K * K * K);
     }
 
     /*!
      * Set the current second derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
      * with respect to the net elastic relative volume
      */
-    void CHIPFoamStrainEnergy::setd2dJbardJe1dJe2(){ setd2dJbardJe1dJe2(false); }
+    void CHIPFoamStrainEnergy::setd2dJbardJe1dJe2() { setd2dJbardJe1dJe2(false); }
 
     /*!
      * Set the previous second derivative of the derivative of Jbar with respect to Je evaluated when Jbar is one
      * with respect to the net elastic relative volume
      */
-    void CHIPFoamStrainEnergy::setd2PreviousdJbardJe1dPreviousJe2(){ setd2dJbardJe1dJe2(true); }
+    void CHIPFoamStrainEnergy::setd2PreviousdJbardJe1dPreviousJe2() { setd2dJbardJe1dJe2(true); }
 
     /*!
      * Set the value of the modified Danielsson function
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWDC(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWDC(bool isPrevious) {
         auto phi0 = get_phi0();
 
         auto C10 = get_C10();
@@ -882,8 +874,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatType> WDC;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Ibar1 = get_previousIbar1();
@@ -894,8 +885,7 @@ namespace tardigradeHydra {
 
             WDC = get_SetDataStorage_previousWDC();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Ibar1 = get_Ibar1();
@@ -905,34 +895,31 @@ namespace tardigradeHydra {
             dJbardJe1 = get_dJbardJe1();
 
             WDC = get_SetDataStorage_WDC();
-
         }
 
         auto Jm = compute_Jm(*Jbar, *Je);
 
         auto f = compute_f(*Jbar);
 
-        *WDC.value = C10 * (Jm * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*dJbardJe1));
-
+        *WDC.value = C10 * (Jm * ((*Ibar1) * f - 3 * (1 - phi0)) - (*Je) * ((*Ibar1) - 3) * (1 - phi0) * (*dJbardJe1));
     }
 
     /*!
      * Set the current value of the modified Danielsson function
      */
-    void CHIPFoamStrainEnergy::setWDC(){ setWDC(false); }
+    void CHIPFoamStrainEnergy::setWDC() { setWDC(false); }
 
     /*!
      * Set the previous value of the modified Danielsson function
      */
-    void CHIPFoamStrainEnergy::setPreviousWDC(){ setWDC(true); }
+    void CHIPFoamStrainEnergy::setPreviousWDC() { setWDC(true); }
 
     /*!
      * Set the derivatives of the modified Danielsson function
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWDCDerivatives(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWDCDerivatives(bool isPrevious) {
         auto phi0 = get_phi0();
 
         auto C10 = get_C10();
@@ -951,8 +938,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatVector> dWDCdD;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Ibar1 = get_previousIbar1();
@@ -967,8 +953,7 @@ namespace tardigradeHydra {
 
             dWDCdD = get_SetDataStorage_dPreviousWDCdPreviousD();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Ibar1 = get_Ibar1();
@@ -982,7 +967,6 @@ namespace tardigradeHydra {
             ddJbardJe1dJe = get_ddJbardJe1dJe();
 
             dWDCdD = get_SetDataStorage_dWDCdD();
-
         }
 
         auto Jm = compute_Jm(*Jbar, *Je);
@@ -995,27 +979,28 @@ namespace tardigradeHydra {
 
         dWDCdD.zero(2);
 
-        (*dWDCdD.value)[0] = C10 * (dJmdJe * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) + Jm * (*Ibar1) * dfdJe - ( (*Ibar1) - 3 )*(1 - phi0) * (*dJbardJe1) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe));
+        (*dWDCdD.value)[0] =
+            C10 * (dJmdJe * ((*Ibar1) * f - 3 * (1 - phi0)) + Jm * (*Ibar1) * dfdJe -
+                   ((*Ibar1) - 3) * (1 - phi0) * (*dJbardJe1) - (*Je) * ((*Ibar1) - 3) * (1 - phi0) * (*ddJbardJe1dJe));
         (*dWDCdD.value)[1] = C10 * (Jm * f - (*Je) * (1 - phi0) * (*dJbardJe1));
     }
 
     /*!
      * Set the current derivatives of the modified Danielsson function
      */
-    void CHIPFoamStrainEnergy::setWDCDerivatives(){ setWDCDerivatives(false); }
+    void CHIPFoamStrainEnergy::setWDCDerivatives() { setWDCDerivatives(false); }
 
     /*!
      * Set the previous derivatives of the modified Danielsson function
      */
-    void CHIPFoamStrainEnergy::setPreviousWDCDerivatives(){ setWDCDerivatives(true); }
+    void CHIPFoamStrainEnergy::setPreviousWDCDerivatives() { setWDCDerivatives(true); }
 
     /*!
      * Set the Hessians of the modified Danielsson function
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWDCHessians(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWDCHessians(bool isPrevious) {
         auto phi0 = get_phi0();
 
         auto C10 = get_C10();
@@ -1038,8 +1023,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatVector> d2WDCdD2;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Ibar1 = get_previousIbar1();
@@ -1058,8 +1042,7 @@ namespace tardigradeHydra {
 
             d2WDCdD2 = get_SetDataStorage_d2PreviousWDCdPreviousD2();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Ibar1 = get_Ibar1();
@@ -1077,14 +1060,15 @@ namespace tardigradeHydra {
             d2dJbardJe1dJe2 = get_d2dJbardJe1dJe2();
 
             d2WDCdD2 = get_SetDataStorage_d2WDCdD2();
-
         }
 
         auto Jm = compute_Jm(*Jbar, *Je);
 
         auto dJmdJe = compute_dJmdJe(*Jbar, *Je) + compute_dJmdJbar(*Jbar, *Je) * (*dJbardJe);
 
-        auto d2JmdJe2 = compute_d2JmdJe2(*Jbar, *Je) + 2 * compute_d2JmdJedJbar(*Jbar, *Je) * (*dJbardJe) + compute_d2JmdJbar2(*Jbar, *Je) * (*dJbardJe) * (*dJbardJe) + compute_dJmdJbar(*Jbar, *Je) * (*d2JbardJe2);
+        auto d2JmdJe2 = compute_d2JmdJe2(*Jbar, *Je) + 2 * compute_d2JmdJedJbar(*Jbar, *Je) * (*dJbardJe) +
+                        compute_d2JmdJbar2(*Jbar, *Je) * (*dJbardJe) * (*dJbardJe) +
+                        compute_dJmdJbar(*Jbar, *Je) * (*d2JbardJe2);
 
         auto f = compute_f(*Jbar);
 
@@ -1094,33 +1078,36 @@ namespace tardigradeHydra {
 
         d2WDCdD2.zero(4);
 
-        (*d2WDCdD2.value)[0] = C10 * (d2JmdJe2 * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) + dJmdJe * (*Ibar1) * dfdJe + dJmdJe * (*Ibar1) * dfdJe + Jm * (*Ibar1) * d2fdJe2 - ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe) - ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*d2dJbardJe1dJe2));
-        (*d2WDCdD2.value)[1] = C10 * (dJmdJe * f + Jm * dfdJe - (1 - phi0) * (*dJbardJe1) - (*Je) * (1 - phi0) * (*ddJbardJe1dJe));
+        (*d2WDCdD2.value)[0] =
+            C10 *
+            (d2JmdJe2 * ((*Ibar1) * f - 3 * (1 - phi0)) + dJmdJe * (*Ibar1) * dfdJe + dJmdJe * (*Ibar1) * dfdJe +
+             Jm * (*Ibar1) * d2fdJe2 - ((*Ibar1) - 3) * (1 - phi0) * (*ddJbardJe1dJe) -
+             ((*Ibar1) - 3) * (1 - phi0) * (*ddJbardJe1dJe) - (*Je) * ((*Ibar1) - 3) * (1 - phi0) * (*d2dJbardJe1dJe2));
+        (*d2WDCdD2.value)[1] =
+            C10 * (dJmdJe * f + Jm * dfdJe - (1 - phi0) * (*dJbardJe1) - (*Je) * (1 - phi0) * (*ddJbardJe1dJe));
         (*d2WDCdD2.value)[2] = (*d2WDCdD2.value)[1];
         (*d2WDCdD2.value)[3] = 0.;
-
     }
 
     /*!
      * Set the current Hessians of the modified Danielsson function
      */
-    void CHIPFoamStrainEnergy::setWDCHessians(){ setWDCHessians(false); }
+    void CHIPFoamStrainEnergy::setWDCHessians() { setWDCHessians(false); }
 
     /*!
      * Set the previous Hessians of the modified Danielsson function
      */
-    void CHIPFoamStrainEnergy::setPreviousWDCHessians(){ setWDCHessians(true); }
+    void CHIPFoamStrainEnergy::setPreviousWDCHessians() { setWDCHessians(true); }
 
     /*!
      * Set the value of the gas energy
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWG(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWG(bool isPrevious) {
         auto phi0 = get_phi0();
 
-        auto p0   = get_p0();
+        auto p0 = get_p0();
 
         auto gamma = get_gamma();
 
@@ -1130,58 +1117,53 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatType> WG;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Jbar = get_previousJbar();
 
             WG = get_SetDataStorage_previousWG();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Jbar = get_Jbar();
 
             WG = get_SetDataStorage_WG();
-
         }
 
         auto Jm = (*Je) / (*Jbar);
 
-        auto Jg = Jm * ( (*Jbar) - 1 + phi0 ) / phi0;
+        auto Jg = Jm * ((*Jbar) - 1 + phi0) / phi0;
 
-        if ( gas_isothermal_compression ){
+        if (gas_isothermal_compression) {
             *WG.value = Jg - std::log(Jg) - 1;
-        }else{
-            *WG.value = Jg - 1./(gamma - 1)*(gamma - std::pow(Jg, 1 - gamma));
+        } else {
+            *WG.value = Jg - 1. / (gamma - 1) * (gamma - std::pow(Jg, 1 - gamma));
         }
 
         *WG.value *= p0 * phi0;
-
     }
 
     /*!
      * Set the current value of the gas energy
      */
-    void CHIPFoamStrainEnergy::setWG(){ setWG(false); }
+    void CHIPFoamStrainEnergy::setWG() { setWG(false); }
 
     /*!
      * Set the previous value of the gas energy
      */
-    void CHIPFoamStrainEnergy::setPreviousWG(){ setWG(true); }
+    void CHIPFoamStrainEnergy::setPreviousWG() { setWG(true); }
 
     /*!
      * Set the derivatives of the gas energy
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWGDerivatives(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWGDerivatives(bool isPrevious) {
         auto phi0 = get_phi0();
 
-        auto p0   = get_p0();
+        auto p0 = get_p0();
 
         auto gamma = get_gamma();
 
@@ -1193,8 +1175,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatVector> dWGdD;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Jbar = get_previousJbar();
@@ -1203,8 +1184,7 @@ namespace tardigradeHydra {
 
             dWGdD = get_SetDataStorage_dPreviousWGdPreviousD();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Jbar = get_Jbar();
@@ -1212,49 +1192,46 @@ namespace tardigradeHydra {
             dJbardJe = get_dJbardJe();
 
             dWGdD = get_SetDataStorage_dWGdD();
-
         }
 
         auto Jm = (*Je) / (*Jbar);
 
-        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar)*(*Jbar)) * (*dJbardJe);
+        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar) * (*Jbar)) * (*dJbardJe);
 
-        auto Jg = Jm * ( (*Jbar) - 1 + phi0 ) / phi0;
+        auto Jg = Jm * ((*Jbar) - 1 + phi0) / phi0;
 
-        auto dJgdJe = dJmdJe * ( (*Jbar) - 1 + phi0 ) / phi0 + Jm * (*dJbardJe) / phi0;
+        auto dJgdJe = dJmdJe * ((*Jbar) - 1 + phi0) / phi0 + Jm * (*dJbardJe) / phi0;
 
         dWGdD.zero(2);
 
-        if ( gas_isothermal_compression ){
-            (*dWGdD.value)[0] = dJgdJe * ( 1 - 1 / Jg );
-        }else{
+        if (gas_isothermal_compression) {
+            (*dWGdD.value)[0] = dJgdJe * (1 - 1 / Jg);
+        } else {
             (*dWGdD.value)[0] = dJgdJe * (1 - std::pow(Jg, -gamma));
         }
 
         (*dWGdD.value)[0] *= p0 * phi0;
-
     }
 
     /*!
      * Set the current derivatives of the gas energy
      */
-    void CHIPFoamStrainEnergy::setWGDerivatives(){ setWGDerivatives(false); }
+    void CHIPFoamStrainEnergy::setWGDerivatives() { setWGDerivatives(false); }
 
     /*!
      * Set the previous derivatives of the gas energy
      */
-    void CHIPFoamStrainEnergy::setPreviousWGDerivatives(){ setWGDerivatives(true); }
+    void CHIPFoamStrainEnergy::setPreviousWGDerivatives() { setWGDerivatives(true); }
 
     /*!
      * Set the Hessians of the gas energy
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWGHessians(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWGHessians(bool isPrevious) {
         auto phi0 = get_phi0();
 
-        auto p0   = get_p0();
+        auto p0 = get_p0();
 
         auto gamma = get_gamma();
 
@@ -1268,8 +1245,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatVector> d2WGdD2;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Jbar = get_previousJbar();
@@ -1280,8 +1256,7 @@ namespace tardigradeHydra {
 
             d2WGdD2 = get_SetDataStorage_d2PreviousWGdPreviousD2();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Jbar = get_Jbar();
@@ -1291,27 +1266,30 @@ namespace tardigradeHydra {
             d2JbardJe2 = get_d2JbardJe2();
 
             d2WGdD2 = get_SetDataStorage_d2WGdD2();
-
         }
 
         auto Jm = (*Je) / (*Jbar);
 
-        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar)*(*Jbar)) * (*dJbardJe);
+        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar) * (*Jbar)) * (*dJbardJe);
 
-        auto d2JmdJe2 = -(*dJbardJe) / ((*Jbar)*(*Jbar)) - (*dJbardJe) / ((*Jbar)*(*Jbar)) + 2 * (*Je) / ((*Jbar)*(*Jbar)*(*Jbar)) * (*dJbardJe) * (*dJbardJe) - (*Je) / ((*Jbar)*(*Jbar)) * (*d2JbardJe2);
+        auto d2JmdJe2 = -(*dJbardJe) / ((*Jbar) * (*Jbar)) - (*dJbardJe) / ((*Jbar) * (*Jbar)) +
+                        2 * (*Je) / ((*Jbar) * (*Jbar) * (*Jbar)) * (*dJbardJe) * (*dJbardJe) -
+                        (*Je) / ((*Jbar) * (*Jbar)) * (*d2JbardJe2);
 
-        auto Jg = Jm * ( (*Jbar) - 1 + phi0 ) / phi0;
+        auto Jg = Jm * ((*Jbar) - 1 + phi0) / phi0;
 
-        auto dJgdJe = dJmdJe * ( (*Jbar) - 1 + phi0 ) / phi0 + Jm * (*dJbardJe) / phi0;
+        auto dJgdJe = dJmdJe * ((*Jbar) - 1 + phi0) / phi0 + Jm * (*dJbardJe) / phi0;
 
-        auto d2JgdJe2 = d2JmdJe2 * ( (*Jbar) - 1 + phi0 ) / phi0 + dJmdJe * (*dJbardJe) / phi0 + dJmdJe * (*dJbardJe) / phi0 + Jm * (*d2JbardJe2) / phi0;
+        auto d2JgdJe2 = d2JmdJe2 * ((*Jbar) - 1 + phi0) / phi0 + dJmdJe * (*dJbardJe) / phi0 +
+                        dJmdJe * (*dJbardJe) / phi0 + Jm * (*d2JbardJe2) / phi0;
 
         d2WGdD2.zero(4);
 
-        if ( gas_isothermal_compression ){
-            (*d2WGdD2.value)[0] = d2JgdJe2 * ( 1 - 1 / Jg ) + dJgdJe * dJgdJe / (Jg * Jg);
-        }else{
-            (*d2WGdD2.value)[0] = d2JgdJe2 * (1 - std::pow(Jg, -gamma)) + dJgdJe * dJgdJe * gamma * std::pow(Jg, -(gamma+1));
+        if (gas_isothermal_compression) {
+            (*d2WGdD2.value)[0] = d2JgdJe2 * (1 - 1 / Jg) + dJgdJe * dJgdJe / (Jg * Jg);
+        } else {
+            (*d2WGdD2.value)[0] =
+                d2JgdJe2 * (1 - std::pow(Jg, -gamma)) + dJgdJe * dJgdJe * gamma * std::pow(Jg, -(gamma + 1));
         }
 
         (*d2WGdD2.value)[0] *= p0 * phi0;
@@ -1320,20 +1298,19 @@ namespace tardigradeHydra {
     /*!
      * Set the current Hessians of the gas energy
      */
-    void CHIPFoamStrainEnergy::setWGHessians(){ setWGHessians(false); }
+    void CHIPFoamStrainEnergy::setWGHessians() { setWGHessians(false); }
 
     /*!
      * Set the previous Hessians of the gas energy
      */
-    void CHIPFoamStrainEnergy::setPreviousWGHessians(){ setWGHessians(true); }
+    void CHIPFoamStrainEnergy::setPreviousWGHessians() { setWGHessians(true); }
 
     /*!
      * Set the value of the parent material energy
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWM(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWM(bool isPrevious) {
         auto phi0 = get_phi0();
 
         auto K = get_K();
@@ -1344,47 +1321,42 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatType> WM;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Jbar = get_previousJbar();
 
             WM = get_SetDataStorage_previousWM();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Jbar = get_Jbar();
 
             WM = get_SetDataStorage_WM();
-
         }
 
         auto Jm = (*Je) / (*Jbar);
 
-        *WM.value = (1 - phi0) * K * ( Jm * std::log(Jm) - Jm + 1);
-
+        *WM.value = (1 - phi0) * K * (Jm * std::log(Jm) - Jm + 1);
     }
 
     /*!
      * Set the current value of the parent material energy
      */
-    void CHIPFoamStrainEnergy::setWM(){ setWM(false); }
+    void CHIPFoamStrainEnergy::setWM() { setWM(false); }
 
     /*!
      * Set the previous value of the parent material energy
      */
-    void CHIPFoamStrainEnergy::setPreviousWM(){ setWM(true); }
+    void CHIPFoamStrainEnergy::setPreviousWM() { setWM(true); }
 
     /*!
      * Set the derivatives of the parent energy
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWMDerivatives(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWMDerivatives(bool isPrevious) {
         auto phi0 = get_phi0();
 
         auto K = get_K();
@@ -1397,8 +1369,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatVector> dWMdD;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Jbar = get_previousJbar();
@@ -1407,8 +1378,7 @@ namespace tardigradeHydra {
 
             dWMdD = get_SetDataStorage_dPreviousWMdPreviousD();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Jbar = get_Jbar();
@@ -1416,36 +1386,33 @@ namespace tardigradeHydra {
             dJbardJe = get_dJbardJe();
 
             dWMdD = get_SetDataStorage_dWMdD();
-
         }
 
         auto Jm = (*Je) / (*Jbar);
 
-        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar)*(*Jbar)) * (*dJbardJe);
+        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar) * (*Jbar)) * (*dJbardJe);
 
         dWMdD.zero(2);
 
         (*dWMdD.value)[0] = (1 - phi0) * K * std::log(Jm) * dJmdJe;
-
     }
 
     /*!
      * Set the current derivatives of the parent material energy
      */
-    void CHIPFoamStrainEnergy::setWMDerivatives(){ setWMDerivatives(false); }
+    void CHIPFoamStrainEnergy::setWMDerivatives() { setWMDerivatives(false); }
 
     /*!
      * Set the previous derivatives of the parent material energy
      */
-    void CHIPFoamStrainEnergy::setPreviousWMDerivatives(){ setWMDerivatives(true); }
+    void CHIPFoamStrainEnergy::setPreviousWMDerivatives() { setWMDerivatives(true); }
 
     /*!
      * Set the Hessians of the parent energy
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setWMHessians(bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setWMHessians(bool isPrevious) {
         auto phi0 = get_phi0();
 
         auto K = get_K();
@@ -1460,8 +1427,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatVector> d2WMdD2;
 
-        if(isPrevious){
-
+        if (isPrevious) {
             Je = get_previousJe();
 
             Jbar = get_previousJbar();
@@ -1472,8 +1438,7 @@ namespace tardigradeHydra {
 
             d2WMdD2 = get_SetDataStorage_d2PreviousWMdPreviousD2();
 
-        }else{
-
+        } else {
             Je = get_Je();
 
             Jbar = get_Jbar();
@@ -1483,14 +1448,15 @@ namespace tardigradeHydra {
             d2JbardJe2 = get_d2JbardJe2();
 
             d2WMdD2 = get_SetDataStorage_d2WMdD2();
-
         }
 
         auto Jm = (*Je) / (*Jbar);
 
-        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar)*(*Jbar)) * (*dJbardJe);
+        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar) * (*Jbar)) * (*dJbardJe);
 
-        auto d2JmdJe2 = -(*dJbardJe) / ((*Jbar)*(*Jbar)) - (*dJbardJe) / ((*Jbar)*(*Jbar)) + 2 * (*Je) / ((*Jbar)*(*Jbar)*(*Jbar)) * (*dJbardJe) * (*dJbardJe) - (*Je) / ((*Jbar)*(*Jbar)) * (*d2JbardJe2);
+        auto d2JmdJe2 = -(*dJbardJe) / ((*Jbar) * (*Jbar)) - (*dJbardJe) / ((*Jbar) * (*Jbar)) +
+                        2 * (*Je) / ((*Jbar) * (*Jbar) * (*Jbar)) * (*dJbardJe) * (*dJbardJe) -
+                        (*Je) / ((*Jbar) * (*Jbar)) * (*d2JbardJe2);
 
         d2WMdD2.zero(4);
 
@@ -1500,20 +1466,19 @@ namespace tardigradeHydra {
     /*!
      * Set the current Hessians of the parent material energy
      */
-    void CHIPFoamStrainEnergy::setWMHessians(){ setWMHessians(false); }
+    void CHIPFoamStrainEnergy::setWMHessians() { setWMHessians(false); }
 
     /*!
      * Set the previous Hessians of the parent material energy
      */
-    void CHIPFoamStrainEnergy::setPreviousWMHessians(){ setWMHessians(true); }
+    void CHIPFoamStrainEnergy::setPreviousWMHessians() { setWMHessians(true); }
 
     /*!
      * Set the value of the strain energy
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setStrainEnergy(const bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setStrainEnergy(const bool isPrevious) {
         const floatType *WLB;
 
         const floatType *WDC;
@@ -1524,8 +1489,7 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatType> strainEnergy;
 
-        if (isPrevious){
-
+        if (isPrevious) {
             WLB = get_previousWLB();
 
             WDC = get_previousWDC();
@@ -1536,9 +1500,7 @@ namespace tardigradeHydra {
 
             strainEnergy = get_SetDataStorage_previousStrainEnergy();
 
-        }
-        else{
-
+        } else {
             WLB = get_WLB();
 
             WDC = get_WDC();
@@ -1548,11 +1510,9 @@ namespace tardigradeHydra {
             WG = get_WG();
 
             strainEnergy = get_SetDataStorage_strainEnergy();
-
         }
 
         *strainEnergy.value = (*WLB) + (*WDC) + (*WM) + (*WG);
-
     }
 
     /*!
@@ -1560,8 +1520,7 @@ namespace tardigradeHydra {
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setStrainEnergyJacobians(const bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
         constexpr unsigned int dim = 3;
 
         const floatVector *dWLBdD;
@@ -1578,14 +1537,13 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatVector> dStrainEnergydFe;
 
-        if (isPrevious){
-
+        if (isPrevious) {
             dJedFe = get_dPreviousJedPreviousFe();
 
             dIbar1dFe = get_dPreviousIbar1dPreviousFe();
 
             dWLBdD = get_dPreviousWLBdPreviousD();
-                                  
+
             dWDCdD = get_dPreviousWDCdPreviousD();
 
             dWMdD = get_dPreviousWMdPreviousD();
@@ -1594,9 +1552,7 @@ namespace tardigradeHydra {
 
             dStrainEnergydFe = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
 
-        }
-        else{
-
+        } else {
             dJedFe = get_dJedFe();
 
             dIbar1dFe = get_dIbar1dFe();
@@ -1610,18 +1566,15 @@ namespace tardigradeHydra {
             dWGdD = get_dWGdD();
 
             dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
-
         }
 
-        dStrainEnergydFe.zero(dim*dim);
+        dStrainEnergydFe.zero(dim * dim);
 
-        for ( unsigned int iI = 0; iI < dim * dim; ++iI ){
-
+        for (unsigned int iI = 0; iI < dim * dim; ++iI) {
             (*dStrainEnergydFe.value)[iI] += ((*dWLBdD)[0] + (*dWDCdD)[0] + (*dWMdD)[0] + (*dWGdD)[0]) * (*dJedFe)[iI];
-            (*dStrainEnergydFe.value)[iI] += ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) * (*dIbar1dFe)[iI];
-
+            (*dStrainEnergydFe.value)[iI] +=
+                ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) * (*dIbar1dFe)[iI];
         }
-
     }
 
     /*!
@@ -1629,8 +1582,7 @@ namespace tardigradeHydra {
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
-    void CHIPFoamStrainEnergy::setStrainEnergyHessians(const bool isPrevious){
-
+    void CHIPFoamStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
         constexpr unsigned int dim = 3;
 
         const floatVector *dWLBdD;
@@ -1661,14 +1613,13 @@ namespace tardigradeHydra {
 
         SetDataStorageBase<floatVector> d2StrainEnergydFedT;
 
-        if (isPrevious){
-
+        if (isPrevious) {
             dJedFe = get_dPreviousJedPreviousFe();
 
             dIbar1dFe = get_dPreviousIbar1dPreviousFe();
 
             dWLBdD = get_dPreviousWLBdPreviousD();
-                                  
+
             dWDCdD = get_dPreviousWDCdPreviousD();
 
             dWMdD = get_dPreviousWMdPreviousD();
@@ -1691,9 +1642,7 @@ namespace tardigradeHydra {
 
             d2StrainEnergydFedT = get_SetDataStorage_d2PreviousStrainEnergydPreviousFedPreviousT();
 
-        }
-        else{
-
+        } else {
             dJedFe = get_dJedFe();
 
             dIbar1dFe = get_dIbar1dFe();
@@ -1721,27 +1670,25 @@ namespace tardigradeHydra {
             d2StrainEnergydFe2 = get_SetDataStorage_d2StrainEnergydFe2();
 
             d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
-
         }
 
-        d2StrainEnergydFe2.zero(dim*dim*dim*dim);
-        d2StrainEnergydFedT.zero(dim*dim);
+        d2StrainEnergydFe2.zero(dim * dim * dim * dim);
+        d2StrainEnergydFedT.zero(dim * dim);
 
-        for ( unsigned int iI = 0; iI < dim * dim; ++iI ){
-
-            for ( unsigned int aA = 0; aA < dim * dim; ++aA ){
-
-                (*d2StrainEnergydFe2.value)[dim * dim * iI + aA] += ((*d2WLBdD2)[0] + (*d2WDCdD2)[0] + (*d2WMdD2)[0] + (*d2WGdD2)[0]) * (*dJedFe)[iI] * (*dJedFe)[aA]
-                                                                  + ((*d2WLBdD2)[1] + (*d2WDCdD2)[1] + (*d2WMdD2)[1] + (*d2WGdD2)[1]) * (*dJedFe)[iI] * (*dIbar1dFe)[aA]
-                                                                  + ((*d2WLBdD2)[2] + (*d2WDCdD2)[2] + (*d2WMdD2)[2] + (*d2WGdD2)[2]) * (*dIbar1dFe)[iI] * (*dJedFe)[aA]
-                                                                  + ((*d2WLBdD2)[3] + (*d2WDCdD2)[3] + (*d2WMdD2)[3] + (*d2WGdD2)[3]) * (*dIbar1dFe)[iI] * (*dIbar1dFe)[aA]
-                                                                  + ((*dWLBdD)[0] + (*dWDCdD)[0] + (*dWMdD)[0] + (*dWGdD)[0]) * (*d2JedFe2)[dim * dim * iI + aA]
-                                                                  + ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) * (*d2Ibar1dFe2)[dim * dim * iI + aA];
-
+        for (unsigned int iI = 0; iI < dim * dim; ++iI) {
+            for (unsigned int aA = 0; aA < dim * dim; ++aA) {
+                (*d2StrainEnergydFe2.value)[dim * dim * iI + aA] +=
+                    ((*d2WLBdD2)[0] + (*d2WDCdD2)[0] + (*d2WMdD2)[0] + (*d2WGdD2)[0]) * (*dJedFe)[iI] * (*dJedFe)[aA] +
+                    ((*d2WLBdD2)[1] + (*d2WDCdD2)[1] + (*d2WMdD2)[1] + (*d2WGdD2)[1]) * (*dJedFe)[iI] *
+                        (*dIbar1dFe)[aA] +
+                    ((*d2WLBdD2)[2] + (*d2WDCdD2)[2] + (*d2WMdD2)[2] + (*d2WGdD2)[2]) * (*dIbar1dFe)[iI] *
+                        (*dJedFe)[aA] +
+                    ((*d2WLBdD2)[3] + (*d2WDCdD2)[3] + (*d2WMdD2)[3] + (*d2WGdD2)[3]) * (*dIbar1dFe)[iI] *
+                        (*dIbar1dFe)[aA] +
+                    ((*dWLBdD)[0] + (*dWDCdD)[0] + (*dWMdD)[0] + (*dWGdD)[0]) * (*d2JedFe2)[dim * dim * iI + aA] +
+                    ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) * (*d2Ibar1dFe2)[dim * dim * iI + aA];
             }
-
         }
-
     }
 
 }  // namespace tardigradeHydra

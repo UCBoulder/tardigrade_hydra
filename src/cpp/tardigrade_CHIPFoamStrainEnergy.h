@@ -118,7 +118,8 @@ namespace tardigradeHydra {
 
         const floatType compute_Jbar_d2RdJbar2(const floatType &Jbar, const floatType &Je);
 
-        const floatType Jbar_bisection(const floatType &Je, const floatType &lb, const floatType &ub, floatType tol_R = -1, floatType tol_dx = -1);
+        const floatType Jbar_bisection(const floatType &Je, const floatType &lb, const floatType &ub,
+                                       floatType tol_R = -1, floatType tol_dx = -1);
 
         const floatType Jbar_newton(const floatType &Je);
 
@@ -307,7 +308,10 @@ namespace tardigradeHydra {
         void setInitialized() { is_initialized = true; };
 
         //! Get the sign of a floating point number
-        template <typename T> int sgn(T val) { return (T(0) < val) - (val < T(0)); }
+        template <typename T>
+        int sgn(T val) {
+            return (T(0) < val) - (val < T(0));
+        }
 
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Je, floatType, setJe)
@@ -338,86 +342,85 @@ namespace tardigradeHydra {
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousIbar1dPreviousFe2, fourthOrderTensor,
                                                   setd2PreviousIbar1dPreviousFe2)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WLB, floatType, setWLB);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WLB, floatType, setWLB)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWLB, floatType, setPreviousWLB);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWLB, floatType, setPreviousWLB)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWLBdD, floatVector, setWLBDerivatives);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWLBdD, floatVector, setWLBDerivatives)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWLBdPreviousD, floatVector,
-                                                  setPreviousWLBDerivatives);
+                                                  setPreviousWLBDerivatives)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WLBdD2, floatVector, setWLBHessians);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WLBdD2, floatVector, setWLBHessians)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWLBdPreviousD2, floatVector,
-                                                  setPreviousWLBHessians);
+                                                  setPreviousWLBHessians)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Jbar, floatType, setJbar);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Jbar, floatType, setJbar)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousJbar, floatType, setPreviousJbar);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousJbar, floatType, setPreviousJbar)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dJbardJe, floatType, setdJbardJe);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dJbardJe, floatType, setdJbardJe)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousJbardPreviousJe, floatType, setdPreviousJbardPreviousJe);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousJbardPreviousJe, floatType,
+                                                  setdPreviousJbardPreviousJe)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2JbardJe2, floatType, setd2JbardJe2);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2JbardJe2, floatType, setd2JbardJe2)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJbardPreviousJe2, floatType, setd2PreviousJbardPreviousJe2);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJbardPreviousJe2, floatType,
+                                                  setd2PreviousJbardPreviousJe2)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dJbardJe1, floatType, setdJbardJe1);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dJbardJe1, floatType, setdJbardJe1)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousdJbardJe1, floatType, setPreviousdJbardJe1);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousdJbardJe1, floatType, setPreviousdJbardJe1)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, ddJbardJe1dJe, floatType, setddJbardJe1dJe);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, ddJbardJe1dJe, floatType, setddJbardJe1dJe)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousdJbardJe1dPreviousJe, floatType, setdPreviousdJbardJe1dPreviousJe);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousdJbardJe1dPreviousJe, floatType,
+                                                  setdPreviousdJbardJe1dPreviousJe)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2dJbardJe1dJe2, floatType, setd2dJbardJe1dJe2);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2dJbardJe1dJe2, floatType, setd2dJbardJe1dJe2)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousdJbardJe1dPreviousJe2, floatType, setd2PreviousdJbardJe1dPreviousJe2);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousdJbardJe1dPreviousJe2, floatType,
+                                                  setd2PreviousdJbardJe1dPreviousJe2)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WDC, floatType, setWDC);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WDC, floatType, setWDC)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWDC, floatType, setPreviousWDC);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWDC, floatType, setPreviousWDC)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWDCdD, floatVector, setWDCDerivatives);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWDCdD, floatVector, setWDCDerivatives)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWDCdPreviousD, floatVector,
-                                                  setPreviousWDCDerivatives);
+                                                  setPreviousWDCDerivatives)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WDCdD2, floatVector, setWDCHessians);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WDCdD2, floatVector, setWDCHessians)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWDCdPreviousD2, floatVector,
-                                                  setPreviousWDCHessians);
+                                                  setPreviousWDCHessians)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WG, floatType, setWG);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WG, floatType, setWG)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWG, floatType, setPreviousWG);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWG, floatType, setPreviousWG)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWGdD, floatVector, setWGDerivatives);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWGdD, floatVector, setWGDerivatives)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWGdPreviousD, floatVector,
-                                                  setPreviousWGDerivatives);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWGdPreviousD, floatVector, setPreviousWGDerivatives)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WGdD2, floatVector, setWGHessians);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WGdD2, floatVector, setWGHessians)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWGdPreviousD2, floatVector,
-                                                  setPreviousWGHessians);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWGdPreviousD2, floatVector, setPreviousWGHessians)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WM, floatType, setWM);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WM, floatType, setWM)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWM, floatType, setPreviousWM);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWM, floatType, setPreviousWM)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWMdD, floatVector, setWMDerivatives);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWMdD, floatVector, setWMDerivatives)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWMdPreviousD, floatVector,
-                                                  setPreviousWMDerivatives);
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWMdPreviousD, floatVector, setPreviousWMDerivatives)
 
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WMdD2, floatVector, setWMHessians);
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WMdD2, floatVector, setWMHessians)
 
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWMdPreviousD2, floatVector,
-                                                  setPreviousWMHessians);
-
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWMdPreviousD2, floatVector, setPreviousWMHessians)
 
         //! Whether the class has been initialized or not
         bool is_initialized = false;

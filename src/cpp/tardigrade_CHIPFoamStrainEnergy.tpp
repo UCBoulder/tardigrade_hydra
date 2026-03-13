@@ -443,9 +443,8 @@ namespace tardigradeHydra {
      *
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
-     */ 
+     */
     const floatType CHIPFoamStrainEnergy::compute_Jbar_residual(const floatType &Jbar, const floatType &Je) {
-
         auto Jm = compute_Jm(Jbar, Je);
 
         return Je / Jbar - Jm;
@@ -457,13 +456,11 @@ namespace tardigradeHydra {
      *
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
-     */ 
+     */
     const floatType CHIPFoamStrainEnergy::compute_Jbar_dRdJbar(const floatType &Jbar, const floatType &Je) {
-
         auto dJmdJbar = compute_dJmdJbar(Jbar, Je);
 
         return -Je / (Jbar * Jbar) - dJmdJbar;
-
     }
 
     /*!
@@ -472,13 +469,11 @@ namespace tardigradeHydra {
      *
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
-     */ 
+     */
     const floatType CHIPFoamStrainEnergy::compute_Jbar_dRdJe(const floatType &Jbar, const floatType &Je) {
-
         auto dJmdJe = compute_dJmdJe(Jbar, Je);
 
         return 1. / Jbar - dJmdJe;
-
     }
 
     /*!
@@ -487,13 +482,11 @@ namespace tardigradeHydra {
      *
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
-     */ 
+     */
     const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJe2(const floatType &Jbar, const floatType &Je) {
-
         auto d2JmdJe2 = compute_d2JmdJe2(Jbar, Je);
 
         return -d2JmdJe2;
-
     }
 
     /*!
@@ -503,13 +496,11 @@ namespace tardigradeHydra {
      *
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
-     */ 
+     */
     const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJedJbar(const floatType &Jbar, const floatType &Je) {
-
         auto d2JmdJedJbar = compute_d2JmdJedJbar(Jbar, Je);
 
         return -1. / (Jbar * Jbar) - d2JmdJedJbar;
-
     }
 
     /*!
@@ -518,13 +509,11 @@ namespace tardigradeHydra {
      *
      * \param &Jbar: The matrix volume-conserving relative volume
      * \param &Je: The net elastic relative volume
-     */ 
+     */
     const floatType CHIPFoamStrainEnergy::compute_Jbar_d2RdJbar2(const floatType &Jbar, const floatType &Je) {
-
         auto d2JmdJbar2 = compute_d2JmdJbar2(Jbar, Je);
 
         return 2 * Je / (Jbar * Jbar * Jbar) - d2JmdJbar2;
-
     }
 
     /*!
@@ -536,36 +525,33 @@ namespace tardigradeHydra {
      * \param &tol_R: The tolerance on the residual
      * \param &tol_dx: The tolerance on the span betwen the lower and upper bound
      */
-    const floatType CHIPFoamStrainEnergy::Jbar_bisection(const floatType &Je, const floatType &lb, const floatType &ub, floatType tol_R, floatType tol_dx){
-
-        auto m = 0.5 * (lb + ub);
+    const floatType CHIPFoamStrainEnergy::Jbar_bisection(const floatType &Je, const floatType &lb, const floatType &ub,
+                                                         floatType tol_R, floatType tol_dx) {
+        auto m   = 0.5 * (lb + ub);
         auto Rlb = compute_Jbar_residual(lb, Je);
         auto Rub = compute_Jbar_residual(ub, Je);
 
-        if ( sgn(Rlb) == sgn(Rub) ){ throw std::logic_error("The residual at the lower and upper points must have different signs"); }
-
-        if (tol_R < 0){
-
-            tol_R = bisection_tolr * 0.5 * (std::fabs(Rlb) + std::fabs(Rub)) + bisection_tola;
-
+        if (sgn(Rlb) == sgn(Rub)) {
+            throw std::logic_error("The residual at the lower and upper points must have different signs");
         }
 
-        if (tol_dx < 0){
+        if (tol_R < 0) {
+            tol_R = bisection_tolr * 0.5 * (std::fabs(Rlb) + std::fabs(Rub)) + bisection_tola;
+        }
 
+        if (tol_dx < 0) {
             tol_dx = bisection_tolr * std::fabs(ub - lb) + bisection_tola;
-
         }
 
         auto Rm = compute_Jbar_residual(m, Je);
 
-        if ((std::fabs(Rm) < tol_R) || (std::fabs(ub - lb) < tol_dx)){
+        if ((std::fabs(Rm) < tol_R) || (std::fabs(ub - lb) < tol_dx)) {
             return m;
-        } else if(sgn(Rlb) == sgn(Rm)){
-            return Jbar_bisection(Je,m,ub,tol_R,tol_dx);
-        } else{
-            return Jbar_bisection(Je,lb,m,tol_R,tol_dx);
+        } else if (sgn(Rlb) == sgn(Rm)) {
+            return Jbar_bisection(Je, m, ub, tol_R, tol_dx);
+        } else {
+            return Jbar_bisection(Je, lb, m, tol_R, tol_dx);
         }
-
     }
 
     /*!
@@ -573,8 +559,7 @@ namespace tardigradeHydra {
      *
      * \param &Je: The net elastic relative volume
      */
-    const floatType CHIPFoamStrainEnergy::Jbar_newton(const floatType &Je){
-
+    const floatType CHIPFoamStrainEnergy::Jbar_newton(const floatType &Je) {
         floatType Jbar = Jbar_bisection(Je, 1 - get_phi0() + 1e-9, std::fmax(Je, 1.0) + 1e-9);
 
         floatType R = compute_Jbar_residual(Jbar, Je);
@@ -585,11 +570,10 @@ namespace tardigradeHydra {
 
         unsigned int niter = 0;
 
-        while ( (Rp > tol) && (niter < newton_maxiter)){
-
+        while ((Rp > tol) && (niter < newton_maxiter)) {
             floatType J = compute_Jbar_dRdJbar(Jbar, Je);
 
-            floatType dx = -R/J;
+            floatType dx = -R / J;
 
             floatType l = 1.0;
 
@@ -597,14 +581,12 @@ namespace tardigradeHydra {
 
             unsigned int lsiter = 0;
 
-            while ((std::fabs(R) > (1 - newton_lsalpha)*Rp ) && (lsiter < newton_maxlsiter)){
-
+            while ((std::fabs(R) > (1 - newton_lsalpha) * Rp) && (lsiter < newton_maxlsiter)) {
                 l *= 0.5;
 
                 R = compute_Jbar_residual(Jbar + l * dx, Je);
 
                 lsiter++;
-
             }
 
             Jbar += l * dx;
@@ -612,14 +594,11 @@ namespace tardigradeHydra {
             Rp = std::fabs(R);
 
             niter++;
-
         }
 
         TARDIGRADE_ERROR_TOOLS_CHECK(Rp <= tol, "The Jbar Newton algorithm did not converge")
 
         return Jbar;
-
     }
- 
 
 }  // namespace tardigradeHydra
