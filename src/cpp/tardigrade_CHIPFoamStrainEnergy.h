@@ -237,6 +237,24 @@ namespace tardigradeHydra {
 
         virtual void setd2PreviousdJbardJe1dPreviousJe2();
 
+        virtual void setWDC(bool isPrevious);
+
+        virtual void setWDC();
+
+        virtual void setPreviousWDC();
+
+        virtual void setWDCDerivatives(bool isPrevious);
+
+        virtual void setWDCDerivatives();
+
+        virtual void setPreviousWDCDerivatives();
+
+        virtual void setWDCHessians(bool isPrevious);
+
+        virtual void setWDCHessians();
+
+        virtual void setPreviousWDCHessians();
+
         //! Check if the class has been initialized
         const bool isInitialized() { return is_initialized; }
 
@@ -312,6 +330,21 @@ namespace tardigradeHydra {
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2dJbardJe1dJe2, floatType, setd2dJbardJe1dJe2);
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousdJbardJe1dPreviousJe2, floatType, setd2PreviousdJbardJe1dPreviousJe2);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, WDC, floatType, setWDC);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousWDC, floatType, setPreviousWDC);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dWDCdD, floatVector, setWDCDerivatives);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousWDCdPreviousD, floatVector,
+                                                  setPreviousWDCDerivatives);
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2WDCdD2, floatVector, setWDCHessians);
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousWDCdPreviousD2, floatVector,
+                                                  setPreviousWDCHessians);
+
 
         //! Whether the class has been initialized or not
         bool is_initialized = false;

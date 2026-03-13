@@ -861,4 +861,255 @@ namespace tardigradeHydra {
      */
     void CHIPFoamStrainEnergy::setd2PreviousdJbardJe1dPreviousJe2(){ setd2dJbardJe1dJe2(true); }
 
+    /*!
+     * Set the value of the modified Danielsson function
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWDC(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto C10 = get_C10();
+
+        const floatType *Je;
+
+        const floatType *Ibar1;
+
+        const floatType *Jbar;
+
+        const floatType *dJbardJe1;
+
+        SetDataStorageBase<floatType> WDC;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Ibar1 = get_previousIbar1();
+
+            Jbar = get_previousJbar();
+
+            dJbardJe1 = get_previousdJbardJe1();
+
+            WDC = get_SetDataStorage_previousWDC();
+
+        }else{
+
+            Je = get_Je();
+
+            Ibar1 = get_Ibar1();
+
+            Jbar = get_Jbar();
+
+            dJbardJe1 = get_dJbardJe1();
+
+            WDC = get_SetDataStorage_WDC();
+
+        }
+
+        auto Jm = compute_Jm(*Jbar, *Je);
+
+        auto f = compute_f(*Jbar);
+
+        *WDC.value = C10 * (Jm * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*dJbardJe1));
+
+    }
+
+    /*!
+     * Set the current value of the modified Danielsson function
+     */
+    void CHIPFoamStrainEnergy::setWDC(){ setWDC(false); }
+
+    /*!
+     * Set the previous value of the modified Danielsson function
+     */
+    void CHIPFoamStrainEnergy::setPreviousWDC(){ setWDC(true); }
+
+    /*!
+     * Set the derivatives of the modified Danielsson function
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWDCDerivatives(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto C10 = get_C10();
+
+        const floatType *Je;
+
+        const floatType *Ibar1;
+
+        const floatType *Jbar;
+
+        const floatType *dJbardJe;
+
+        const floatType *dJbardJe1;
+
+        const floatType *ddJbardJe1dJe;
+
+        SetDataStorageBase<floatVector> dWDCdD;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Ibar1 = get_previousIbar1();
+
+            Jbar = get_previousJbar();
+
+            dJbardJe = get_dPreviousJbardPreviousJe();
+
+            dJbardJe1 = get_previousdJbardJe1();
+
+            ddJbardJe1dJe = get_dPreviousdJbardJe1dPreviousJe();
+
+            dWDCdD = get_SetDataStorage_dPreviousWDCdPreviousD();
+
+        }else{
+
+            Je = get_Je();
+
+            Ibar1 = get_Ibar1();
+
+            Jbar = get_Jbar();
+
+            dJbardJe = get_dJbardJe();
+
+            dJbardJe1 = get_dJbardJe1();
+
+            ddJbardJe1dJe = get_ddJbardJe1dJe();
+
+            dWDCdD = get_SetDataStorage_dWDCdD();
+
+        }
+
+        auto Jm = compute_Jm(*Jbar, *Je);
+
+        auto dJmdJe = compute_dJmdJe(*Jbar, *Je) + compute_dJmdJbar(*Jbar, *Je) * (*dJbardJe);
+
+        auto f = compute_f(*Jbar);
+
+        auto dfdJe = compute_dfdJ(*Jbar) * (*dJbardJe);
+
+        dWDCdD.zero(2);
+
+        (*dWDCdD.value)[0] = C10 * (dJmdJe * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) + Jm * (*Ibar1) * dfdJe - ( (*Ibar1) - 3 )*(1 - phi0) * (*dJbardJe1) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe));
+        (*dWDCdD.value)[1] = C10 * (Jm * f - (*Je) * (1 - phi0) * (*dJbardJe1));
+    }
+
+    /*!
+     * Set the current derivatives of the modified Danielsson function
+     */
+    void CHIPFoamStrainEnergy::setWDCDerivatives(){ setWDCDerivatives(false); }
+
+    /*!
+     * Set the previous derivatives of the modified Danielsson function
+     */
+    void CHIPFoamStrainEnergy::setPreviousWDCDerivatives(){ setWDCDerivatives(true); }
+
+    /*!
+     * Set the Hessians of the modified Danielsson function
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWDCHessians(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto C10 = get_C10();
+
+        const floatType *Je;
+
+        const floatType *Ibar1;
+
+        const floatType *Jbar;
+
+        const floatType *dJbardJe;
+
+        const floatType *d2JbardJe2;
+
+        const floatType *dJbardJe1;
+
+        const floatType *ddJbardJe1dJe;
+
+        const floatType *d2dJbardJe1dJe2;
+
+        SetDataStorageBase<floatVector> d2WDCdD2;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Ibar1 = get_previousIbar1();
+
+            Jbar = get_previousJbar();
+
+            dJbardJe = get_dPreviousJbardPreviousJe();
+
+            d2JbardJe2 = get_d2PreviousJbardPreviousJe2();
+
+            dJbardJe1 = get_previousdJbardJe1();
+
+            ddJbardJe1dJe = get_dPreviousdJbardJe1dPreviousJe();
+
+            d2dJbardJe1dJe2 = get_d2PreviousdJbardJe1dPreviousJe2();
+
+            d2WDCdD2 = get_SetDataStorage_d2PreviousWDCdPreviousD2();
+
+        }else{
+
+            Je = get_Je();
+
+            Ibar1 = get_Ibar1();
+
+            Jbar = get_Jbar();
+
+            dJbardJe = get_dJbardJe();
+
+            d2JbardJe2 = get_d2JbardJe2();
+
+            dJbardJe1 = get_dJbardJe1();
+
+            ddJbardJe1dJe = get_ddJbardJe1dJe();
+
+            d2dJbardJe1dJe2 = get_d2dJbardJe1dJe2();
+
+            d2WDCdD2 = get_SetDataStorage_d2WDCdD2();
+
+        }
+
+        auto Jm = compute_Jm(*Jbar, *Je);
+
+        auto dJmdJe = compute_dJmdJe(*Jbar, *Je) + compute_dJmdJbar(*Jbar, *Je) * (*dJbardJe);
+
+        auto d2JmdJe2 = compute_d2JmdJe2(*Jbar, *Je) + 2 * compute_d2JmdJedJbar(*Jbar, *Je) * (*dJbardJe) + compute_d2JmdJbar2(*Jbar, *Je) * (*dJbardJe) * (*dJbardJe) + compute_dJmdJbar(*Jbar, *Je) * (*d2JbardJe2);
+
+        auto f = compute_f(*Jbar);
+
+        auto dfdJe = compute_dfdJ(*Jbar) * (*dJbardJe);
+
+        auto d2fdJe2 = compute_d2fdJ2(*Jbar) * (*dJbardJe) * (*dJbardJe) + compute_dfdJ(*Jbar) * (*d2JbardJe2);
+
+        d2WDCdD2.zero(4);
+
+        (*d2WDCdD2.value)[0] = C10 * (d2JmdJe2 * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) + dJmdJe * (*Ibar1) * dfdJe + dJmdJe * (*Ibar1) * dfdJe + Jm * (*Ibar1) * d2fdJe2 - ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe) - ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*d2dJbardJe1dJe2));
+//        (*d2WDCdD2.value)[0] = C10 * (dJmdJe * ( (*Ibar1) * f - 3 * ( 1 - phi0 ) ) + Jm * (*Ibar1) * dfdJe - ( (*Ibar1) - 3 )*(1 - phi0) * (*dJbardJe1) - (*Je) * ( (*Ibar1) - 3 )*(1 - phi0) * (*ddJbardJe1dJe));
+        (*d2WDCdD2.value)[1] = C10 * (dJmdJe * f + Jm * dfdJe - (1 - phi0) * (*dJbardJe1) - (*Je) * (1 - phi0) * (*ddJbardJe1dJe));
+        (*d2WDCdD2.value)[2] = (*d2WDCdD2.value)[1];
+        (*d2WDCdD2.value)[3] = 0.;
+
+    }
+
+    /*!
+     * Set the current Hessians of the modified Danielsson function
+     */
+    void CHIPFoamStrainEnergy::setWDCHessians(){ setWDCHessians(false); }
+
+    /*!
+     * Set the previous Hessians of the modified Danielsson function
+     */
+    void CHIPFoamStrainEnergy::setPreviousWDCHessians(){ setWDCHessians(true); }
+
 }  // namespace tardigradeHydra
