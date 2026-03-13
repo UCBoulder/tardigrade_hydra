@@ -5303,3 +5303,563 @@ BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setWM_derivatives, *boost::unit_t
     }
 
 }
+
+BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setStrainEnergy, *boost::unit_test::tolerance(1e-6)) {
+    class CHIPFoamStrainEnergyMock : public tardigradeHydra::CHIPFoamStrainEnergy {
+       public:
+        using tardigradeHydra::CHIPFoamStrainEnergy::CHIPFoamStrainEnergy;
+
+        tardigradeHydra::floatType WLB = 1.0;
+
+        tardigradeHydra::floatType WDC = 2.0;
+
+        tardigradeHydra::floatType WM  = 3.0;
+
+        tardigradeHydra::floatType WG  = 4.0;
+
+        tardigradeHydra::floatType previousWLB = .1;
+
+        tardigradeHydra::floatType previousWDC = .2;
+
+        tardigradeHydra::floatType previousWM  = .3;
+
+        tardigradeHydra::floatType previousWG  = .4;
+
+       protected:
+        virtual void setWLB(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousWLB();
+                *v.value = previousWLB;
+
+            } else {
+                auto v   = get_SetDataStorage_WLB();
+                *v.value = WLB;
+            }
+        }
+
+        virtual void setWDC(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousWDC();
+                *v.value = previousWDC;
+
+            } else {
+                auto v   = get_SetDataStorage_WDC();
+                *v.value = WDC;
+            }
+        }
+
+        virtual void setWM(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousWM();
+                *v.value = previousWM;
+
+            } else {
+                auto v   = get_SetDataStorage_WM();
+                *v.value = WM;
+            }
+        }
+
+        virtual void setWG(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousWG();
+                *v.value = previousWG;
+
+            } else {
+                auto v   = get_SetDataStorage_WG();
+                *v.value = WG;
+            }
+        }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+       public:
+        CHIPFoamStrainEnergyMock elasticity;
+
+        tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
+
+        unsigned int elasticitySize = 9;
+
+        using tardigradeHydra::hydraBase::hydraBase;
+
+        using tardigradeHydra::hydraBase::setResidualClasses;
+
+        virtual void setResidualClasses() {
+            elasticity = CHIPFoamStrainEnergyMock(this, elasticitySize, *getParameters());
+
+            remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>(this, 9);
+
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
+
+            residuals[0] = &elasticity;
+
+            residuals[1] = &remainder;
+
+            setResidualClasses(residuals);
+        }
+    };
+
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
+                                                           0.01110235, 0.02224434, -0.01770411, -0.01382113};
+
+    tardigradeHydra::floatVector parameters = {60., 100.0, 0.94, 50., 0.7, 1e3, 1.2, 1.4};
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatType answer = 10.;
+
+    tardigradeHydra::floatType previousAnswer = 1.0;
+
+    CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
+
+    BOOST_TEST(answer == *R.get_strainEnergy());
+
+    BOOST_TEST(previousAnswer == *R.get_previousStrainEnergy());
+
+}
+
+BOOST_AUTO_TEST_CASE(test_CHIPFoamStrainEnergy_setStrainEnergy_derivatives, *boost::unit_test::tolerance(1e-6)) {
+    class CHIPFoamStrainEnergyMock : public tardigradeHydra::CHIPFoamStrainEnergy {
+       public:
+        using tardigradeHydra::CHIPFoamStrainEnergy::CHIPFoamStrainEnergy;
+
+        tardigradeHydra::floatVector Fe = { 0.9, 0.1, 0.2, 0.1, 0.8, 0.1, 0.2, 0.3, 0.7 };
+
+        tardigradeHydra::floatVector previousFe = { 0.95, 0.12, 0.2, 0.1, 0.87, 0.1, 0.1, 0.3, 0.77 };
+
+       protected:
+        virtual void setFe(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousFe();
+                *v.value = previousFe;
+
+            } else {
+                auto v   = get_SetDataStorage_Fe();
+                *v.value = Fe;
+            }
+        }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+       public:
+        CHIPFoamStrainEnergyMock elasticity;
+
+        tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
+
+        unsigned int elasticitySize = 9;
+
+        using tardigradeHydra::hydraBase::hydraBase;
+
+        using tardigradeHydra::hydraBase::setResidualClasses;
+
+        virtual void setResidualClasses() {
+            elasticity = CHIPFoamStrainEnergyMock(this, elasticitySize, *getParameters());
+
+            remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>(this, 9);
+
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
+
+            residuals[0] = &elasticity;
+
+            residuals[1] = &remainder;
+
+            setResidualClasses(residuals);
+        }
+    };
+
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
+                                                           0.01110235, 0.02224434, -0.01770411, -0.01382113};
+
+    tardigradeHydra::floatVector parameters = {60., 100.0, 0.94, 50., 0.7, 1e3, 1.2, 1.4};
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    CHIPFoamStrainEnergyMock R(&hydra, 9, parameters);
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 1;
+        std::vector<double> x = R.Fe;
+        std::vector<double> jacobian_answer(OUT_SIZE * VAR_SIZE,0);
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+
+            hydraBaseMock hydrap(dofp, model_configurationp);
+            hydraBaseMock hydram(dofm, model_configurationm);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            CHIPFoamStrainEnergyMock Rp(&hydrap, 9, parameters);
+            CHIPFoamStrainEnergyMock Rm(&hydram, 9, parameters);
+
+            Rp.Fe = xp;
+            Rm.Fe = xm;
+
+            auto rp = *Rp.get_strainEnergy();
+            auto rm = *Rm.get_strainEnergy();
+
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                jacobian_answer[VAR_SIZE * j + i] = (rp - rm) / (2 * delta);
+            }
+
+        }
+
+        BOOST_TEST(jacobian_answer == *R.get_dStrainEnergydFe(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 9;
+        std::vector<double> x = R.Fe;
+        std::vector<double> jacobian_answer(OUT_SIZE * VAR_SIZE,0);
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+
+            hydraBaseMock hydrap(dofp, model_configurationp);
+            hydraBaseMock hydram(dofm, model_configurationm);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            CHIPFoamStrainEnergyMock Rp(&hydrap, 9, parameters);
+            CHIPFoamStrainEnergyMock Rm(&hydram, 9, parameters);
+
+            Rp.Fe = xp;
+            Rm.Fe = xm;
+
+            auto rp = *Rp.get_dStrainEnergydFe();
+            auto rm = *Rm.get_dStrainEnergydFe();
+
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                jacobian_answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
+            }
+
+        }
+
+        BOOST_TEST(jacobian_answer == *R.get_d2StrainEnergydFe2(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int VAR_SIZE = 1;
+        constexpr unsigned int OUT_SIZE = 9;
+        std::vector<double> x = {temperature};
+        std::vector<double> jacobian_answer(OUT_SIZE * VAR_SIZE,0);
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, xp[i], previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, xm[i], previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+
+            hydraBaseMock hydrap(dofp, model_configurationp);
+            hydraBaseMock hydram(dofm, model_configurationm);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            CHIPFoamStrainEnergyMock Rp(&hydrap, 9, parameters);
+            CHIPFoamStrainEnergyMock Rm(&hydram, 9, parameters);
+
+            auto rp = *Rp.get_dStrainEnergydFe();
+            auto rm = *Rm.get_dStrainEnergydFe();
+
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                jacobian_answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
+            }
+
+        }
+
+        BOOST_TEST(jacobian_answer == *R.get_d2StrainEnergydFedT(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 1;
+        std::vector<double> x = R.previousFe;
+        std::vector<double> jacobian_answer(OUT_SIZE * VAR_SIZE,0);
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+
+            hydraBaseMock hydrap(dofp, model_configurationp);
+            hydraBaseMock hydram(dofm, model_configurationm);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            CHIPFoamStrainEnergyMock Rp(&hydrap, 9, parameters);
+            CHIPFoamStrainEnergyMock Rm(&hydram, 9, parameters);
+
+            Rp.previousFe = xp;
+            Rm.previousFe = xm;
+
+            auto rp = *Rp.get_previousStrainEnergy();
+            auto rm = *Rm.get_previousStrainEnergy();
+
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                jacobian_answer[VAR_SIZE * j + i] = (rp - rm) / (2 * delta);
+            }
+
+        }
+
+        BOOST_TEST(jacobian_answer == *R.get_dPreviousStrainEnergydPreviousFe(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 9;
+        std::vector<double> x = R.previousFe;
+        std::vector<double> jacobian_answer(OUT_SIZE * VAR_SIZE,0);
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+
+            hydraBaseMock hydrap(dofp, model_configurationp);
+            hydraBaseMock hydram(dofm, model_configurationm);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            CHIPFoamStrainEnergyMock Rp(&hydrap, 9, parameters);
+            CHIPFoamStrainEnergyMock Rm(&hydram, 9, parameters);
+
+            Rp.previousFe = xp;
+            Rm.previousFe = xm;
+
+            auto rp = *Rp.get_dPreviousStrainEnergydPreviousFe();
+            auto rm = *Rm.get_dPreviousStrainEnergydPreviousFe();
+
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                jacobian_answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
+            }
+
+        }
+
+        BOOST_TEST(jacobian_answer == *R.get_d2PreviousStrainEnergydPreviousFe2(), CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int VAR_SIZE = 1;
+        constexpr unsigned int OUT_SIZE = 9;
+        std::vector<double> x = {previousTemperature};
+        std::vector<double> jacobian_answer(OUT_SIZE * VAR_SIZE,0);
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            tardigradeHydra::DOFStorageBase dofp(time, deltaTime, temperature, xp[i], deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+            tardigradeHydra::DOFStorageBase dofm(time, deltaTime, temperature, xm[i], deformationGradient,
+                                                 previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+            tardigradeHydra::ModelConfigurationBase model_configurationp(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+            tardigradeHydra::ModelConfigurationBase model_configurationm(previousStateVariables, parameters,
+                                                                         numConfigurations,
+                                                                         numNonLinearSolveStateVariables);
+
+            hydraBaseMock hydrap(dofp, model_configurationp);
+            hydraBaseMock hydram(dofm, model_configurationm);
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            CHIPFoamStrainEnergyMock Rp(&hydrap, 9, parameters);
+            CHIPFoamStrainEnergyMock Rm(&hydram, 9, parameters);
+
+            auto rp = *Rp.get_dPreviousStrainEnergydPreviousFe();
+            auto rm = *Rm.get_dPreviousStrainEnergydPreviousFe();
+
+            for (unsigned int j = 0; j < OUT_SIZE; ++j) {
+                jacobian_answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
+            }
+
+        }
+
+        BOOST_TEST(jacobian_answer == *R.get_d2PreviousStrainEnergydPreviousFedPreviousT(), CHECK_PER_ELEMENT);
+
+    }
+}

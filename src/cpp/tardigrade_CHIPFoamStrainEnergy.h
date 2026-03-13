@@ -294,6 +294,12 @@ namespace tardigradeHydra {
 
         virtual void setPreviousWMHessians();
 
+        virtual void setStrainEnergy(const bool isPrevious) override;
+
+        virtual void setStrainEnergyJacobians(const bool isPrevious) override;
+
+        virtual void setStrainEnergyHessians(const bool isPrevious) override;
+
         //! Check if the class has been initialized
         const bool isInitialized() { return is_initialized; }
 

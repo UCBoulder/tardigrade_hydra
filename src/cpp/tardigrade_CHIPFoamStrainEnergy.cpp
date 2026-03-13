@@ -1506,4 +1506,242 @@ namespace tardigradeHydra {
      * Set the previous Hessians of the parent material energy
      */
     void CHIPFoamStrainEnergy::setPreviousWMHessians(){ setWMHessians(true); }
+
+    /*!
+     * Set the value of the strain energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setStrainEnergy(const bool isPrevious){
+
+        const floatType *WLB;
+
+        const floatType *WDC;
+
+        const floatType *WM;
+
+        const floatType *WG;
+
+        SetDataStorageBase<floatType> strainEnergy;
+
+        if (isPrevious){
+
+            WLB = get_previousWLB();
+
+            WDC = get_previousWDC();
+
+            WM = get_previousWM();
+
+            WG = get_previousWG();
+
+            strainEnergy = get_SetDataStorage_previousStrainEnergy();
+
+        }
+        else{
+
+            WLB = get_WLB();
+
+            WDC = get_WDC();
+
+            WM = get_WM();
+
+            WG = get_WG();
+
+            strainEnergy = get_SetDataStorage_strainEnergy();
+
+        }
+
+        *strainEnergy.value = (*WLB) + (*WDC) + (*WM) + (*WG);
+
+    }
+
+    /*!
+     * Set the derivatives of the strain energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setStrainEnergyJacobians(const bool isPrevious){
+
+        constexpr unsigned int dim = 3;
+
+        const floatVector *dWLBdD;
+
+        const floatVector *dWDCdD;
+
+        const floatVector *dWMdD;
+
+        const floatVector *dWGdD;
+
+        const floatVector *dJedFe;
+
+        const floatVector *dIbar1dFe;
+
+        SetDataStorageBase<floatVector> dStrainEnergydFe;
+
+        if (isPrevious){
+
+            dJedFe = get_dPreviousJedPreviousFe();
+
+            dIbar1dFe = get_dPreviousIbar1dPreviousFe();
+
+            dWLBdD = get_dPreviousWLBdPreviousD();
+                                  
+            dWDCdD = get_dPreviousWDCdPreviousD();
+
+            dWMdD = get_dPreviousWMdPreviousD();
+
+            dWGdD = get_dPreviousWGdPreviousD();
+
+            dStrainEnergydFe = get_SetDataStorage_dPreviousStrainEnergydPreviousFe();
+
+        }
+        else{
+
+            dJedFe = get_dJedFe();
+
+            dIbar1dFe = get_dIbar1dFe();
+
+            dWLBdD = get_dWLBdD();
+
+            dWDCdD = get_dWDCdD();
+
+            dWMdD = get_dWMdD();
+
+            dWGdD = get_dWGdD();
+
+            dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
+
+        }
+
+        dStrainEnergydFe.zero(dim*dim);
+
+        for ( unsigned int iI = 0; iI < dim * dim; ++iI ){
+
+            (*dStrainEnergydFe.value)[iI] += ((*dWLBdD)[0] + (*dWDCdD)[0] + (*dWMdD)[0] + (*dWGdD)[0]) * (*dJedFe)[iI];
+            (*dStrainEnergydFe.value)[iI] += ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) * (*dIbar1dFe)[iI];
+
+        }
+
+    }
+
+    /*!
+     * Set the Hessians of the strain energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setStrainEnergyHessians(const bool isPrevious){
+
+        constexpr unsigned int dim = 3;
+
+        const floatVector *dWLBdD;
+
+        const floatVector *dWDCdD;
+
+        const floatVector *dWMdD;
+
+        const floatVector *dWGdD;
+
+        const floatVector *dJedFe;
+
+        const floatVector *dIbar1dFe;
+
+        const floatVector *d2WLBdD2;
+
+        const floatVector *d2WDCdD2;
+
+        const floatVector *d2WMdD2;
+
+        const floatVector *d2WGdD2;
+
+        const floatVector *d2JedFe2;
+
+        const floatVector *d2Ibar1dFe2;
+
+        SetDataStorageBase<floatVector> d2StrainEnergydFe2;
+
+        SetDataStorageBase<floatVector> d2StrainEnergydFedT;
+
+        if (isPrevious){
+
+            dJedFe = get_dPreviousJedPreviousFe();
+
+            dIbar1dFe = get_dPreviousIbar1dPreviousFe();
+
+            dWLBdD = get_dPreviousWLBdPreviousD();
+                                  
+            dWDCdD = get_dPreviousWDCdPreviousD();
+
+            dWMdD = get_dPreviousWMdPreviousD();
+
+            dWGdD = get_dPreviousWGdPreviousD();
+
+            d2JedFe2 = get_d2PreviousJedPreviousFe2();
+
+            d2Ibar1dFe2 = get_d2PreviousIbar1dPreviousFe2();
+
+            d2WLBdD2 = get_d2PreviousWLBdPreviousD2();
+
+            d2WDCdD2 = get_d2PreviousWDCdPreviousD2();
+
+            d2WMdD2 = get_d2PreviousWMdPreviousD2();
+
+            d2WGdD2 = get_d2PreviousWGdPreviousD2();
+
+            d2StrainEnergydFe2 = get_SetDataStorage_d2PreviousStrainEnergydPreviousFe2();
+
+            d2StrainEnergydFedT = get_SetDataStorage_d2PreviousStrainEnergydPreviousFedPreviousT();
+
+        }
+        else{
+
+            dJedFe = get_dJedFe();
+
+            dIbar1dFe = get_dIbar1dFe();
+
+            dWLBdD = get_dWLBdD();
+
+            dWDCdD = get_dWDCdD();
+
+            dWMdD = get_dWMdD();
+
+            dWGdD = get_dWGdD();
+
+            d2JedFe2 = get_d2JedFe2();
+
+            d2Ibar1dFe2 = get_d2Ibar1dFe2();
+
+            d2WLBdD2 = get_d2WLBdD2();
+
+            d2WDCdD2 = get_d2WDCdD2();
+
+            d2WMdD2 = get_d2WMdD2();
+
+            d2WGdD2 = get_d2WGdD2();
+
+            d2StrainEnergydFe2 = get_SetDataStorage_d2StrainEnergydFe2();
+
+            d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
+
+        }
+
+        d2StrainEnergydFe2.zero(dim*dim*dim*dim);
+        d2StrainEnergydFedT.zero(dim*dim);
+
+        for ( unsigned int iI = 0; iI < dim * dim; ++iI ){
+
+            for ( unsigned int aA = 0; aA < dim * dim; ++aA ){
+
+                (*d2StrainEnergydFe2.value)[dim * dim * iI + aA] += ((*d2WLBdD2)[0] + (*d2WDCdD2)[0] + (*d2WMdD2)[0] + (*d2WGdD2)[0]) * (*dJedFe)[iI] * (*dJedFe)[aA]
+                                                                  + ((*d2WLBdD2)[1] + (*d2WDCdD2)[1] + (*d2WMdD2)[1] + (*d2WGdD2)[1]) * (*dJedFe)[iI] * (*dIbar1dFe)[aA]
+                                                                  + ((*d2WLBdD2)[2] + (*d2WDCdD2)[2] + (*d2WMdD2)[2] + (*d2WGdD2)[2]) * (*dIbar1dFe)[iI] * (*dJedFe)[aA]
+                                                                  + ((*d2WLBdD2)[3] + (*d2WDCdD2)[3] + (*d2WMdD2)[3] + (*d2WGdD2)[3]) * (*dIbar1dFe)[iI] * (*dIbar1dFe)[aA]
+                                                                  + ((*dWLBdD)[0] + (*dWDCdD)[0] + (*dWMdD)[0] + (*dWGdD)[0]) * (*d2JedFe2)[dim * dim * iI + aA]
+                                                                  + ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) * (*d2Ibar1dFe2)[dim * dim * iI + aA];
+
+            }
+
+        }
+
+    }
+
 }  // namespace tardigradeHydra
