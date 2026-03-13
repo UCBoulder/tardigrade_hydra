@@ -69,6 +69,8 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_SequentialQuadraticProgrammingStep"
     "tardigrade_LevenbergMarquardtStep"
     "tardigrade_DeformationBase"
+    "tardigrade_HyperelasticBase"
+    "tardigrade_CHIPFoamStrainEnergy"
 )
 set(ADDITIONAL_HEADER_ONLY_LIBRARIES
     "tardigrade_DeformationDecompositionBase"
@@ -170,9 +172,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Set the c++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Woverloaded-virtual")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -DNDEBUG -ggdb")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ggdb")
 endif()
 
 # Enable CTest

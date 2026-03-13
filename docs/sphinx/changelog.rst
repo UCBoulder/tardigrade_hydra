@@ -6,7 +6,20 @@ Changelog
 #########
 
 ******************
-0.8.0 (unreleased)
+0.8.1 (unreleased)
+******************
+
+New Features
+============
+- Added hyperelastic material base (:pull:`263`). By `Nathan Miller`_.
+- Added CHIPFoam strain-energy potential (:pull:`264`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.8.1 (:pull:`265`). By `Nathan Miller`_.
+
+******************
+0.8.0 (02-17-2026)
 ******************
 
 New Features
@@ -32,6 +45,10 @@ Breaking Changes
 - Moved gradientMicroDeformation and previousGradientMicroDeformation to the dof storage class (:pull:`259`). By `Nathan Miller`_.
 - Moved additionalDOF and previousAdditionalDOF to the dof storage class (:pull:`260`). By `Nathan Miller`_.
 - Moved model configuration inputs to the ModelConfigurationBase class (:pull:`261`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.8.0 (:pull:`262`). By `Nathan Miller`_.
 
 ******************
 0.7.1 (02-03-2026)

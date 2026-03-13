@@ -1239,8 +1239,8 @@ namespace tardigradeHydra {
 
         // Form the map for dXdF
         _flatdXdAdditionalDOF.second = floatVector(getNumUnknowns() * getAdditionalDOF()->size(), 0);
-        auto dXdAdditionalDOF        = tardigradeHydra::getDynamicSizeMatrixMap(_flatdXdAdditionalDOF.second.data(),
-                                                                                getNumUnknowns(), getAdditionalDOF()->size());
+        auto dXdAdditionalDOF = tardigradeHydra::getDynamicSizeMatrixMap(_flatdXdAdditionalDOF.second.data(),
+                                                                         getNumUnknowns(), getAdditionalDOF()->size());
 
         // Solve
         tardigradeVectorTools::solverType<floatType> linear_solver(P_Amat);
