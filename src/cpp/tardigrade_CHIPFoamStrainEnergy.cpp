@@ -1327,4 +1327,183 @@ namespace tardigradeHydra {
      */
     void CHIPFoamStrainEnergy::setPreviousWGHessians(){ setWGHessians(true); }
 
+    /*!
+     * Set the value of the parent material energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWM(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto K = get_K();
+
+        const floatType *Je;
+
+        const floatType *Jbar;
+
+        SetDataStorageBase<floatType> WM;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Jbar = get_previousJbar();
+
+            WM = get_SetDataStorage_previousWM();
+
+        }else{
+
+            Je = get_Je();
+
+            Jbar = get_Jbar();
+
+            WM = get_SetDataStorage_WM();
+
+        }
+
+        auto Jm = (*Je) / (*Jbar);
+
+        *WM.value = (1 - phi0) * K * ( Jm * std::log(Jm) - Jm + 1);
+
+    }
+
+    /*!
+     * Set the current value of the parent material energy
+     */
+    void CHIPFoamStrainEnergy::setWM(){ setWM(false); }
+
+    /*!
+     * Set the previous value of the parent material energy
+     */
+    void CHIPFoamStrainEnergy::setPreviousWM(){ setWM(true); }
+
+    /*!
+     * Set the derivatives of the parent energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWMDerivatives(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto K = get_K();
+
+        const floatType *Je;
+
+        const floatType *Jbar;
+
+        const floatType *dJbardJe;
+
+        SetDataStorageBase<floatVector> dWMdD;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Jbar = get_previousJbar();
+
+            dJbardJe = get_dPreviousJbardPreviousJe();
+
+            dWMdD = get_SetDataStorage_dPreviousWMdPreviousD();
+
+        }else{
+
+            Je = get_Je();
+
+            Jbar = get_Jbar();
+
+            dJbardJe = get_dJbardJe();
+
+            dWMdD = get_SetDataStorage_dWMdD();
+
+        }
+
+        auto Jm = (*Je) / (*Jbar);
+
+        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar)*(*Jbar)) * (*dJbardJe);
+
+        dWMdD.zero(2);
+
+        (*dWMdD.value)[0] = (1 - phi0) * K * std::log(Jm) * dJmdJe;
+
+    }
+
+    /*!
+     * Set the current derivatives of the parent material energy
+     */
+    void CHIPFoamStrainEnergy::setWMDerivatives(){ setWMDerivatives(false); }
+
+    /*!
+     * Set the previous derivatives of the parent material energy
+     */
+    void CHIPFoamStrainEnergy::setPreviousWMDerivatives(){ setWMDerivatives(true); }
+
+    /*!
+     * Set the Hessians of the parent energy
+     *
+     * \param isPrevious: Whether to set the current (false) or previous (true) value
+     */
+    void CHIPFoamStrainEnergy::setWMHessians(bool isPrevious){
+
+        auto phi0 = get_phi0();
+
+        auto K = get_K();
+
+        const floatType *Je;
+
+        const floatType *Jbar;
+
+        const floatType *dJbardJe;
+
+        const floatType *d2JbardJe2;
+
+        SetDataStorageBase<floatVector> d2WMdD2;
+
+        if(isPrevious){
+
+            Je = get_previousJe();
+
+            Jbar = get_previousJbar();
+
+            dJbardJe = get_dPreviousJbardPreviousJe();
+
+            d2JbardJe2 = get_d2PreviousJbardPreviousJe2();
+
+            d2WMdD2 = get_SetDataStorage_d2PreviousWMdPreviousD2();
+
+        }else{
+
+            Je = get_Je();
+
+            Jbar = get_Jbar();
+
+            dJbardJe = get_dJbardJe();
+
+            d2JbardJe2 = get_d2JbardJe2();
+
+            d2WMdD2 = get_SetDataStorage_d2WMdD2();
+
+        }
+
+        auto Jm = (*Je) / (*Jbar);
+
+        auto dJmdJe = 1. / (*Jbar) - (*Je) / ((*Jbar)*(*Jbar)) * (*dJbardJe);
+
+        auto d2JmdJe2 = -(*dJbardJe) / ((*Jbar)*(*Jbar)) - (*dJbardJe) / ((*Jbar)*(*Jbar)) + 2 * (*Je) / ((*Jbar)*(*Jbar)*(*Jbar)) * (*dJbardJe) * (*dJbardJe) - (*Je) / ((*Jbar)*(*Jbar)) * (*d2JbardJe2);
+
+        d2WMdD2.zero(4);
+
+        (*d2WMdD2.value)[0] = (1 - phi0) * K * dJmdJe * dJmdJe / Jm + (1 - phi0) * K * std::log(Jm) * d2JmdJe2;
+    }
+
+    /*!
+     * Set the current Hessians of the parent material energy
+     */
+    void CHIPFoamStrainEnergy::setWMHessians(){ setWMHessians(false); }
+
+    /*!
+     * Set the previous Hessians of the parent material energy
+     */
+    void CHIPFoamStrainEnergy::setPreviousWMHessians(){ setWMHessians(true); }
 }  // namespace tardigradeHydra
