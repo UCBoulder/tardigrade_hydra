@@ -20,7 +20,6 @@ namespace tardigradeHydra {
          * \param &referenceTemperature: The reference temperature
          */
         void residual::setReferenceTemperature(const floatType &referenceTemperature) {
-
             _referenceTemperature = referenceTemperature;
         }
 
@@ -31,7 +30,6 @@ namespace tardigradeHydra {
          *     ex. for 3D [ c11, c12, c13, c21, c22, c23, c31, c32, c33 ]
          */
         void residual::setLinearParameters(const floatVector &linearParameters) {
-
             _linearParameters = linearParameters;
         }
 
@@ -42,7 +40,6 @@ namespace tardigradeHydra {
          *     format ex. for 3D [ c11, c12, c13, c21, c22, c23, c31, c32, c33 ]
          */
         void residual::setQuadraticParameters(const floatVector &quadraticParameters) {
-
             _quadraticParameters = quadraticParameters;
         }
 
@@ -52,7 +49,6 @@ namespace tardigradeHydra {
          * \f$ E^{\theta}_{IJ} = \frac{1}{2} \left( F_{iI}^{\theta} F_{iJ}^{\theta} - \delta_{IJ} \right) \f$
          */
         void residual::setThermalGreenLagrangeStrain() {
-
             auto thermalGreenLagrangeStrain = get_SetDataStorage_thermalGreenLagrangeStrain();
 
             auto dThermalGreenLagrangeStraindT = get_SetDataStorage_dThermalGreenLagrangeStraindT();
@@ -66,7 +62,6 @@ namespace tardigradeHydra {
          * Set the thermal deformation gradient
          */
         void residual::setThermalDeformationGradient() {
-
             constexpr unsigned int dim = 3;
 
             constexpr unsigned int sot_dim = dim * dim;
@@ -121,18 +116,12 @@ namespace tardigradeHydra {
         /*!
          * Set the derivative of the thermal Green-Lagrange strain w.r.t. the temperature
          */
-        void residual::setdThermalGreenLagrangeStraindT() {
-
-            setThermalGreenLagrangeStrain();
-        }
+        void residual::setdThermalGreenLagrangeStraindT() { setThermalGreenLagrangeStrain(); }
 
         /*!
          * Set the derivative of the thermal deformation gradient w.r.t. the temperature
          */
-        void residual::setdThermalDeformationGradientdT() {
-
-            setThermalDeformationGradient();
-        }
+        void residual::setdThermalDeformationGradientdT() { setThermalDeformationGradient(); }
 
         /*!
          * Set the value of the residual
@@ -141,7 +130,6 @@ namespace tardigradeHydra {
          * configurations.
          */
         void residual::setResidual() {
-
             const unsigned int thermalConfigurationIndex = getThermalConfigurationIndex();
 
             auto residual = get_SetDataStorage_residual();
@@ -155,7 +143,6 @@ namespace tardigradeHydra {
          * Set the values of the jacobian
          */
         void residual::setJacobian() {
-
             const unsigned int sot_dim = hydra->getSOTDimension();
 
             const unsigned int num_unknowns = hydra->getNumUnknowns();
@@ -172,7 +159,6 @@ namespace tardigradeHydra {
          * Set the derivative of the residual w.r.t. the temperature
          */
         void residual::setdRdT() {
-
             auto dRdT   = get_SetDataStorage_dRdT();
             *dRdT.value = *get_dThermalDeformationGradientdT();
         }
@@ -181,7 +167,6 @@ namespace tardigradeHydra {
          * Set the derivative of the residual w.r.t. the deformation gradient
          */
         void residual::setdRdF() {
-
             auto dRdF = get_SetDataStorage_dRdF();
             dRdF.zero(getNumEquations() * hydra->getDeformationGradient()->size());
         }
@@ -195,7 +180,6 @@ namespace tardigradeHydra {
          *     tardigradeConstitutiveTools::quadraticThermalExpansion.
          */
         void residual::decomposeParameters(const floatVector &parameters) {
-
             const unsigned int dim = hydra->getDimension();
 
             const unsigned int sot_dim = hydra->getSOTDimension();
@@ -245,7 +229,6 @@ namespace tardigradeHydra {
          * \param &parameterization_info: The incoming string
          */
         void residual::addParameterizationInfo(std::string &parameterization_info) {
-
             std::stringstream ss;
             ss.precision(9);
             ss << std::scientific;
@@ -302,7 +285,6 @@ namespace tardigradeHydra {
          * \param &values: The values to suggest
          */
         void residual::suggestInitialIterateValues(std::vector<unsigned int> &indices, std::vector<floatType> &values) {
-
             const unsigned int sot_dim = hydra->getSOTDimension();
 
             const unsigned int configuration = getThermalConfigurationIndex();

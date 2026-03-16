@@ -1219,7 +1219,8 @@ BOOST_AUTO_TEST_CASE(test_residual_suggestInitialIterateValues, *boost::unit_tes
 
         floatVector elasticityParameters = {123.4, 56.7};
 
-        floatVector thermalExpansionParameters = {293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 1e-9, 2e-9, 3e-9, 4e-9, 5e-9, 6e-9};
+        floatVector thermalExpansionParameters = {293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5,
+                                                  1e-9,   2e-9, 3e-9, 4e-9, 5e-9, 6e-9};
 
         tardigradeHydra::linearElasticity::residual elasticity;
 
