@@ -14,44 +14,44 @@ namespace tardigradeHydra {
 
     namespace thermalExpansion {
 
+        /*!
+         * Set the reference temperature\n";
+         *
+         * \param &referenceTemperature: The reference temperature
+         */
         void residual::setReferenceTemperature(const floatType &referenceTemperature) {
-            /*!
-             * Set the reference temperature\n";
-             *
-             * \param &referenceTemperature: The reference temperature
-             */
 
             _referenceTemperature = referenceTemperature;
         }
 
+        /*!
+         * Set the linear thermal expansion coefficients
+         *
+         * \param &linearParameters: The expanded linear parameters in row-major format
+         *     ex. for 3D [ c11, c12, c13, c21, c22, c23, c31, c32, c33 ]
+         */
         void residual::setLinearParameters(const floatVector &linearParameters) {
-            /*!
-             * Set the linear thermal expansion coefficients
-             *
-             * \param &linearParameters: The expanded linear parameters in row-major format
-             *     ex. for 3D [ c11, c12, c13, c21, c22, c23, c31, c32, c33 ]
-             */
 
             _linearParameters = linearParameters;
         }
 
+        /*!
+         * Set the quadratic thermal expansion coefficients
+         *
+         * \param &quadraticParameters: The expanded quadratic parameters in row-major
+         *     format ex. for 3D [ c11, c12, c13, c21, c22, c23, c31, c32, c33 ]
+         */
         void residual::setQuadraticParameters(const floatVector &quadraticParameters) {
-            /*!
-             * Set the quadratic thermal expansion coefficients
-             *
-             * \param &quadraticParameters: The expanded quadratic parameters in row-major
-             *     format ex. for 3D [ c11, c12, c13, c21, c22, c23, c31, c32, c33 ]
-             */
 
             _quadraticParameters = quadraticParameters;
         }
 
+        /*!
+         * Set the thermal Green-Lagrange strain defined as
+         *
+         * \f$ E^{\theta}_{IJ} = \frac{1}{2} \left( F_{iI}^{\theta} F_{iJ}^{\theta} - \delta_{IJ} \right) \f$
+         */
         void residual::setThermalGreenLagrangeStrain() {
-            /*!
-             * Set the thermal Green-Lagrange strain defined as
-             *
-             * \f$ E^{\theta}_{IJ} = \frac{1}{2} \left( F_{iI}^{\theta} F_{iJ}^{\theta} - \delta_{IJ} \right) \f$
-             */
 
             auto thermalGreenLagrangeStrain = get_SetDataStorage_thermalGreenLagrangeStrain();
 
@@ -62,10 +62,10 @@ namespace tardigradeHydra {
                 *thermalGreenLagrangeStrain.value, *dThermalGreenLagrangeStraindT.value));
         }
 
+        /*!
+         * Set the thermal deformation gradient
+         */
         void residual::setThermalDeformationGradient() {
-            /*!
-             * Set the thermal deformation gradient
-             */
 
             constexpr unsigned int dim = 3;
 
@@ -118,29 +118,29 @@ namespace tardigradeHydra {
                 (map_dThermalDeformationGradientdGreenLagrangeStrain * map_dThermalGreenLagrangeStraindT).eval();
         }
 
+        /*!
+         * Set the derivative of the thermal Green-Lagrange strain w.r.t. the temperature
+         */
         void residual::setdThermalGreenLagrangeStraindT() {
-            /*!
-             * Set the derivative of the thermal Green-Lagrange strain w.r.t. the temperature
-             */
 
             setThermalGreenLagrangeStrain();
         }
 
+        /*!
+         * Set the derivative of the thermal deformation gradient w.r.t. the temperature
+         */
         void residual::setdThermalDeformationGradientdT() {
-            /*!
-             * Set the derivative of the thermal deformation gradient w.r.t. the temperature
-             */
 
             setThermalDeformationGradient();
         }
 
+        /*!
+         * Set the value of the residual
+         *
+         * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's
+         * configurations.
+         */
         void residual::setResidual() {
-            /*!
-             * Set the value of the residual
-             *
-             * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's
-             * configurations.
-             */
 
             const unsigned int thermalConfigurationIndex = getThermalConfigurationIndex();
 
@@ -151,10 +151,10 @@ namespace tardigradeHydra {
                             hydra->deformation->get_configurations()->begin() + (thermalConfigurationIndex + 1) * 9);
         }
 
+        /*!
+         * Set the values of the jacobian
+         */
         void residual::setJacobian() {
-            /*!
-             * Set the values of the jacobian
-             */
 
             const unsigned int sot_dim = hydra->getSOTDimension();
 
@@ -168,33 +168,33 @@ namespace tardigradeHydra {
             }
         }
 
+        /*!
+         * Set the derivative of the residual w.r.t. the temperature
+         */
         void residual::setdRdT() {
-            /*!
-             * Set the derivative of the residual w.r.t. the temperature
-             */
 
             auto dRdT   = get_SetDataStorage_dRdT();
             *dRdT.value = *get_dThermalDeformationGradientdT();
         }
 
+        /*!
+         * Set the derivative of the residual w.r.t. the deformation gradient
+         */
         void residual::setdRdF() {
-            /*!
-             * Set the derivative of the residual w.r.t. the deformation gradient
-             */
 
             auto dRdF = get_SetDataStorage_dRdF();
             dRdF.zero(getNumEquations() * hydra->getDeformationGradient()->size());
         }
 
+        /*!
+         * Decompose the parameter vector
+         *
+         * \param &parameters: The parameter vector. Assumed to be
+         *     of the form ( referenceTemperature, linearParameters, quadraticParameters )
+         *     where the parameters are defined as in
+         *     tardigradeConstitutiveTools::quadraticThermalExpansion.
+         */
         void residual::decomposeParameters(const floatVector &parameters) {
-            /*!
-             * Decompose the parameter vector
-             *
-             * \param &parameters: The parameter vector. Assumed to be
-             *     of the form ( referenceTemperature, linearParameters, quadraticParameters )
-             *     where the parameters are defined as in
-             *     tardigradeConstitutiveTools::quadraticThermalExpansion.
-             */
 
             const unsigned int dim = hydra->getDimension();
 
@@ -239,12 +239,12 @@ namespace tardigradeHydra {
             setQuadraticParameters(quadraticParameters);
         }
 
+        /*!
+         * Add the parameterization information to the incoming string
+         *
+         * \param &parameterization_info: The incoming string
+         */
         void residual::addParameterizationInfo(std::string &parameterization_info) {
-            /*!
-             * Add the parameterization information to the incoming string
-             *
-             * \param &parameterization_info: The incoming string
-             */
 
             std::stringstream ss;
             ss.precision(9);
@@ -293,6 +293,28 @@ namespace tardigradeHydra {
 
             ss.unsetf(std::ios_base::floatfield);
             parameterization_info.append(ss.str());
+        }
+
+        /*!
+         * Suggest initial iterate values to try and improve convergence
+         *
+         * \param &indices: The indices of the unknown vector to suggest initial values
+         * \param &values: The values to suggest
+         */
+        void residual::suggestInitialIterateValues(std::vector<unsigned int> &indices, std::vector<floatType> &values) {
+
+            const unsigned int sot_dim = hydra->getSOTDimension();
+
+            const unsigned int configuration = getThermalConfigurationIndex();
+
+            const secondOrderTensor *thermalDeformationGradient = get_thermalDeformationGradient();
+
+            indices = std::vector<unsigned int>(sot_dim, sot_dim * configuration);
+
+            for (unsigned int i = 0; i < sot_dim; i++) {
+                indices[i] += i;
+            }
+            values = *thermalDeformationGradient;
         }
 
     }  // namespace thermalExpansion

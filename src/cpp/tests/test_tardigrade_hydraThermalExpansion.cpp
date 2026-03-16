@@ -1197,3 +1197,118 @@ BOOST_AUTO_TEST_CASE(test_residual_addParameterizationInfo, *boost::unit_test::t
     std::string output;
     R.addParameterizationInfo(output);
 }
+
+BOOST_AUTO_TEST_CASE(test_residual_suggestInitialIterateValues, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+    class residualMock : public tardigradeHydra::thermalExpansion::residual {
+       public:
+        using tardigradeHydra::thermalExpansion::residual::residual;
+
+        floatVector thermalDeformationGradient = {0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 0.999};
+
+       protected:
+        virtual void setThermalDeformationGradient() override {
+            set_thermalDeformationGradient(thermalDeformationGradient);
+        }
+
+        floatVector initializeVector(unsigned int size) { return floatVector(size, 0); }
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+       public:
+        using tardigradeHydra::hydraBase::hydraBase;
+
+        floatVector elasticityParameters = {123.4, 56.7};
+
+        floatVector thermalExpansionParameters = {293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 1e-9, 2e-9, 3e-9, 4e-9, 5e-9, 6e-9};
+
+        tardigradeHydra::linearElasticity::residual elasticity;
+
+        tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> plasticity;
+
+        residualMock thermalExpansion;
+
+        tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
+
+        void setResidualClasses(std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> &residuals) {
+            tardigradeHydra::hydraBase::setResidualClasses(residuals);
+        }
+
+       private:
+        virtual void setResidualClasses() override {
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(4);
+
+            elasticity = tardigradeHydra::linearElasticity::residual(this, 9, elasticityParameters);
+
+            plasticity = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>(this, 9);
+
+            thermalExpansion = residualMock(this, 9, 2, thermalExpansionParameters);
+
+            remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>(this, 3);
+
+            residuals[0] = &elasticity;
+
+            residuals[1] = &plasticity;
+
+            residuals[2] = &thermalExpansion;
+
+            residuals[3] = &remainder;
+
+            setResidualClasses(residuals);
+        }
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = {1.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+
+    floatVector previousDeformationGradient = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+
+    floatVector additionalDOF = {0.11, 0.22, 0.33, 0.44, 0.55};
+
+    floatVector previousAdditionalDOF = {0.12, 0.23, 0.36, 0.47, 0.58};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    floatVector previousStateVariables = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2,
+                                          0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, -1,  -2,  -3};
+
+    floatVector parameters = {123.4, 56.7, 0.78};
+
+    floatVector unknownVector = {1,    1,    1,   1,   1,    1,    1,    1,   1,    1.1,  0.12, 0.13, 0.14, 1.3, 0.15,
+                                 0.16, 0.17, 1.4, 1.2, 0.21, 0.29, 0.23, 0.9, 0.11, 0.30, 0.25, 1.1,  3,    4,   5};
+
+    const unsigned int numConfigurations = 3;
+
+    const unsigned int numNonLinearSolveStateVariables = 3;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector);
+
+    residualMock R(&hydra, 9, 2, hydra.thermalExpansionParameters);
+
+    std::vector<unsigned int> indices = {18, 19, 20, 21, 22, 23, 24, 25, 26};
+
+    floatVector values = {0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 0.999};
+
+    std::vector<unsigned int> result_1;
+    std::vector<floatType>    result_2;
+
+    R.suggestInitialIterateValues(result_1, result_2);
+
+    BOOST_TEST(indices == result_1, CHECK_PER_ELEMENT);
+
+    BOOST_TEST(values == result_2, CHECK_PER_ELEMENT);
+}
