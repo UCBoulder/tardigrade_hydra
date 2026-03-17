@@ -6,7 +6,19 @@ Changelog
 #########
 
 ******************
-0.8.1 (unreleased)
+0.8.2 (03-16-2026)
+******************
+
+Internal Changes
+================
+- Added initial iterate estimation for the thermal expansion (:pull:`266`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.8.2 (:pull:`267`). By `Nathan Miller`_.
+
+******************
+0.8.1 (03-13-2026)
 ******************
 
 New Features

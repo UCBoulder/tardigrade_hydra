@@ -109,6 +109,9 @@ namespace tardigradeHydra {
 
             virtual void addParameterizationInfo(std::string &parameterization_info) override;
 
+            virtual void suggestInitialIterateValues(std::vector<unsigned int> &indices,
+                                                     std::vector<floatType>    &values) override;
+
            protected:
             virtual void setThermalGreenLagrangeStrain();
 
