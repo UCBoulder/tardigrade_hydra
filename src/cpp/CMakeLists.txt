@@ -6,6 +6,7 @@ target_link_libraries(
     tardigrade_stress_tools
     tardigrade_micromorphic_tools
     ${PROJECT_LINK_LIBRARIES}
+    Eigen3::Eigen
 )
 target_compile_options(${PROJECT_NAME} PUBLIC)
 
@@ -36,6 +37,7 @@ foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
+    target_link_libraries(${TEST_NAME} Eigen3::Eigen)
     install(FILES ${package}.h ${package}.cpp ${package}.tpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     get_target_property(target_sources ${package} SOURCES)
     foreach(source ${target_sources})
