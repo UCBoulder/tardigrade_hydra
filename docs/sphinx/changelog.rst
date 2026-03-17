@@ -6,6 +6,18 @@ Changelog
 #########
 
 ******************
+0.8.3 (03-17-2026)
+******************
+
+Internal Changes
+================
+- Enable using Eigen versions greater than 3.5 (:pull:`268`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.8.3 (:pull:`269`). By `Nathan Miller`_.
+
+******************
 0.8.2 (03-16-2026)
 ******************
 
