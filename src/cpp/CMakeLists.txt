@@ -6,6 +6,7 @@ target_link_libraries(
     tardigrade_stress_tools
     tardigrade_micromorphic_tools
     ${PROJECT_LINK_LIBRARIES}
+    Eigen3::Eigen
 )
 target_compile_options(${PROJECT_NAME} PUBLIC)
 
