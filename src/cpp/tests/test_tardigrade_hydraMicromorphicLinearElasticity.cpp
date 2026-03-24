@@ -4848,64 +4848,64 @@ BOOST_AUTO_TEST_CASE(testAssembleFundamentalDeformationMeasures, *boost::unit_te
         }
     }
 
-    for (unsigned int i = 0; i < 27; i++) {
-        constantMatrix delta(9, constantVector(3, 0));
-        unsigned int   ii, ij;
-        ii            = (int)(i / 3);
-        ij            = i % 3;
-        delta[ii][ij] = eps * fabs(grad_u[ii][ij]) + eps;
+    for (unsigned int ii = 0; ii < 9; ++ii) {
+        for ( unsigned int ij = 0; ij < 3; ++ij){
+            unsigned int i = 3 * ii + ij;
+            constantMatrix delta(9, constantVector(3, 0));
+            delta[ii][ij] = eps * fabs(grad_phi[ii][ij]) + eps;
 
-        variableVector FP, chiP, gradChiP;
-        variableVector FM, chiM, gradChiM;
+            variableVector FP, chiP, gradChiP;
+            variableVector FM, chiM, gradChiM;
 
-        double positive_perturb[9][3] = {
-            {grad_phi[0][0] + delta[0][0], grad_phi[0][1] + delta[0][1], grad_phi[0][2] + delta[0][2]},
-            {grad_phi[1][0] + delta[1][0], grad_phi[1][1] + delta[1][1], grad_phi[1][2] + delta[1][2]},
-            {grad_phi[2][0] + delta[2][0], grad_phi[2][1] + delta[2][1], grad_phi[2][2] + delta[2][2]},
-            {grad_phi[3][0] + delta[3][0], grad_phi[3][1] + delta[3][1], grad_phi[3][2] + delta[3][2]},
-            {grad_phi[4][0] + delta[4][0], grad_phi[4][1] + delta[4][1], grad_phi[4][2] + delta[4][2]},
-            {grad_phi[5][0] + delta[5][0], grad_phi[5][1] + delta[5][1], grad_phi[5][2] + delta[5][2]},
-            {grad_phi[6][0] + delta[6][0], grad_phi[6][1] + delta[6][1], grad_phi[6][2] + delta[6][2]},
-            {grad_phi[7][0] + delta[7][0], grad_phi[7][1] + delta[7][1], grad_phi[7][2] + delta[7][2]},
-            {grad_phi[8][0] + delta[8][0], grad_phi[8][1] + delta[8][1], grad_phi[8][2] + delta[8][2]}
-        };
+            double positive_perturb[9][3] = {
+                {grad_phi[0][0] + delta[0][0], grad_phi[0][1] + delta[0][1], grad_phi[0][2] + delta[0][2]},
+                {grad_phi[1][0] + delta[1][0], grad_phi[1][1] + delta[1][1], grad_phi[1][2] + delta[1][2]},
+                {grad_phi[2][0] + delta[2][0], grad_phi[2][1] + delta[2][1], grad_phi[2][2] + delta[2][2]},
+                {grad_phi[3][0] + delta[3][0], grad_phi[3][1] + delta[3][1], grad_phi[3][2] + delta[3][2]},
+                {grad_phi[4][0] + delta[4][0], grad_phi[4][1] + delta[4][1], grad_phi[4][2] + delta[4][2]},
+                {grad_phi[5][0] + delta[5][0], grad_phi[5][1] + delta[5][1], grad_phi[5][2] + delta[5][2]},
+                {grad_phi[6][0] + delta[6][0], grad_phi[6][1] + delta[6][1], grad_phi[6][2] + delta[6][2]},
+                {grad_phi[7][0] + delta[7][0], grad_phi[7][1] + delta[7][1], grad_phi[7][2] + delta[7][2]},
+                {grad_phi[8][0] + delta[8][0], grad_phi[8][1] + delta[8][1], grad_phi[8][2] + delta[8][2]}
+            };
 
-        double negative_perturb[9][3] = {
-            {grad_phi[0][0] - delta[0][0], grad_phi[0][1] - delta[0][1], grad_phi[0][2] - delta[0][2]},
-            {grad_phi[1][0] - delta[1][0], grad_phi[1][1] - delta[1][1], grad_phi[1][2] - delta[1][2]},
-            {grad_phi[2][0] - delta[2][0], grad_phi[2][1] - delta[2][1], grad_phi[2][2] - delta[2][2]},
-            {grad_phi[3][0] - delta[3][0], grad_phi[3][1] - delta[3][1], grad_phi[3][2] - delta[3][2]},
-            {grad_phi[4][0] - delta[4][0], grad_phi[4][1] - delta[4][1], grad_phi[4][2] - delta[4][2]},
-            {grad_phi[5][0] - delta[5][0], grad_phi[5][1] - delta[5][1], grad_phi[5][2] - delta[5][2]},
-            {grad_phi[6][0] - delta[6][0], grad_phi[6][1] - delta[6][1], grad_phi[6][2] - delta[6][2]},
-            {grad_phi[7][0] - delta[7][0], grad_phi[7][1] - delta[7][1], grad_phi[7][2] - delta[7][2]},
-            {grad_phi[8][0] - delta[8][0], grad_phi[8][1] - delta[8][1], grad_phi[8][2] - delta[8][2]}
-        };
+            double negative_perturb[9][3] = {
+                {grad_phi[0][0] - delta[0][0], grad_phi[0][1] - delta[0][1], grad_phi[0][2] - delta[0][2]},
+                {grad_phi[1][0] - delta[1][0], grad_phi[1][1] - delta[1][1], grad_phi[1][2] - delta[1][2]},
+                {grad_phi[2][0] - delta[2][0], grad_phi[2][1] - delta[2][1], grad_phi[2][2] - delta[2][2]},
+                {grad_phi[3][0] - delta[3][0], grad_phi[3][1] - delta[3][1], grad_phi[3][2] - delta[3][2]},
+                {grad_phi[4][0] - delta[4][0], grad_phi[4][1] - delta[4][1], grad_phi[4][2] - delta[4][2]},
+                {grad_phi[5][0] - delta[5][0], grad_phi[5][1] - delta[5][1], grad_phi[5][2] - delta[5][2]},
+                {grad_phi[6][0] - delta[6][0], grad_phi[6][1] - delta[6][1], grad_phi[6][2] - delta[6][2]},
+                {grad_phi[7][0] - delta[7][0], grad_phi[7][1] - delta[7][1], grad_phi[7][2] - delta[7][2]},
+                {grad_phi[8][0] - delta[8][0], grad_phi[8][1] - delta[8][1], grad_phi[8][2] - delta[8][2]}
+            };
 
-        tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures(grad_u, phi,
-                                                                                              positive_perturb, FP,
-                                                                                              chiP, gradChiP);
+            tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures(grad_u, phi,
+                                                                                                  positive_perturb, FP,
+                                                                                                  chiP, gradChiP);
 
-        tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures(grad_u, phi,
-                                                                                              negative_perturb, FM,
-                                                                                              chiM, gradChiM);
+            tardigradeHydra::micromorphicLinearElasticity::assembleFundamentalDeformationMeasures(grad_u, phi,
+                                                                                                  negative_perturb, FM,
+                                                                                                  chiM, gradChiM);
 
-        variableVector gradCol = (FP - FM) / (2 * delta[ii][ij]);
+            variableVector gradCol = (FP - FM) / (2 * delta[ii][ij]);
 
-        for (unsigned int j = 0; j < gradCol.size(); j++) {
-            BOOST_TEST(gradCol[j] == 0.);
-        }
+            for (unsigned int j = 0; j < gradCol.size(); j++) {
+                BOOST_TEST(gradCol[j] == 0.);
+            }
 
-        gradCol = (chiP - chiM) / (2 * delta[ii][ij]);
+            gradCol = (chiP - chiM) / (2 * delta[ii][ij]);
 
-        for (unsigned int j = 0; j < gradCol.size(); j++) {
-            BOOST_TEST(gradCol[j] == 0.);
-        }
+            for (unsigned int j = 0; j < gradCol.size(); j++) {
+                BOOST_TEST(gradCol[j] == 0.);
+            }
 
-        gradCol = (gradChiP - gradChiM) / (2 * delta[ii][ij]);
+            gradCol = (gradChiP - gradChiM) / (2 * delta[ii][ij]);
 
-        for (unsigned int j = 0; j < gradCol.size(); j++) {
-            BOOST_TEST(gradCol[j] == dGradChidGradPhi[27 * j + i]);
+            for (unsigned int j = 0; j < gradCol.size(); j++) {
+                BOOST_TEST(gradCol[j] == dGradChidGradPhi[27 * j + i]);
+            }
         }
     }
 }
