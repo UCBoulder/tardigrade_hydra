@@ -199,11 +199,14 @@ namespace tardigradeHydra {
             TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(private, activeConstraints, std::vector<bool>,
                                                       setActiveConstraints)
 
+            //! The allowable tolerance on the yield function
             double _yieldTolerance;
 
+            //! The allowable tolerance on the plastic multiplier
             double _plasticMultiplierTolerance;
 
-            bool _change_in_constraints;
+            //! Whether the constraints changed in the previous iteration
+            bool _change_in_constraints = false;
         };
 
     }  // namespace micromorphicRadialReturnDruckerPragerPlasticity
