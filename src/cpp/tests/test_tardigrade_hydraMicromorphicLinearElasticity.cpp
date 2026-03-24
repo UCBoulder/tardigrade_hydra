@@ -4849,8 +4849,8 @@ BOOST_AUTO_TEST_CASE(testAssembleFundamentalDeformationMeasures, *boost::unit_te
     }
 
     for (unsigned int ii = 0; ii < 9; ++ii) {
-        for ( unsigned int ij = 0; ij < 3; ++ij){
-            unsigned int i = 3 * ii + ij;
+        for (unsigned int ij = 0; ij < 3; ++ij) {
+            unsigned int   i = 3 * ii + ij;
             constantMatrix delta(9, constantVector(3, 0));
             delta[ii][ij] = eps * fabs(grad_phi[ii][ij]) + eps;
 
