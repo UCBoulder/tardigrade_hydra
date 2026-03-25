@@ -248,14 +248,16 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getTime, *boost::unit_test::tolerance(DEFAUL
 
     floatVector parameters = {5, 6, 7};
 
-    unsigned int numConfigurations = 4;
+    unsigned int numConfigurations = 1;
 
-    unsigned int numNonLinearSolveStateVariables = 5;
+    unsigned int numNonLinearSolveStateVariables = 0;
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
                                                                 numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
 
     tardigradeHydra::unit_test::hydraBaseTester::checkTime(hydra);
 }
@@ -286,14 +288,16 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getDeltaTime, *boost::unit_test::tolerance(D
 
     floatVector parameters = {5, 6, 7};
 
-    unsigned int numConfigurations = 4;
+    unsigned int numConfigurations = 1;
 
-    unsigned int numNonLinearSolveStateVariables = 5;
+    unsigned int numNonLinearSolveStateVariables = 0;
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
                                                                 numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
 
     tardigradeHydra::unit_test::hydraBaseTester::checkDeltaTime(hydra);
 }
@@ -324,14 +328,16 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getTemperature, *boost::unit_test::tolerance
 
     floatVector parameters = {5, 6, 7};
 
-    unsigned int numConfigurations = 4;
+    unsigned int numConfigurations = 1;
 
-    unsigned int numNonLinearSolveStateVariables = 5;
+    unsigned int numNonLinearSolveStateVariables = 0;
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
                                                                 numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
 
     tardigradeHydra::unit_test::hydraBaseTester::checkTemperature(hydra);
 }
@@ -362,14 +368,16 @@ BOOST_AUTO_TEST_CASE(test_hydraBase_getPreviousTemperature, *boost::unit_test::t
 
     floatVector parameters = {5, 6, 7};
 
-    unsigned int numConfigurations = 4;
+    unsigned int numConfigurations = 1;
 
-    unsigned int numNonLinearSolveStateVariables = 5;
+    unsigned int numNonLinearSolveStateVariables = 0;
 
     tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
                                                                 numNonLinearSolveStateVariables);
 
     tardigradeHydra::hydraBase hydra(dof, model_configuration);
+
+    hydra.initialize();
 
     tardigradeHydra::unit_test::hydraBaseTester::checkPreviousTemperature(hydra);
 }

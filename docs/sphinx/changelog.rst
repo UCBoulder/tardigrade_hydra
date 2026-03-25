@@ -6,6 +6,18 @@ Changelog
 #########
 
 ******************
+0.8.4 (03-24-2026)
+******************
+
+Bug Fixes
+=========
+- Fixed bugs in tests which caused failures on some platforms and identified potential sources of issues (:pull:`270`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.8.4 (:pull:`271`). By `Nathan Miller`_.
+
+******************
 0.8.3 (03-17-2026)
 ******************
 
