@@ -1619,20 +1619,25 @@ BOOST_AUTO_TEST_CASE(test_residual_get_yieldFunction_jacobian, *boost::unit_test
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        residualMock R(&hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        hydraBaseMock hydrap(dof, model_configuration);
+        hydraBaseMock hydram(dof, model_configuration);
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector + delta);
+        residualMock Rp(&hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        residualMock Rm(&hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
 
-        floatType dp = *R.get_yieldFunction();
+        hydrap.initialize();
+        hydram.initialize();
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector - delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector + delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector - delta);
 
-        floatType dm = *R.get_yieldFunction();
+        floatType dp = *Rp.get_yieldFunction();
+        floatType dm = *Rm.get_yieldFunction();
 
         dYieldFunctiondCauchyStress[i] = (dp - dm) / (2 * delta[i]);
     }
 
-    BOOST_TEST(tolerantCheck(dYieldFunctiondCauchyStress, *R.get_dYieldFunctiondCauchyStress(), 5e-5, 1e-5));
+    BOOST_TEST(dYieldFunctiondCauchyStress == *R.get_dYieldFunctiondCauchyStress(), CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -1702,7 +1707,7 @@ BOOST_AUTO_TEST_CASE(test_residual_get_yieldFunction_jacobian, *boost::unit_test
         dYieldFunctiondSubFs[i] = (dp - dm) / (2 * delta[i + 9]);
     }
 
-    BOOST_TEST(tolerantCheck(dYieldFunctiondSubFs, *R.get_dYieldFunctiondSubFs(), 1e-5, 1e-5));
+    BOOST_TEST(dYieldFunctiondSubFs == *R.get_dYieldFunctiondSubFs(), CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for (unsigned int i = 0; i < 9; i++) {
@@ -1926,12 +1931,12 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticThermalMultiplier, *boost::unit_te
     floatType exp = (-hydra.viscoPlasticParameters[3] * (temperature - hydra.viscoPlasticParameters[5]) /
                      (hydra.viscoPlasticParameters[4] + temperature - hydra.viscoPlasticParameters[5]));
 
-    floatType answer = std::pow(10, exp);
+    floatType answer = std::pow(10, -exp);
 
     exp = (-hydra.viscoPlasticParameters[3] * (previousTemperature - hydra.viscoPlasticParameters[5]) /
            (hydra.viscoPlasticParameters[4] + previousTemperature - hydra.viscoPlasticParameters[5]));
 
-    floatType answer2 = std::pow(10, exp);
+    floatType answer2 = std::pow(10, -exp);
 
     BOOST_TEST(answer == *R.get_plasticThermalMultiplier());
 
@@ -3335,20 +3340,25 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticMultiplier_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        residualMock R(&hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        hydraBaseMock hydrap(dof, model_configuration);
+        hydraBaseMock hydram(dof, model_configuration);
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector + delta);
+        residualMock Rp(&hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        residualMock Rm(&hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
 
-        floatType dp = *R.get_plasticMultiplier();
+        hydrap.initialize();
+        hydram.initialize();
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector - delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector + delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector - delta);
 
-        floatType dm = *R.get_plasticMultiplier();
+        floatType dp = *Rp.get_plasticMultiplier();
+        floatType dm = *Rm.get_plasticMultiplier();
 
         dPlasticMultiplierdCauchyStress[i] = (dp - dm) / (2 * delta[i]);
     }
 
-    BOOST_TEST(tolerantCheck(dPlasticMultiplierdCauchyStress, *R.get_dPlasticMultiplierdCauchyStress(), 3e-5, 1e-5));
+    BOOST_TEST(dPlasticMultiplierdCauchyStress == *R.get_dPlasticMultiplierdCauchyStress(), CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -3387,7 +3397,7 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticMultiplier_jacobian,
         dPlasticMultiplierdF[i] = (dp - dm) / (2 * delta[i]);
     }
 
-    BOOST_TEST(tolerantCheck(dPlasticMultiplierdF, *R.get_dPlasticMultiplierdF(), 1e-5, 1e-5));
+    BOOST_TEST(dPlasticMultiplierdF == *R.get_dPlasticMultiplierdF(), CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -3418,7 +3428,7 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticMultiplier_jacobian,
         dPlasticMultiplierdSubFs[i] = (dp - dm) / (2 * delta[i + 9]);
     }
 
-    BOOST_TEST(tolerantCheck(dPlasticMultiplierdSubFs, *R.get_dPlasticMultiplierdSubFs(), 1e-5, 1e-5));
+    BOOST_TEST(dPlasticMultiplierdSubFs == *R.get_dPlasticMultiplierdSubFs(), CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {
@@ -4129,23 +4139,29 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        residualMock R(&hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        hydraBaseMock hydrap(dof, model_configuration);
+        hydraBaseMock hydram(dof, model_configuration);
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector + delta);
+        residualMock Rp(&hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        residualMock Rm(&hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
 
-        floatVector dp = *R.get_velocityGradient();
+        hydrap.initialize();
+        hydram.initialize();
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector - delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector + delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector - delta);
 
-        floatVector dm = *R.get_velocityGradient();
+        floatVector dp = *Rp.get_velocityGradient();
+        floatVector dm = *Rm.get_velocityGradient();
 
         for (unsigned int j = 0; j < 9; j++) {
             dVelocityGradientdCauchyStress[j][i] = (dp[j] - dm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dVelocityGradientdCauchyStress),
-                             *R.get_dVelocityGradientdCauchyStress(), 1e-4, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdCauchyStress) ==
+                   *R.get_dVelocityGradientdCauchyStress(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -4186,8 +4202,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dVelocityGradientdF), *R.get_dVelocityGradientdF(),
-                             5e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdF) == *R.get_dVelocityGradientdF(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -4220,8 +4236,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dVelocityGradientdSubFs),
-                             *R.get_dVelocityGradientdSubFs(), 2e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdSubFs) == *R.get_dVelocityGradientdSubFs(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {
@@ -4260,7 +4276,7 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(dVelocityGradientdT, *R.get_dVelocityGradientdT(), 1e-5, 1e-5));
+    BOOST_TEST(dVelocityGradientdT == *R.get_dVelocityGradientdT(), CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the state variables
     for (unsigned int i = 0; i < hydra.stateVariableIndices.size(); i++) {
@@ -4294,8 +4310,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dVelocityGradientdStateVariables),
-                             *R.get_dVelocityGradientdStateVariables(), 1e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdStateVariables) ==
+                   *R.get_dVelocityGradientdStateVariables(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for (unsigned int i = 0; i < 9; i++) {
@@ -4925,23 +4942,29 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        residualMock R(&hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        hydraBaseMock hydrap(dof, model_configuration);
+        hydraBaseMock hydram(dof, model_configuration);
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector + delta);
+        residualMock Rp(&hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        residualMock Rm(&hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
 
-        floatVector dp = *R.get_stateVariableEvolutionRates();
+        hydrap.initialize();
+        hydram.initialize();
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector - delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector + delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector - delta);
 
-        floatVector dm = *R.get_stateVariableEvolutionRates();
+        floatVector dp = *Rp.get_stateVariableEvolutionRates();
+        floatVector dm = *Rm.get_stateVariableEvolutionRates();
 
         for (unsigned int j = 0; j < nvar; j++) {
             dStateVariableEvolutionRatesdCauchyStress[j][i] = (dp[j] - dm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdCauchyStress),
-                             *R.get_dStateVariableEvolutionRatesdCauchyStress(), 3e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdCauchyStress) ==
+                   *R.get_dStateVariableEvolutionRatesdCauchyStress(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -4982,8 +5005,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdF),
-                             *R.get_dStateVariableEvolutionRatesdF(), 1e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdF) ==
+                   *R.get_dStateVariableEvolutionRatesdF(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -5016,8 +5040,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdSubFs),
-                             *R.get_dStateVariableEvolutionRatesdSubFs(), 1e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdSubFs) ==
+                   *R.get_dStateVariableEvolutionRatesdSubFs(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {
@@ -5566,7 +5591,7 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
 
         floatVector elasticityParameters = {123.4, 56.7};
 
-        floatVector viscoPlasticParameters = {10.0, 1e1, 1e2, 10, 200, 293.15, 5, 0.34, 0.12, 13., 14.};
+        floatVector viscoPlasticParameters = {30.0, 1e1, 1e2, 10, 200, 293.15, 5, 0.34, 0.12, 13., 14.};
 
         std::vector<unsigned int> stateVariableIndices = {2};
 
@@ -5657,9 +5682,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector);
 
-    R.get_dYieldFunctiondCauchyStress();
+    R.get_dPlasticDeformationGradientdCauchyStress();
 
-    BOOST_TEST(*R.get_yieldFunction() == *R_ngrad.get_yieldFunction());
+    BOOST_TEST(*R.get_plasticDeformationGradient() == *R_ngrad.get_plasticDeformationGradient(), CHECK_PER_ELEMENT);
 
     // Test the jacobians
     floatType eps = 1e-6;
@@ -5692,23 +5717,29 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        residualMock R(&hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        hydraBaseMock hydrap(dof, model_configuration);
+        hydraBaseMock hydram(dof, model_configuration);
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector + delta);
+        residualMock Rp(&hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        residualMock Rm(&hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
 
-        floatVector dp = *R.get_plasticDeformationGradient();
+        hydrap.initialize();
+        hydram.initialize();
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector - delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector + delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector - delta);
 
-        floatVector dm = *R.get_plasticDeformationGradient();
+        floatVector dp = *Rp.get_plasticDeformationGradient();
+        floatVector dm = *Rm.get_plasticDeformationGradient();
 
         for (unsigned int j = 0; j < nvar; j++) {
             dPlasticDeformationGradientdCauchyStress[j][i] = (dp[j] - dm[j]) / (2 * delta[i]);
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdCauchyStress),
-                             *R.get_dPlasticDeformationGradientdCauchyStress(), 3e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdCauchyStress) ==
+                   *R.get_dPlasticDeformationGradientdCauchyStress(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -5749,8 +5780,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdF),
-                             *R.get_dPlasticDeformationGradientdF(), 1e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdF) ==
+                   *R.get_dPlasticDeformationGradientdF(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -5783,8 +5815,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdSubFs),
-                             *R.get_dPlasticDeformationGradientdSubFs(), 1e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdSubFs) ==
+                   *R.get_dPlasticDeformationGradientdSubFs(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {
@@ -5897,8 +5930,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousCauchyStress),
-                             *R.get_dPlasticDeformationGradientdPreviousCauchyStress(), 1e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousCauchyStress) ==
+                   *R.get_dPlasticDeformationGradientdPreviousCauchyStress(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the previous deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -5937,8 +5971,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousF),
-                             *R.get_dPlasticDeformationGradientdPreviousF(), 1e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousF) ==
+                   *R.get_dPlasticDeformationGradientdPreviousF(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -5979,8 +6014,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tolerantCheck(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousSubFs),
-                             *R.get_dPlasticDeformationGradientdPreviousSubFs(), 1e-5, 1e-5));
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousSubFs) ==
+                   *R.get_dPlasticDeformationGradientdPreviousSubFs(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {
@@ -6960,7 +6996,7 @@ BOOST_AUTO_TEST_CASE(test_residual_getResidual, *boost::unit_test::tolerance(DEF
     BOOST_TEST(answer == *R.getResidual(), CHECK_PER_ELEMENT);
 }
 
-BOOST_AUTO_TEST_CASE(test_residual_getJacobian, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
+BOOST_AUTO_TEST_CASE(test_residual_getJacobian, *boost::unit_test::tolerance(3e-6)) {
     /*!
      * Test of computing the jacobian
      */
@@ -7088,15 +7124,20 @@ BOOST_AUTO_TEST_CASE(test_residual_getJacobian, *boost::unit_test::tolerance(DEF
 
         delta[i] = eps * std::fabs(unknownVector[i]) + eps;
 
-        residualMock _R(&hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        hydraBaseMock hydrap(dof, model_configuration);
+        hydraBaseMock hydram(dof, model_configuration);
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector + delta);
+        residualMock Rp(&hydrap, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
+        residualMock Rm(&hydram, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters);
 
-        floatVector dp = *_R.getResidual();
+        hydrap.initialize();
+        hydram.initialize();
 
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydra, unknownVector - delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydrap, unknownVector + delta);
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector(hydram, unknownVector - delta);
 
-        floatVector dm = *_R.getResidual();
+        floatVector dp = *Rp.getResidual();
+        floatVector dm = *Rm.getResidual();
 
         for (unsigned int j = 0; j < nvar; j++) {
             jacobian[j][i] = (dp[j] - dm[j]) / (2 * delta[i]);

@@ -6,6 +6,22 @@ Changelog
 #########
 
 ******************
+0.8.6 (unreleased)
+******************
+
+******************
+0.8.5 (04-02-2026)
+******************
+
+Bug Fixes
+=========
+- Corrected a bug in the plastic thermal multiplier where increasing the temperature caused the rate of plastic evolution to decrease (:pull:`273`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.8.5 (:pull:`274`). By `Nathan Miller`_.
+
+******************
 0.8.4 (03-24-2026)
 ******************
 
