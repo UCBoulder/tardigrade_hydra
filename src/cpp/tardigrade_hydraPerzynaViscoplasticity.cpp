@@ -1009,7 +1009,7 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CATCH(temperatureParameters = get_thermalParameters());
 
             TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::WLF(
-                temperature, {(*temperatureParameters)[2], (*temperatureParameters)[0], (*temperatureParameters)[1]},
+                temperature, {(*temperatureParameters)[2], -(*temperatureParameters)[0], (*temperatureParameters)[1]},
                 *plasticThermalMultiplier.value));
         }
 
@@ -1047,7 +1047,7 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CATCH(temperatureParameters = get_thermalParameters());
 
             TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::WLF(
-                temperature, {(*temperatureParameters)[2], (*temperatureParameters)[0], (*temperatureParameters)[1]},
+                temperature, {(*temperatureParameters)[2], -(*temperatureParameters)[0], (*temperatureParameters)[1]},
                 *plasticThermalMultiplier.value, *dPlasticThermalMultiplierdT.value));
         }
 
