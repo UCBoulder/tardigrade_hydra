@@ -4159,7 +4159,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdCauchyStress) == *R.get_dVelocityGradientdCauchyStress(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdCauchyStress) ==
+                   *R.get_dVelocityGradientdCauchyStress(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -4200,7 +4202,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdF) == *R.get_dVelocityGradientdF(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdF) == *R.get_dVelocityGradientdF(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -4233,7 +4236,8 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdSubFs) == *R.get_dVelocityGradientdSubFs(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdSubFs) == *R.get_dVelocityGradientdSubFs(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {
@@ -4306,7 +4310,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_velocityGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdStateVariables) ==  *R.get_dVelocityGradientdStateVariables(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dVelocityGradientdStateVariables) ==
+                   *R.get_dVelocityGradientdStateVariables(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for (unsigned int i = 0; i < 9; i++) {
@@ -4956,7 +4962,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdCauchyStress) == *R.get_dStateVariableEvolutionRatesdCauchyStress(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdCauchyStress) ==
+                   *R.get_dStateVariableEvolutionRatesdCauchyStress(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -4997,7 +5005,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdF) == *R.get_dStateVariableEvolutionRatesdF(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdF) ==
+                   *R.get_dStateVariableEvolutionRatesdF(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -5030,7 +5040,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_stateVariableEvolutionRates_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdSubFs) == *R.get_dStateVariableEvolutionRatesdSubFs(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dStateVariableEvolutionRatesdSubFs) ==
+                   *R.get_dStateVariableEvolutionRatesdSubFs(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {
@@ -5725,7 +5737,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdCauchyStress) == *R.get_dPlasticDeformationGradientdCauchyStress(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdCauchyStress) ==
+                   *R.get_dPlasticDeformationGradientdCauchyStress(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -5766,7 +5780,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdF) == *R.get_dPlasticDeformationGradientdF(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdF) ==
+                   *R.get_dPlasticDeformationGradientdF(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -5799,7 +5815,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdSubFs) == *R.get_dPlasticDeformationGradientdSubFs(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdSubFs) ==
+                   *R.get_dPlasticDeformationGradientdSubFs(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {
@@ -5912,7 +5930,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousCauchyStress) == *R.get_dPlasticDeformationGradientdPreviousCauchyStress(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousCauchyStress) ==
+                   *R.get_dPlasticDeformationGradientdPreviousCauchyStress(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the previous deformation gradient
     for (unsigned int i = 0; i < 9; i++) {
@@ -5951,7 +5971,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousF) == *R.get_dPlasticDeformationGradientdPreviousF(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousF) ==
+                   *R.get_dPlasticDeformationGradientdPreviousF(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for (unsigned int i = 0; i < 18; i++) {
@@ -5992,7 +6014,9 @@ BOOST_AUTO_TEST_CASE(test_residual_get_plasticDeformationGradient_jacobian,
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousSubFs) == *R.get_dPlasticDeformationGradientdPreviousSubFs(), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dPlasticDeformationGradientdPreviousSubFs) ==
+                   *R.get_dPlasticDeformationGradientdPreviousSubFs(),
+               CHECK_PER_ELEMENT);
 
     // Jacobians w.r.t. the temperature
     for (unsigned int i = 0; i < 1; i++) {

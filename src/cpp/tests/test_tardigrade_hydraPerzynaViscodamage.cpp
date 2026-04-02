@@ -1874,7 +1874,10 @@ BOOST_AUTO_TEST_CASE(test_setDamageDeformationGradient2, *boost::unit_test::tole
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dDamageDeformationGradientdCauchyStress) - *R.get_dDamageDeformationGradientdCauchyStress() == std::vector<double>(81,0.0), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dDamageDeformationGradientdCauchyStress) -
+                       *R.get_dDamageDeformationGradientdCauchyStress() ==
+                   std::vector<double>(81, 0.0),
+               CHECK_PER_ELEMENT);
 
     for (unsigned int i = 0; i < deformationGradient.size(); i++) {
         floatVector delta(deformationGradient.size(), 0);
@@ -1916,7 +1919,10 @@ BOOST_AUTO_TEST_CASE(test_setDamageDeformationGradient2, *boost::unit_test::tole
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dDamageDeformationGradientdF) - *R.get_dDamageDeformationGradientdF() == std::vector<double>(81,0.0), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dDamageDeformationGradientdF) -
+                       *R.get_dDamageDeformationGradientdF() ==
+                   std::vector<double>(81, 0.0),
+               CHECK_PER_ELEMENT);
 
     for (unsigned int i = 0; i < 2 * deformationGradient.size(); i++) {
         floatVector delta(unknownVector.size(), 0);
@@ -1950,7 +1956,10 @@ BOOST_AUTO_TEST_CASE(test_setDamageDeformationGradient2, *boost::unit_test::tole
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dDamageDeformationGradientdSubFs) - *R.get_dDamageDeformationGradientdSubFs() == std::vector<double>(2*deformationGradient.size()*deformationGradient.size(),0.0), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dDamageDeformationGradientdSubFs) -
+                       *R.get_dDamageDeformationGradientdSubFs() ==
+                   std::vector<double>(2 * deformationGradient.size() * deformationGradient.size(), 0.0),
+               CHECK_PER_ELEMENT);
 
     for (unsigned int i = 0; i < 1; i++) {
         floatVector delta(1, 0);
@@ -2510,7 +2519,9 @@ BOOST_AUTO_TEST_CASE(test_setResidual2, *boost::unit_test::tolerance(DEFAULT_TES
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(jacobian) - *R.getJacobian() == std::vector<double>(nvals*unknownVector.size(),0.0), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(jacobian) - *R.getJacobian() ==
+                   std::vector<double>(nvals * unknownVector.size(), 0.0),
+               CHECK_PER_ELEMENT);
 
     for (unsigned int i = 0; i < deformationGradient.size(); i++) {
         floatVector delta(deformationGradient.size(), 0);
@@ -2552,7 +2563,9 @@ BOOST_AUTO_TEST_CASE(test_setResidual2, *boost::unit_test::tolerance(DEFAULT_TES
         }
     }
 
-    BOOST_TEST(tardigradeVectorTools::appendVectors(dRdF) - *R.getdRdF() == std::vector<double>(nvals*deformationGradient.size(),0.0), CHECK_PER_ELEMENT);
+    BOOST_TEST(tardigradeVectorTools::appendVectors(dRdF) - *R.getdRdF() ==
+                   std::vector<double>(nvals * deformationGradient.size(), 0.0),
+               CHECK_PER_ELEMENT);
 
     for (unsigned int i = 0; i < 1; i++) {
         floatVector delta(1, 0);
