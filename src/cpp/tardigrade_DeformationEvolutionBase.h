@@ -1,0 +1,69 @@
+/**
+ ******************************************************************************
+ * \file tardigrade_DeformationEvolutionBase.h
+ ******************************************************************************
+ * The base class for defining an evolution equation for deformation
+ ******************************************************************************
+ */
+
+#ifndef TARDIGRADE_DEFORMATIONEVOLUTIONBASE_H
+#define TARDIGRADE_DEFORMATIONEVOLUTIONBASE_H
+
+#include "tardigrade_ResidualBase.h"
+
+namespace tardigradeHydra {
+
+    /*!
+     * Base class for defining the evolution of a deformation
+     *
+     * Assumes an evolution equation of the form \f$ \dot{F}_{iI} = L_{ij} F_{jI} \f$
+     * where \f$ F_{iI} \f$ is the deformation gradient i.e.,
+     * \f$\frac{\partial x_i}{\partial X_I}$ \f$ and \f$ L_{ij} \f$
+     * is the velocity gradient in \f$ F_{iI} \f$'s current configuration i.e.,
+     * \f$\frac{\partial \dot{x}_i}{\partial x_j} \f$.
+     *
+     * The equation is integrated with a generalized
+     * trapezoidal rule which can be expressed as
+     *
+     * \f$ F_{iI}^{t+1} = F_{iI}^t + \Delta t \dot{F}_{iI}^{t+\alpha} \f$
+     *
+     * \f$ \dot{F}_{iI}^{t+\alpha} = \left(1-\alpha\right) \dot{F}_{iI}^t + \alpha \dot{F}_{iI}^{t+1} \f$.
+     *
+     * This means
+     *
+     * \f$ F_{iI}^{t+1} = F_{iI}^t + \Delta t \left(\left(1-\alpha\right) \dot{F}_{iI}^t + \alpha \dot{F}_{iI}^{t+1} \f$\right) \f$
+     *
+     * \f$ F_{iI}^{t+1} = F_{iI}^t + \Delta t \left( 1 - \alpha \right) L_{ij}^t F_{jI}^t + \Delta t \alpha L_{ij}^{t+1} F_{jI}^{t+1} \f$
+     *
+     * \f$ \left(\delta_{ij} - \Delta t \alpha L_{ij}^{t+1} \right) F_{jI}^{t+1} = \left(\delta_{ij} + \Delta t \left(1 - \alpha \right) F_{jI}^t \f$
+     *
+     * which can be solved for \f$F_{jI}^{t+1}\f$.
+     *
+     * By default the integration parameter is 0.5 which enables second
+     * order accuracy. If it is set to 0.0, then the evolution equation is
+     * explicitly integrated, and 1.0 then the integration is fully implicit.
+     */
+    template <class container>
+    class DeformationEvolutionBase : public ResidualBase<container> {
+        public:
+	    using tardigradeHydra::ResidualBase::ResidualBase;
+	    
+	    double integration_parameter = 0.5;
+
+	    template<
+		class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator
+	    >
+        void computeDeformation(const Lt_iterator &Lt_begin, const Lt_iterator &Lt_end,
+                                const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                                const Ft_iterator &Ft_begin, const Ft_iterator &Ft_end,
+                                Ftp1_iterator Ftp1_begin, Ftp1_iterator Ftp1_end);
+
+        protected:
+	private:
+    }
+
+}
+
+include "tardigrade_DeformationEvolutionBase.tpp"
+
+#endif
