@@ -214,7 +214,29 @@ namespace tardigradeHydra {
      * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
      */
     template<class configuration>
-    class HydraBase : public CachingDataBase { };
+    class HydraBase : public CachingDataBase {
+        public:
+            //Logging capabilities. Move to stand-alone class
+            template <class v_type>
+            void addToFailureOutput(const v_type &v, bool add_endline = true);
+
+            template <class v_iterator>
+            void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true);
+
+            void addToFailureOutput(const std::string &value, bool add_endline = false);
+
+            void addToFailureOutput(const floatVector &value, bool add_endline = true);
+
+            void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
+
+            void addToFailureOutput(const floatType &value, bool add_endline = true);
+
+        protected:
+            //Logging capabilities. Move to stand-alone class
+            //! Additional failure output information
+            std::stringstream _failure_output;
+
+    };
 
     /*!
      * A base class for 3D Classical continuum
@@ -382,20 +404,6 @@ namespace tardigradeHydra {
 
         //! Get the verbosity level for failure outputs
         const unsigned int getFailureVerbosityLevel() { return _failure_verbosity_level; }
-
-        void addToFailureOutput(const std::string &value, bool add_endline = false);
-
-        void addToFailureOutput(const floatVector &value, bool add_endline = true);
-
-        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
-
-        void addToFailureOutput(const floatType &value, bool add_endline = true);
-
-        template <class v_type>
-        void addToFailureOutput(const v_type &v, bool add_endline = true);
-
-        template <class v_iterator>
-        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true);
 
         //! Get the failure output string
         const std::string getFailureOutput() { return _failure_output.str(); }
@@ -607,9 +615,6 @@ namespace tardigradeHydra {
 
         //! The verbosity level for failure
         unsigned int _failure_verbosity_level = 0;
-
-        //! Additional failure output information
-        std::stringstream _failure_output;
 
         //! A scale factor applied to the incoming loading (deformation, temperature, etc.)
         floatType _scale_factor = 1.0;

@@ -69,46 +69,6 @@ namespace tardigradeHydra {
      */
     void hydraBase::setFailureVerbosityLevel(const unsigned int &value) { _failure_verbosity_level = value; }
 
-    /*!
-     * Add a string to the failure output string
-     *
-     * \param &value: The string to append to the output
-     * \param add_endline: A boolean for if the endline character should be added after the value
-     */
-    void hydraBase::addToFailureOutput(const std::string &value, bool add_endline) {
-        addToFailureOutput<std::string>(value, add_endline);
-    }
-
-    /*!
-     * Add a floatVector to the output string
-     *
-     * \param &value: The vector to add to the output string
-     * \param add_endline: A boolean for if the endline character should be added after the value
-     */
-    void hydraBase::addToFailureOutput(const floatVector &value, bool add_endline) {
-        addToFailureOutput(std::begin(value), std::end(value), add_endline);
-    }
-
-    /*!
-     * Add a vector of booleans to the output string
-     *
-     * \param &value: The vector to add to the output string
-     * \param add_endline: A boolean for if the endline character should be added after the value
-     */
-    void hydraBase::addToFailureOutput(const std::vector<bool> &value, bool add_endline) {
-        addToFailureOutput(std::begin(value), std::end(value), add_endline);
-    }
-
-    /*!
-     * Add a floating point value to the output string
-     *
-     * \param &value: The value to add to the output string
-     * \param add_endline: A boolean for if the endline character should be added after the value
-     */
-    void hydraBase::addToFailureOutput(const floatType &value, bool add_endline) {
-        addToFailureOutput<floatType>(value, add_endline);
-    }
-
     /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
      *
      * This should only be called in residual classes that need to modify the full residual in their
