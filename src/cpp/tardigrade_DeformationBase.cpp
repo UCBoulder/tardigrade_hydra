@@ -43,7 +43,7 @@ namespace tardigradeHydra {
      */
     secondOrderTensor DeformationBase::getSubConfiguration(const unsigned int &lowerIndex,
                                                            const unsigned int &upperIndex) {
-        return getSubConfiguration<3, 3, 3>(*get_configurations(), lowerIndex, upperIndex);
+        return getSubConfiguration<dimension, dimension, dimension>(*get_configurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -84,7 +84,7 @@ namespace tardigradeHydra {
      */
     secondOrderTensor DeformationBase::getPreviousSubConfiguration(const unsigned int &lowerIndex,
                                                                    const unsigned int &upperIndex) {
-        return getSubConfiguration<3, 3, 3>(*get_previousConfigurations(), lowerIndex, upperIndex);
+        return getSubConfiguration<dimension, dimension, dimension>(*get_previousConfigurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -128,7 +128,7 @@ namespace tardigradeHydra {
      */
     floatVector DeformationBase::getSubConfigurationJacobian(const unsigned int &lowerIndex,
                                                              const unsigned int &upperIndex) {
-        return getSubConfigurationJacobian<3, 3, 3>(*get_configurations(), lowerIndex, upperIndex);
+        return getSubConfigurationJacobian<dimension, dimension, dimension>(*get_configurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -173,7 +173,7 @@ namespace tardigradeHydra {
      */
     floatVector DeformationBase::getPreviousSubConfigurationJacobian(const unsigned int &lowerIndex,
                                                                      const unsigned int &upperIndex) {
-        return getSubConfigurationJacobian<3, 3, 3>(*get_previousConfigurations(), lowerIndex, upperIndex);
+        return getSubConfigurationJacobian<dimension, dimension, dimension>(*get_previousConfigurations(), lowerIndex, upperIndex);
     }
 
     /*!
@@ -197,16 +197,15 @@ namespace tardigradeHydra {
      */
     void DeformationBase::calculateFirstConfigurationJacobians(const floatVector &configurations,
                                                                fourthOrderTensor &dC1dC, floatVector &dC1dCn) {
-        constexpr unsigned int dim         = 3;
-        constexpr unsigned int sot_dim     = dim * dim;
+        constexpr unsigned int sot_dim     = dimension * dimension;
         auto                   num_configs = getNumConfigurations();
 
-        secondOrderTensor fullConfiguration = getSubConfiguration<3, 3, 3>(configurations, 0, num_configs);
+        secondOrderTensor fullConfiguration = getSubConfiguration<dimension, dimension, dimension>(configurations, 0, num_configs);
 
         dC1dC  = secondOrderTensor(sot_dim * sot_dim, 0);
         dC1dCn = floatVector(sot_dim * (num_configs - 1) * sot_dim, 0);
 
-        DeformationDecompositionBase<dim, dim, dim> decomposition;
+        DeformationDecompositionBase<dimension, dimension, dimension> decomposition;
         decomposition.solveForLeadingConfigurationTotalConfigurationJacobian(std::begin(fullConfiguration),
                                                                              std::end(fullConfiguration),
                                                                              std::begin(configurations) + sot_dim,
