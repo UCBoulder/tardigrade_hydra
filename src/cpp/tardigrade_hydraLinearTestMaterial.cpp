@@ -43,8 +43,6 @@ namespace tardigradeHydra {
              * Compute all of the values of the X vector for the residual calculation
              */
 
-            constexpr unsigned int dim = 3;
-
             auto F_params = get_F_params();
 
             auto T_params = get_T_params();
@@ -63,7 +61,7 @@ namespace tardigradeHydra {
                 // Add the contributions from the deformation gradient
                 for (auto v = std::begin(*hydra->getDeformationGradient());
                      v != std::end(*hydra->getDeformationGradient()); ++j, ++v) {
-                    *xi += (*F_params)[dim * dim * i + j] * (*v);
+                    *xi += (*F_params)[dimension * dimension * i + j] * (*v);
                 }
 
                 // Add the contributions from the temperature
@@ -85,13 +83,11 @@ namespace tardigradeHydra {
              * Currently uses the Cauchy stress
              */
 
-            constexpr unsigned int dim = 3;
-
             auto stress = get_SetDataStorage_stress();
 
-            stress.zero(dim * dim);
+            stress.zero(dimension * dimension);
 
-            std::copy(std::begin(*get_XPred()), std::begin(*get_XPred()) + dim * dim, std::begin(*stress.value));
+            std::copy(std::begin(*get_XPred()), std::begin(*get_XPred()) + dimension * dimension, std::begin(*stress.value));
         }
 
         void residual::setPreviousStress() {
@@ -148,11 +144,9 @@ namespace tardigradeHydra {
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            constexpr unsigned int dim = 3;
-
             auto dRdF = get_SetDataStorage_dRdF();
 
-            dRdF.zero(getNumEquations() * dim * dim);
+            dRdF.zero(getNumEquations() * dimension * dimension);
 
             std::copy(std::begin(*get_F_params()), std::end(*get_F_params()), dRdF.begin());
         }
