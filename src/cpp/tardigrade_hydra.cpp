@@ -766,7 +766,7 @@ namespace tardigradeHydra {
      * Get dRdF for the non-linear problem
      */
     floatMatrix hydraBase::getdRdF() {
-        return tardigradeVectorTools::inflate(*getFlatdRdF(), getResidual()->size(), getSOTDimension());
+        return tardigradeVectorTools::inflate(*getFlatdRdF(), getResidual()->size(), configuration::dimension * configuration::dimension);
     }
 
     /*!
