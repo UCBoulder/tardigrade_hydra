@@ -92,6 +92,9 @@ namespace tardigradeHydra {
                     tardigradeHydra::linearViscoelasticity::residual::decomposeParameterVector(parameters));
             }
 
+            //! The dimension of a second-order tensor
+            static constexpr unsigned int sot_dimension = dimension * dimension;
+
             //! Get the lower index of the viscoelastic ISVs from the non-nonlinear solve state variable vector
             const unsigned int getViscoelasticISVLowerIndex() { return _viscoelasticISVLowerIndex; }
 
