@@ -214,9 +214,12 @@ namespace tardigradeHydra {
      *
      * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
      */
-    template<class configuration>
+    template<class _configuration>
     class HydraBase : public CachingDataBase {
         public:
+            //!The core configuration of the hydra object
+            using configuration = _configuration;
+
             //Logging capabilities. Move to stand-alone class
             template <class v_type>
             void addToFailureOutput(const v_type &v, bool add_endline = true);
