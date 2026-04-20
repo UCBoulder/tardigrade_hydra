@@ -159,12 +159,6 @@ namespace tardigradeHydra {
              * \f$R = f\f$ if the constraint is in the active set and \f$ R = \dot{\bar{\gamma}} \f$ if it isn't
              */
 
-            auto dim = hydra->getDimension();
-
-            auto sot_dim = dim * dim;
-
-            auto tot_dim = dim * dim * dim;
-
             auto plasticStrainLikeISVs = get_plasticStrainLikeISVs();
 
             auto activeConstraints = get_activeConstraints();
@@ -188,7 +182,7 @@ namespace tardigradeHydra {
             jacobian.zero(num_ISVS * num_unknowns);
 
             // Set the state variable jacobians
-            unsigned int offset = num_configurations * (2 * sot_dim + tot_dim);
+            unsigned int offset = num_configurations * (2 * sot_dimension + tot_dimension);
 
             for (unsigned int i = 0; i < num_plastic_state_variables; ++i) {
                 (*jacobian.value)[num_unknowns * i + i + offset + num_plastic_multipliers] -= 1;
@@ -215,7 +209,7 @@ namespace tardigradeHydra {
 
                 // Deformation Jacobians
                 for (auto v = std::begin(*get_dMacroYielddFn()); v != std::end(*get_dMacroYielddFn()); ++v) {
-                    col = (unsigned int)(v - std::begin(*get_dMacroYielddFn())) + 2 * sot_dim + tot_dim;
+                    col = (unsigned int)(v - std::begin(*get_dMacroYielddFn())) + 2 * sot_dimension + tot_dimension;
                     (*jacobian.value)[num_unknowns * row + col] += *v;
                 }
 
@@ -223,7 +217,7 @@ namespace tardigradeHydra {
                 for (auto v = std::begin(*get_dMacroYielddStateVariables());
                      v != std::end(*get_dMacroYielddStateVariables()); ++v) {
                     col = (unsigned int)(v - std::begin(*get_dMacroYielddStateVariables())) +
-                          num_configurations * (2 * sot_dim + tot_dim);
+                          num_configurations * (2 * sot_dimension + tot_dimension);
                     (*jacobian.value)[num_unknowns * row + col] += *v;
                 }
             }
@@ -235,13 +229,13 @@ namespace tardigradeHydra {
                 // Stress Jacobians
                 unsigned int col;
                 for (auto v = std::begin(*get_dMicroYielddStress()); v != std::end(*get_dMicroYielddStress()); ++v) {
-                    col = sot_dim + (unsigned int)(v - std::begin(*get_dMicroYielddStress()));
+                    col = sot_dimension + (unsigned int)(v - std::begin(*get_dMicroYielddStress()));
                     (*jacobian.value)[num_unknowns * row + col] += *v;
                 }
 
                 // Deformation Jacobians
                 for (auto v = std::begin(*get_dMicroYielddFn()); v != std::end(*get_dMicroYielddFn()); ++v) {
-                    col = (unsigned int)(v - std::begin(*get_dMicroYielddFn())) + 2 * sot_dim + tot_dim;
+                    col = (unsigned int)(v - std::begin(*get_dMicroYielddFn())) + 2 * sot_dimension + tot_dimension;
                     (*jacobian.value)[num_unknowns * row + col] += *v;
                 }
 
@@ -249,7 +243,7 @@ namespace tardigradeHydra {
                 for (auto v = std::begin(*get_dMicroYielddStateVariables());
                      v != std::end(*get_dMicroYielddStateVariables()); ++v) {
                     col = (unsigned int)(v - std::begin(*get_dMicroYielddStateVariables())) +
-                          num_configurations * (2 * sot_dim + tot_dim);
+                          num_configurations * (2 * sot_dimension + tot_dimension);
                     (*jacobian.value)[num_unknowns * row + col] += *v;
                 }
             }
@@ -261,30 +255,30 @@ namespace tardigradeHydra {
 
                     // Stress Jacobians
                     unsigned int col;
-                    for (auto v = std::begin(*get_dMicroGradientYielddStress()) + tot_dim * i;
-                         v != std::begin(*get_dMicroGradientYielddStress()) + tot_dim * (i + 1); ++v) {
-                        col = 2 * sot_dim +
-                              (unsigned int)(v - std::begin(*get_dMicroGradientYielddStress()) - tot_dim * i);
+                    for (auto v = std::begin(*get_dMicroGradientYielddStress()) + tot_dimension * i;
+                         v != std::begin(*get_dMicroGradientYielddStress()) + tot_dimension * (i + 1); ++v) {
+                        col = 2 * sot_dimension +
+                              (unsigned int)(v - std::begin(*get_dMicroGradientYielddStress()) - tot_dimension * i);
                         (*jacobian.value)[num_unknowns * row + col] += *v;
                     }
 
                     // Deformation Jacobians
-                    for (auto v = std::begin(*get_dMicroGradientYielddFn()) + sot_dim * (num_configurations - 1) * i;
-                         v != std::begin(*get_dMicroGradientYielddFn()) + sot_dim * (num_configurations - 1) * (i + 1);
+                    for (auto v = std::begin(*get_dMicroGradientYielddFn()) + sot_dimension * (num_configurations - 1) * i;
+                         v != std::begin(*get_dMicroGradientYielddFn()) + sot_dimension * (num_configurations - 1) * (i + 1);
                          ++v) {
                         col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddFn()) -
-                                             sot_dim * (num_configurations - 1) * i) +
-                              2 * sot_dim + tot_dim;
+                                             sot_dimension * (num_configurations - 1) * i) +
+                              2 * sot_dimension + tot_dimension;
                         (*jacobian.value)[num_unknowns * row + col] += *v;
                     }
 
-                    for (auto v = std::begin(*get_dMicroGradientYielddChin()) + sot_dim * (num_configurations - 1) * i;
+                    for (auto v = std::begin(*get_dMicroGradientYielddChin()) + sot_dimension * (num_configurations - 1) * i;
                          v !=
-                         std::begin(*get_dMicroGradientYielddChin()) + sot_dim * (num_configurations - 1) * (i + 1);
+                         std::begin(*get_dMicroGradientYielddChin()) + sot_dimension * (num_configurations - 1) * (i + 1);
                          ++v) {
                         col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddChin()) -
-                                             sot_dim * (num_configurations - 1) * i) +
-                              2 * sot_dim + tot_dim + sot_dim * (num_configurations - 1);
+                                             sot_dimension * (num_configurations - 1) * i) +
+                              2 * sot_dimension + tot_dimension + sot_dimension * (num_configurations - 1);
                         (*jacobian.value)[num_unknowns * row + col] += *v;
                     }
 
@@ -292,7 +286,7 @@ namespace tardigradeHydra {
                     for (auto v = std::begin(*get_dMicroGradientYielddStateVariables()) + num_ISVS * i;
                          v != std::begin(*get_dMicroGradientYielddStateVariables()) + num_ISVS * (i + 1); ++v) {
                         col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddStateVariables()) - num_ISVS * i) +
-                              num_configurations * (2 * sot_dim + tot_dim);
+                              num_configurations * (2 * sot_dimension + tot_dimension);
                         (*jacobian.value)[num_unknowns * row + col] += *v;
                     }
                 }
@@ -303,7 +297,7 @@ namespace tardigradeHydra {
                 row = num_plastic_state_variables + (unsigned int)(v - std::begin(*activeConstraints));
 
                 if (!(*v)) {
-                    offset = num_configurations * (2 * sot_dim + tot_dim);
+                    offset = num_configurations * (2 * sot_dimension + tot_dimension);
                     (*jacobian
                           .value)[num_unknowns * row + (unsigned int)(v - std::begin(*activeConstraints)) + offset] +=
                         1;
@@ -324,12 +318,6 @@ namespace tardigradeHydra {
              * \f$R = f\f$ if the constraint is in the active set and \f$ R = \dot{\bar{\gamma}} \f$ if it isn't
              */
 
-            auto dim = hydra->getDimension();
-
-            auto sot_dim = dim * dim;
-
-            auto tot_dim = dim * dim * dim;
-
             auto plasticStrainLikeISVs = get_plasticStrainLikeISVs();
 
             auto activeConstraints = get_activeConstraints();
@@ -341,7 +329,7 @@ namespace tardigradeHydra {
             auto num_plastic_state_variables =
                 (const unsigned int)(std::end(*plasticStrainLikeISVs) - std::begin(*plasticStrainLikeISVs));
 
-            auto num_cols = (2 * sot_dim + tot_dim);
+            auto num_cols = (2 * sot_dimension + tot_dimension);
 
             jacobian.zero(num_ISVS * num_cols);
 
@@ -377,15 +365,15 @@ namespace tardigradeHydra {
                     row = num_plastic_state_variables + 2 + i;
 
                     // Deformation Jacobians
-                    for (auto v = std::begin(*get_dMicroGradientYielddF()) + sot_dim * i;
-                         v != std::begin(*get_dMicroGradientYielddF()) + sot_dim * (i + 1); ++v) {
-                        col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddF()) - sot_dim * i);
+                    for (auto v = std::begin(*get_dMicroGradientYielddF()) + sot_dimension * i;
+                         v != std::begin(*get_dMicroGradientYielddF()) + sot_dimension * (i + 1); ++v) {
+                        col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddF()) - sot_dimension * i);
                         (*jacobian.value)[num_cols * row + col] += *v;
                     }
 
-                    for (auto v = std::begin(*get_dMicroGradientYielddChi()) + sot_dim * i;
-                         v != std::begin(*get_dMicroGradientYielddChi()) + sot_dim * (i + 1); ++v) {
-                        col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddChi()) - sot_dim * i) + sot_dim;
+                    for (auto v = std::begin(*get_dMicroGradientYielddChi()) + sot_dimension * i;
+                         v != std::begin(*get_dMicroGradientYielddChi()) + sot_dimension * (i + 1); ++v) {
+                        col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddChi()) - sot_dimension * i) + sot_dimension;
                         (*jacobian.value)[num_cols * row + col] += *v;
                     }
                 }
