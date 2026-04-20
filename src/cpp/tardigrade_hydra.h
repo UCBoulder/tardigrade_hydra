@@ -200,6 +200,7 @@ namespace tardigradeHydra {
 
     class HydraClassical3DConfiguration {
         public:
+            //! The spatial dimension
             static constexpr int dimension = 3;
         protected:
         private:
