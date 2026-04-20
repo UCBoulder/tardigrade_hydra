@@ -200,21 +200,21 @@ namespace tardigradeHydra {
                                           const floatVector &total_transformation, floatVector &configurations,
                                           floatVector &inverseConfigurations, const bool add_eye) {
         auto dim     = getDimension();
-        auto sot_dim = getSOTDimension();
+        constexpr unsigned int sot_dimension = configuration::dimension * configuration::dimension;
 
         auto num_configs = getNumConfigurations();
 
         // Set the configurations
-        configurations = floatVector(num_configs * sot_dim, 0);
+        configurations = floatVector(num_configs * sot_dimension, 0);
 
-        inverseConfigurations = floatVector(num_configs * sot_dim, 0);
+        inverseConfigurations = floatVector(num_configs * sot_dimension, 0);
 
         auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(inverseConfigurations.data());
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0);
 
         // Initialize the first configuration with the total deformation gradient
-        secondOrderTensor temp(sot_dim, 0);
+        secondOrderTensor temp(sot_dimension, 0);
 #else
         auto mat2 = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(configurations.data());
 #endif
@@ -223,28 +223,28 @@ namespace tardigradeHydra {
 
         for (int i = num_configs - 2; i >= 0; i--) {
             // Set the current configuration as being equal to the previous
-            std::copy(data_vector->begin() + i * sot_dim + start_index,
-                      data_vector->begin() + (i + 1) * sot_dim + start_index,
-                      configurations.begin() + sot_dim * (i + 1));
+            std::copy(data_vector->begin() + i * sot_dimension + start_index,
+                      data_vector->begin() + (i + 1) * sot_dimension + start_index,
+                      configurations.begin() + sot_dimension * (i + 1));
 
             if (add_eye) {
                 for (unsigned int j = 0; j < dim; j++) {
-                    configurations[sot_dim * (i + 1) + dim * j + j] += 1;
+                    configurations[sot_dimension * (i + 1) + dim * j + j] += 1;
                 }
             }
 
             // Compute the inverse of the current configuration and store it
-            std::copy(configurations.begin() + sot_dim * (i + 1), configurations.begin() + sot_dim * (i + 2),
-                      inverseConfigurations.begin() + sot_dim * (i + 1));
+            std::copy(configurations.begin() + sot_dimension * (i + 1), configurations.begin() + sot_dimension * (i + 2),
+                      inverseConfigurations.begin() + sot_dimension * (i + 1));
             new (&mat) Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(inverseConfigurations.data() +
-                                                                                        sot_dim * (i + 1),
+                                                                                        sot_dimension * (i + 1),
                                                                                     3, 3);
             mat = mat.inverse().eval();
 
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-            std::copy(configurations.begin(), configurations.begin() + sot_dim, temp.begin());
+            std::copy(configurations.begin(), configurations.begin() + sot_dimension, temp.begin());
 
-            kernel(&inverseConfigurations[sot_dim * (i + 1)], &temp[0], &configurations[0]);
+            kernel(&inverseConfigurations[sot_dimension * (i + 1)], &temp[0], &configurations[0]);
 #else
             // Add contribution of deformation gradient to the first configuration
 
@@ -254,7 +254,7 @@ namespace tardigradeHydra {
 #endif
         }
 
-        std::copy(configurations.begin(), configurations.begin() + sot_dim, inverseConfigurations.begin());
+        std::copy(configurations.begin(), configurations.begin() + sot_dimension, inverseConfigurations.begin());
 
         new (&mat) Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(inverseConfigurations.data(), 3, 3);
         mat = mat.inverse().eval();
@@ -924,14 +924,14 @@ namespace tardigradeHydra {
      * which returns a pointer to the current value of the stress.
      */
     void hydraBase::initializeUnknownVector() {
-        const unsigned int sot_dim = getSOTDimension();
+        constexpr unsigned int sot_dimension = configuration::dimension * configuration::dimension;
 
         const floatVector *cauchyStress;
         TARDIGRADE_ERROR_TOOLS_CATCH(cauchyStress = getStress());
 
         const floatVector *configurations = deformation->get_configurations();
 
-        const unsigned int num_local_configs = configurations->size() / sot_dim;
+        const unsigned int num_local_configs = configurations->size() / sot_dimension;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             configurations->size() % num_local_configs == 0,
@@ -943,10 +943,10 @@ namespace tardigradeHydra {
 
         std::copy(std::begin(*cauchyStress), std::end(*cauchyStress), std::begin(X));
 
-        std::copy(std::begin(*configurations) + sot_dim, std::end(*configurations), std::begin(X) + sot_dim);
+        std::copy(std::begin(*configurations) + sot_dimension, std::end(*configurations), std::begin(X) + sot_dimension);
 
         std::copy(std::begin(*nonLinearSolveStateVariables), std::end(*nonLinearSolveStateVariables),
-                  std::begin(X) + num_local_configs * sot_dim);
+                  std::begin(X) + num_local_configs * sot_dimension);
 
         bool resetRequired = false;
 
