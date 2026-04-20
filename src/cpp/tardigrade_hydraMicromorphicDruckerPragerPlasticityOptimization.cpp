@@ -97,8 +97,6 @@ namespace tardigradeHydra {
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            auto dim = hydra->getDimension();
-
             auto numSecondOrderTensor = hydra->getSOTDimension();
 
             auto numThirdOrderTensor = hydra->getTOTDimension();
@@ -178,7 +176,7 @@ namespace tardigradeHydra {
             }
 
             offset = 2 * numSecondOrderTensor;
-            for (unsigned int i = 0; i < dim; i++) {
+            for (unsigned int i = 0; i < dimension; i++) {
                 for (unsigned int j = 0; j < numThirdOrderTensor; j++) {
                     (*jacobian.value)[numUnknowns * (i + 2 + row0) + j + offset] =
                         -(*dMicroGradientYielddStress)[numThirdOrderTensor * i + j];
@@ -193,7 +191,7 @@ namespace tardigradeHydra {
                 (*jacobian.value)[numUnknowns * (1 + row0) + j + offset] = -(*dMicroYielddFn)[j];
             }
 
-            for (unsigned int i = 0; i < dim; i++) {
+            for (unsigned int i = 0; i < dimension; i++) {
                 for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
                     (*jacobian.value)[numUnknowns * (i + 2 + row0) + j + offset] =
                         -(*dMicroGradientYielddFn)[(numConfigurations - 1) * numSecondOrderTensor * i + j];
@@ -202,7 +200,7 @@ namespace tardigradeHydra {
 
             // Sub-Micro deformation jacobians
             offset = 2 * numSecondOrderTensor + numThirdOrderTensor + (numConfigurations - 1) * numSecondOrderTensor;
-            for (unsigned int i = 0; i < dim; i++) {
+            for (unsigned int i = 0; i < dimension; i++) {
                 for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
                     (*jacobian.value)[numUnknowns * (i + 2 + row0) + j + offset] =
                         -(*dMicroGradientYielddChin)[(numConfigurations - 1) * numSecondOrderTensor * i + j];
@@ -217,7 +215,7 @@ namespace tardigradeHydra {
                 (*jacobian.value)[numUnknowns * (1 + row0) + j + offset] += -(*dMicroYielddStateVariables)[j];
             }
 
-            for (unsigned int i = 0; i < dim; i++) {
+            for (unsigned int i = 0; i < dimension; i++) {
                 for (unsigned int j = 0; j < (numPlasticMultipliers + numPlasticStrainLikeISVs); j++) {
                     (*jacobian.value)[numUnknowns * (i + 2 + row0) + j + offset] +=
                         -(*dMicroGradientYielddStateVariables)[numISVs * i + j];
@@ -252,8 +250,6 @@ namespace tardigradeHydra {
 
             auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            auto dim = hydra->getDimension();
-
             auto numSecondOrderTensor = hydra->getSOTDimension();
 
             auto numPlasticMultipliers = getNumPlasticMultipliers();
@@ -280,7 +276,7 @@ namespace tardigradeHydra {
                 (*dRdD.value)[numConfigurationUnknowns * (1 + row0) + j + offset] = -(*dMicroYielddF)[j];
             }
 
-            for (unsigned int i = 0; i < dim; i++) {
+            for (unsigned int i = 0; i < dimension; i++) {
                 for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
                     (*dRdD.value)[numConfigurationUnknowns * (i + 2 + row0) + j + offset] =
                         -(*dMicroGradientYielddF)[numSecondOrderTensor * i + j];
@@ -289,7 +285,7 @@ namespace tardigradeHydra {
 
             // Micro deformation jacobians
             offset = numSecondOrderTensor;
-            for (unsigned int i = 0; i < dim; i++) {
+            for (unsigned int i = 0; i < dimension; i++) {
                 for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
                     (*dRdD.value)[numConfigurationUnknowns * (i + 2 + row0) + j + offset] =
                         -(*dMicroGradientYielddChi)[numSecondOrderTensor * i + j];
@@ -385,8 +381,6 @@ namespace tardigradeHydra {
              * \param &values:  The values to be set in the unknown vector
              */
 
-            constexpr unsigned int dim = 3;
-
             auto numPlasticMultipliers = getNumPlasticMultipliers();
 
             const unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs()->size();
@@ -420,7 +414,7 @@ namespace tardigradeHydra {
                 values.push_back(delta);
             }
 
-            for (unsigned int i = 0; i < dim; i++) {
+            for (unsigned int i = 0; i < dimension; i++) {
                 values[i + 2] = std::fmax(0, -(*get_microGradientYield())[i]);
 
                 if ((*get_microGradientYield())[i] > 0) {
