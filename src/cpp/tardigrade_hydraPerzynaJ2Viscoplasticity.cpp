@@ -87,10 +87,6 @@ namespace tardigradeHydra {
              * \param isPrevious: Flag for whether this is the previous timestep
              */
 
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
             auto num_configs = hydra->getNumConfigurations();
 
             const floatVector *drivingStress;
@@ -169,7 +165,7 @@ namespace tardigradeHydra {
 
             floatType vonMises;
 
-            floatVector dVonMisesdDrivingStress(sot_dim, 0);
+            floatVector dVonMisesdDrivingStress(sot_dimension, 0);
 
             TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeStressTools::calculateVonMisesStress(*drivingStress, vonMises,
                                                                                         dVonMisesdDrivingStress));
@@ -186,20 +182,20 @@ namespace tardigradeHydra {
             *dYieldFunctiondStateVariables.value = {-(*yieldParameters)[1], -(*signTerm.value) * (*yieldParameters)[2]};
 
             auto map_dYieldFunctiondDrivingStress =
-                getFixedSizeMatrixMap<floatType, 1, sot_dim>(dYieldFunctiondDrivingStress.data());
+                getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dYieldFunctiondDrivingStress.data());
             auto map_dDrivingStressdCauchyStress =
-                getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDrivingStressdCauchyStress->data());
-            auto map_dDrivingStressdF = getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>(dDrivingStressdF->data());
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdCauchyStress->data());
+            auto map_dDrivingStressdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdF->data());
 
             auto map_dDrivingStressdSubFs =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dim>(dDrivingStressdSubFs->data(),
-                                                                  (num_configs - 1) * sot_dim);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dDrivingStressdSubFs->data(),
+                                                                  (num_configs - 1) * sot_dimension);
 
-            auto map_dYieldFunctiondCauchyStress = dYieldFunctiondCauchyStress.zeroMap<floatType, 1, sot_dim>();
+            auto map_dYieldFunctiondCauchyStress = dYieldFunctiondCauchyStress.zeroMap<floatType, 1, sot_dimension>();
 
-            auto map_dYieldFunctiondF = dYieldFunctiondF.zeroMap<floatType, 1, sot_dim>();
+            auto map_dYieldFunctiondF = dYieldFunctiondF.zeroMap<floatType, 1, sot_dimension>();
 
-            auto map_dYieldFunctiondSubFs = dYieldFunctiondSubFs.zeroMap<floatType, 1>((num_configs - 1) * sot_dim);
+            auto map_dYieldFunctiondSubFs = dYieldFunctiondSubFs.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
 
             map_dYieldFunctiondCauchyStress =
                 (map_dYieldFunctiondDrivingStress * map_dDrivingStressdCauchyStress).eval();
