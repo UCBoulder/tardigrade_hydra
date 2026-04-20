@@ -30,11 +30,9 @@ namespace tardigradeHydra {
 
             const unsigned int sot_dim = hydra->getSOTDimension();
 
-            if (parameters.size() < 10) {
-                TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error(
-                    "Parameter vector is expected to have a length of at least 10 but has a length of " +
-                    std::to_string(parameters.size())));
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() >= 10, "Parameter vector is expected to have a length of at least 10 but has a length of " +
+                    std::to_string(parameters.size())
+            )
 
             setNumVolumetricViscousTerms((unsigned int)(parameters[0] + 0.5));
 
@@ -42,16 +40,11 @@ namespace tardigradeHydra {
 
             setNumStateVariables(getNumVolumetricViscousTerms() + sot_dim * getNumIsochoricViscousTerms());
 
-            if (getNumStateVariables() != (getViscoelasticISVUpperIndex() - getViscoelasticISVLowerIndex())) {
-                std::string message =
-                    "The number of state variables required by the parameterization is not equal to the number of "
-                    "state variables indicated by the ISV bounds\n";
-                message += "   required # ISVs: " + std::to_string(getNumStateVariables()) + "\n";
-                message += "   ISV Lower Bound: " + std::to_string(getViscoelasticISVLowerIndex()) + "\n";
-                message += "   ISV Upper Bound: " + std::to_string(getViscoelasticISVUpperIndex()) + "\n";
-
-                TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error(message));
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK(getNumStateVariables() == (getViscoelasticISVUpperIndex() - getViscoelasticISVLowerIndex()),
+                "The number of state variables required by the parameterization is not equal to the number of state variables indicated by the ISV bounds\n   required # ISVs: " + std::to_string(getNumStateVariables())
+                + "\n   ISV Lower Bound: " + std::to_string(getViscoelasticISVLowerIndex())
+                + "\n   ISV Upper Bound: " + std::to_string(getViscoelasticISVUpperIndex()) + "\n"
+            )
 
             setKinf(parameters[2]);
 
@@ -63,17 +56,12 @@ namespace tardigradeHydra {
 
             unsigned int parameterCount = 10 + 2 * getNumVolumetricViscousTerms() + 2 * getNumIsochoricViscousTerms();
 
-            if (parameters.size() != parameterCount) {
-                std::string message = "The number of parameters provided is not consistent with the parameter counts\n";
-                message += "  num parameters:      " + std::to_string(parameters.size()) + "\n";
-                message += "  num viscous terms:   " + std::to_string(getNumVolumetricViscousTerms()) + "\n";
-                message += "  num isochoric terms: " + std::to_string(getNumIsochoricViscousTerms()) + "\n";
-                message +=
-                    "The number of parameters is 4 + 2 * ( numVolumetricViscousTerms + numIsochoricViscousTerms )\n";
-                message += "  required parameter count: " + std::to_string(parameterCount) + "\n";
-
-                TARDIGRADE_ERROR_TOOLS_CATCH(throw std::runtime_error(message));
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == parameterCount,
+                "The number of parameters provided is not consistent with the parameter counts\n  num parameters:      " + std::to_string(parameters.size())
+                + "\n  num viscous terms:   " + std::to_string(getNumVolumetricViscousTerms())
+                + "\n  num isochoric terms: " + std::to_string(getNumIsochoricViscousTerms())
+                + "\nThe number of parameters is 4 + 2 * ( numVolumetricViscousTerms + numIsochoricViscousTerms )\n  required parameter count: " + std::to_string(parameterCount) + "\n"
+            )
 
             unsigned int lb = 10;
             unsigned int ub = lb + getNumVolumetricViscousTerms();
