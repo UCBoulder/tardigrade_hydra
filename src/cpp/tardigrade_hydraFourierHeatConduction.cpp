@@ -171,7 +171,7 @@ namespace tardigradeHydra {
 
             auto dRdF = get_SetDataStorage_dRdF();
 
-            dRdF.zero(getNumEquations() * hydra->getDimension() * hydra->getDimension());
+            dRdF.zero(getNumEquations() * dimension * dimension);
         }
 
         void residual::setdRdAdditionalDOF() {
