@@ -25,7 +25,7 @@ namespace tardigradeHydra {
     template <unsigned int leading_rows, unsigned int size, unsigned int dim>
     floatVector DeformationBase::getSubConfiguration(const floatVector &configurations, const unsigned int &lowerIndex,
                                                      const unsigned int &upperIndex) {
-        constexpr unsigned int sot_dim = size * size;
+        constexpr unsigned int sot_dimension = size * size;
         TARDIGRADE_ERROR_TOOLS_CHECK(leading_rows == size, "leading_rows and size must be the same")
         TARDIGRADE_ERROR_TOOLS_CHECK(leading_rows == dim, "leading_rows and dim must be the same")
 
@@ -38,8 +38,8 @@ namespace tardigradeHydra {
 
         } else {
             DeformationDecompositionBase<leading_rows, size, dim> decomposition;
-            decomposition.getNetConfiguration(std::begin(configurations) + sot_dim * lowerIndex,
-                                              std::begin(configurations) + sot_dim * upperIndex, std::begin(Fsc),
+            decomposition.getNetConfiguration(std::begin(configurations) + sot_dimension * lowerIndex,
+                                              std::begin(configurations) + sot_dimension * upperIndex, std::begin(Fsc),
                                               std::end(Fsc));
         }
 
@@ -64,19 +64,19 @@ namespace tardigradeHydra {
     floatVector DeformationBase::getSubConfigurationJacobian(const floatVector  &configurations,
                                                              const unsigned int &lowerIndex,
                                                              const unsigned int &upperIndex) {
-        constexpr unsigned int sot_dim = size * size;
+        constexpr unsigned int sot_dimension = size * size;
         TARDIGRADE_ERROR_TOOLS_CHECK(leading_rows == size, "leading_rows and size must be the same")
         TARDIGRADE_ERROR_TOOLS_CHECK(leading_rows == dim, "leading_rows and dim must be the same")
-        const unsigned int num_incoming_configs = configurations.size() / sot_dim;
+        const unsigned int num_incoming_configs = configurations.size() / sot_dimension;
 
-        floatVector gradient(sot_dim * sot_dim * num_incoming_configs, 0);
+        floatVector gradient(sot_dimension * sot_dimension * num_incoming_configs, 0);
 
         if (lowerIndex != upperIndex) {
             DeformationDecompositionBase<leading_rows, size, dim> decomposition;
-            decomposition.getNetConfigurationJacobian(std::begin(configurations) + sot_dim * lowerIndex,
-                                                      std::begin(configurations) + sot_dim * upperIndex,
-                                                      std::begin(gradient), std::end(gradient), lowerIndex * sot_dim,
-                                                      num_incoming_configs * sot_dim);
+            decomposition.getNetConfigurationJacobian(std::begin(configurations) + sot_dimension * lowerIndex,
+                                                      std::begin(configurations) + sot_dimension * upperIndex,
+                                                      std::begin(gradient), std::end(gradient), lowerIndex * sot_dimension,
+                                                      num_incoming_configs * sot_dimension);
         }
 
         return gradient;
