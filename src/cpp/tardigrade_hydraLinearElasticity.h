@@ -81,6 +81,10 @@ namespace tardigradeHydra {
                 TARDIGRADE_ERROR_TOOLS_CATCH(
                     tardigradeHydra::linearElasticity::residual::decomposeParameterVector(parameters));
             }
+
+            //! The dimension of the second order tensor
+            static constexpr unsigned int sot_dimension = dimension * dimension;
+
             //! Get a pointer to the value of the lambda Lame parameter
             const floatType getLambda() { return _lambda; }
 
