@@ -199,7 +199,6 @@ namespace tardigradeHydra {
     void hydraBase::computeConfigurations(const floatVector *data_vector, const unsigned int start_index,
                                           const floatVector &total_transformation, floatVector &configurations,
                                           floatVector &inverseConfigurations, const bool add_eye) {
-        auto dim     = getDimension();
         constexpr unsigned int sot_dimension = configuration::dimension * configuration::dimension;
 
         auto num_configs = getNumConfigurations();
@@ -211,7 +210,7 @@ namespace tardigradeHydra {
 
         auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(inverseConfigurations.data());
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0);
+        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, configuration::dimension, configuration::dimension, configuration::dimension, 1, 0);
 
         // Initialize the first configuration with the total deformation gradient
         secondOrderTensor temp(sot_dimension, 0);
@@ -228,8 +227,8 @@ namespace tardigradeHydra {
                       configurations.begin() + sot_dimension * (i + 1));
 
             if (add_eye) {
-                for (unsigned int j = 0; j < dim; j++) {
-                    configurations[sot_dimension * (i + 1) + dim * j + j] += 1;
+                for (unsigned int j = 0; j < configuration::dimension; j++) {
+                    configurations[sot_dimension * (i + 1) + configuration::dimension * j + j] += 1;
                 }
             }
 
