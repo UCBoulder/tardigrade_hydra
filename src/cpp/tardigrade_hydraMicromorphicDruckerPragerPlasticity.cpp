@@ -3168,9 +3168,9 @@ namespace tardigradeHydra {
              * \param &chip: The following micro gradient from the reference to the intermediate configuration
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension();
+            constexpr unsigned int sot_dim = dimension * dimension;
 
-            const unsigned int tot_dim = hydra->getTOTDimension();
+            constexpr unsigned int tot_dim = dimension * dimension * dimension;
 
             const floatVector *stress;
 
@@ -3471,7 +3471,7 @@ namespace tardigradeHydra {
              *
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             constexpr unsigned int sot_dim = dim * dim;
 
@@ -3824,8 +3824,8 @@ namespace tardigradeHydra {
             }
 
             setBaseMicroGradientSmoothingRatio(getMicroGradientSmoothingRatio());
-            setMicroGradientC0(floatVector(hydra->getDimension(), (*get_microGradientHardeningParameters())[0]));
-            setMicroGradientA(floatVector(hydra->getDimension(), (*get_microGradientHardeningParameters())[1]));
+            setMicroGradientC0(floatVector(dimension, (*get_microGradientHardeningParameters())[0]));
+            setMicroGradientA(floatVector(dimension, (*get_microGradientHardeningParameters())[1]));
 
             set_macroFlowParameters(outputs[3]);
 
@@ -4429,7 +4429,7 @@ namespace tardigradeHydra {
              * \param isPrevious: A flag for whether to set the current (false) or previous (true) derivatives
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             constexpr unsigned int sot_dim = dim * dim;
 
@@ -4865,7 +4865,7 @@ namespace tardigradeHydra {
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) cohesions
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             const floatVector *plasticStrainLikeISVs;
 
@@ -4977,7 +4977,7 @@ namespace tardigradeHydra {
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) cohesions
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             const unsigned int num_pms = get_plasticMultipliers()->size();
 
@@ -5720,7 +5720,7 @@ namespace tardigradeHydra {
              * functions
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             constexpr unsigned int sot_dim = dim * dim;
 
@@ -6188,7 +6188,7 @@ namespace tardigradeHydra {
              * \param isPrevious: Whether to set the current (false) or previous (true) preceding deformation gradient
              */
 
-            auto sot_dim = hydra->getSOTDimension();
+            constexpr unsigned int sot_dim = dimension * dimension;
 
             auto num_configs = hydra->getNumConfigurations();
 
@@ -6333,7 +6333,7 @@ namespace tardigradeHydra {
              * \param isPrevious: Whether to set the current (false) or previous (true) preceding micro deformation
              */
 
-            auto sot_dim = hydra->getSOTDimension();
+            constexpr unsigned int sot_dim = dimension * dimension;
 
             auto num_configs = hydra->getNumConfigurations();
 
@@ -6428,7 +6428,7 @@ namespace tardigradeHydra {
              * deformation
              */
 
-            const unsigned int tot_dim = hydra->getTOTDimension();
+            constexpr unsigned int tot_dim = dimension * dimension * dimension;
 
             if (isPrevious) {
                 set_previousPrecedingGradientMicroDeformation(
@@ -6537,7 +6537,7 @@ namespace tardigradeHydra {
              * deformation
              */
 
-            const unsigned int tot_dim = hydra->getTOTDimension();
+            constexpr unsigned int tot_dim = dimension * dimension * dimension;
 
             if (isPrevious) {
                 set_previousPrecedingGradientMicroDeformation(
@@ -6628,7 +6628,7 @@ namespace tardigradeHydra {
              * calculated
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             constexpr unsigned int sot_dim = dim * dim;
 
@@ -7080,7 +7080,7 @@ namespace tardigradeHydra {
              * calculated
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             constexpr unsigned int sot_dim = dim * dim;
 
@@ -7825,9 +7825,9 @@ namespace tardigradeHydra {
              * Set all of the plastic deformations
              */
 
-            auto sot_dim = hydra->getSOTDimension();
+            constexpr unsigned int sot_dim = dimension * dimension;
 
-            auto tot_dim = hydra->getTOTDimension();
+            constexpr unsigned int tot_dim = dimension * dimension * dimension;
 
             auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
@@ -8212,7 +8212,7 @@ namespace tardigradeHydra {
              * \param addPreviousGradients: Flag for whether to compute the previous gradients
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             constexpr unsigned int sot_dim = dim * dim;
 
@@ -9052,11 +9052,11 @@ namespace tardigradeHydra {
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            auto dim = hydra->getDimension();
+            constexpr unsigned int dim = dimension;
 
-            auto numSecondOrderTensor = hydra->getSOTDimension();
+            constexpr unsigned int numSecondOrderTensor = dimension * dimension;
 
-            auto numThirdOrderTensor = hydra->getTOTDimension();
+            constexpr unsigned int numThirdOrderTensor = dimension * dimension * dimension;
 
             auto numConfigurations = hydra->getNumConfigurations();
 
@@ -9300,9 +9300,9 @@ namespace tardigradeHydra {
 
             auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            auto dim = hydra->getDimension();
+            constexpr unsigned int dim = dimension;
 
-            auto numSecondOrderTensor = hydra->getSOTDimension();
+            constexpr unsigned int numSecondOrderTensor = dimension * dimension;
 
             const floatVector *plasticMultipliers = get_plasticMultipliers();
 
@@ -9425,9 +9425,9 @@ namespace tardigradeHydra {
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            auto numSecondOrderTensor = hydra->getSOTDimension();
+            constexpr unsigned int numSecondOrderTensor = dimension * dimension;
 
-            auto numThirdOrderTensor = hydra->getTOTDimension();
+            constexpr unsigned int numThirdOrderTensor = dimension * dimension * dimension;
 
             auto numConfigurations = hydra->getNumConfigurations();
 
@@ -9470,9 +9470,9 @@ namespace tardigradeHydra {
              * Set the residual equation
              */
 
-            auto sot_dim = hydra->getSOTDimension();
+            constexpr unsigned int sot_dim = dimension * dimension;
 
-            auto tot_dim = hydra->getTOTDimension();
+            constexpr unsigned int tot_dim = dimension * dimension * dimension;
 
             const secondOrderTensor *updatedPlasticDeformationGradient;
 
@@ -9529,9 +9529,9 @@ namespace tardigradeHydra {
 
             auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension();
+            constexpr unsigned int numSecondOrderTensor = dimension * dimension;
 
-            const unsigned int numThirdOrderTensor = hydra->getTOTDimension();
+            constexpr unsigned int numThirdOrderTensor = dimension * dimension * dimension;
 
             const std::vector<unsigned int> stateVariableIndices = *getStateVariableIndices();
 
@@ -9741,9 +9741,9 @@ namespace tardigradeHydra {
 
             auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension();
+            constexpr unsigned int numSecondOrderTensor = dimension * dimension;
 
-            const unsigned int numThirdOrderTensor = hydra->getTOTDimension();
+            constexpr unsigned int numThirdOrderTensor = dimension * dimension * dimension;
 
             const std::vector<unsigned int> stateVariableIndices = *getStateVariableIndices();
 
@@ -9850,9 +9850,9 @@ namespace tardigradeHydra {
              * \param &Xp: The previously accepted value of X
              */
 
-            auto numSecondOrderTensor = hydra->getSOTDimension();
+            constexpr unsigned int numSecondOrderTensor = dimension * dimension;
 
-            auto numThirdOrderTensor = hydra->getTOTDimension();
+            constexpr unsigned int numThirdOrderTensor = dimension * dimension * dimension;
 
             auto plasticConfigurationIndex = getPlasticConfigurationIndex();
 
@@ -9999,7 +9999,7 @@ namespace tardigradeHydra {
              * Check if the relaxation is converged
              */
 
-            constexpr unsigned int dim         = 3;
+            constexpr unsigned int dim         = dimension;
             bool                   isConverged = true;
 
             floatType   baseMacroCohesion, baseMicroCohesion;
@@ -10054,7 +10054,7 @@ namespace tardigradeHydra {
              * \param &relaxedStep: The current relaxed step
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             // Save the base smoothing ratios
             if (relaxedStep == 0) {
@@ -10177,7 +10177,7 @@ namespace tardigradeHydra {
              * \param &microGradientSmoothingRatio: The micro-gradient smoothing ratios
              */
 
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dim = dimension;
 
             macroCohesion =
                 smoothLinearCohesion((*get_plasticStrainLikeISVs())[0], (*get_macroHardeningParameters())[1],
