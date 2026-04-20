@@ -116,6 +116,9 @@ namespace tardigradeHydra {
                     tardigradeHydra::dofVelocityGradientDeformation::residual::decomposeAdditionalDOF());
             }
 
+            //! The size of a second-order tensor
+            static constexpr unsigned int sot_dimension = dimension * dimension;
+
             //! Get the index of the mass-change configuration
             const unsigned int getDOFConfigurationIndex() { return _dofConfigurationIndex; }
 

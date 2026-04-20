@@ -33,20 +33,18 @@ namespace tardigradeHydra {
              * Decompose the additional DOF vectors
              */
 
-            constexpr unsigned int dim = 3;
-
-            TARDIGRADE_ERROR_TOOLS_CHECK(hydra->getAdditionalDOF()->size() >= getDOFVelocityGradientIndex() + dim * dim,
+            TARDIGRADE_ERROR_TOOLS_CHECK(hydra->getAdditionalDOF()->size() >= getDOFVelocityGradientIndex() + dimension * dimension,
                                          "The additional DOF vector is of size " +
                                              std::to_string(hydra->getAdditionalDOF()->size()) +
                                              " which is less than the required size of " +
-                                             std::to_string(getDOFVelocityGradientIndex() + dim * dim));
+                                             std::to_string(getDOFVelocityGradientIndex() + dimension * dimension));
 
             TARDIGRADE_ERROR_TOOLS_CHECK(hydra->getPreviousAdditionalDOF()->size() >=
-                                             getDOFVelocityGradientIndex() + dim * dim,
+                                             getDOFVelocityGradientIndex() + dimension * dimension,
                                          "The additional DOF vector is of size " +
                                              std::to_string(hydra->getPreviousAdditionalDOF()->size()) +
                                              " which is less than the required size of " +
-                                             std::to_string(getDOFVelocityGradientIndex() + dim * dim));
+                                             std::to_string(getDOFVelocityGradientIndex() + dimension * dimension));
 
             auto density = get_SetDataStorage_density();
 
@@ -62,12 +60,12 @@ namespace tardigradeHydra {
 
             *dofVelocityGradient.value =
                 secondOrderTensor(hydra->getAdditionalDOF()->begin() + getDOFVelocityGradientIndex(),
-                                  hydra->getAdditionalDOF()->begin() + getDOFVelocityGradientIndex() + dim * dim);
+                                  hydra->getAdditionalDOF()->begin() + getDOFVelocityGradientIndex() + dimension * dimension);
 
             *previousDOFVelocityGradient.value =
                 secondOrderTensor(hydra->getPreviousAdditionalDOF()->begin() + getDOFVelocityGradientIndex(),
                                   hydra->getPreviousAdditionalDOF()->begin() + getDOFVelocityGradientIndex() +
-                                      dim * dim);
+                                      dimension * dimension);
         }
 
         void residual::setPrecedingDeformationGradient(const bool &isPrevious) {
@@ -95,10 +93,6 @@ namespace tardigradeHydra {
              *
              * \param &isPrevious Flag for whether to set the current (false) or previous (true) values
              */
-
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
 
             auto num_configs = hydra->getNumConfigurations();
 
@@ -147,27 +141,27 @@ namespace tardigradeHydra {
                 dpFdFn = get_SetDataStorage_dPrecedingDeformationGradientdSubDeformationGradients();
             }
 
-            dpFdF.zero(sot_dim * sot_dim);
+            dpFdF.zero(sot_dimension * sot_dimension);
 
-            dpFdFn.zero(sot_dim * sot_dim * (num_configs - 1));
+            dpFdFn.zero(sot_dimension * sot_dimension * (num_configs - 1));
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < sot_dim; j++) {
-                    for (unsigned int k = 0; k < sot_dim; k++) {
-                        (*dpFdF.value)[sot_dim * i + k] +=
-                            dpFdFs[num_configs * sot_dim * i + j] * (*dF1dF)[sot_dim * j + k];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
+                    for (unsigned int k = 0; k < sot_dimension; k++) {
+                        (*dpFdF.value)[sot_dimension * i + k] +=
+                            dpFdFs[num_configs * sot_dimension * i + j] * (*dF1dF)[sot_dimension * j + k];
                     }
                 }
             }
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < (num_configs - 1) * sot_dim; j++) {
-                    (*dpFdFn.value)[(num_configs - 1) * sot_dim * i + j] +=
-                        dpFdFs[num_configs * sot_dim * i + j + sot_dim];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < (num_configs - 1) * sot_dimension; j++) {
+                    (*dpFdFn.value)[(num_configs - 1) * sot_dimension * i + j] +=
+                        dpFdFs[num_configs * sot_dimension * i + j + sot_dimension];
 
-                    for (unsigned int k = 0; k < sot_dim; k++) {
-                        (*dpFdFn.value)[(num_configs - 1) * sot_dim * i + j] +=
-                            dpFdFs[num_configs * sot_dim * i + k] * (*dF1dFn)[(num_configs - 1) * sot_dim * k + j];
+                    for (unsigned int k = 0; k < sot_dimension; k++) {
+                        (*dpFdFn.value)[(num_configs - 1) * sot_dimension * i + j] +=
+                            dpFdFs[num_configs * sot_dimension * i + k] * (*dF1dFn)[(num_configs - 1) * sot_dimension * k + j];
                     }
                 }
             }
@@ -262,10 +256,6 @@ namespace tardigradeHydra {
              * \param &isPrevious: Flag for whether this is being computed for the current or previous timestep
              */
 
-            constexpr unsigned int dim = 3;
-
-            auto sot_dim = dim * dim;
-
             auto num_configs = hydra->getNumConfigurations();
 
             const secondOrderTensor *velocityGradient;
@@ -327,19 +317,19 @@ namespace tardigradeHydra {
                                                                   *intermediateVelocityGradient.value, *dILdL.value,
                                                                   dILdPF);
 
-            dILdF.zero(sot_dim * sot_dim);
+            dILdF.zero(sot_dimension * sot_dimension);
 
-            dILdFn.zero((num_configs - 1) * sot_dim * sot_dim);
+            dILdFn.zero((num_configs - 1) * sot_dimension * sot_dimension);
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < sot_dim; j++) {
-                    for (unsigned int k = 0; k < sot_dim; k++) {
-                        (*dILdF.value)[sot_dim * i + k] += dILdPF[sot_dim * i + j] * (*dPFdF)[sot_dim * j + k];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
+                    for (unsigned int k = 0; k < sot_dimension; k++) {
+                        (*dILdF.value)[sot_dimension * i + k] += dILdPF[sot_dimension * i + j] * (*dPFdF)[sot_dimension * j + k];
                     }
 
-                    for (unsigned int k = 0; k < (num_configs - 1) * sot_dim; k++) {
-                        (*dILdFn.value)[(num_configs - 1) * sot_dim * i + k] +=
-                            dILdPF[sot_dim * i + j] * (*dPFdFn)[(num_configs - 1) * sot_dim * j + k];
+                    for (unsigned int k = 0; k < (num_configs - 1) * sot_dimension; k++) {
+                        (*dILdFn.value)[(num_configs - 1) * sot_dimension * i + k] +=
+                            dILdPF[sot_dimension * i + j] * (*dPFdFn)[(num_configs - 1) * sot_dimension * j + k];
                     }
                 }
             }
@@ -450,10 +440,6 @@ namespace tardigradeHydra {
              * \param &computePrevious: Compute the gradients w.r.t. previous values
              */
 
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
             auto num_configs = hydra->getNumConfigurations();
 
             const secondOrderTensor *intermediateVelocityGradient = get_dofIntermediateVelocityGradient();
@@ -505,30 +491,30 @@ namespace tardigradeHydra {
                 }
 
                 auto dFmdPreviousL = get_SetDataStorage_dDOFDeformationGradientdPreviousDOFVelocityGradient();
-                dFmdPreviousL.zero(sot_dim * sot_dim);
+                dFmdPreviousL.zero(sot_dimension * sot_dimension);
 
                 auto dFmdPreviousF = get_SetDataStorage_dDOFDeformationGradientdPreviousDeformationGradient();
-                dFmdPreviousF.zero(sot_dim * sot_dim);
+                dFmdPreviousF.zero(sot_dimension * sot_dimension);
 
                 auto dFmdPreviousFn = get_SetDataStorage_dDOFDeformationGradientdPreviousSubDeformationGradients();
-                dFmdPreviousFn.zero(sot_dim * sot_dim * (num_configs - 1));
+                dFmdPreviousFn.zero(sot_dimension * sot_dimension * (num_configs - 1));
 
-                for (unsigned int i = 0; i < sot_dim; i++) {
-                    for (unsigned int j = 0; j < sot_dim; j++) {
-                        (*dFmdPreviousFn.value)[(num_configs - 1) * sot_dim * i + j +
-                                                (getDOFConfigurationIndex() - 1) * sot_dim] += dFmdFp[sot_dim * i + j];
+                for (unsigned int i = 0; i < sot_dimension; i++) {
+                    for (unsigned int j = 0; j < sot_dimension; j++) {
+                        (*dFmdPreviousFn.value)[(num_configs - 1) * sot_dimension * i + j +
+                                                (getDOFConfigurationIndex() - 1) * sot_dimension] += dFmdFp[sot_dimension * i + j];
 
-                        for (unsigned int k = 0; k < sot_dim; k++) {
-                            (*dFmdPreviousL.value)[sot_dim * i + k] +=
-                                dFmdILp[sot_dim * i + j] * (*dILpdL)[sot_dim * j + k];
+                        for (unsigned int k = 0; k < sot_dimension; k++) {
+                            (*dFmdPreviousL.value)[sot_dimension * i + k] +=
+                                dFmdILp[sot_dimension * i + j] * (*dILpdL)[sot_dimension * j + k];
 
-                            (*dFmdPreviousF.value)[sot_dim * i + k] +=
-                                dFmdILp[sot_dim * i + j] * (*dILpdF)[sot_dim * j + k];
+                            (*dFmdPreviousF.value)[sot_dimension * i + k] +=
+                                dFmdILp[sot_dimension * i + j] * (*dILpdF)[sot_dimension * j + k];
                         }
 
-                        for (unsigned int k = 0; k < (num_configs - 1) * sot_dim; k++) {
-                            (*dFmdPreviousFn.value)[(num_configs - 1) * sot_dim * i + k] +=
-                                dFmdILp[sot_dim * i + j] * (*dILpdFn)[(num_configs - 1) * sot_dim * j + k];
+                        for (unsigned int k = 0; k < (num_configs - 1) * sot_dimension; k++) {
+                            (*dFmdPreviousFn.value)[(num_configs - 1) * sot_dimension * i + k] +=
+                                dFmdILp[sot_dimension * i + j] * (*dILpdFn)[(num_configs - 1) * sot_dimension * j + k];
                         }
                     }
                 }
@@ -549,25 +535,25 @@ namespace tardigradeHydra {
             }
 
             auto dFmdL = get_SetDataStorage_dDOFDeformationGradientdDOFVelocityGradient();
-            dFmdL.zero(sot_dim * sot_dim);
+            dFmdL.zero(sot_dimension * sot_dimension);
 
             auto dFmdF = get_SetDataStorage_dDOFDeformationGradientdDeformationGradient();
-            dFmdF.zero(sot_dim * sot_dim);
+            dFmdF.zero(sot_dimension * sot_dimension);
 
             auto dFmdFn = get_SetDataStorage_dDOFDeformationGradientdSubDeformationGradients();
-            dFmdFn.zero(sot_dim * sot_dim * (num_configs - 1));
+            dFmdFn.zero(sot_dimension * sot_dimension * (num_configs - 1));
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < sot_dim; j++) {
-                    for (unsigned int k = 0; k < sot_dim; k++) {
-                        (*dFmdL.value)[sot_dim * i + k] += dFmdIL[sot_dim * i + j] * (*dILdL)[sot_dim * j + k];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
+                    for (unsigned int k = 0; k < sot_dimension; k++) {
+                        (*dFmdL.value)[sot_dimension * i + k] += dFmdIL[sot_dimension * i + j] * (*dILdL)[sot_dimension * j + k];
 
-                        (*dFmdF.value)[sot_dim * i + k] += dFmdIL[sot_dim * i + j] * (*dILdF)[sot_dim * j + k];
+                        (*dFmdF.value)[sot_dimension * i + k] += dFmdIL[sot_dimension * i + j] * (*dILdF)[sot_dimension * j + k];
                     }
 
-                    for (unsigned int k = 0; k < (num_configs - 1) * sot_dim; k++) {
-                        (*dFmdFn.value)[(num_configs - 1) * sot_dim * i + k] +=
-                            dFmdIL[sot_dim * i + j] * (*dILdFn)[(num_configs - 1) * sot_dim * j + k];
+                    for (unsigned int k = 0; k < (num_configs - 1) * sot_dimension; k++) {
+                        (*dFmdFn.value)[(num_configs - 1) * sot_dimension * i + k] +=
+                            dFmdIL[sot_dimension * i + j] * (*dILdFn)[(num_configs - 1) * sot_dimension * j + k];
                     }
                 }
             }
@@ -631,28 +617,24 @@ namespace tardigradeHydra {
              * configurations.
              */
 
-            auto dim = hydra->getDimension();
-
-            auto sot_dim = dim * dim;
-
             auto dofConfigurationIndex = getDOFConfigurationIndex();
 
             auto residual = get_SetDataStorage_residual();
 
-            residual.zero(sot_dim + 2);
+            residual.zero(sot_dimension + 2);
 
             std::transform(std::begin(*get_dofDeformationGradient()), std::end(*get_dofDeformationGradient()),
-                           hydra->deformation->get_configurations()->begin() + dofConfigurationIndex * sot_dim,
+                           hydra->deformation->get_configurations()->begin() + dofConfigurationIndex * sot_dimension,
                            residual.begin(), std::minus<>());
 
             TARDIGRADE_ERROR_TOOLS_CHECK(getStateVariableIndices()->size() == 2,
                                          "The state variable indices must have a size of 2 instead of " +
                                              std::to_string(getStateVariableIndices()->size()));
 
-            (*residual.value)[sot_dim + 0] =
+            (*residual.value)[sot_dimension + 0] =
                 *get_massChangeRate() - (*hydra->get_nonLinearSolveStateVariables())[(*getStateVariableIndices())[0]];
 
-            (*residual.value)[sot_dim + 1] =
+            (*residual.value)[sot_dimension + 1] =
                 *get_internalHeatGenerationRate() -
                 (*hydra->get_nonLinearSolveStateVariables())[(*getStateVariableIndices())[1]];
         }
@@ -661,8 +643,6 @@ namespace tardigradeHydra {
             /*!
              * Set the values of the jacobian
              */
-
-            auto sot_dim = hydra->getSOTDimension();
 
             auto num_unknowns = hydra->getNumUnknowns();
 
@@ -675,19 +655,19 @@ namespace tardigradeHydra {
 
             const floatVector *dFmdFn = get_dDOFDeformationGradientdSubDeformationGradients();
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                (*jacobian.value)[num_unknowns * i + sot_dim * getDOFConfigurationIndex() + i] += -1;
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                (*jacobian.value)[num_unknowns * i + sot_dimension * getDOFConfigurationIndex() + i] += -1;
 
-                for (unsigned int j = 0; j < (num_configs - 1) * sot_dim; j++) {
-                    (*jacobian.value)[num_unknowns * i + j + sot_dim] += (*dFmdFn)[(num_configs - 1) * sot_dim * i + j];
+                for (unsigned int j = 0; j < (num_configs - 1) * sot_dimension; j++) {
+                    (*jacobian.value)[num_unknowns * i + j + sot_dimension] += (*dFmdFn)[(num_configs - 1) * sot_dimension * i + j];
                 }
             }
 
-            unsigned int offset = sot_dim * num_configs;
+            unsigned int offset = sot_dimension * num_configs;
 
-            (*jacobian.value)[num_unknowns * (sot_dim + 0) + offset + (*getStateVariableIndices())[0]] += -1;
+            (*jacobian.value)[num_unknowns * (sot_dimension + 0) + offset + (*getStateVariableIndices())[0]] += -1;
 
-            (*jacobian.value)[num_unknowns * (sot_dim + 1) + offset + (*getStateVariableIndices())[1]] += -1;
+            (*jacobian.value)[num_unknowns * (sot_dimension + 1) + offset + (*getStateVariableIndices())[1]] += -1;
         }
 
         void residual::setdRdT() {
@@ -695,11 +675,9 @@ namespace tardigradeHydra {
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension();
-
             auto dRdT = get_SetDataStorage_dRdT();
 
-            dRdT.zero(sot_dim + getStateVariableIndices()->size());
+            dRdT.zero(sot_dimension + getStateVariableIndices()->size());
         }
 
         void residual::setdRdF() {
@@ -707,9 +685,8 @@ namespace tardigradeHydra {
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            auto sot_dim = hydra->getSOTDimension();
             auto dRdF    = get_SetDataStorage_dRdF();
-            dRdF.zero(getNumEquations() * sot_dim);
+            dRdF.zero(getNumEquations() * sot_dimension);
             std::copy(std::begin(*get_dDOFDeformationGradientdDeformationGradient()),
                       std::end(*get_dDOFDeformationGradientdDeformationGradient()), dRdF.begin());
         }
@@ -718,8 +695,6 @@ namespace tardigradeHydra {
             /*!
              * Set the additional derivatives
              */
-
-            auto sot_dim = hydra->getSOTDimension();
 
             auto num_equations = getNumEquations();
 
@@ -733,36 +708,36 @@ namespace tardigradeHydra {
 
             auto offset = getDOFVelocityGradientIndex();
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < sot_dim; j++) {
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
                     (*dRdAdditionalDOF.value)[num_additional_dof * i + j + offset] +=
-                        (*dDOFDeformationdDOFVelocityGradient)[sot_dim * i + j];
+                        (*dDOFDeformationdDOFVelocityGradient)[sot_dimension * i + j];
                 }
             }
 
-            (*dRdAdditionalDOF.value)[num_additional_dof * (sot_dim + 0) + getDensityIndex()] +=
+            (*dRdAdditionalDOF.value)[num_additional_dof * (sot_dimension + 0) + getDensityIndex()] +=
                 *get_dMassChangeRatedDensity();
 
             std::transform(std::begin(*get_dMassChangeRatedDOFVelocityGradient()),
                            std::end(*get_dMassChangeRatedDOFVelocityGradient()),
-                           dRdAdditionalDOF.begin() + num_additional_dof * (sot_dim + 0) +
+                           dRdAdditionalDOF.begin() + num_additional_dof * (sot_dimension + 0) +
                                getDOFVelocityGradientIndex(),
-                           dRdAdditionalDOF.begin() + num_additional_dof * (sot_dim + 0) +
+                           dRdAdditionalDOF.begin() + num_additional_dof * (sot_dimension + 0) +
                                getDOFVelocityGradientIndex(),
                            std::plus<>());
 
-            (*dRdAdditionalDOF.value)[num_additional_dof * (sot_dim + 1) + getDensityIndex()] +=
+            (*dRdAdditionalDOF.value)[num_additional_dof * (sot_dimension + 1) + getDensityIndex()] +=
                 *get_dInternalHeatGenerationRatedDensity();
 
             std::transform(std::begin(*get_dInternalHeatGenerationRatedDOFVelocityGradient()),
                            std::end(*get_dInternalHeatGenerationRatedDOFVelocityGradient()),
-                           dRdAdditionalDOF.begin() + num_additional_dof * (sot_dim + 1) +
+                           dRdAdditionalDOF.begin() + num_additional_dof * (sot_dimension + 1) +
                                getDOFVelocityGradientIndex(),
-                           dRdAdditionalDOF.begin() + num_additional_dof * (sot_dim + 1) +
+                           dRdAdditionalDOF.begin() + num_additional_dof * (sot_dimension + 1) +
                                getDOFVelocityGradientIndex(),
                            std::plus<>());
 
-            (*dRdAdditionalDOF.value)[num_additional_dof * (sot_dim + 1) + getInternalEnergyIndex()] +=
+            (*dRdAdditionalDOF.value)[num_additional_dof * (sot_dimension + 1) + getInternalEnergyIndex()] +=
                 *get_dInternalHeatGenerationRatedInternalEnergy();
         }
 
@@ -774,37 +749,33 @@ namespace tardigradeHydra {
              * \param &values: The values to suggest
              */
 
-            auto sot_dim = hydra->getSOTDimension();
-
             auto configuration = getDOFConfigurationIndex();
 
             auto num_configurations = hydra->getNumConfigurations();
 
             const secondOrderTensor *dofDeformationGradient = get_dofDeformationGradient();
 
-            indices = std::vector<unsigned int>(sot_dim + 2, sot_dim * configuration);
+            indices = std::vector<unsigned int>(sot_dimension + 2, sot_dimension * configuration);
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
+            for (unsigned int i = 0; i < sot_dimension; i++) {
                 indices[i] += i;
             }
 
-            indices[sot_dim + 0] = sot_dim * num_configurations + (*getStateVariableIndices())[0];
-            indices[sot_dim + 1] = sot_dim * num_configurations + (*getStateVariableIndices())[1];
+            indices[sot_dimension + 0] = sot_dimension * num_configurations + (*getStateVariableIndices())[0];
+            indices[sot_dimension + 1] = sot_dimension * num_configurations + (*getStateVariableIndices())[1];
 
-            values = std::vector<floatType>(sot_dim + 2, 0);
+            values = std::vector<floatType>(sot_dimension + 2, 0);
 
             std::copy(std::begin(*dofDeformationGradient), std::end(*dofDeformationGradient), std::begin(values));
 
-            values[sot_dim + 0] = *get_massChangeRate();
-            values[sot_dim + 1] = *get_internalHeatGenerationRate();
+            values[sot_dimension + 0] = *get_massChangeRate();
+            values[sot_dimension + 1] = *get_internalHeatGenerationRate();
         }
 
         void residual::setMassChangeRate() {
             /*!
              * Set the mass-change rate from the external velocity gradient
              */
-
-            auto dim = hydra->getDimension();
 
             auto mass_change_rate_factor = get_massChangeRateFactor();
 
@@ -815,8 +786,8 @@ namespace tardigradeHydra {
             auto mass_change_rate = get_SetDataStorage_massChangeRate();
 
             (*mass_change_rate.value) = 0.;
-            for (unsigned int i = 0; i < dim; ++i) {
-                *mass_change_rate.value += (*mass_change_rate_factor) * (*density) * (*velocity_gradient)[dim * i + i];
+            for (unsigned int i = 0; i < dimension; ++i) {
+                *mass_change_rate.value += (*mass_change_rate_factor) * (*density) * (*velocity_gradient)[dimension * i + i];
             }
         }
 
@@ -824,10 +795,6 @@ namespace tardigradeHydra {
             /*!
              * Compute the gradients of the mass change rate
              */
-
-            auto dim = hydra->getDimension();
-
-            auto sot_dim = dim * dim;
 
             auto mass_change_rate_factor = get_massChangeRateFactor();
 
@@ -840,11 +807,11 @@ namespace tardigradeHydra {
             auto dCdV = get_SetDataStorage_dMassChangeRatedDOFVelocityGradient();
 
             *dCdRho.value = 0.;
-            *dCdV.value   = secondOrderTensor(sot_dim, 0);
+            *dCdV.value   = secondOrderTensor(sot_dimension, 0);
 
-            for (unsigned int i = 0; i < dim; ++i) {
-                *dCdRho.value += (*mass_change_rate_factor) * (*velocity_gradient)[dim * i + i];
-                (*dCdV.value)[dim * i + i] += (*mass_change_rate_factor) * (*density);
+            for (unsigned int i = 0; i < dimension; ++i) {
+                *dCdRho.value += (*mass_change_rate_factor) * (*velocity_gradient)[dimension * i + i];
+                (*dCdV.value)[dimension * i + i] += (*mass_change_rate_factor) * (*density);
             }
         }
 
@@ -857,8 +824,6 @@ namespace tardigradeHydra {
 
             auto normalize_by_density = getInternalEnergyScaledByDensity();
 
-            auto dim = hydra->getDimension();
-
             auto density = get_density();
 
             auto internal_energy = get_internalEnergy();
@@ -869,16 +834,16 @@ namespace tardigradeHydra {
 
             *internal_heat_generation_rate.value = 0.;
             if (normalize_by_density) {
-                for (unsigned int i = 0; i < dim; ++i) {
+                for (unsigned int i = 0; i < dimension; ++i) {
                     *internal_heat_generation_rate.value += (*internal_heat_generation_rate_factor) *
                                                             (*internal_energy) / (*density) *
-                                                            (*velocity_gradient)[dim * i + i];
+                                                            (*velocity_gradient)[dimension * i + i];
                 }
 
             } else {
-                for (unsigned int i = 0; i < dim; ++i) {
+                for (unsigned int i = 0; i < dimension; ++i) {
                     *internal_heat_generation_rate.value += (*internal_heat_generation_rate_factor) *
-                                                            (*internal_energy) * (*velocity_gradient)[dim * i + i];
+                                                            (*internal_energy) * (*velocity_gradient)[dimension * i + i];
                 }
             }
         }
@@ -891,8 +856,6 @@ namespace tardigradeHydra {
             auto internal_heat_generation_rate_factor = get_internalHeatGenerationRateFactor();
 
             auto normalize_by_density = getInternalEnergyScaledByDensity();
-
-            auto dim = hydra->getDimension();
 
             auto density = get_density();
 
@@ -908,21 +871,21 @@ namespace tardigradeHydra {
 
             *drdRho.value = 0.;
             *drdE.value   = 0.;
-            *drdV.value   = secondOrderTensor(dim * dim, 0.);
+            *drdV.value   = secondOrderTensor(dimension * dimension, 0.);
             if (normalize_by_density) {
-                for (unsigned int i = 0; i < dim; ++i) {
+                for (unsigned int i = 0; i < dimension; ++i) {
                     *drdRho.value -= (*internal_heat_generation_rate_factor) * (*internal_energy) /
-                                     ((*density) * (*density)) * (*velocity_gradient)[dim * i + i];
+                                     ((*density) * (*density)) * (*velocity_gradient)[dimension * i + i];
                     *drdE.value +=
-                        (*internal_heat_generation_rate_factor) / (*density) * (*velocity_gradient)[dim * i + i];
-                    (*drdV.value)[dim * i + i] +=
+                        (*internal_heat_generation_rate_factor) / (*density) * (*velocity_gradient)[dimension * i + i];
+                    (*drdV.value)[dimension * i + i] +=
                         (*internal_heat_generation_rate_factor) * (*internal_energy) / (*density);
                 }
 
             } else {
-                for (unsigned int i = 0; i < dim; ++i) {
-                    *drdE.value += (*internal_heat_generation_rate_factor) * (*velocity_gradient)[dim * i + i];
-                    (*drdV.value)[dim * i + i] += (*internal_heat_generation_rate_factor) * (*internal_energy);
+                for (unsigned int i = 0; i < dimension; ++i) {
+                    *drdE.value += (*internal_heat_generation_rate_factor) * (*velocity_gradient)[dimension * i + i];
+                    (*drdV.value)[dimension * i + i] += (*internal_heat_generation_rate_factor) * (*internal_energy);
                 }
             }
         }
