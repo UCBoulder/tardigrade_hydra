@@ -51,6 +51,7 @@ namespace tardigradeHydra {
     }
 
     namespace unit_test {
+        class HydraBaseTester;  //!< Friend class for HydraBase for unit testing
         class hydraBaseTester;  //!< Friend class for hydraBase for unit testing
     }  // namespace unit_test
 
@@ -197,8 +198,14 @@ namespace tardigradeHydra {
         const unsigned int _num_nonlinear_solve_state_variables;
     };
 
+    class HydraClassical3DConfiguration {
+        public:
+        protected:
+        private:
+    };
+
     /*!
-     * hydraBase: A base class which can be used to construct finite deformation material models.
+     * HydraBase: A base class template which can be used to construct finite deformation material models.
      *
      * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
      * more rapidly than would be possible previously. The user can define as many different configurations as desired
@@ -206,7 +213,13 @@ namespace tardigradeHydra {
      *
      * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
      */
-    class hydraBase : public CachingDataBase {
+    template<class configuration>
+    class HydraBase : public CachingDataBase { };
+
+    /*!
+     * A base class for 3D Classical continuum
+     */
+    class hydraBase : public HydraBase<HydraClassical3DConfiguration> {
        public:
         // Constructors
         //! Default constructor for hydraBase
