@@ -97,9 +97,9 @@ namespace tardigradeHydra {
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            auto numSecondOrderTensor = hydra->getSOTDimension();
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
-            auto numThirdOrderTensor = hydra->getTOTDimension();
+            constexpr unsigned int tot_dimension = dimension * dimension * dimension;
 
             auto numConfigurations = hydra->getNumConfigurations();
 
@@ -156,7 +156,7 @@ namespace tardigradeHydra {
             }
 
             row0   = numPlasticMultipliers;
-            offset = numConfigurations * (2 * numSecondOrderTensor + numThirdOrderTensor);
+            offset = numConfigurations * (2 * sot_dimension + tot_dimension);
             for (unsigned int i = 0; i < numPlasticStrainLikeISVs; i++) {
                 (*jacobian.value)[numUnknowns * (i + row0) + i + offset + numPlasticMultipliers] -= 1;
 
@@ -168,47 +168,47 @@ namespace tardigradeHydra {
             }
 
             row0   = numPlasticMultipliers + numPlasticStrainLikeISVs;
-            offset = numSecondOrderTensor;
-            for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+            offset = sot_dimension;
+            for (unsigned int j = 0; j < sot_dimension; j++) {
                 (*jacobian.value)[numUnknowns * (0 + row0) + j] = -(*dMacroYielddStress)[j];
 
                 (*jacobian.value)[numUnknowns * (1 + row0) + j + offset] = -(*dMicroYielddStress)[j];
             }
 
-            offset = 2 * numSecondOrderTensor;
+            offset = 2 * sot_dimension;
             for (unsigned int i = 0; i < dimension; i++) {
-                for (unsigned int j = 0; j < numThirdOrderTensor; j++) {
+                for (unsigned int j = 0; j < tot_dimension; j++) {
                     (*jacobian.value)[numUnknowns * (i + 2 + row0) + j + offset] =
-                        -(*dMicroGradientYielddStress)[numThirdOrderTensor * i + j];
+                        -(*dMicroGradientYielddStress)[tot_dimension * i + j];
                 }
             }
 
             // Sub-Deformation gradient jacobians
-            offset = 2 * numSecondOrderTensor + numThirdOrderTensor;
-            for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+            offset = 2 * sot_dimension + tot_dimension;
+            for (unsigned int j = 0; j < (numConfigurations - 1) * sot_dimension; j++) {
                 (*jacobian.value)[numUnknowns * (0 + row0) + j + offset] = -(*dMacroYielddFn)[j];
 
                 (*jacobian.value)[numUnknowns * (1 + row0) + j + offset] = -(*dMicroYielddFn)[j];
             }
 
             for (unsigned int i = 0; i < dimension; i++) {
-                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                for (unsigned int j = 0; j < (numConfigurations - 1) * sot_dimension; j++) {
                     (*jacobian.value)[numUnknowns * (i + 2 + row0) + j + offset] =
-                        -(*dMicroGradientYielddFn)[(numConfigurations - 1) * numSecondOrderTensor * i + j];
+                        -(*dMicroGradientYielddFn)[(numConfigurations - 1) * sot_dimension * i + j];
                 }
             }
 
             // Sub-Micro deformation jacobians
-            offset = 2 * numSecondOrderTensor + numThirdOrderTensor + (numConfigurations - 1) * numSecondOrderTensor;
+            offset = 2 * sot_dimension + tot_dimension + (numConfigurations - 1) * sot_dimension;
             for (unsigned int i = 0; i < dimension; i++) {
-                for (unsigned int j = 0; j < (numConfigurations - 1) * numSecondOrderTensor; j++) {
+                for (unsigned int j = 0; j < (numConfigurations - 1) * sot_dimension; j++) {
                     (*jacobian.value)[numUnknowns * (i + 2 + row0) + j + offset] =
-                        -(*dMicroGradientYielddChin)[(numConfigurations - 1) * numSecondOrderTensor * i + j];
+                        -(*dMicroGradientYielddChin)[(numConfigurations - 1) * sot_dimension * i + j];
                 }
             }
 
             // State Variable Jacobians
-            offset = numConfigurations * (2 * numSecondOrderTensor + numThirdOrderTensor);
+            offset = numConfigurations * (2 * sot_dimension + tot_dimension);
             for (unsigned int j = 0; j < (numPlasticMultipliers + numPlasticStrainLikeISVs); j++) {
                 (*jacobian.value)[numUnknowns * (0 + row0) + j + offset] += -(*dMacroYielddStateVariables)[j];
 
@@ -222,7 +222,7 @@ namespace tardigradeHydra {
                 }
             }
 
-            offset = numConfigurations * (2 * numSecondOrderTensor + numThirdOrderTensor) + numPlasticMultipliers +
+            offset = numConfigurations * (2 * sot_dimension + tot_dimension) + numPlasticMultipliers +
                      numPlasticStrainLikeISVs;
             for (unsigned int i = 0; i < 5; i++) {
                 (*jacobian.value)[numUnknowns * (i + row0) + i + offset] -= 1;
@@ -250,7 +250,7 @@ namespace tardigradeHydra {
 
             auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount();
 
-            auto numSecondOrderTensor = hydra->getSOTDimension();
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             auto numPlasticMultipliers = getNumPlasticMultipliers();
 
@@ -270,25 +270,25 @@ namespace tardigradeHydra {
             unsigned int offset = 0;
             unsigned int row0   = numPlasticMultipliers + numPlasticStrainLikeISVs;
 
-            for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+            for (unsigned int j = 0; j < sot_dimension; j++) {
                 (*dRdD.value)[numConfigurationUnknowns * (0 + row0) + j + offset] = -(*dMacroYielddF)[j];
 
                 (*dRdD.value)[numConfigurationUnknowns * (1 + row0) + j + offset] = -(*dMicroYielddF)[j];
             }
 
             for (unsigned int i = 0; i < dimension; i++) {
-                for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
                     (*dRdD.value)[numConfigurationUnknowns * (i + 2 + row0) + j + offset] =
-                        -(*dMicroGradientYielddF)[numSecondOrderTensor * i + j];
+                        -(*dMicroGradientYielddF)[sot_dimension * i + j];
                 }
             }
 
             // Micro deformation jacobians
-            offset = numSecondOrderTensor;
+            offset = sot_dimension;
             for (unsigned int i = 0; i < dimension; i++) {
-                for (unsigned int j = 0; j < numSecondOrderTensor; j++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
                     (*dRdD.value)[numConfigurationUnknowns * (i + 2 + row0) + j + offset] =
-                        -(*dMicroGradientYielddChi)[numSecondOrderTensor * i + j];
+                        -(*dMicroGradientYielddChi)[sot_dimension * i + j];
                 }
             }
         }
