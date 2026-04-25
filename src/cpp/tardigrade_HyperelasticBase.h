@@ -105,6 +105,12 @@ namespace tardigradeHydra {
 
         virtual void setdRdF() override;
 
+        template<typename T>
+        inline T compute_I1(const bool isPrevious);
+
+        template<class dI1dFe_iter>
+        inline void compute_dI1dFe(const bool isPrevious, dI1dFe_iter dI1dFe_begin, dI1dFe_iter dI1dFe_end);
+
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Fe, secondOrderTensor, setFe)
 
@@ -178,6 +184,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-#include "tardigrade_ResidualBase.tpp"
+#include "tardigrade_HyperelasticBase.tpp"
 
 #endif

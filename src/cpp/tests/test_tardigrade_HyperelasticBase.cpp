@@ -690,6 +690,156 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setJe_derivatives, *boost::unit_test:
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_HyperelasticBase_compute_I1, *boost::unit_test::tolerance(1e-6)) {
+    class HyperelasticBaseMock : public tardigradeHydra::HyperelasticBase {
+       public:
+        using tardigradeHydra::HyperelasticBase::HyperelasticBase;
+
+        tardigradeHydra::floatVector Fe = {2, 1, 2, 3, 6, 3, 2, 1, 10};
+
+        tardigradeHydra::floatVector previousFe = {1.1, 0.2, 0.3, 0.4, 1.5, 0.6, 0.7, 0.8, 1.9};
+
+        tardigradeHydra::floatType public_compute_I1(const bool isPrevious){
+            return compute_I1<tardigradeHydra::floatType>(isPrevious);
+        }
+
+        void public_compute_dI1dFe(const bool isPrevious, std::vector<double> dI1dFe){
+            compute_dI1dFe(isPrevious, std::begin(dI1dFe), std::end(dI1dFe));
+        }
+
+       protected:
+        virtual void setFe(const bool isPrevious) override {
+            if (isPrevious) {
+                auto v   = get_SetDataStorage_previousFe();
+                *v.value = previousFe;
+
+            } else {
+                auto v   = get_SetDataStorage_Fe();
+                *v.value = Fe;
+            }
+        }
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+       public:
+        HyperelasticBaseMock elasticity;
+
+        tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
+
+        unsigned int elasticitySize = 9;
+
+        using tardigradeHydra::hydraBase::hydraBase;
+
+        using tardigradeHydra::hydraBase::setResidualClasses;
+
+        virtual void setResidualClasses() {
+            elasticity = HyperelasticBaseMock(this, elasticitySize);
+
+            remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>(this, 9);
+
+            std::vector<tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> *> residuals(2);
+
+            residuals[0] = &elasticity;
+
+            residuals[1] = &remainder;
+
+            setResidualClasses(residuals);
+        }
+    };
+
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = {9.92294371e-01, -1.32912834e-02, 3.57093896e-02,
+                                                        2.70156033e-02, 9.77585948e-01,  4.76270457e-04,
+                                                        4.42875587e-02, -4.95172679e-02, 9.54139963e-01};
+
+    tardigradeHydra::floatVector previousDeformationGradient = {
+        1.02150915, -0.01813721, -0.01347062, 0.0406867, 1.0450375, 0.0038319, 0.07107588, 0.0013805, 0.98514977};
+
+    tardigradeHydra::floatVector additionalDOF = {};
+
+    tardigradeHydra::floatVector previousAdditionalDOF = {};
+
+    tardigradeHydra::DOFStorageBase dof(time, deltaTime, temperature, previousTemperature, deformationGradient,
+                                        previousDeformationGradient, additionalDOF, previousAdditionalDOF);
+
+    tardigradeHydra::floatVector previousStateVariables = {0.00315514, 0.00318276, 0.0134401,   0.03494318, 0.02244553,
+                                                           0.01110235, 0.02224434, -0.01770411, -0.01382113};
+
+    tardigradeHydra::floatVector parameters = {60., 100.0, 0.94, 50., 0.7, 1e3, 1.2, 1.4};
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    tardigradeHydra::ModelConfigurationBase model_configuration(previousStateVariables, parameters, numConfigurations,
+                                                                numNonLinearSolveStateVariables);
+
+    hydraBaseMock hydra(dof, model_configuration);
+
+    hydra.initialize();
+
+    tardigradeHydra::floatType answer = 18;
+
+    tardigradeHydra::floatType previousAnswer = 4.5;
+
+    HyperelasticBaseMock R(&hydra, 9);
+
+    BOOST_TEST(answer == R.public_compute_I1(false));
+
+    BOOST_TEST(previousAnswer == R.public_compute_I1(true));
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_VAR = 9;
+        constexpr unsigned int NUM_OUT = 1;
+        std::vector<double> x = deformationGradient;
+        std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
+
+        for (unsigned int i = 0; i < NUM_VAR; ++i){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            HyperelasticBaseMock Rp(&hydra, 9);
+            HyperelasticBaseMock Rm(&hydra, 9);
+
+            Rp.Fe = xp;
+            Rm.Fe = xm;
+
+            double vp = Rp.public_compute_I1(true);
+            double vm = Rm.public_compute_I1(true);
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                jacobian[NUM_VAR * j + i] = (vp-vm)/(2*delta);
+
+            }
+
+        }
+
+        std::vector<double> result(NUM_VAR*NUM_OUT,0);
+
+        R.public_compute_dI1dFe(true, result);
+
+        BOOST_TEST(result == jacobian, CHECK_PER_ELEMENT);
+
+    }
+
+}
+
 BOOST_AUTO_TEST_CASE(test_HyperelasticBase_setCauchyStress, *boost::unit_test::tolerance(1e-6)) {
     class HyperelasticBaseMock : public tardigradeHydra::HyperelasticBase {
        public:
