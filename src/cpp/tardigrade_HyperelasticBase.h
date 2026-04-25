@@ -37,6 +37,24 @@ namespace tardigradeHydra {
 
         virtual void setPreviousdFedFn();
 
+        virtual void setJe(bool isPrevious);
+
+        virtual void setJe();
+
+        virtual void setPreviousJe();
+
+        virtual void setdJedFe(bool isPrevious);
+
+        virtual void setdJedFe();
+
+        virtual void setdPreviousJedPreviousFe();
+
+        virtual void setd2JedFe2(bool isPrevious);
+
+        virtual void setd2JedFe2();
+
+        virtual void setd2PreviousJedPreviousFe2();
+
         virtual void setStrainEnergy(const bool isPrevious);
 
         virtual void setStrainEnergy();
@@ -99,6 +117,21 @@ namespace tardigradeHydra {
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousdFedF, fourthOrderTensor, setPreviousdFedF)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousdFedFn, floatVector, setPreviousdFedFn)
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Je, floatType, setJe)
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousJe, floatType, setPreviousJe)
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dJedFe, secondOrderTensor, setdJedFe)
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousJedPreviousFe, secondOrderTensor,
+                                                  setdPreviousJedPreviousFe)
+
+        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2JedFe2, fourthOrderTensor, setd2JedFe2)
+
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJedPreviousFe2, fourthOrderTensor,
+                                                  setd2PreviousJedPreviousFe2)
+
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, strainEnergy, floatType, setStrainEnergy)
 
