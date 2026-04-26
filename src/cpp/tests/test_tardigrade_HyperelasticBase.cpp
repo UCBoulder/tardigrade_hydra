@@ -703,8 +703,12 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_compute_I1, *boost::unit_test::tolera
             return compute_I1<tardigradeHydra::floatType>(isPrevious);
         }
 
-        void public_compute_dI1dFe(const bool isPrevious, std::vector<double> dI1dFe){
+        void public_compute_dI1dFe(const bool isPrevious, std::vector<double> &dI1dFe){
             compute_dI1dFe(isPrevious, std::begin(dI1dFe), std::end(dI1dFe));
+        }
+
+        void public_compute_d2I1dFe2(std::vector<double> &d2I1dFe2){
+            compute_d2I1dFe2(std::begin(d2I1dFe2), std::end(d2I1dFe2));
         }
 
        protected:
@@ -785,9 +789,9 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_compute_I1, *boost::unit_test::tolera
 
     hydra.initialize();
 
-    tardigradeHydra::floatType answer = 18;
+    tardigradeHydra::floatType answer = 168;
 
-    tardigradeHydra::floatType previousAnswer = 4.5;
+    tardigradeHydra::floatType previousAnswer = 8.85;
 
     HyperelasticBaseMock R(&hydra, 9);
 
@@ -800,7 +804,99 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_compute_I1, *boost::unit_test::tolera
         double eps = 1e-6;
         constexpr unsigned int NUM_VAR = 9;
         constexpr unsigned int NUM_OUT = 1;
-        std::vector<double> x = deformationGradient;
+        std::vector<double> x = R.Fe;
+        std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
+
+        for (unsigned int i = 0; i < NUM_VAR; ++i){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            hydraBaseMock hydrap(dof,model_configuration); 
+            hydraBaseMock hydram(dof,model_configuration); 
+
+            hydrap.initialize();
+            hydram.initialize();
+
+            HyperelasticBaseMock Rp(&hydrap, 9);
+            HyperelasticBaseMock Rm(&hydram, 9);
+
+            Rp.Fe = xp;
+            Rm.Fe = xm;
+
+            double vp = Rp.public_compute_I1(false);
+            double vm = Rm.public_compute_I1(false);
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                jacobian[NUM_VAR * j + i] = (vp-vm)/(2*delta);
+
+            }
+
+        }
+
+        std::vector<double> result(NUM_VAR*NUM_OUT,0);
+
+        R.public_compute_dI1dFe(false, result);
+
+        BOOST_TEST(result == jacobian, CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_VAR = 9;
+        constexpr unsigned int NUM_OUT = 1;
+        std::vector<double> x = R.previousFe;
+        std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
+
+        for (unsigned int i = 0; i < NUM_VAR; ++i){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            HyperelasticBaseMock Rp(&hydra, 9);
+            HyperelasticBaseMock Rm(&hydra, 9);
+
+            Rp.previousFe = xp;
+            Rm.previousFe = xm;
+
+            double vp = Rp.public_compute_I1(true);
+            double vm = Rm.public_compute_I1(true);
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                jacobian[NUM_VAR * j + i] = (vp-vm)/(2*delta);
+
+            }
+
+        }
+
+        std::vector<double> result(NUM_VAR*NUM_OUT,0);
+
+        R.public_compute_dI1dFe(true, result);
+
+        BOOST_TEST(result == jacobian, CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_VAR = 9;
+        constexpr unsigned int NUM_OUT = 9;
+        std::vector<double> x = R.Fe;
         std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
 
         for (unsigned int i = 0; i < NUM_VAR; ++i){
@@ -819,12 +915,15 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_compute_I1, *boost::unit_test::tolera
             Rp.Fe = xp;
             Rm.Fe = xm;
 
-            double vp = Rp.public_compute_I1(true);
-            double vm = Rm.public_compute_I1(true);
+            std::vector<double> vp(NUM_OUT,0);
+            std::vector<double> vm(NUM_OUT,0);
+
+            Rp.public_compute_dI1dFe(false,vp);
+            Rm.public_compute_dI1dFe(false,vm);
 
             for ( unsigned int j = 0; j < NUM_OUT; ++j ){
 
-                jacobian[NUM_VAR * j + i] = (vp-vm)/(2*delta);
+                jacobian[NUM_VAR * j + i] = (vp[j]-vm[j])/(2*delta);
 
             }
 
@@ -832,7 +931,53 @@ BOOST_AUTO_TEST_CASE(test_HyperelasticBase_compute_I1, *boost::unit_test::tolera
 
         std::vector<double> result(NUM_VAR*NUM_OUT,0);
 
-        R.public_compute_dI1dFe(true, result);
+        R.public_compute_d2I1dFe2(result);
+
+        BOOST_TEST(result == jacobian, CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_VAR = 9;
+        constexpr unsigned int NUM_OUT = 9;
+        std::vector<double> x = R.previousFe;
+        std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
+
+        for (unsigned int i = 0; i < NUM_VAR; ++i){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::vector<double> xp = x;
+            std::vector<double> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            HyperelasticBaseMock Rp(&hydra, 9);
+            HyperelasticBaseMock Rm(&hydra, 9);
+
+            Rp.previousFe = xp;
+            Rm.previousFe = xm;
+
+            std::vector<double> vp(NUM_OUT,0);
+            std::vector<double> vm(NUM_OUT,0);
+
+            Rp.public_compute_dI1dFe(true,vp);
+            Rm.public_compute_dI1dFe(true,vm);
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                jacobian[NUM_VAR * j + i] = (vp[j]-vm[j])/(2*delta);
+
+            }
+
+        }
+
+        std::vector<double> result(NUM_VAR*NUM_OUT,0);
+
+        R.public_compute_d2I1dFe2(result);
 
         BOOST_TEST(result == jacobian, CHECK_PER_ELEMENT);
 

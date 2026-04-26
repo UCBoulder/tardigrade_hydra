@@ -111,6 +111,9 @@ namespace tardigradeHydra {
         template<class dI1dFe_iter>
         inline void compute_dI1dFe(const bool isPrevious, dI1dFe_iter dI1dFe_begin, dI1dFe_iter dI1dFe_end);
 
+        template<class d2I1dFe2_iter>
+        inline void compute_d2I1dFe2(d2I1dFe2_iter d2I1dFe2_begin, d2I1dFe2_iter d2I1dFe2_end);
+
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Fe, secondOrderTensor, setFe)
 
