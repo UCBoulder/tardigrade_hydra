@@ -114,14 +114,17 @@ namespace tardigradeHydra {
         template<class d2I1dFe2_iter>
         inline void compute_d2I1dFe2(d2I1dFe2_iter d2I1dFe2_begin, d2I1dFe2_iter d2I1dFe2_end);
 
-//        template<typename T>
-//        inline T compute_I2(const bool isPrevious);
-//
-//        template<class dI2dFe_iter>
-//        inline void compute_dI2dFe(const bool isPrevious, dI2dFe_iter dI2dFe_begin, dI2dFe_iter dI2dFe_end);
-//
-//        template<class d2I2dFe2_iter>
-//        inline void compute_d2I2dFe2(d2I2dFe2_iter d2I2dFe2_begin, d2I2dFe2_iter d2I2dFe2_end);
+        template<typename C_iter>
+        void compute_right_cauchy_green_deformation_tensor(const bool isPrevious, C_iter C_begin, C_iter C_end);
+
+        template<typename T>
+        inline T compute_I2(const bool isPrevious);
+
+        template<class dI2dFe_iter>
+        inline void compute_dI2dFe(const bool isPrevious, dI2dFe_iter dI2dFe_begin, dI2dFe_iter dI2dFe_end);
+
+        template<class d2I2dFe2_iter>
+        inline void compute_d2I2dFe2(const bool isPrevious, d2I2dFe2_iter d2I2dFe2_begin, d2I2dFe2_iter d2I2dFe2_end);
 
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Fe, secondOrderTensor, setFe)
