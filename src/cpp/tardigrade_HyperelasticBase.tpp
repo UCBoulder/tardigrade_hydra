@@ -6,6 +6,9 @@
  ******************************************************************************
  */
 
+#include<numeric>
+#include<functional>
+
 namespace tardigradeHydra {
 
     /*!
@@ -16,8 +19,6 @@ namespace tardigradeHydra {
     template<typename T>
     T HyperelasticBase::compute_I1(const bool isPrevious){
 
-        constexpr unsigned int dim = 3; //TODO: Replace with constant value from container
-
         const secondOrderTensor *Fe;
 
         if (isPrevious){
@@ -26,17 +27,7 @@ namespace tardigradeHydra {
             Fe = get_Fe();
         }
 
-        T I1 = T();
-
-        for ( unsigned int i = 0; i < dim; ++i ){
-
-            for ( unsigned int j = 0; j < dim; ++j ){
-
-                I1 += (*Fe)[dim * i + j] * (*Fe)[dim * i + j];
-
-            }
-
-        }
+        T I1 = std::inner_product(std::begin(*Fe),std::end(*Fe),std::begin(*Fe),T());
 
         return I1;
 
@@ -52,9 +43,9 @@ namespace tardigradeHydra {
     template<class dI1dFe_iter>
     void HyperelasticBase::compute_dI1dFe(const bool isPrevious, dI1dFe_iter dI1dFe_begin, dI1dFe_iter dI1dFe_end){
 
-        using dI1dFe_type = typename std::iterator_traits<dI1dFe_iter>::value_type;
-
+        TARDIGRADE_ERROR_TOOLS_EVAL(
         constexpr unsigned int dim = 3; //TODO: Replace with constant value from container
+        )
 
         const secondOrderTensor *Fe;
 
@@ -66,17 +57,9 @@ namespace tardigradeHydra {
 
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(dI1dFe_end - dI1dFe_begin) == dim * dim, "dI1dFe has a size of " + std::to_string((unsigned int)(dI1dFe_end - dI1dFe_begin)) + " but it should have a size of " + std::to_string(dim*dim))
 
-        std::fill(dI1dFe_begin, dI1dFe_end, dI1dFe_type());
 
-        for ( unsigned int i = 0; i < dim; ++i ){
-
-            for ( unsigned int j = 0; j < dim; ++j ){
-
-                *(dI1dFe_begin + dim * i + j) = 2 * (*Fe)[dim * i + j];
-
-            }
-
-        }
+        std::transform(std::begin(*Fe), std::end(*Fe), dI1dFe_begin,
+               std::bind(std::multiplies<>(), std::placeholders::_1, 2));
 
     }
 
@@ -97,13 +80,9 @@ namespace tardigradeHydra {
 
         std::fill(d2I1dFe2_begin, d2I1dFe2_end, d2I1dFe2_type());
 
-        for ( unsigned int i = 0; i < dim; ++i ){
+        for ( unsigned int ij = 0; ij < dim * dim; ++ij ){
 
-            for ( unsigned int j = 0; j < dim; ++j ){
-
-                *(d2I1dFe2_begin + dim * dim * dim * i + dim * dim * j + dim * i + j) += 2;
-
-            }
+                *(d2I1dFe2_begin + dim * dim * ij + ij) += 2;
 
         }
 
