@@ -9,6 +9,10 @@ Changelog
 0.8.6 (unreleased)
 ******************
 
+New Features
+============
+- Added a compile-time map which has no run-time overhead (:pull:`275`). By `Nathan Miller`_.
+
 ******************
 0.8.5 (04-02-2026)
 ******************
