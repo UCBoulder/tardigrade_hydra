@@ -308,6 +308,7 @@ namespace tardigradeHydra {
                     return entry.value;
                 }
             }
+            // TODO: Figure out how to throw a compile time error
         }
         // NOLINTEND(clang-diagnostic-return-type)
     };
