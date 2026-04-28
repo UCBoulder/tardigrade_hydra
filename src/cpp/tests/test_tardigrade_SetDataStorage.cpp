@@ -266,26 +266,24 @@ BOOST_AUTO_TEST_CASE(test_SetDataStorageIteration2, *boost::unit_test::tolerance
 }
 
 class test_map {
-
-    public:
-        using key_type = std::string_view;
-        using value_type = int;
-        static constexpr std::array<tardigradeHydra::Entry<key_type, value_type>, 3> entries = {{{"apple",1},{"orange",2},{"grape",3}}};
-
+   public:
+    using key_type                                                                       = std::string_view;
+    using value_type                                                                     = int;
+    static constexpr std::array<tardigradeHydra::Entry<key_type, value_type>, 3> entries = {
+        {{"apple", 1}, {"orange", 2}, {"grape", 3}}
+    };
 };
 
 BOOST_AUTO_TEST_CASE(test_CompileTimeMap, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
-
     tardigradeHydra::CompileTimeMap<test_map> map;
 
     static_assert(map.get_value("apple") == 1);
 
     static_assert(map.get_value("grape") == 3);
 
-    std::array<double, map.get_value("orange")> a = { 4, 5 };
+    std::array<double, map.get_value("orange")> a = {4, 5};
 
     std::array<double, 2> answer = {4, 5};
 
     BOOST_TEST(a == answer, CHECK_PER_ELEMENT);
-
 }

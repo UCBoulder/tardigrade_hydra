@@ -279,7 +279,7 @@ namespace tardigradeHydra {
      */
     template <typename key_type, typename value_type>
     struct Entry {
-        key_type key;
+        key_type   key;
         value_type value;
     };
 
@@ -287,7 +287,7 @@ namespace tardigradeHydra {
      * A compile-time map which co-locates related objects
      *
      * configuration is a class which defines the access to the object
-     * 
+     *
      * it must have a static member entries which is a static consexpr array of type
      * entry that defines key-value pairs as well as entries for key_type
      * and value_type which define the types of the keys and values
@@ -295,20 +295,18 @@ namespace tardigradeHydra {
      */
     template <class configuration>
     class CompileTimeMap {
-
-        public:
-            /*!
-             * Get an entry to the map
-             *
-             * \param key: The key value to search in the map
-             */
-            constexpr typename configuration::value_type get_value(typename configuration::key_type key) {
-                for (const auto& entry : configuration::entries) {
-                    if (entry.key == key) return entry.value;
-                }
-                //TODO: Add error handling here. This currently fails to compile because we flow out of the function 
+       public:
+        /*!
+         * Get an entry to the map
+         *
+         * \param key: The key value to search in the map
+         */
+        constexpr typename configuration::value_type get_value(typename configuration::key_type key) {
+            for (const auto &entry : configuration::entries) {
+                if (entry.key == key) return entry.value;
             }
-
+            // TODO: Add error handling here. This currently fails to compile because we flow out of the function
+        }
     };
 
     /*!
