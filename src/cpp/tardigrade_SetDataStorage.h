@@ -301,12 +301,15 @@ namespace tardigradeHydra {
          *
          * \param key: The key value to search in the map
          */
+        // NOLINTBEGIN(clang-diagnostic-return-type)
         constexpr typename configuration::value_type get_value(typename configuration::key_type key) {
             for (const auto &entry : configuration::entries) {
-                if (entry.key == key) return entry.value;
+                if (entry.key == key) {
+                    return entry.value;
+                }
             }
-            // TODO: Add error handling here. This currently fails to compile because we flow out of the function
         }
+        // NOLINTEND(clang-diagnostic-return-type)
     };
 
     /*!
