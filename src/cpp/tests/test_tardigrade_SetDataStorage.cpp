@@ -290,5 +290,4 @@ BOOST_AUTO_TEST_CASE(test_CompileTimeMap, *boost::unit_test::tolerance(DEFAULT_T
     std::array<double, 2> answer = {4, 5};
 
     BOOST_TEST(a == answer, CHECK_PER_ELEMENT);
-
 }
