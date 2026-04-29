@@ -67,6 +67,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-#include "tardigrade_NeoHookianStrainEnergy.h"
+#include "tardigrade_NeoHookianStrainEnergy.tpp"
 
 #endif
