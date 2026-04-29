@@ -297,6 +297,19 @@ namespace tardigradeHydra {
     class CompileTimeMap {
        public:
         /*!
+         * Check if a key is in the map
+         *
+         * \param key: The key value to search in the map
+         */
+        constexpr bool key_in_map(typename configuration::key_type key) {
+            for (const auto &entry : configuration::entries) {
+                if (entry.key == key) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /*!
          * Get an entry to the map
          *
          * \param key: The key value to search in the map
