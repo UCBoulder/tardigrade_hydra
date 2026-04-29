@@ -6,7 +6,7 @@ Changelog
 #########
 
 ******************
-0.8.6 (unreleased)
+0.9.0 (unreleased)
 ******************
 
 New Features
@@ -15,6 +15,11 @@ New Features
 - Added a compile-time map key check which has no run-time overhead (:pull:`276`). By `Nathan Miller`_.
 - Added a Neo-Hookian strain energy potential (:pull:`277`). By `Nathan Miller`_.
 - Added a Mooney-Rivlin strain energy potential (:pull:`278`). By `Nathan Miller`_.
+
+Breaking Changes
+================
+- Removed the getDimension, getSOTDimension, getTOTDimension, and getFOTDimension functions since the dimension is set in the
+  configuration file (:pull:`278`). By `Nathan Miller`_.
 
 ******************
 0.8.5 (04-02-2026)
