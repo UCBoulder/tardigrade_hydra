@@ -1,27 +1,27 @@
 /**
  ******************************************************************************
- * \file tardigrade_NeoHookianStrainEnergy.h
+ * \file tardigrade_MooneyRivlinStrainEnergy.h
  ******************************************************************************
- * A Neo-Hookian strain energy function
+ * A Mooney-Rivlin strain energy function
  ******************************************************************************
  */
 
-#ifndef TARDIGRADE_NEOHOOKIANSTRAINENERGY
-#define TARDIGRADE_NEOHOOKIANSTRAINENERGY
+#ifndef TARDIGRADE_MOONYRIVLINSTRAINENERGY
+#define TARDIGRADE_MOONYRIVLINSTRAINENERGY
 
-#include "tardigrade_HyperelasticBase.h"
+#include "tardigrade_NeoHookianStrainEnergy.h"
 
 namespace tardigradeHydra {
 
     /*!
      * A Neo-Hookian strain energy
      */
-    class NeoHookianStrainEnergy : public HyperelasticBase {
+    class MooneyRivlinStrainEnergy : public NeoHookianStrainEnergy {
        public:
         /*!
          * Default constructor
          */
-        NeoHookianStrainEnergy() : HyperelasticBase(), _C10(0), _D1(0) {};
+        MooneyRivlinStrainEnergy() : NeoHookianStrainEnergy(), _C01(0) {};
 
         /*!
          * Main utilization constructor
@@ -29,14 +29,15 @@ namespace tardigradeHydra {
          * \param *_hydra: A pointer to a hydraBase object
          * \param &_numEquations: The number of equations defined by the residual
          * \param &parameters: The parameter vector organized as
-         *    C10, D1
+         *    C10, C01, D1
          */
-        NeoHookianStrainEnergy(hydraBase *_hydra, const unsigned int &_numEquations, const floatVector &parameters)
-            : HyperelasticBase(_hydra, _numEquations) {
-            TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == 2, "The parameters vector must have a size of 2");
+        MooneyRivlinStrainEnergy(hydraBase *_hydra, const unsigned int &_numEquations, const floatVector &parameters)
+            : NeoHookianStrainEnergy(_hydra, _numEquations, {parameters[0], parameters[2]}) {
+            TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == 3, "The parameters vector must have a size of 3");
 
             _C10 = parameters[0];
-            _D1  = parameters[1];
+            _C01 = parameters[1];
+            _D1  = parameters[2];
 
             setInitialized();
         }
@@ -57,6 +58,9 @@ namespace tardigradeHydra {
         //! The parameter associated with Ibar1
         floatType _C10;
 
+        //! The parameter associated with Ibar2
+        floatType _C01;
+
         //! The parameter associated with the volumetric deformation
         floatType _D1;
 
@@ -67,6 +71,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-#include "tardigrade_NeoHookianStrainEnergy.tpp"
+#include "tardigrade_MooneyRivlinStrainEnergy.tpp"
 
 #endif

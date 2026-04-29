@@ -71,6 +71,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_DeformationBase"
     "tardigrade_HyperelasticBase"
     "tardigrade_NeoHookianStrainEnergy"
+    "tardigrade_MooneyRivlinStrainEnergy"
     "tardigrade_CHIPFoamStrainEnergy"
 )
 set(ADDITIONAL_HEADER_ONLY_LIBRARIES
