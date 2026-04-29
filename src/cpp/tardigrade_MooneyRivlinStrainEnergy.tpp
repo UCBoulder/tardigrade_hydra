@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
- * \file tardigrade_MoonyRivlinStrainEnergy.tpp
+ * \file tardigrade_MooneyRivlinStrainEnergy.tpp
  ******************************************************************************
- * A Moony-Rivlin strain energy function
+ * A Mooney-Rivlin strain energy function
  ******************************************************************************
  */

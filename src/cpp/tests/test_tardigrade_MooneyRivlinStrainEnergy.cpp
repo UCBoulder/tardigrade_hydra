@@ -1,13 +1,13 @@
 /**
- * \file test_tardigrade_MoonyRivlinStrainEnergy.cpp
+ * \file test_tardigrade_MooneyRivlinStrainEnergy.cpp
  *
- * Tests for tardigrade_MoonyRivlinStrainEnergy
+ * Tests for tardigrade_MooneyRivlinStrainEnergy
  */
 
-#include "tardigrade_MoonyRivlinStrainEnergy.h"
+#include "tardigrade_MooneyRivlinStrainEnergy.h"
 #include "tardigrade_SetDataStorage.h"
 
-#define BOOST_TEST_MODULE test_tardigrade_MoonyRivlinStrainEnergy
+#define BOOST_TEST_MODULE test_tardigrade_MooneyRivlinStrainEnergy
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -59,10 +59,10 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-BOOST_AUTO_TEST_CASE(test_MoonyRivlinStrainEnergy_setStrainEnergy, *boost::unit_test::tolerance(1e-5)) {
-    class MoonyRivlinStrainEnergyMock : public tardigradeHydra::MoonyRivlinStrainEnergy {
+BOOST_AUTO_TEST_CASE(test_MooneyRivlinStrainEnergy_setStrainEnergy, *boost::unit_test::tolerance(1e-5)) {
+    class MooneyRivlinStrainEnergyMock : public tardigradeHydra::MooneyRivlinStrainEnergy {
        public:
-        using tardigradeHydra::MoonyRivlinStrainEnergy::MoonyRivlinStrainEnergy;
+        using tardigradeHydra::MooneyRivlinStrainEnergy::MooneyRivlinStrainEnergy;
 
         tardigradeHydra::floatVector Fe = {2, 1, 2, 3, 6, 3, 2, 1, 10};
 
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_MoonyRivlinStrainEnergy_setStrainEnergy, *boost::unit_
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
        public:
-        MoonyRivlinStrainEnergyMock elasticity;
+        MooneyRivlinStrainEnergyMock elasticity;
 
         tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(test_MoonyRivlinStrainEnergy_setStrainEnergy, *boost::unit_
         using tardigradeHydra::hydraBase::setResidualClasses;
 
         virtual void setResidualClasses() {
-            elasticity = MoonyRivlinStrainEnergyMock(this, elasticitySize, elasticity_parameters);
+            elasticity = MooneyRivlinStrainEnergyMock(this, elasticitySize, elasticity_parameters);
 
             remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>(this, 9);
 
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(test_MoonyRivlinStrainEnergy_setStrainEnergy, *boost::unit_
 
     tardigradeHydra::floatType previousAnswer = 11.594462065513707;
 
-    MoonyRivlinStrainEnergyMock R(&hydra, 9, hydra.elasticity_parameters);
+    MooneyRivlinStrainEnergyMock R(&hydra, 9, hydra.elasticity_parameters);
 
     BOOST_TEST(answer == *R.get_strainEnergy());
 
@@ -193,8 +193,8 @@ BOOST_AUTO_TEST_CASE(test_MoonyRivlinStrainEnergy_setStrainEnergy, *boost::unit_
                 hydrap.initialize();
                 hydram.initialize();
 
-                MoonyRivlinStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
-                MoonyRivlinStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
+                MooneyRivlinStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
+                MooneyRivlinStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
 
                 Rp.Fe = xp;
                 Rm.Fe = xm;
@@ -232,8 +232,8 @@ BOOST_AUTO_TEST_CASE(test_MoonyRivlinStrainEnergy_setStrainEnergy, *boost::unit_
                 hydrap.initialize();
                 hydram.initialize();
 
-                MoonyRivlinStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
-                MoonyRivlinStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
+                MooneyRivlinStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
+                MooneyRivlinStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
 
                 Rp.previousFe = xp;
                 Rm.previousFe = xm;
@@ -271,8 +271,8 @@ BOOST_AUTO_TEST_CASE(test_MoonyRivlinStrainEnergy_setStrainEnergy, *boost::unit_
                 hydrap.initialize();
                 hydram.initialize();
 
-                MoonyRivlinStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
-                MoonyRivlinStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
+                MooneyRivlinStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
+                MooneyRivlinStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
 
                 Rp.Fe = xp;
                 Rm.Fe = xm;
@@ -313,8 +313,8 @@ BOOST_AUTO_TEST_CASE(test_MoonyRivlinStrainEnergy_setStrainEnergy, *boost::unit_
                 hydrap.initialize();
                 hydram.initialize();
 
-                MoonyRivlinStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
-                MoonyRivlinStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
+                MooneyRivlinStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
+                MooneyRivlinStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
 
                 Rp.previousFe = xp;
                 Rm.previousFe = xm;

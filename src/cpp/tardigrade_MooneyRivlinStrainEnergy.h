@@ -1,8 +1,8 @@
 /**
  ******************************************************************************
- * \file tardigrade_MoonyRivlinStrainEnergy.h
+ * \file tardigrade_MooneyRivlinStrainEnergy.h
  ******************************************************************************
- * A Moony-Rivlin strain energy function
+ * A Mooney-Rivlin strain energy function
  ******************************************************************************
  */
 
@@ -16,12 +16,12 @@ namespace tardigradeHydra {
     /*!
      * A Neo-Hookian strain energy
      */
-    class MoonyRivlinStrainEnergy : public NeoHookianStrainEnergy {
+    class MooneyRivlinStrainEnergy : public NeoHookianStrainEnergy {
        public:
         /*!
          * Default constructor
          */
-        MoonyRivlinStrainEnergy() : NeoHookianStrainEnergy(), _C01(0) {};
+        MooneyRivlinStrainEnergy() : NeoHookianStrainEnergy(), _C01(0) {};
 
         /*!
          * Main utilization constructor
@@ -31,7 +31,7 @@ namespace tardigradeHydra {
          * \param &parameters: The parameter vector organized as
          *    C10, C01, D1
          */
-        MoonyRivlinStrainEnergy(hydraBase *_hydra, const unsigned int &_numEquations, const floatVector &parameters)
+        MooneyRivlinStrainEnergy(hydraBase *_hydra, const unsigned int &_numEquations, const floatVector &parameters)
             : NeoHookianStrainEnergy(_hydra, _numEquations, {parameters[0], parameters[2]}) {
             TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == 3, "The parameters vector must have a size of 3");
 
@@ -71,6 +71,6 @@ namespace tardigradeHydra {
 
 }  // namespace tardigradeHydra
 
-#include "tardigrade_MoonyRivlinStrainEnergy.tpp"
+#include "tardigrade_MooneyRivlinStrainEnergy.tpp"
 
 #endif

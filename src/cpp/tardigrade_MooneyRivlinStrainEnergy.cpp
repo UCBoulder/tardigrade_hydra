@@ -1,12 +1,12 @@
 /**
  ******************************************************************************
- * \file tardigrade_MoonyRivlinStrainEnergy.cpp
+ * \file tardigrade_MooneyRivlinStrainEnergy.cpp
  ******************************************************************************
- * A Moony-Rivlin strain energy function
+ * A Mooney-Rivlin strain energy function
  ******************************************************************************
  */
 
-#include "tardigrade_MoonyRivlinStrainEnergy.h"
+#include "tardigrade_MooneyRivlinStrainEnergy.h"
 
 namespace tardigradeHydra {
 
@@ -15,7 +15,7 @@ namespace tardigradeHydra {
      *
      * \param isPrevious: A flag for whether to set the current (false) or previous (true) strain energy
      */
-    void MoonyRivlinStrainEnergy::setStrainEnergy(const bool isPrevious) {
+    void MooneyRivlinStrainEnergy::setStrainEnergy(const bool isPrevious) {
 
         NeoHookianStrainEnergy::setStrainEnergy(isPrevious);
 
@@ -38,7 +38,7 @@ namespace tardigradeHydra {
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) Jacobians of the strain energy
      */
-    void MoonyRivlinStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
+    void MooneyRivlinStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
 
         NeoHookianStrainEnergy::setStrainEnergyJacobians(isPrevious);
 
@@ -66,7 +66,7 @@ namespace tardigradeHydra {
      *
      * \param isPrevious: Whether to set the current (false) or previous (true) Hessians of the strain energy
      */
-    void MoonyRivlinStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
+    void MooneyRivlinStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
 
         NeoHookianStrainEnergy::setStrainEnergyHessians(isPrevious);
 
