@@ -41,7 +41,6 @@ namespace tardigradeHydra {
      */
     template <class dI1dFe_iter>
     void HyperelasticBase::compute_dI1dFe(const bool isPrevious, dI1dFe_iter dI1dFe_begin, dI1dFe_iter dI1dFe_end) {
-
         const secondOrderTensor *Fe;
 
         if (isPrevious) {
@@ -71,10 +70,10 @@ namespace tardigradeHydra {
     void HyperelasticBase::compute_d2I1dFe2(d2I1dFe2_iter d2I1dFe2_begin, d2I1dFe2_iter d2I1dFe2_end) {
         using d2I1dFe2_type = typename std::iterator_traits<d2I1dFe2_iter>::value_type;
 
-        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(d2I1dFe2_end - d2I1dFe2_begin) == dimension * dimension * dimension * dimension,
-                                     "d2I1dFe2 has a size of " +
-                                         std::to_string((unsigned int)(d2I1dFe2_end - d2I1dFe2_begin)) +
-                                         " but it should have a size of " + std::to_string(dimension * dimension * dimension * dimension))
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            (unsigned int)(d2I1dFe2_end - d2I1dFe2_begin) == dimension * dimension * dimension * dimension,
+            "d2I1dFe2 has a size of " + std::to_string((unsigned int)(d2I1dFe2_end - d2I1dFe2_begin)) +
+                " but it should have a size of " + std::to_string(dimension * dimension * dimension * dimension))
 
         std::fill(d2I1dFe2_begin, d2I1dFe2_end, d2I1dFe2_type());
 
@@ -129,7 +128,6 @@ namespace tardigradeHydra {
      */
     template <typename T>
     T HyperelasticBase::compute_I2(const bool isPrevious) {
-
         T I1 = compute_I1<T>(isPrevious);
 
         T I2 = 0.5 * I1 * I1;
@@ -212,10 +210,10 @@ namespace tardigradeHydra {
             Fe = get_Fe();
         }
 
-        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(d2I2dFe2_end - d2I2dFe2_begin) == dimension * dimension * dimension * dimension,
-                                     "The size of d2I2dFe2 is " +
-                                         std::to_string((unsigned int)(d2I2dFe2_end - d2I2dFe2_begin)) +
-                                         " but it must be " + std::to_string(dimension * dimension * dimension * dimension));
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            (unsigned int)(d2I2dFe2_end - d2I2dFe2_begin) == dimension * dimension * dimension * dimension,
+            "The size of d2I2dFe2 is " + std::to_string((unsigned int)(d2I2dFe2_end - d2I2dFe2_begin)) +
+                " but it must be " + std::to_string(dimension * dimension * dimension * dimension));
 
         d2I2dFe2_type I1 = compute_I1<d2I2dFe2_type>(isPrevious);
 
@@ -230,14 +228,15 @@ namespace tardigradeHydra {
         for (unsigned int a = 0; a < dimension; ++a) {
             for (unsigned int A = 0; A < dimension; ++A) {
                 for (unsigned int b = 0; b < dimension; ++b) {
-                    *(d2I2dFe2_begin + dimension * dimension * dimension * a + dimension * dimension * A + dimension * a + b) -= C[dimension * A + b];
+                    *(d2I2dFe2_begin + dimension * dimension * dimension * a + dimension * dimension * A +
+                      dimension * a + b) -= C[dimension * A + b];
                     for (unsigned int B = 0; B < dimension; ++B) {
-                        *(d2I2dFe2_begin + dimension * dimension * dimension * a + dimension * dimension * A + dimension * b + B) +=
-                            2 * (*Fe)[dimension * a + A] * (*Fe)[dimension * b + B];
-                        *(d2I2dFe2_begin + dimension * dimension * dimension * a + dimension * dimension * A + dimension * b + B) -=
-                            (*Fe)[dimension * a + B] * (*Fe)[dimension * b + A];
-                        *(d2I2dFe2_begin + dimension * dimension * dimension * a + dimension * dimension * A + dimension * b + A) -=
-                            (*Fe)[dimension * a + B] * (*Fe)[dimension * b + B];
+                        *(d2I2dFe2_begin + dimension * dimension * dimension * a + dimension * dimension * A +
+                          dimension * b + B) += 2 * (*Fe)[dimension * a + A] * (*Fe)[dimension * b + B];
+                        *(d2I2dFe2_begin + dimension * dimension * dimension * a + dimension * dimension * A +
+                          dimension * b + B) -= (*Fe)[dimension * a + B] * (*Fe)[dimension * b + A];
+                        *(d2I2dFe2_begin + dimension * dimension * dimension * a + dimension * dimension * A +
+                          dimension * b + A) -= (*Fe)[dimension * a + B] * (*Fe)[dimension * b + B];
                     }
                 }
             }
@@ -345,8 +344,8 @@ namespace tardigradeHydra {
 
         d2Ibar1dFe2_type I1 = compute_I1<d2Ibar1dFe2_type>(isPrevious);
 
-        std::array<d2Ibar1dFe2_type, dimension * dimension>             dI1dFe{};
-        std::array<d2Ibar1dFe2_type, dimension * dimension>             dIbar1dFe{};
+        std::array<d2Ibar1dFe2_type, dimension * dimension>                         dI1dFe{};
+        std::array<d2Ibar1dFe2_type, dimension * dimension>                         dIbar1dFe{};
         std::array<d2Ibar1dFe2_type, dimension * dimension * dimension * dimension> d2I1dFe2{};
 
         compute_dI1dFe(isPrevious, std::begin(dI1dFe), std::end(dI1dFe));
@@ -466,8 +465,8 @@ namespace tardigradeHydra {
 
         d2Ibar2dFe2_type I2 = compute_I2<d2Ibar2dFe2_type>(isPrevious);
 
-        std::array<d2Ibar2dFe2_type, dimension * dimension>             dI2dFe{};
-        std::array<d2Ibar2dFe2_type, dimension * dimension>             dIbar2dFe{};
+        std::array<d2Ibar2dFe2_type, dimension * dimension>                         dI2dFe{};
+        std::array<d2Ibar2dFe2_type, dimension * dimension>                         dIbar2dFe{};
         std::array<d2Ibar2dFe2_type, dimension * dimension * dimension * dimension> d2I2dFe2{};
 
         compute_dI2dFe(isPrevious, std::begin(dI2dFe), std::end(dI2dFe));

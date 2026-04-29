@@ -105,7 +105,6 @@ namespace tardigradeHydra {
      * \param isPrevious: A flag for of the current (false) or previous (true) value should be computed
      */
     void HyperelasticBase::setJe(bool isPrevious) {
-
         const secondOrderTensor *Fe;
 
         SetDataStorageBase<floatType> Je;
@@ -121,8 +120,8 @@ namespace tardigradeHydra {
             Je = get_SetDataStorage_Je();
         }
 
-        Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> Femat(
-            Fe->data(), dimension, dimension);
+        Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> Femat(Fe->data(), dimension,
+                                                                                                dimension);
         *Je.value = Femat.determinant();
     }
 
@@ -144,7 +143,6 @@ namespace tardigradeHydra {
      *     value
      */
     void HyperelasticBase::setdJedFe(bool isPrevious) {
-
         const secondOrderTensor *Fe;
 
         const floatType *Je;
@@ -166,11 +164,11 @@ namespace tardigradeHydra {
             dJedFe = get_SetDataStorage_dJedFe();
         }
 
-        secondOrderTensor                                                   invFe(dimension * dimension, 0);
-        Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> Femat(
-            Fe->data(), dimension, dimension);
-        Eigen::Map<Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> invFemat(
-            invFe.data(), dimension, dimension);
+        secondOrderTensor invFe(dimension * dimension, 0);
+        Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> Femat(Fe->data(), dimension,
+                                                                                                dimension);
+        Eigen::Map<Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> invFemat(invFe.data(), dimension,
+                                                                                             dimension);
         invFemat = Femat.inverse().eval();
 
         dJedFe.zero(dimension * dimension);
@@ -202,7 +200,6 @@ namespace tardigradeHydra {
      *     value
      */
     void HyperelasticBase::setd2JedFe2(bool isPrevious) {
-
         const floatType *Je;
 
         const secondOrderTensor *dJedFe;
@@ -230,7 +227,8 @@ namespace tardigradeHydra {
             for (unsigned int I = 0; I < dimension; ++I) {
                 for (unsigned int j = 0; j < dimension; ++j) {
                     for (unsigned int J = 0; J < dimension; ++J) {
-                        (*d2JedFe2.value)[dimension * dimension * dimension * i + dimension * dimension * I + dimension * j + J] =
+                        (*d2JedFe2.value)[dimension * dimension * dimension * i + dimension * dimension * I +
+                                          dimension * j + J] =
                             ((*dJedFe)[dimension * j + J] * (*dJedFe)[dimension * i + I] -
                              (*dJedFe)[dimension * j + I] * (*dJedFe)[dimension * i + J]) /
                             (*Je);

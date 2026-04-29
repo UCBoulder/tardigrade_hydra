@@ -888,11 +888,13 @@ namespace tardigradeHydra {
                     for (unsigned int K = 0; K < dimension; K++) {
                         for (unsigned int L = 0; L < dimension; L++) {
                             for (unsigned int Q = 0; Q < dimension; Q++) {
-                                term2[dimension * I + J] +=
-                                    (B[dimension * dimension * dimension * I + dimension * dimension * Q + dimension * K + L] * microStrain[dimension * K + L] +
-                                     greenLagrangeStrain[dimension * K + L] *
-                                         D[dimension * dimension * dimension * K + dimension * dimension * L + dimension * I + Q]) *
-                                    invCPsi[dimension * J + Q];
+                                term2[dimension * I + J] += (B[dimension * dimension * dimension * I +
+                                                               dimension * dimension * Q + dimension * K + L] *
+                                                                 microStrain[dimension * K + L] +
+                                                             greenLagrangeStrain[dimension * K + L] *
+                                                                 D[dimension * dimension * dimension * K +
+                                                                   dimension * dimension * L + dimension * I + Q]) *
+                                                            invCPsi[dimension * J + Q];
                             }
                         }
                     }
@@ -947,14 +949,22 @@ namespace tardigradeHydra {
                     for (unsigned int M = 0; M < dimension; M++) {
                         for (unsigned int N = 0; N < dimension; N++) {
                             for (unsigned int K = 0; K < dimension; K++) {
-                                dTerm2dGreenLagrangeStrain[dimension * sot_dimension * I + sot_dimension * J + dimension * M + N] +=
-                                    D[dimension * dimension * dimension * M + dimension * dimension * N + dimension * I + K] * invCPsi[dimension * J + K];
-                                dTerm2dMicroStrain[dimension * sot_dimension * I + sot_dimension * J + dimension * M + N] +=
-                                    B[dimension * dimension * dimension * I + dimension * dimension * K + dimension * M + N] * invCPsi[dimension * J + K];
+                                dTerm2dGreenLagrangeStrain[dimension * sot_dimension * I + sot_dimension * J +
+                                                           dimension * M + N] +=
+                                    D[dimension * dimension * dimension * M + dimension * dimension * N +
+                                      dimension * I + K] *
+                                    invCPsi[dimension * J + K];
+                                dTerm2dMicroStrain[dimension * sot_dimension * I + sot_dimension * J + dimension * M +
+                                                   N] += B[dimension * dimension * dimension * I +
+                                                           dimension * dimension * K + dimension * M + N] *
+                                                         invCPsi[dimension * J + K];
                                 dTerm2dInvCPsi[dimension * sot_dimension * I + sot_dimension * J + dimension * J + M] +=
-                                    (B[dimension * dimension * dimension * I + dimension * dimension * M + dimension * N + K] * microStrain[dimension * N + K] +
+                                    (B[dimension * dimension * dimension * I + dimension * dimension * M +
+                                       dimension * N + K] *
+                                         microStrain[dimension * N + K] +
                                      greenLagrangeStrain[dimension * N + K] *
-                                         D[dimension * dimension * dimension * N + dimension * dimension * K + dimension * I + M]);
+                                         D[dimension * dimension * dimension * N + dimension * dimension * K +
+                                           dimension * I + M]);
                             }
                         }
                     }
@@ -994,8 +1004,9 @@ namespace tardigradeHydra {
                     for (unsigned int K = 0; K < dimension; K++) {
                         for (unsigned int LMN = 0; LMN < tot_dimension; LMN++) {
                             referenceHigherOrderStress[dimension * dimension * I + dimension * J + K] +=
-                                C[dimension * dimension * dimension * dimension * dimension * J + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * I +
-                                  LMN] *
+                                C[dimension * dimension * dimension * dimension * dimension * J +
+                                  dimension * dimension * dimension * dimension * K +
+                                  dimension * dimension * dimension * I + LMN] *
                                 Gamma[LMN];
                         }
                     }
@@ -1036,10 +1047,12 @@ namespace tardigradeHydra {
                 for (unsigned int J = 0; J < dimension; J++) {
                     for (unsigned int K = 0; K < dimension; K++) {
                         for (unsigned int OPQ = 0; OPQ < tot_dimension; OPQ++) {
-                            dReferenceHigherOrderStressdGamma[dimension * dimension * tot_dimension * I + dimension * tot_dimension * J +
-                                                              tot_dimension * K + OPQ] +=
-                                C[dimension * dimension * dimension * dimension * dimension * J + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * I +
-                                  OPQ];
+                            dReferenceHigherOrderStressdGamma[dimension * dimension * tot_dimension * I +
+                                                              dimension * tot_dimension * J + tot_dimension * K +
+                                                              OPQ] +=
+                                C[dimension * dimension * dimension * dimension * dimension * J +
+                                  dimension * dimension * dimension * dimension * K +
+                                  dimension * dimension * dimension * I + OPQ];
                         }
                     }
                 }
@@ -1074,8 +1087,8 @@ namespace tardigradeHydra {
             for (unsigned int I = 0; I < dimension; I++) {
                 for (unsigned int J = 0; J < dimension; J++) {
                     for (unsigned int QR = 0; QR < sot_dimension; QR++) {
-                        term3[dimension * I + J] +=
-                            referenceHigherOrderStress[dimension * dimension * I + QR] * invCGamma[dimension * dimension * J + QR];
+                        term3[dimension * I + J] += referenceHigherOrderStress[dimension * dimension * I + QR] *
+                                                    invCGamma[dimension * dimension * J + QR];
                     }
                 }
             }
@@ -1119,10 +1132,11 @@ namespace tardigradeHydra {
             for (unsigned int I = 0; I < dimension; I++) {
                 for (unsigned int J = 0; J < dimension; J++) {
                     for (unsigned int TU = 0; TU < sot_dimension; TU++) {
-                        dTerm3dReferenceHigherOrderStress[dimension * tot_dimension * I + tot_dimension * J + dimension * dimension * I +
-                                                          TU] += invCGamma[dimension * dimension * J + TU];
-                        dTerm3dInvCGamma[dimension * tot_dimension * I + tot_dimension * J + dimension * dimension * J + TU] +=
-                            referenceHigherOrderStress[dimension * dimension * I + TU];
+                        dTerm3dReferenceHigherOrderStress[dimension * tot_dimension * I + tot_dimension * J +
+                                                          dimension * dimension * I + TU] +=
+                            invCGamma[dimension * dimension * J + TU];
+                        dTerm3dInvCGamma[dimension * tot_dimension * I + tot_dimension * J + dimension * dimension * J +
+                                         TU] += referenceHigherOrderStress[dimension * dimension * I + TU];
                     }
                 }
             }
@@ -1146,11 +1160,17 @@ namespace tardigradeHydra {
 
             TARDIGRADE_ERROR_TOOLS_CHECK(Psi.size() == sot_dimension, "Psi has an improper dimension");
 
-            Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_invRCG(invRCG.data(), dimension, dimension);
-            Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_Psi(Psi.data(), dimension, dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_invRCG(invRCG.data(),
+                                                                                                          dimension,
+                                                                                                          dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_Psi(Psi.data(),
+                                                                                                       dimension,
+                                                                                                       dimension);
 
             invRCGPsi = secondOrderTensor(sot_dimension, 0);
-            Eigen::Map<Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_invRCGPsi(invRCGPsi.data(), dimension, dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_invRCGPsi(invRCGPsi.data(),
+                                                                                                       dimension,
+                                                                                                       dimension);
 
             map_invRCGPsi = (map_invRCG * map_Psi).eval();
 
@@ -1190,7 +1210,8 @@ namespace tardigradeHydra {
             for (unsigned int I = 0; I < 3; I++) {
                 for (unsigned int J = 0; J < 3; J++) {
                     for (unsigned int K = 0; K < 3; K++) {
-                        dInvRCGPsidPsi[dimension * sot_dimension * I + sot_dimension * J + dimension * K + J] = invRCG[dimension * I + K];
+                        dInvRCGPsidPsi[dimension * sot_dimension * I + sot_dimension * J + dimension * K + J] =
+                            invRCG[dimension * I + K];
                         for (unsigned int L = 0; L < 3; L++) {
                             dInvRCGPsidRCG[dimension * sot_dimension * I + sot_dimension * J + dimension * K + L] =
                                 -invRCG[dimension * I + K] * invRCGPsi[dimension * L + J];
@@ -1270,12 +1291,15 @@ namespace tardigradeHydra {
                 for (unsigned int Q = 0; Q < dimension; Q++) {
                     for (unsigned int R = 0; R < dimension; R++) {
                         for (unsigned int T = 0; T < dimension; T++) {
-                            dInvRCGGammadGamma[dimension * dimension * tot_dimension * J + dimension * tot_dimension * Q +
-                                               tot_dimension * R + dimension * dimension * T + dimension * Q + R] = invRCG[dimension * J + T];
+                            dInvRCGGammadGamma[dimension * dimension * tot_dimension * J +
+                                               dimension * tot_dimension * Q + tot_dimension * R +
+                                               dimension * dimension * T + dimension * Q + R] =
+                                invRCG[dimension * J + T];
                             for (unsigned int U = 0; U < dimension; U++) {
-                                dInvRCGGammadRCG[dimension * dimension * sot_dimension * J + dimension * sot_dimension * Q +
-                                                 sot_dimension * R + dimension * T + U] =
-                                    -invRCG[dimension * J + T] * invRCGGamma[dimension * dimension * U + dimension * Q + R];
+                                dInvRCGGammadRCG[dimension * dimension * sot_dimension * J +
+                                                 dimension * sot_dimension * Q + sot_dimension * R + dimension * T +
+                                                 U] = -invRCG[dimension * J + T] *
+                                                      invRCGGamma[dimension * dimension * U + dimension * Q + R];
                             }
                         }
                     }
@@ -1340,7 +1364,8 @@ namespace tardigradeHydra {
 
             for (unsigned int K = 0; K < dimension; K++) {
                 for (unsigned int L = 0; L < dimension; L++) {
-                    B[dimension * dimension * dimension * K + dimension * dimension * K + dimension * L + L] += (eta - tau);
+                    B[dimension * dimension * dimension * K + dimension * dimension * K + dimension * L + L] +=
+                        (eta - tau);
                     B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] += kappa;
                     B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] += nu;
                     B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] -= sigma;
@@ -1388,35 +1413,50 @@ namespace tardigradeHydra {
             for (unsigned int K = 0; K < dimension; K++) {
                 for (unsigned int L = 0; L < dimension; L++) {
                     for (unsigned int M = 0; M < dimension; M++) {
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
                           dimension * dimension * L + dimension * M + M] += taus[0];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
                           dimension * dimension * M + dimension * M + K] += taus[0];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
                           dimension * dimension * M + dimension * L + M] += taus[1];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
                           dimension * dimension * M + dimension * M + L] += taus[1];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
                           dimension * dimension * M + dimension * M + L] += taus[2];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
                           dimension * dimension * K + dimension * M + M] += taus[3];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
                           dimension * dimension * L + dimension * M + M] += taus[4];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
                           dimension * dimension * M + dimension * K + M] += taus[4];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
                           dimension * dimension * M + dimension * L + M] += taus[5];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
                           dimension * dimension * K + dimension * L + M] += taus[6];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
                           dimension * dimension * M + dimension * K + L] += taus[7];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
                           dimension * dimension * L + dimension * M + K] += taus[7];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
                           dimension * dimension * K + dimension * M + L] += taus[8];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
                           dimension * dimension * L + dimension * K + M] += taus[9];
-                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
                           dimension * dimension * M + dimension * L + K] += taus[10];
                     }
                 }

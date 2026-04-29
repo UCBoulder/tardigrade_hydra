@@ -38,7 +38,6 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true) Jacobians of the strain energy
      */
     void NeoHookianStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
-
         std::array<floatType, dimension * dimension> dIbar1dFe{};
         compute_dIbar1dFe(isPrevious, std::begin(dIbar1dFe), std::end(dIbar1dFe));
         const floatType         *Je;
@@ -69,7 +68,6 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true) Hessians of the strain energy
      */
     void NeoHookianStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
-
         std::array<floatType, dimension * dimension * dimension * dimension> d2Ibar1dFe2{};
         compute_d2Ibar1dFe2(isPrevious, std::begin(d2Ibar1dFe2), std::end(d2Ibar1dFe2));
         const floatType         *Je;
