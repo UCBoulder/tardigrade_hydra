@@ -16,9 +16,6 @@ namespace tardigradeHydra {
      * \param isPrevious: A flag for whether to set the current (false) or previous (true) strain energy
      */
     void NeoHookianStrainEnergy::setStrainEnergy(const bool isPrevious) {
-        const floatType C10 = _parameters[0];
-        const floatType D1  = _parameters[1];
-
         const floatType  Ibar1 = compute_Ibar1<floatType>(isPrevious);
         const floatType *Je;
 
@@ -32,7 +29,7 @@ namespace tardigradeHydra {
             strainEnergy = get_SetDataStorage_strainEnergy();
         }
 
-        *strainEnergy.value = C10 * (Ibar1 - 3) + D1 * (*Je - 1) * (*Je - 1);
+        *strainEnergy.value = _C10 * (Ibar1 - 3) + _D1 * (*Je - 1) * (*Je - 1);
     }
 
     /*!
@@ -42,9 +39,6 @@ namespace tardigradeHydra {
      */
     void NeoHookianStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
         constexpr unsigned int dim = 3;  // TODO: Replace with value from ResidualBase
-
-        const floatType C10 = _parameters[0];
-        const floatType D1  = _parameters[1];
 
         floatVector dIbar1dFe(dim * dim, 0);
         compute_dIbar1dFe(isPrevious, std::begin(dIbar1dFe), std::end(dIbar1dFe));
@@ -66,7 +60,7 @@ namespace tardigradeHydra {
         dStrainEnergydFe.zero(dim * dim);
 
         for (unsigned int iI = 0; iI < dim * dim; ++iI) {
-            (*dStrainEnergydFe.value)[iI] += C10 * dIbar1dFe[iI] + 2 * D1 * (*Je - 1) * (*dJedFe)[iI];
+            (*dStrainEnergydFe.value)[iI] += _C10 * dIbar1dFe[iI] + 2 * _D1 * (*Je - 1) * (*dJedFe)[iI];
         }
     }
 
@@ -77,9 +71,6 @@ namespace tardigradeHydra {
      */
     void NeoHookianStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
         constexpr unsigned int dim = 3;  // TODO: Replace with value from ResidualBase
-
-        const floatType C10 = _parameters[0];
-        const floatType D1  = _parameters[1];
 
         floatVector d2Ibar1dFe2(dim * dim * dim * dim, 0);
         compute_d2Ibar1dFe2(isPrevious, std::begin(d2Ibar1dFe2), std::end(d2Ibar1dFe2));
@@ -110,8 +101,8 @@ namespace tardigradeHydra {
         for (unsigned int iI = 0; iI < dim * dim; ++iI) {
             for (unsigned int jJ = 0; jJ < dim * dim; ++jJ) {
                 (*d2StrainEnergydFe2.value)[dim * dim * iI + jJ] +=
-                    C10 * d2Ibar1dFe2[dim * dim * iI + jJ] + 2 * D1 * (*dJedFe)[iI] * (*dJedFe)[jJ] +
-                    2 * D1 * (*Je - 1) * (*d2JedFe2)[dim * dim * iI + jJ];
+                    _C10 * d2Ibar1dFe2[dim * dim * iI + jJ] + 2 * _D1 * (*dJedFe)[iI] * (*dJedFe)[jJ] +
+                    2 * _D1 * (*Je - 1) * (*d2JedFe2)[dim * dim * iI + jJ];
             }
         }
     }

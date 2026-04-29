@@ -21,7 +21,7 @@ namespace tardigradeHydra {
         /*!
          * Default constructor
          */
-        NeoHookianStrainEnergy() : HyperelasticBase(), _parameters({}) {};
+        NeoHookianStrainEnergy() : HyperelasticBase(), _C10(0), _D1(0) {};
 
         /*!
          * Main utilization constructor
@@ -29,11 +29,14 @@ namespace tardigradeHydra {
          * \param *_hydra: A pointer to a hydraBase object
          * \param &_numEquations: The number of equations defined by the residual
          * \param &parameters: The parameter vector organized as
-         *    C01, D1
+         *    C10, D1
          */
         NeoHookianStrainEnergy(hydraBase *_hydra, const unsigned int &_numEquations, const floatVector &parameters)
-            : HyperelasticBase(_hydra, _numEquations), _parameters(parameters) {
-            TARDIGRADE_ERROR_TOOLS_CHECK(_parameters.size() == 2, "The parameters vector must have a size of 2");
+            : HyperelasticBase(_hydra, _numEquations) {
+            TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == 2, "The parameters vector must have a size of 2");
+
+            _C10 = parameters[0];
+            _D1  = parameters[1];
 
             setInitialized();
         }
@@ -51,8 +54,11 @@ namespace tardigradeHydra {
         //! Set that the class has been initialized
         void setInitialized() { is_initialized = true; };
 
-        //! The parameters vector
-        floatVector _parameters;
+        //! The parameter associated with Ibar1
+        floatType _C10;
+
+        //! The parameter associated with the volumetric deformation
+        floatType _D1;
 
        private:
         //! Whether the class has been initialized or not
