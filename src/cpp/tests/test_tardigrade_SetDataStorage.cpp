@@ -277,6 +277,10 @@ class test_map {
 BOOST_AUTO_TEST_CASE(test_CompileTimeMap, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     tardigradeHydra::CompileTimeMap<test_map> map;
 
+    static_assert(map.key_in_map("apple"));
+
+    static_assert(!map.key_in_map("raspberry"));
+
     static_assert(map.get_value("apple") == 1);
 
     static_assert(map.get_value("grape") == 3);
@@ -286,4 +290,5 @@ BOOST_AUTO_TEST_CASE(test_CompileTimeMap, *boost::unit_test::tolerance(DEFAULT_T
     std::array<double, 2> answer = {4, 5};
 
     BOOST_TEST(a == answer, CHECK_PER_ELEMENT);
+
 }
