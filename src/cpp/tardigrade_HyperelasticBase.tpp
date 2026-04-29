@@ -150,8 +150,8 @@ namespace tardigradeHydra {
      * Compute the derivative of the second invariant of the deformation with respect to the elastic deformation gradient
      *
      * \param isPrevious: Whether to compute the current (false) or previous (true) value
-     * \param dI2dFe_begin: The starting iterator of the derivative of the second inveriant of the deformation with respect ot the elastic deformation gradient
-     * \param dI2dFe_end: The stopping iterator of the derivative of the second inveriant of the deformation with respect ot the elastic deformation gradient
+     * \param dI2dFe_begin: The starting iterator of the derivative of the second invariant of the deformation with respect ot the elastic deformation gradient
+     * \param dI2dFe_end: The stopping iterator of the derivative of the second invariant of the deformation with respect ot the elastic deformation gradient
      */
     template<class dI2dFe_iter>
     void HyperelasticBase::compute_dI2dFe(const bool isPrevious, dI2dFe_iter dI2dFe_begin, dI2dFe_iter dI2dFe_end){
@@ -195,8 +195,8 @@ namespace tardigradeHydra {
      * Compute the second derivative of the second invariant of the deformation with respect to the elastic deformation gradient
      *
      * \param isPrevious: Whether to compute the current (false) or previous (true) value
-     * \param d2I2dFe2_begin: The starting iterator of the second derivative of the second inveriant of the deformation with respect ot the elastic deformation gradient
-     * \param d2I2dFe2_end: The stopping iterator of the second derivative of the second inveriant of the deformation with respect ot the elastic deformation gradient
+     * \param d2I2dFe2_begin: The starting iterator of the second derivative of the second invariant of the deformation with respect ot the elastic deformation gradient
+     * \param d2I2dFe2_end: The stopping iterator of the second derivative of the second invariant of the deformation with respect ot the elastic deformation gradient
      */
     template<class d2I2dFe2_iter>
     void HyperelasticBase::compute_d2I2dFe2(const bool isPrevious, d2I2dFe2_iter d2I2dFe2_begin, d2I2dFe2_iter d2I2dFe2_end){
@@ -242,4 +242,118 @@ namespace tardigradeHydra {
                 std::bind(std::multiplies<>(), std::placeholders::_1, 2));
     }
 
+    /*!
+     * Compute the isochoric first invariant of the deformation
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true) value
+     */
+    template<typename T>
+    inline T HyperelasticBase::compute_Ibar1(const bool isPrevious){
+
+        const floatType *Je;
+
+        if (isPrevious){
+            Je = get_previousJe();
+        }
+        else{
+            Je = get_Je();
+        }
+
+        T I1 = compute_I1<T>(isPrevious);
+
+        T Ibar1 = I1 / std::pow(*Je,2./3.);
+
+        return Ibar1;
+
+    }
+
+    /*!
+     * Compute the derivative of the isochoric first invariant of the deformation with respect to the elastic deformation gradient
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true) value
+     * \param dI2dFe_begin: The starting iterator of the derivative of the isochoric first invariant of the deformation with respect ot the elastic deformation gradient
+     * \param dI2dFe_end: The stopping iterator of the derivative of the isochoric first invariant of the deformation with respect ot the elastic deformation gradient
+     */
+    template<class dIbar1dFe_iter>
+    void HyperelasticBase::compute_dIbar1dFe(const bool isPrevious, dIbar1dFe_iter dIbar1dFe_begin, dIbar1dFe_iter dIbar1dFe_end){
+
+        using dIbar1dFe_type = typename std::iterator_traits<dIbar1dFe_iter>::value_type;
+
+        constexpr unsigned int dim = 3; //TODO: Get this value from ResidualBase
+
+        constexpr double f = 2./3;
+
+        const floatType *Je;
+
+        const secondOrderTensor *dJedFe;
+
+        if (isPrevious){
+            Je = get_previousJe();
+            dJedFe = get_dPreviousJedPreviousFe();
+        }else{
+            Je = get_Je();
+            dJedFe = get_dJedFe();
+        }
+
+        dIbar1dFe_type I1 = compute_I1<dIbar1dFe_type>(isPrevious);
+
+        compute_dI1dFe(isPrevious, dIbar1dFe_begin, dIbar1dFe_end);
+
+        for (unsigned int iI = 0; iI < dim*dim; ++iI){
+            *(dIbar1dFe_begin + iI) -= f * I1 * (*dJedFe)[iI] / (*Je);
+        }
+
+        std::transform(dIbar1dFe_begin, dIbar1dFe_end, dIbar1dFe_begin,
+                std::bind(std::divides<>(), std::placeholders::_1, std::pow(*Je,f)));
+
+    }
+
+    template<class d2Ibar1dFe2_iter>
+    void HyperelasticBase::compute_d2Ibar1dFe2(const bool isPrevious, d2Ibar1dFe2_iter d2Ibar1dFe2_begin, d2Ibar1dFe2_iter d2Ibar1dFe2_end){
+
+        using d2Ibar1dFe2_type = typename std::iterator_traits<d2Ibar1dFe2_iter>::value_type;
+
+        constexpr unsigned int dim = 3; //TODO: Get this value from ResidualBase
+
+        constexpr double f = 2./3.;
+
+        const floatType *Je;
+
+        const secondOrderTensor *dJedFe;
+
+        const fourthOrderTensor *d2JedFe2;
+
+        if (isPrevious){
+            Je = get_previousJe();
+            dJedFe = get_dPreviousJedPreviousFe();
+            d2JedFe2 = get_d2PreviousJedPreviousFe2();
+        }else{
+            Je = get_Je();
+            dJedFe = get_dJedFe();
+            d2JedFe2 = get_d2JedFe2();
+        }
+
+        d2Ibar1dFe2_type I1 = compute_I1<d2Ibar1dFe2_type>(isPrevious);
+
+        std::array<d2Ibar1dFe2_type,dim*dim> dI1dFe{};
+        std::array<d2Ibar1dFe2_type,dim*dim> dIbar1dFe{};
+        std::array<d2Ibar1dFe2_type,dim*dim*dim*dim> d2I1dFe2{};
+
+        compute_dI1dFe(isPrevious, std::begin(dI1dFe), std::end(dI1dFe));
+        compute_dIbar1dFe(isPrevious, std::begin(dIbar1dFe), std::end(dIbar1dFe));
+        compute_d2I1dFe2(std::begin(d2I1dFe2), std::end(d2I1dFe2));
+
+        std::fill(d2Ibar1dFe2_begin, d2Ibar1dFe2_end, d2Ibar1dFe2_type());
+
+        for ( unsigned int aA = 0; aA < dim * dim; ++aA ){
+
+            for ( unsigned int bB = 0; bB < dim * dim; ++bB ){
+
+                *(d2Ibar1dFe2_begin + dim * dim * aA + bB) += (d2I1dFe2[dim * dim * aA + bB] - f / (*Je) * (*dJedFe)[aA] * dI1dFe[bB] + f * I1 / ((*Je)*(*Je)) * (*dJedFe)[aA] * (*dJedFe)[bB] - f * I1 / (*Je) * (*d2JedFe2)[dim *dim * aA + bB]) / std::pow((*Je),f) - f / (*Je) * dIbar1dFe[aA] * (*dJedFe)[bB];
+
+            }
+
+        }
+
+    }
 }
