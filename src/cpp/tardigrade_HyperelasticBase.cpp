@@ -102,6 +102,162 @@ namespace tardigradeHydra {
     }
 
     /*!
+     * Compute the Jacobian of the elastic deformation
+     *
+     * \param isPrevious: A flag for of the current (false) or previous (true) value should be computed
+     */
+    void HyperelasticBase::setJe(bool isPrevious) {
+        constexpr unsigned int dim = 3;
+
+        const secondOrderTensor *Fe;
+
+        SetDataStorageBase<floatType> Je;
+
+        if (isPrevious) {
+            Fe = get_previousFe();
+
+            Je = get_SetDataStorage_previousJe();
+
+        } else {
+            Fe = get_Fe();
+
+            Je = get_SetDataStorage_Je();
+        }
+
+        Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> Femat(
+            Fe->data(), dim, dim);  // TODO: Change this to a constant size when possible
+        *Je.value = Femat.determinant();
+    }
+
+    /*!
+     * Compute the Jacobian of the elastic deformation
+     */
+    void HyperelasticBase::setJe() { setJe(false); }
+
+    /*!
+     * Compute the previous Jacobian of the elastic deformation
+     */
+    void HyperelasticBase::setPreviousJe() { setJe(true); }
+
+    /*!
+     * Compute the derivative of the Jacobian of the elastic deformation
+     * with respect to the elastic deformation
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true)
+     *     value
+     */
+    void HyperelasticBase::setdJedFe(bool isPrevious) {
+        constexpr unsigned int dim = 3;
+
+        const secondOrderTensor *Fe;
+
+        const floatType *Je;
+
+        SetDataStorageBase<secondOrderTensor> dJedFe;
+
+        if (isPrevious) {
+            Fe = get_previousFe();
+
+            Je = get_previousJe();
+
+            dJedFe = get_SetDataStorage_dPreviousJedPreviousFe();
+
+        } else {
+            Fe = get_Fe();
+
+            Je = get_Je();
+
+            dJedFe = get_SetDataStorage_dJedFe();
+        }
+
+        secondOrderTensor                                                   invFe(dim * dim, 0);
+        Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> Femat(
+            Fe->data(), dim, dim);  // TODO: Change this to a constant size when possible
+        Eigen::Map<Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> invFemat(
+            invFe.data(), dim, dim);  // TODO: Change this to a constant size when possible
+        invFemat = Femat.inverse().eval();
+
+        dJedFe.zero(dim * dim);
+
+        for (unsigned int i = 0; i < dim; ++i) {
+            for (unsigned int I = 0; I < dim; ++I) {
+                (*dJedFe.value)[dim * i + I] = (*Je) * invFe[dim * I + i];
+            }
+        }
+    }
+
+    /*!
+     * Compute the derivative of the Jacobian of the elastic deformation
+     * with respect to the elastic deformation
+     */
+    void HyperelasticBase::setdJedFe() { setdJedFe(false); }
+
+    /*!
+     * Compute the previous derivative of the Jacobian of the elastic deformation
+     * with respect to the elastic deformation
+     */
+    void HyperelasticBase::setdPreviousJedPreviousFe() { setdJedFe(true); }
+
+    /*!
+     * Compute the second derivative of the Jacobian of the elastic deformation
+     * with respect to the elastic deformation
+     *
+     * \param isPrevious: Whether to compute the current (false) or previous (true)
+     *     value
+     */
+    void HyperelasticBase::setd2JedFe2(bool isPrevious) {
+        constexpr unsigned int dim = 3;
+
+        const floatType *Je;
+
+        const secondOrderTensor *dJedFe;
+
+        SetDataStorageBase<fourthOrderTensor> d2JedFe2;
+
+        if (isPrevious) {
+            Je = get_previousJe();
+
+            dJedFe = get_dPreviousJedPreviousFe();
+
+            d2JedFe2 = get_SetDataStorage_d2PreviousJedPreviousFe2();
+
+        } else {
+            Je = get_Je();
+
+            dJedFe = get_dJedFe();
+
+            d2JedFe2 = get_SetDataStorage_d2JedFe2();
+        }
+
+        d2JedFe2.zero(dim * dim * dim * dim);
+
+        for (unsigned int i = 0; i < dim; ++i) {
+            for (unsigned int I = 0; I < dim; ++I) {
+                for (unsigned int j = 0; j < dim; ++j) {
+                    for (unsigned int J = 0; J < dim; ++J) {
+                        (*d2JedFe2.value)[dim * dim * dim * i + dim * dim * I + dim * j + J] =
+                            ((*dJedFe)[dim * j + J] * (*dJedFe)[dim * i + I] -
+                             (*dJedFe)[dim * j + I] * (*dJedFe)[dim * i + J]) /
+                            (*Je);
+                    }
+                }
+            }
+        }
+    }
+
+    /*!
+     * Compute the derivative of the Jacobian of the elastic deformation
+     * with respect to the elastic deformation
+     */
+    void HyperelasticBase::setd2JedFe2() { setd2JedFe2(false); }
+
+    /*!
+     * Compute the previous derivative of the Jacobian of the elastic deformation
+     * with respect to the elastic deformation
+     */
+    void HyperelasticBase::setd2PreviousJedPreviousFe2() { setd2JedFe2(true); }
+
+    /*!
      * Compute the current strain energy
      */
     void HyperelasticBase::setStrainEnergy() { setStrainEnergy(false); }
@@ -159,6 +315,8 @@ namespace tardigradeHydra {
 
         const secondOrderTensor *Fe;
 
+        const floatType *Je;
+
         const secondOrderTensor *dStrainEnergydFe;
 
         SetDataStorageBase<secondOrderTensor> cauchyStress;
@@ -166,12 +324,16 @@ namespace tardigradeHydra {
         if (isPrevious) {
             Fe = get_previousFe();
 
+            Je = get_previousJe();
+
             dStrainEnergydFe = get_dPreviousStrainEnergydPreviousFe();
 
             cauchyStress = get_SetDataStorage_previousCauchyStress();
 
         } else {
             Fe = get_Fe();
+
+            Je = get_Je();
 
             dStrainEnergydFe = get_dStrainEnergydFe();
 
@@ -188,17 +350,13 @@ namespace tardigradeHydra {
 
         cauchyStress.zero(dim * dim);
 
-        Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> Femat(
-            Fe->data(), dim, dim);  // TODO: Change this to a constant size when possible
-        auto Je = Femat.determinant();
-
         for (unsigned int i = 0; i < dim; ++i) {
             for (unsigned int j = 0; j < dim; ++j) {
                 for (unsigned int I = 0; I < dim; ++I) {
                     (*cauchyStress.value)[dim * i + j] += (*dStrainEnergydFe)[dim * i + I] * (*Fe)[dim * j + I];
                 }
 
-                (*cauchyStress.value)[dim * i + j] /= Je;
+                (*cauchyStress.value)[dim * i + j] /= *Je;
             }
         }
     }
@@ -223,6 +381,8 @@ namespace tardigradeHydra {
 
         const secondOrderTensor *Fe;
 
+        const floatType *Je;
+
         const secondOrderTensor *dStrainEnergydFe;
 
         const fourthOrderTensor *dFedF;
@@ -242,6 +402,8 @@ namespace tardigradeHydra {
         if (isPrevious) {
             Fe = get_previousFe();
 
+            Je = get_previousJe();
+
             dStrainEnergydFe = get_dPreviousStrainEnergydPreviousFe();
 
             dFedF = get_previousdFedF();
@@ -260,6 +422,8 @@ namespace tardigradeHydra {
 
         } else {
             Fe = get_Fe();
+
+            Je = get_Je();
 
             dStrainEnergydFe = get_dStrainEnergydFe();
 
@@ -298,7 +462,6 @@ namespace tardigradeHydra {
             Fe->data(), dim, dim);  // TODO: Change this to a constant size when possible
         Eigen::Map<Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> invFemat(
             invFe.data(), dim, dim);  // TODO: Change this to a constant size when possible
-        auto Je  = Femat.determinant();
         invFemat = Femat.inverse().eval();
 
         secondOrderTensor JecauchyStress(dim * dim, 0);
@@ -342,7 +505,7 @@ namespace tardigradeHydra {
                     JecauchyStress[dim * i + j] += (*dStrainEnergydFe)[dim * i + I] * (*Fe)[dim * j + I];
                 }
 
-                (*dCauchyStressdT.value)[dim * i + j] /= Je;
+                (*dCauchyStressdT.value)[dim * i + j] /= *Je;
             }
         }
 
@@ -372,13 +535,13 @@ namespace tardigradeHydra {
         for (unsigned int ij = 0; ij < dim * dim; ++ij) {
             for (unsigned int aA = 0; aA < dim * dim; ++aA) {
                 (*dCauchyStressdF.value)[dim * dim * ij + aA] -= JecauchyStress[ij] * invFedFedF[aA];
-                (*dCauchyStressdF.value)[dim * dim * ij + aA] /= Je;
+                (*dCauchyStressdF.value)[dim * dim * ij + aA] /= *Je;
             }
 
             for (unsigned int aA = 0; aA < dim * dim * (hydra->getNumConfigurations() - 1); ++aA) {
                 (*dCauchyStressdFn.value)[dim * dim * (hydra->getNumConfigurations() - 1) * ij + aA] -=
                     JecauchyStress[ij] * invFedFedFn[aA];
-                (*dCauchyStressdFn.value)[dim * dim * (hydra->getNumConfigurations() - 1) * ij + aA] /= Je;
+                (*dCauchyStressdFn.value)[dim * dim * (hydra->getNumConfigurations() - 1) * ij + aA] /= *Je;
             }
         }
     }
