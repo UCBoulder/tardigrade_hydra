@@ -210,7 +210,8 @@ namespace tardigradeHydra {
 
         auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>(inverseConfigurations.data());
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, configuration::dimension, configuration::dimension, configuration::dimension, 1, 0);
+        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, configuration::dimension, configuration::dimension,
+                           configuration::dimension, 1, 0);
 
         // Initialize the first configuration with the total deformation gradient
         secondOrderTensor temp(sot_dimension, 0);
@@ -233,7 +234,8 @@ namespace tardigradeHydra {
             }
 
             // Compute the inverse of the current configuration and store it
-            std::copy(configurations.begin() + sot_dimension * (i + 1), configurations.begin() + sot_dimension * (i + 2),
+            std::copy(configurations.begin() + sot_dimension * (i + 1),
+                      configurations.begin() + sot_dimension * (i + 2),
                       inverseConfigurations.begin() + sot_dimension * (i + 1));
             new (&mat) Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(inverseConfigurations.data() +
                                                                                         sot_dimension * (i + 1),
@@ -766,7 +768,8 @@ namespace tardigradeHydra {
      * Get dRdF for the non-linear problem
      */
     floatMatrix hydraBase::getdRdF() {
-        return tardigradeVectorTools::inflate(*getFlatdRdF(), getResidual()->size(), configuration::dimension * configuration::dimension);
+        return tardigradeVectorTools::inflate(*getFlatdRdF(), getResidual()->size(),
+                                              configuration::dimension * configuration::dimension);
     }
 
     /*!
@@ -942,7 +945,8 @@ namespace tardigradeHydra {
 
         std::copy(std::begin(*cauchyStress), std::end(*cauchyStress), std::begin(X));
 
-        std::copy(std::begin(*configurations) + sot_dimension, std::end(*configurations), std::begin(X) + sot_dimension);
+        std::copy(std::begin(*configurations) + sot_dimension, std::end(*configurations),
+                  std::begin(X) + sot_dimension);
 
         std::copy(std::begin(*nonLinearSolveStateVariables), std::end(*nonLinearSolveStateVariables),
                   std::begin(X) + num_local_configs * sot_dimension);

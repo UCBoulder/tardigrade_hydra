@@ -67,7 +67,8 @@ namespace tardigradeHydra {
          */
 
         constexpr unsigned int sot_dimension = configuration::dimension * configuration::dimension;
-        constexpr unsigned int tot_dimension = configuration::dimension * configuration::dimension * configuration::dimension;
+        constexpr unsigned int tot_dimension =
+            configuration::dimension * configuration::dimension * configuration::dimension;
 
         const floatVector *stress;
         TARDIGRADE_ERROR_TOOLS_CATCH(stress = getStress());
@@ -94,7 +95,8 @@ namespace tardigradeHydra {
         offset += configurations->size() - sot_dimension;
 
         // Set the values of the micro configurations
-        std::copy(std::begin(*microConfigurations) + sot_dimension, std::end(*microConfigurations), std::begin(X) + offset);
+        std::copy(std::begin(*microConfigurations) + sot_dimension, std::end(*microConfigurations),
+                  std::begin(X) + offset);
 
         offset += microConfigurations->size() - sot_dimension;
 
@@ -246,7 +248,8 @@ namespace tardigradeHydra {
          * configuration \param &gradientMicroConfigurations: The resulting gradients of the micro configurations
          */
 
-        constexpr unsigned int tot_dimension     = configuration::dimension * configuration::dimension * configuration::dimension;
+        constexpr unsigned int tot_dimension =
+            configuration::dimension * configuration::dimension * configuration::dimension;
         auto num_configs = getNumConfigurations();
 
         gradientMicroConfigurations =
@@ -264,8 +267,8 @@ namespace tardigradeHydra {
          * Decompose the micro-deformation parts of the unknown vector
          */
 
-        constexpr unsigned int sot_dimension     = configuration::dimension * configuration::dimension;
-        auto num_configs = getNumConfigurations();
+        constexpr unsigned int sot_dimension = configuration::dimension * configuration::dimension;
+        auto                   num_configs   = getNumConfigurations();
 
         unsigned int start_index = getStressSize() + (num_configs - 1) * sot_dimension;
 
@@ -292,8 +295,8 @@ namespace tardigradeHydra {
          * Decompose the micro-deformation parts of the state variable vector
          */
 
-        constexpr unsigned int sot_dimension     = configuration::dimension * configuration::dimension;
-        auto num_configs = getNumConfigurations();
+        constexpr unsigned int sot_dimension = configuration::dimension * configuration::dimension;
+        auto                   num_configs   = getNumConfigurations();
 
         unsigned int start_index = (num_configs - 1) * sot_dimension;
 
@@ -592,8 +595,9 @@ namespace tardigradeHydra {
          * configurations
          */
 
-        constexpr unsigned int sot_dimension     = configuration::dimension * configuration::dimension;
-        constexpr unsigned int tot_dimension     = configuration::dimension * configuration::dimension * configuration::dimension;
+        constexpr unsigned int sot_dimension = configuration::dimension * configuration::dimension;
+        constexpr unsigned int tot_dimension =
+            configuration::dimension * configuration::dimension * configuration::dimension;
         auto num_configs = getNumConfigurations();
 
         // Compute the gradient in the reference configuration
@@ -608,13 +612,14 @@ namespace tardigradeHydra {
             chiPrecede[configuration::dimension * i + i] = 1.;
         }
 
-        Eigen::Map<Eigen::Matrix<floatType, configuration::dimension, configuration::dimension, Eigen::RowMajor> >       chip_map(chiPrecede.data(), configuration::dimension, configuration::dimension);
-        Eigen::Map<const Eigen::Matrix<floatType, configuration::dimension, configuration::dimension, Eigen::RowMajor> > map1(NULL, configuration::dimension, configuration::dimension);
+        Eigen::Map<Eigen::Matrix<floatType, configuration::dimension, configuration::dimension, Eigen::RowMajor> >
+            chip_map(chiPrecede.data(), configuration::dimension, configuration::dimension);
+        Eigen::Map<const Eigen::Matrix<floatType, configuration::dimension, configuration::dimension, Eigen::RowMajor> >
+            map1(NULL, configuration::dimension, configuration::dimension);
 
         for (unsigned int index = 1; index < num_configs; index++) {
-            new (&map1) Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(microConfigurations.data() +
-                                                                                               (index - 1) * sot_dimension,
-                                                                                           3, 3);
+            new (&map1) Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> >(
+                microConfigurations.data() + (index - 1) * sot_dimension, 3, 3);
             chip_map *= map1;
 
             // Add the contribution of the term
@@ -622,9 +627,12 @@ namespace tardigradeHydra {
                 for (unsigned int j = 0; j < configuration::dimension; j++) {
                     for (unsigned int I = 0; I < configuration::dimension; I++) {
                         for (unsigned int J = 0; J < configuration::dimension; J++) {
-                            gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] -=
+                            gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * I + J] -=
                                 chiPrecede[configuration::dimension * i + j] *
-                                gradientMicroConfigurations[tot_dimension * index + configuration::dimension * configuration::dimension * j + configuration::dimension * I + J];
+                                gradientMicroConfigurations[tot_dimension * index +
+                                                            configuration::dimension * configuration::dimension * j +
+                                                            configuration::dimension * I + J];
                         }
                     }
                 }
@@ -644,8 +652,11 @@ namespace tardigradeHydra {
                 for (unsigned int I = 0; I < configuration::dimension; I++) {
                     for (unsigned int J = 0; J < configuration::dimension; J++) {
                         for (unsigned int k = 0; k < configuration::dimension; k++) {
-                            temp_tot1[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                                chiFollow[configuration::dimension * k + I] * gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * k + J];
+                            temp_tot1[configuration::dimension * configuration::dimension * i +
+                                      configuration::dimension * I + J] +=
+                                chiFollow[configuration::dimension * k + I] *
+                                gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                      configuration::dimension * k + J];
                         }
                     }
                 }
@@ -661,8 +672,11 @@ namespace tardigradeHydra {
                 for (unsigned int I = 0; I < configuration::dimension; I++) {
                     for (unsigned int l = 0; l < configuration::dimension; l++) {
                         for (unsigned int J = 0; J < configuration::dimension; J++) {
-                            gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                                FFollow[configuration::dimension * l + J] * temp_tot1[configuration::dimension * configuration::dimension * i + configuration::dimension * I + l];
+                            gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * I + J] +=
+                                FFollow[configuration::dimension * l + J] *
+                                temp_tot1[configuration::dimension * configuration::dimension * i +
+                                          configuration::dimension * I + l];
                         }
                     }
                 }
@@ -688,8 +702,10 @@ namespace tardigradeHydra {
             for (unsigned int a = 0; a < configuration::dimension; a++) {
                 for (unsigned int I = 0; I < configuration::dimension; I++) {
                     for (unsigned int J = 0; J < configuration::dimension; J++) {
-                        temp_tot1[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                            gradientChi1Reference[sot_dimension * i + configuration::dimension * a + J] * invChiFollow[configuration::dimension * a + I];
+                        temp_tot1[configuration::dimension * configuration::dimension * i +
+                                  configuration::dimension * I + J] +=
+                            gradientChi1Reference[sot_dimension * i + configuration::dimension * a + J] *
+                            invChiFollow[configuration::dimension * a + I];
                     }
                 }
             }
@@ -699,8 +715,10 @@ namespace tardigradeHydra {
             for (unsigned int I = 0; I < configuration::dimension; I++) {
                 for (unsigned int b = 0; b < configuration::dimension; b++) {
                     for (unsigned int J = 0; J < configuration::dimension; J++) {
-                        gradientMicroConfigurations[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                            temp_tot1[sot_dimension * i + configuration::dimension * I + b] * invFFollow[configuration::dimension * b + J];
+                        gradientMicroConfigurations[configuration::dimension * configuration::dimension * i +
+                                                    configuration::dimension * I + J] +=
+                            temp_tot1[sot_dimension * i + configuration::dimension * I + b] *
+                            invFFollow[configuration::dimension * b + J];
                     }
                 }
             }
@@ -734,8 +752,9 @@ namespace tardigradeHydra {
          * remaining sub micro-configurations
          */
 
-        constexpr unsigned int sot_dimension     = configuration::dimension * configuration::dimension;
-        constexpr unsigned int tot_dimension     = configuration::dimension * configuration::dimension * configuration::dimension;
+        constexpr unsigned int sot_dimension = configuration::dimension * configuration::dimension;
+        constexpr unsigned int tot_dimension =
+            configuration::dimension * configuration::dimension * configuration::dimension;
         auto num_configs = getNumConfigurations();
 
         // Compute the gradient in the reference configuration
@@ -802,9 +821,12 @@ namespace tardigradeHydra {
                 for (unsigned int j = 0; j < configuration::dimension; j++) {
                     for (unsigned int I = 0; I < configuration::dimension; I++) {
                         for (unsigned int J = 0; J < configuration::dimension; J++) {
-                            gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] -=
+                            gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * I + J] -=
                                 chiPrecede[configuration::dimension * i + j] *
-                                gradientMicroConfigurations[tot_dimension * index + configuration::dimension * configuration::dimension * j + configuration::dimension * I + J];
+                                gradientMicroConfigurations[tot_dimension * index +
+                                                            configuration::dimension * configuration::dimension * j +
+                                                            configuration::dimension * I + J];
                         }
                     }
                 }
@@ -824,11 +846,18 @@ namespace tardigradeHydra {
                     for (unsigned int I = 0; I < configuration::dimension; I++) {
                         for (unsigned int J = 0; J < configuration::dimension; J++) {
                             for (unsigned int k = 0; k < configuration::dimension; k++) {
-                                gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                                    chiFollow[configuration::dimension * k + I] * temp_tot1[configuration::dimension * configuration::dimension * i + configuration::dimension * k + J];
-                                temp_tot2[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] -=
+                                gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                      configuration::dimension * I + J] +=
                                     chiFollow[configuration::dimension * k + I] *
-                                    gradientMicroConfigurations[tot_dimension * index + configuration::dimension * configuration::dimension * i + configuration::dimension * k + J];
+                                    temp_tot1[configuration::dimension * configuration::dimension * i +
+                                              configuration::dimension * k + J];
+                                temp_tot2[configuration::dimension * configuration::dimension * i +
+                                          configuration::dimension * I + J] -=
+                                    chiFollow[configuration::dimension * k + I] *
+                                    gradientMicroConfigurations[tot_dimension * index +
+                                                                configuration::dimension * configuration::dimension *
+                                                                    i +
+                                                                configuration::dimension * k + J];
                             }
                         }
                     }
@@ -845,22 +874,34 @@ namespace tardigradeHydra {
                     for (unsigned int I = 0; I < configuration::dimension; I++) {
                         for (unsigned int l = 0; l < configuration::dimension; l++) {
                             for (unsigned int J = 0; J < configuration::dimension; J++) {
-                                gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                                    FFollow[configuration::dimension * l + J] * temp_tot1[configuration::dimension * configuration::dimension * i + configuration::dimension * I + l];
+                                gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                      configuration::dimension * I + J] +=
+                                    FFollow[configuration::dimension * l + J] *
+                                    temp_tot1[configuration::dimension * configuration::dimension * i +
+                                              configuration::dimension * I + l];
 
-                                temp_tot2a[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                                    FFollow[configuration::dimension * l + J] * temp_tot2[configuration::dimension * configuration::dimension * i + configuration::dimension * I + l];
+                                temp_tot2a[configuration::dimension * configuration::dimension * i +
+                                           configuration::dimension * I + J] +=
+                                    FFollow[configuration::dimension * l + J] *
+                                    temp_tot2[configuration::dimension * configuration::dimension * i +
+                                              configuration::dimension * I + l];
 
-                                temp_tot3a[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                                    FFollow[configuration::dimension * l + J] * temp_tot3[configuration::dimension * configuration::dimension * i + configuration::dimension * I + l];
+                                temp_tot3a[configuration::dimension * configuration::dimension * i +
+                                           configuration::dimension * I + J] +=
+                                    FFollow[configuration::dimension * l + J] *
+                                    temp_tot3[configuration::dimension * configuration::dimension * i +
+                                              configuration::dimension * I + l];
 
                                 for (unsigned int A = 0; A < (num_configs - 1) * sot_dimension; A++) {
-                                    dGradientChi1ReferencedCn[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                                              configuration::dimension * (num_configs - 1) * sot_dimension * I +
+                                    dGradientChi1ReferencedCn[configuration::dimension * configuration::dimension *
+                                                                  (num_configs - 1) * sot_dimension * i +
+                                                              configuration::dimension * (num_configs - 1) *
+                                                                  sot_dimension * I +
                                                               (num_configs - 1) * sot_dimension * J + A] +=
-                                        dFFollowdCs[configuration::dimension * num_configs * sot_dimension * l + num_configs * sot_dimension * J +
-                                                    sot_dimension + A] *
-                                        temp_tot1[configuration::dimension * configuration::dimension * i + configuration::dimension * I + l];
+                                        dFFollowdCs[configuration::dimension * num_configs * sot_dimension * l +
+                                                    num_configs * sot_dimension * J + sot_dimension + A] *
+                                        temp_tot1[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * I + l];
                                 }
                             }
                         }
@@ -889,12 +930,15 @@ namespace tardigradeHydra {
                         for (unsigned int l = 0; l < configuration::dimension; l++) {
                             for (unsigned int J = 0; J < configuration::dimension; J++) {
                                 for (unsigned int A = 0; A < (num_configs - 1) * sot_dimension; A++) {
-                                    dGradientChi1ReferencedCn[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                                              configuration::dimension * (num_configs - 1) * sot_dimension * I +
+                                    dGradientChi1ReferencedCn[configuration::dimension * configuration::dimension *
+                                                                  (num_configs - 1) * sot_dimension * i +
+                                                              configuration::dimension * (num_configs - 1) *
+                                                                  sot_dimension * I +
                                                               (num_configs - 1) * sot_dimension * J + A] +=
-                                        dFFollowdCs[configuration::dimension * num_configs * sot_dimension * l + num_configs * sot_dimension * J +
-                                                    sot_dimension + A] *
-                                        gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * I + l];
+                                        dFFollowdCs[configuration::dimension * num_configs * sot_dimension * l +
+                                                    num_configs * sot_dimension * J + sot_dimension + A] *
+                                        gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                              configuration::dimension * I + l];
                                 }
                             }
                         }
@@ -907,31 +951,44 @@ namespace tardigradeHydra {
                     for (unsigned int J = 0; J < configuration::dimension; J++) {
                         for (unsigned int j = 0; j < configuration::dimension; j++) {
                             for (unsigned int A = 0; A < sot_dimension; A++) {
-                                dGradientChi1ReferencedChi[configuration::dimension * configuration::dimension * sot_dimension * i + configuration::dimension * sot_dimension * I + sot_dimension * J +
-                                                           A] += dChiPrecededChi[configuration::dimension * sot_dimension * i + sot_dimension * j + A] *
-                                                                 temp_tot2[configuration::dimension * configuration::dimension * j + configuration::dimension * I + J];
+                                dGradientChi1ReferencedChi[configuration::dimension * configuration::dimension *
+                                                               sot_dimension * i +
+                                                           configuration::dimension * sot_dimension * I +
+                                                           sot_dimension * J + A] +=
+                                    dChiPrecededChi[configuration::dimension * sot_dimension * i + sot_dimension * j +
+                                                    A] *
+                                    temp_tot2[configuration::dimension * configuration::dimension * j +
+                                              configuration::dimension * I + J];
                             }
 
                             for (unsigned int A = 0; A < (num_configs - 1) * sot_dimension; A++) {
-                                dGradientChi1ReferencedChin[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                                            configuration::dimension * (num_configs - 1) * sot_dimension * I +
+                                dGradientChi1ReferencedChin[configuration::dimension * configuration::dimension *
+                                                                (num_configs - 1) * sot_dimension * i +
+                                                            configuration::dimension * (num_configs - 1) *
+                                                                sot_dimension * I +
                                                             (num_configs - 1) * sot_dimension * J + A] +=
                                     dChiPrecededChin[configuration::dimension * (num_configs - 1) * sot_dimension * i +
                                                      (num_configs - 1) * sot_dimension * j + A] *
-                                        temp_tot2[configuration::dimension * configuration::dimension * j + configuration::dimension * I + J] +
-                                    dChiFollowdChis[configuration::dimension * num_configs * sot_dimension * j + num_configs * sot_dimension * I + A +
-                                                    sot_dimension] *
-                                        temp_tot3[configuration::dimension * configuration::dimension * i + configuration::dimension * j + J];
+                                        temp_tot2[configuration::dimension * configuration::dimension * j +
+                                                  configuration::dimension * I + J] +
+                                    dChiFollowdChis[configuration::dimension * num_configs * sot_dimension * j +
+                                                    num_configs * sot_dimension * I + A + sot_dimension] *
+                                        temp_tot3[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * j + J];
                             }
 
                             for (unsigned int k = 0; k < configuration::dimension; k++) {
                                 for (unsigned int l = 0; l < configuration::dimension; l++) {
-                                    dGradientChi1ReferencedGradChin[configuration::dimension * configuration::dimension * (num_configs - 1) * tot_dimension * i +
-                                                                    configuration::dimension * (num_configs - 1) * tot_dimension * I +
-                                                                    (num_configs - 1) * tot_dimension * J +
-                                                                    tot_dimension * (index - 1) + configuration::dimension * configuration::dimension * j + configuration::dimension * k +
-                                                                    l] -=
-                                        chiPrecede[configuration::dimension * i + j] * chiFollow[configuration::dimension * k + I] * FFollow[configuration::dimension * l + J];
+                                    dGradientChi1ReferencedGradChin
+                                        [configuration::dimension * configuration::dimension * (num_configs - 1) *
+                                             tot_dimension * i +
+                                         configuration::dimension * (num_configs - 1) * tot_dimension * I +
+                                         (num_configs - 1) * tot_dimension * J + tot_dimension * (index - 1) +
+                                         configuration::dimension * configuration::dimension * j +
+                                         configuration::dimension * k + l] -=
+                                        chiPrecede[configuration::dimension * i + j] *
+                                        chiFollow[configuration::dimension * k + I] *
+                                        FFollow[configuration::dimension * l + J];
                                 }
                             }
                         }
@@ -966,9 +1023,11 @@ namespace tardigradeHydra {
 
         floatVector dFFollowdFs = deformation->getSubConfigurationJacobian<3, 3, 3>(configurations, 1, num_configs);
 
-        fourthOrderTensor dInvChiFollowdChiFollow = tardigradeVectorTools::computeFlatDInvADA(invChiFollow, configuration::dimension, configuration::dimension);
+        fourthOrderTensor dInvChiFollowdChiFollow =
+            tardigradeVectorTools::computeFlatDInvADA(invChiFollow, configuration::dimension, configuration::dimension);
 
-        fourthOrderTensor dInvFFollowdFFollow = tardigradeVectorTools::computeFlatDInvADA(invFFollow, configuration::dimension, configuration::dimension);
+        fourthOrderTensor dInvFFollowdFFollow =
+            tardigradeVectorTools::computeFlatDInvADA(invFFollow, configuration::dimension, configuration::dimension);
 
         floatVector dInvChiFollowdChin(sot_dimension * sot_dimension * (num_configs - 1), 0);
 
@@ -982,7 +1041,8 @@ namespace tardigradeHydra {
                         dChiFollowdChis[num_configs * sot_dimension * k + j + sot_dimension];
 
                     dInvFFollowdFn[(num_configs - 1) * sot_dimension * i + j] +=
-                        dInvFFollowdFFollow[sot_dimension * i + k] * dFFollowdFs[num_configs * sot_dimension * k + j + sot_dimension];
+                        dInvFFollowdFFollow[sot_dimension * i + k] *
+                        dFFollowdFs[num_configs * sot_dimension * k + j + sot_dimension];
                 }
             }
         }
@@ -1011,20 +1071,33 @@ namespace tardigradeHydra {
             for (unsigned int I = 0; I < configuration::dimension; I++) {
                 for (unsigned int J = 0; J < configuration::dimension; J++) {
                     for (unsigned int a = 0; a < configuration::dimension; a++) {
-                        temp_tot1[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                            gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * a + J] * invChiFollow_T[configuration::dimension * I + a];
+                        temp_tot1[configuration::dimension * configuration::dimension * i +
+                                  configuration::dimension * I + J] +=
+                            gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * a + J] *
+                            invChiFollow_T[configuration::dimension * I + a];
 
-                        temp_tot2[configuration::dimension * configuration::dimension * i + configuration::dimension * I + J] +=
-                            gradientChi1Reference[configuration::dimension * configuration::dimension * i + configuration::dimension * I + a] * invFFollow_T[configuration::dimension * J + a];
+                        temp_tot2[configuration::dimension * configuration::dimension * i +
+                                  configuration::dimension * I + J] +=
+                            gradientChi1Reference[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * I + a] *
+                            invFFollow_T[configuration::dimension * J + a];
 
                         for (unsigned int b = 0; b < configuration::dimension; b++) {
-                            dGradChi1dGradChi[configuration::dimension * configuration::dimension * tot_dimension * i + configuration::dimension * tot_dimension * I + tot_dimension * J +
-                                              configuration::dimension * configuration::dimension * i + configuration::dimension * a + b] +=
-                                invChiFollow_T[configuration::dimension * I + a] * invFFollow_T[configuration::dimension * J + b];
+                            dGradChi1dGradChi[configuration::dimension * configuration::dimension * tot_dimension * i +
+                                              configuration::dimension * tot_dimension * I + tot_dimension * J +
+                                              configuration::dimension * configuration::dimension * i +
+                                              configuration::dimension * a + b] +=
+                                invChiFollow_T[configuration::dimension * I + a] *
+                                invFFollow_T[configuration::dimension * J + b];
 
                             for (unsigned int k = 0; k < configuration::dimension; k++) {
-                                temp_fiot[configuration::dimension * configuration::dimension * sot_dimension * i + configuration::dimension * sot_dimension * I + sot_dimension * J + configuration::dimension * a + b] +=
-                                    dGradientChi1ReferencedChi[configuration::dimension * configuration::dimension * sot_dimension * i + configuration::dimension * sot_dimension * k +
+                                temp_fiot[configuration::dimension * configuration::dimension * sot_dimension * i +
+                                          configuration::dimension * sot_dimension * I + sot_dimension * J +
+                                          configuration::dimension * a + b] +=
+                                    dGradientChi1ReferencedChi[configuration::dimension * configuration::dimension *
+                                                                   sot_dimension * i +
+                                                               configuration::dimension * sot_dimension * k +
                                                                sot_dimension * J + configuration::dimension * a + b] *
                                     invChiFollow_T[configuration::dimension * I + k];
                             }
@@ -1039,9 +1112,12 @@ namespace tardigradeHydra {
                     for (unsigned int k = 0; k < configuration::dimension; k++) {
                         for (unsigned int a = 0; a < configuration::dimension; a++) {
                             for (unsigned int b = 0; b < configuration::dimension; b++) {
-                                dGradChi1dChi[configuration::dimension * configuration::dimension * sot_dimension * i + configuration::dimension * sot_dimension * I + sot_dimension * J + configuration::dimension * a +
-                                              b] +=
-                                    temp_fiot[configuration::dimension * configuration::dimension * sot_dimension * i + configuration::dimension * sot_dimension * I + sot_dimension * k + configuration::dimension * a + b] *
+                                dGradChi1dChi[configuration::dimension * configuration::dimension * sot_dimension * i +
+                                              configuration::dimension * sot_dimension * I + sot_dimension * J +
+                                              configuration::dimension * a + b] +=
+                                    temp_fiot[configuration::dimension * configuration::dimension * sot_dimension * i +
+                                              configuration::dimension * sot_dimension * I + sot_dimension * k +
+                                              configuration::dimension * a + b] *
                                     invFFollow_T[configuration::dimension * J + k];
                             }
                         }
@@ -1057,22 +1133,35 @@ namespace tardigradeHydra {
                         for (unsigned int a = 0; a < configuration::dimension; a++) {
                             for (unsigned int b = 0; b < configuration::dimension; b++) {
                                 for (unsigned int k = 0; k < configuration::dimension; k++) {
-                                    temp_siot1[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                               configuration::dimension * (num_configs - 1) * sot_dimension * I + (num_configs - 1) * sot_dimension * J +
-                                               configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a + b] +=
-                                        dGradientChi1ReferencedChin[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                                                    configuration::dimension * (num_configs - 1) * sot_dimension * k +
-                                                                    (num_configs - 1) * sot_dimension * J +
-                                                                    configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a + b] *
+                                    temp_siot1[configuration::dimension * configuration::dimension * (num_configs - 1) *
+                                                   sot_dimension * i +
+                                               configuration::dimension * (num_configs - 1) * sot_dimension * I +
+                                               (num_configs - 1) * sot_dimension * J +
+                                               configuration::dimension * configuration::dimension * (index - 1) +
+                                               configuration::dimension * a + b] +=
+                                        dGradientChi1ReferencedChin
+                                            [configuration::dimension * configuration::dimension * (num_configs - 1) *
+                                                 sot_dimension * i +
+                                             configuration::dimension * (num_configs - 1) * sot_dimension * k +
+                                             (num_configs - 1) * sot_dimension * J +
+                                             configuration::dimension * configuration::dimension * (index - 1) +
+                                             configuration::dimension * a + b] *
                                         invChiFollow_T[configuration::dimension * I + k];
 
-                                    temp_siot2[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                               configuration::dimension * (num_configs - 1) * sot_dimension * I + (num_configs - 1) * sot_dimension * J +
-                                               configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a + b] +=
-                                        dGradientChi1ReferencedCn[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                                                  configuration::dimension * (num_configs - 1) * sot_dimension * k +
+                                    temp_siot2[configuration::dimension * configuration::dimension * (num_configs - 1) *
+                                                   sot_dimension * i +
+                                               configuration::dimension * (num_configs - 1) * sot_dimension * I +
+                                               (num_configs - 1) * sot_dimension * J +
+                                               configuration::dimension * configuration::dimension * (index - 1) +
+                                               configuration::dimension * a + b] +=
+                                        dGradientChi1ReferencedCn[configuration::dimension * configuration::dimension *
+                                                                      (num_configs - 1) * sot_dimension * i +
+                                                                  configuration::dimension * (num_configs - 1) *
+                                                                      sot_dimension * k +
                                                                   (num_configs - 1) * sot_dimension * J +
-                                                                  configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a + b] *
+                                                                  configuration::dimension * configuration::dimension *
+                                                                      (index - 1) +
+                                                                  configuration::dimension * a + b] *
                                         invChiFollow_T[configuration::dimension * I + k];
                                 }
                             }
@@ -1089,50 +1178,77 @@ namespace tardigradeHydra {
                         for (unsigned int index = 1; index < num_configs; index++) {
                             for (unsigned int a = 0; a < configuration::dimension; a++) {
                                 for (unsigned int b = 0; b < configuration::dimension; b++) {
-                                    dGradChi1dCn[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
+                                    dGradChi1dCn[configuration::dimension * configuration::dimension *
+                                                     (num_configs - 1) * sot_dimension * i +
                                                  configuration::dimension * (num_configs - 1) * sot_dimension * I +
-                                                 (num_configs - 1) * sot_dimension * J + configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a +
-                                                 b] += temp_tot1[configuration::dimension * configuration::dimension * i + configuration::dimension * I + c] *
-                                                       dInvFFollowdFn[configuration::dimension * (num_configs - 1) * sot_dimension * c +
-                                                                      (num_configs - 1) * sot_dimension * J +
-                                                                      configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a + b];
+                                                 (num_configs - 1) * sot_dimension * J +
+                                                 configuration::dimension * configuration::dimension * (index - 1) +
+                                                 configuration::dimension * a + b] +=
+                                        temp_tot1[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * I + c] *
+                                        dInvFFollowdFn[configuration::dimension * (num_configs - 1) * sot_dimension *
+                                                           c +
+                                                       (num_configs - 1) * sot_dimension * J +
+                                                       configuration::dimension * configuration::dimension *
+                                                           (index - 1) +
+                                                       configuration::dimension * a + b];
 
-                                    dGradChi1dChin[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
+                                    dGradChi1dChin[configuration::dimension * configuration::dimension *
+                                                       (num_configs - 1) * sot_dimension * i +
                                                    configuration::dimension * (num_configs - 1) * sot_dimension * I +
-                                                   (num_configs - 1) * sot_dimension * J + configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a +
-                                                   b] += temp_tot2[configuration::dimension * configuration::dimension * i + configuration::dimension * c + J] *
-                                                         dInvChiFollowdChin[configuration::dimension * (num_configs - 1) * sot_dimension * c +
-                                                                            (num_configs - 1) * sot_dimension * I +
-                                                                            configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a + b];
-                                    dGradChi1dChin[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
+                                                   (num_configs - 1) * sot_dimension * J +
+                                                   configuration::dimension * configuration::dimension * (index - 1) +
+                                                   configuration::dimension * a + b] +=
+                                        temp_tot2[configuration::dimension * configuration::dimension * i +
+                                                  configuration::dimension * c + J] *
+                                        dInvChiFollowdChin[configuration::dimension * (num_configs - 1) *
+                                                               sot_dimension * c +
+                                                           (num_configs - 1) * sot_dimension * I +
+                                                           configuration::dimension * configuration::dimension *
+                                                               (index - 1) +
+                                                           configuration::dimension * a + b];
+                                    dGradChi1dChin[configuration::dimension * configuration::dimension *
+                                                       (num_configs - 1) * sot_dimension * i +
                                                    configuration::dimension * (num_configs - 1) * sot_dimension * I +
-                                                   (num_configs - 1) * sot_dimension * J + configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a +
-                                                   b] += temp_siot1[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                                                    configuration::dimension * (num_configs - 1) * sot_dimension * I +
-                                                                    (num_configs - 1) * sot_dimension * c +
-                                                                    configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a + b] *
-                                                         invFFollow_T[configuration::dimension * J + c];
+                                                   (num_configs - 1) * sot_dimension * J +
+                                                   configuration::dimension * configuration::dimension * (index - 1) +
+                                                   configuration::dimension * a + b] +=
+                                        temp_siot1[configuration::dimension * configuration::dimension *
+                                                       (num_configs - 1) * sot_dimension * i +
+                                                   configuration::dimension * (num_configs - 1) * sot_dimension * I +
+                                                   (num_configs - 1) * sot_dimension * c +
+                                                   configuration::dimension * configuration::dimension * (index - 1) +
+                                                   configuration::dimension * a + b] *
+                                        invFFollow_T[configuration::dimension * J + c];
 
-                                    dGradChi1dCn[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
+                                    dGradChi1dCn[configuration::dimension * configuration::dimension *
+                                                     (num_configs - 1) * sot_dimension * i +
                                                  configuration::dimension * (num_configs - 1) * sot_dimension * I +
-                                                 (num_configs - 1) * sot_dimension * J + configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a +
-                                                 b] += temp_siot2[configuration::dimension * configuration::dimension * (num_configs - 1) * sot_dimension * i +
-                                                                  configuration::dimension * (num_configs - 1) * sot_dimension * I +
-                                                                  (num_configs - 1) * sot_dimension * c +
-                                                                  configuration::dimension * configuration::dimension * (index - 1) + configuration::dimension * a + b] *
-                                                       invFFollow[configuration::dimension * c + J];
+                                                 (num_configs - 1) * sot_dimension * J +
+                                                 configuration::dimension * configuration::dimension * (index - 1) +
+                                                 configuration::dimension * a + b] +=
+                                        temp_siot2[configuration::dimension * configuration::dimension *
+                                                       (num_configs - 1) * sot_dimension * i +
+                                                   configuration::dimension * (num_configs - 1) * sot_dimension * I +
+                                                   (num_configs - 1) * sot_dimension * c +
+                                                   configuration::dimension * configuration::dimension * (index - 1) +
+                                                   configuration::dimension * a + b] *
+                                        invFFollow[configuration::dimension * c + J];
 
                                     for (unsigned int k = 0; k < configuration::dimension; k++) {
-                                        temp_seot[configuration::dimension * configuration::dimension * (num_configs - 1) * tot_dimension * i +
+                                        temp_seot[configuration::dimension * configuration::dimension *
+                                                      (num_configs - 1) * tot_dimension * i +
                                                   configuration::dimension * (num_configs - 1) * tot_dimension * I +
                                                   (num_configs - 1) * tot_dimension * J + tot_dimension * (index - 1) +
-                                                  configuration::dimension * configuration::dimension * a + configuration::dimension * b + k] +=
-                                            dGradientChi1ReferencedGradChin[configuration::dimension * configuration::dimension * (num_configs - 1) * tot_dimension *
-                                                                                i +
-                                                                            configuration::dimension * (num_configs - 1) * tot_dimension * c +
-                                                                            (num_configs - 1) * tot_dimension * J +
-                                                                            tot_dimension * (index - 1) + configuration::dimension * configuration::dimension * a +
-                                                                            configuration::dimension * b + k] *
+                                                  configuration::dimension * configuration::dimension * a +
+                                                  configuration::dimension * b + k] +=
+                                            dGradientChi1ReferencedGradChin
+                                                [configuration::dimension * configuration::dimension *
+                                                     (num_configs - 1) * tot_dimension * i +
+                                                 configuration::dimension * (num_configs - 1) * tot_dimension * c +
+                                                 (num_configs - 1) * tot_dimension * J + tot_dimension * (index - 1) +
+                                                 configuration::dimension * configuration::dimension * a +
+                                                 configuration::dimension * b + k] *
                                             invChiFollow_T[configuration::dimension * I + c];
                                     }
                                 }
@@ -1151,14 +1267,21 @@ namespace tardigradeHydra {
                             for (unsigned int a = 0; a < configuration::dimension; a++) {
                                 for (unsigned int b = 0; b < configuration::dimension; b++) {
                                     for (unsigned int k = 0; k < configuration::dimension; k++) {
-                                        dGradChi1dGradChin[configuration::dimension * configuration::dimension * (num_configs - 1) * tot_dimension * i +
-                                                           configuration::dimension * (num_configs - 1) * tot_dimension * I +
-                                                           (num_configs - 1) * tot_dimension * J + tot_dimension * (index - 1) +
-                                                           configuration::dimension * configuration::dimension * a + configuration::dimension * b + k] +=
-                                            temp_seot[configuration::dimension * configuration::dimension * (num_configs - 1) * tot_dimension * i +
+                                        dGradChi1dGradChin[configuration::dimension * configuration::dimension *
+                                                               (num_configs - 1) * tot_dimension * i +
+                                                           configuration::dimension * (num_configs - 1) *
+                                                               tot_dimension * I +
+                                                           (num_configs - 1) * tot_dimension * J +
+                                                           tot_dimension * (index - 1) +
+                                                           configuration::dimension * configuration::dimension * a +
+                                                           configuration::dimension * b + k] +=
+                                            temp_seot[configuration::dimension * configuration::dimension *
+                                                          (num_configs - 1) * tot_dimension * i +
                                                       configuration::dimension * (num_configs - 1) * tot_dimension * I +
-                                                      (num_configs - 1) * tot_dimension * c + tot_dimension * (index - 1) +
-                                                      configuration::dimension * configuration::dimension * a + configuration::dimension * b + k] *
+                                                      (num_configs - 1) * tot_dimension * c +
+                                                      tot_dimension * (index - 1) +
+                                                      configuration::dimension * configuration::dimension * a +
+                                                      configuration::dimension * b + k] *
                                             invFFollow_T[configuration::dimension * J + c];
                                     }
                                 }

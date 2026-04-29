@@ -32,7 +32,8 @@ namespace tardigradeHydra {
      */
     template <class configuration>
     template <class v_iterator>
-    void HydraBase<configuration>::addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline) {
+    void HydraBase<configuration>::addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end,
+                                                      bool add_endline) {
         for (auto v = v_begin; v != v_end; ++v) {
             _failure_output << *v << ", ";
         }

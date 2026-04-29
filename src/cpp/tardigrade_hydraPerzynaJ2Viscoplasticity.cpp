@@ -185,17 +185,19 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dYieldFunctiondDrivingStress.data());
             auto map_dDrivingStressdCauchyStress =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdCauchyStress->data());
-            auto map_dDrivingStressdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdF->data());
+            auto map_dDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdF->data());
 
             auto map_dDrivingStressdSubFs =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dDrivingStressdSubFs->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
 
             auto map_dYieldFunctiondCauchyStress = dYieldFunctiondCauchyStress.zeroMap<floatType, 1, sot_dimension>();
 
             auto map_dYieldFunctiondF = dYieldFunctiondF.zeroMap<floatType, 1, sot_dimension>();
 
-            auto map_dYieldFunctiondSubFs = dYieldFunctiondSubFs.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
+            auto map_dYieldFunctiondSubFs =
+                dYieldFunctiondSubFs.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
 
             map_dYieldFunctiondCauchyStress =
                 (map_dYieldFunctiondDrivingStress * map_dDrivingStressdCauchyStress).eval();

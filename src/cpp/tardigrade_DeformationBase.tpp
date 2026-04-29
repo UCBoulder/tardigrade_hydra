@@ -75,8 +75,8 @@ namespace tardigradeHydra {
             DeformationDecompositionBase<leading_rows, size, dim> decomposition;
             decomposition.getNetConfigurationJacobian(std::begin(configurations) + sot_dimension * lowerIndex,
                                                       std::begin(configurations) + sot_dimension * upperIndex,
-                                                      std::begin(gradient), std::end(gradient), lowerIndex * sot_dimension,
-                                                      num_incoming_configs * sot_dimension);
+                                                      std::begin(gradient), std::end(gradient),
+                                                      lowerIndex * sot_dimension, num_incoming_configs * sot_dimension);
         }
 
         return gradient;

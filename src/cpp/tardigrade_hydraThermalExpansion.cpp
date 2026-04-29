@@ -135,7 +135,6 @@ namespace tardigradeHydra {
          * Set the values of the jacobian
          */
         void residual::setJacobian() {
-
             const unsigned int num_unknowns = hydra->getNumUnknowns();
 
             auto jacobian = get_SetDataStorage_jacobian();

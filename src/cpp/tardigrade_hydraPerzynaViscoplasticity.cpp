@@ -211,11 +211,12 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdPrecedingF.data());
             auto map_precedingConfigurationJacobian =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(precedingConfigurationJacobian.data(),
-                                                                  num_configs * sot_dimension);
+                                                                        num_configs * sot_dimension);
 
             floatVector dDrivingStressdFn(num_configs * dimension * dimension * dimension * dimension, 0);
             auto        map_dDrivingStressdFn =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dDrivingStressdFn.data(), num_configs * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dDrivingStressdFn.data(),
+                                                                        num_configs * sot_dimension);
 
             map_dDrivingStressdFn = (map_dDrivingStressdPrecedingF * map_precedingConfigurationJacobian).eval();
 
@@ -647,14 +648,16 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFlowDirectiondDrivingStress.data());
             auto map_dDrivingStressdCauchyStress =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdCauchyStress->data());
-            auto map_dDrivingStressdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdF->data());
+            auto map_dDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdF->data());
 
             auto map_dDrivingStressdSubFs =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dDrivingStressdSubFs->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
 
-            auto map_dFlowDirectiondCauchyStress = dFlowDirectiondCauchyStress.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_dFlowDirectiondF            = dFlowDirectiondF.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dFlowDirectiondCauchyStress =
+                dFlowDirectiondCauchyStress.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dFlowDirectiondF = dFlowDirectiondF.zeroMap<floatType, sot_dimension, sot_dimension>();
             auto map_dFlowDirectiondSubFs =
                 dFlowDirectiondSubFs.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
 
@@ -902,15 +905,17 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dYieldFunctiondDrivingStress.data());
             auto map_dDrivingStressdCauchyStress =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdCauchyStress->data());
-            auto map_dDrivingStressdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdF->data());
+            auto map_dDrivingStressdF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDrivingStressdF->data());
 
             auto map_dDrivingStressdSubFs =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dDrivingStressdSubFs->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
 
             auto map_dYieldFunctiondCauchyStress = dYieldFunctiondCauchyStress.zeroMap<floatType, 1, sot_dimension>();
             auto map_dYieldFunctiondF            = dYieldFunctiondF.zeroMap<floatType, 1, sot_dimension>();
-            auto map_dYieldFunctiondSubFs = dYieldFunctiondSubFs.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
+            auto map_dYieldFunctiondSubFs =
+                dYieldFunctiondSubFs.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
 
             map_dYieldFunctiondCauchyStress =
                 (map_dYieldFunctiondDrivingStress * map_dDrivingStressdCauchyStress).eval();
@@ -1933,7 +1938,8 @@ namespace tardigradeHydra {
             auto map_flowDirection = getFixedSizeVectorMap<floatType, sot_dimension>(flowDirection->data());
             auto map_dPlasticMultiplierdCauchyStress =
                 getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPlasticMultiplierdCauchyStress->data());
-            auto map_dPlasticMultiplierdF = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPlasticMultiplierdF->data());
+            auto map_dPlasticMultiplierdF =
+                getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPlasticMultiplierdF->data());
 
             auto map_dPlasticMultiplierdSubFs =
                 getDynamicColumnSizeMatrixMap<floatType, 1>(dPlasticMultiplierdSubFs->data(),
@@ -1948,7 +1954,8 @@ namespace tardigradeHydra {
             auto map_dVelocityGradientdSubFs =
                 dVelocityGradientdSubFs.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
             auto map_dVelocityGradientdStateVariables =
-                dVelocityGradientdStateVariables.zeroMap<floatType, sot_dimension>(dPlasticMultiplierdStateVariables->size());
+                dVelocityGradientdStateVariables.zeroMap<floatType, sot_dimension>(
+                    dPlasticMultiplierdStateVariables->size());
 
             *velocityGradient.value = (*plasticMultiplier) * (*flowDirection);
 
@@ -2451,19 +2458,22 @@ namespace tardigradeHydra {
                     *velocityGradient, dFp, *plasticDeformationGradient.value, dFdL, ddFdPreviousF, dFdPreviousF,
                     dFdPreviousL, 1 - getIntegrationParameter(), 1));
 
-                auto map_dFdPreviousL = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFdPreviousL.data());
+                auto map_dFdPreviousL =
+                    getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFdPreviousL.data());
 
                 auto map_dPreviousVelocityGradientdPreviousCauchyStress =
                     getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
                         get_dPreviousVelocityGradientdPreviousCauchyStress()->data());
-                auto map_dPreviousVelocityGradientdPreviousF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
-                    get_dPreviousVelocityGradientdPreviousF()->data());
+                auto map_dPreviousVelocityGradientdPreviousF =
+                    getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                        get_dPreviousVelocityGradientdPreviousF()->data());
 
                 auto map_dPreviousVelocityGradientdPreviousT =
                     getFixedSizeVectorMap<floatType, sot_dimension>(get_dPreviousVelocityGradientdPreviousT()->data());
 
-                auto map_dPreviousVelocityGradientdPreviousSubFs = getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
-                    get_dPreviousVelocityGradientdPreviousSubFs()->data(), (num_configs - 1) * sot_dimension);
+                auto map_dPreviousVelocityGradientdPreviousSubFs =
+                    getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
+                        get_dPreviousVelocityGradientdPreviousSubFs()->data(), (num_configs - 1) * sot_dimension);
                 auto map_dPreviousVelocityGradientdPreviousStateVariables =
                     getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
                         get_dPreviousVelocityGradientdPreviousStateVariables()->data(), num_isvs);
@@ -2480,7 +2490,8 @@ namespace tardigradeHydra {
                 auto dPlasticDeformationGradientdPreviousSubFs =
                     get_SetDataStorage_dPlasticDeformationGradientdPreviousSubFs();
                 auto map_dPlasticDeformationGradientdPreviousSubFs =
-                    dPlasticDeformationGradientdPreviousSubFs.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
+                    dPlasticDeformationGradientdPreviousSubFs.zeroMap<floatType, sot_dimension>((num_configs - 1) *
+                                                                                                sot_dimension);
 
                 auto dPlasticDeformationGradientdPreviousT = get_SetDataStorage_dPlasticDeformationGradientdPreviousT();
                 auto map_dPlasticDeformationGradientdPreviousT =
@@ -2503,7 +2514,8 @@ namespace tardigradeHydra {
                 for (unsigned int i = 0; i < sot_dimension; i++) {
                     for (unsigned int j = 0; j < sot_dimension; j++) {
                         (*dPlasticDeformationGradientdPreviousSubFs
-                              .value)[(num_configs - 1) * sot_dimension * i + j + (plastic_config_index - 1) * sot_dimension] +=
+                              .value)[(num_configs - 1) * sot_dimension * i + j +
+                                      (plastic_config_index - 1) * sot_dimension] +=
                             dFdPreviousF[sot_dimension * i + j];
                     }
                 }
@@ -2522,19 +2534,20 @@ namespace tardigradeHydra {
 
             auto map_dFdL = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFdL.data());
 
-            auto map_dVelocityGradientdCauchyStress =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(get_dVelocityGradientdCauchyStress()->data());
+            auto map_dVelocityGradientdCauchyStress = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                get_dVelocityGradientdCauchyStress()->data());
             auto map_dVelocityGradientdF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(get_dVelocityGradientdF()->data());
 
-            auto map_dVelocityGradientdT = getFixedSizeVectorMap<floatType, sot_dimension>(get_dVelocityGradientdT()->data());
+            auto map_dVelocityGradientdT =
+                getFixedSizeVectorMap<floatType, sot_dimension>(get_dVelocityGradientdT()->data());
 
             auto map_dVelocityGradientdSubFs =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(get_dVelocityGradientdSubFs()->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dVelocityGradientdStateVariables =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(get_dVelocityGradientdStateVariables()->data(),
-                                                                  num_isvs);
+                                                                        num_isvs);
 
             auto dPlasticDeformationGradientdCauchyStress =
                 get_SetDataStorage_dPlasticDeformationGradientdCauchyStress();
@@ -2793,7 +2806,8 @@ namespace tardigradeHydra {
 
                 auto dPlasticStateVariablesdPreviousSubFs = get_SetDataStorage_dPlasticStateVariablesdPreviousSubFs();
                 auto map_dPlasticStateVariablesdPreviousSubFs =
-                    dPlasticStateVariablesdPreviousSubFs.zeroMap<floatType>(num_isvs, (num_configs - 1) * sot_dimension);
+                    dPlasticStateVariablesdPreviousSubFs.zeroMap<floatType>(num_isvs,
+                                                                            (num_configs - 1) * sot_dimension);
 
                 auto dPlasticStateVariablesdPreviousT = get_SetDataStorage_dPlasticStateVariablesdPreviousT();
                 auto map_dPlasticStateVariablesdPreviousT =
@@ -3083,14 +3097,16 @@ namespace tardigradeHydra {
             // Get the Jacobians of the plastic deformation gradient
             for (unsigned int i = 0; i < sot_dimension; i++) {
                 for (unsigned int j = 0; j < sot_dimension; j++) {
-                    (*dRdF.value)[sot_dimension * i + j] = (*get_dPlasticDeformationGradientdF())[sot_dimension * i + j];
+                    (*dRdF.value)[sot_dimension * i + j] =
+                        (*get_dPlasticDeformationGradientdF())[sot_dimension * i + j];
                 }
             }
 
             // Get the Jacobians of the plastic state variables
             for (unsigned int i = 0; i < num_isvs; i++) {
                 for (unsigned int j = 0; j < sot_dimension; j++) {
-                    (*dRdF.value)[sot_dimension * (i + sot_dimension) + j] += (*get_dPlasticStateVariablesdF())[sot_dimension * i + j];
+                    (*dRdF.value)[sot_dimension * (i + sot_dimension) + j] +=
+                        (*get_dPlasticStateVariablesdF())[sot_dimension * i + j];
                 }
             }
         }

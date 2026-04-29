@@ -20,8 +20,9 @@ namespace tardigradeHydra {
         if (isPrevious) {
             auto previousFe = get_SetDataStorage_previousFe();
 
-            *previousFe.value = secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin(),
-                                                  hydra->deformation->get_previousConfigurations()->begin() + dimension * dimension);
+            *previousFe.value =
+                secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin(),
+                                  hydra->deformation->get_previousConfigurations()->begin() + dimension * dimension);
 
         } else {
             auto Fe = get_SetDataStorage_Fe();
@@ -336,7 +337,8 @@ namespace tardigradeHydra {
         }
 
         TARDIGRADE_ERROR_TOOLS_CHECK((std::end(*Fe) - std::begin(*Fe)) == dimension * dimension,
-                                     "The elastic deformation must have a size of " + std::to_string(dimension * dimension));
+                                     "The elastic deformation must have a size of " +
+                                         std::to_string(dimension * dimension));
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             (std::end(*dStrainEnergydFe) - std::begin(*dStrainEnergydFe)) == dimension * dimension,
@@ -348,7 +350,8 @@ namespace tardigradeHydra {
         for (unsigned int i = 0; i < dimension; ++i) {
             for (unsigned int j = 0; j < dimension; ++j) {
                 for (unsigned int I = 0; I < dimension; ++I) {
-                    (*cauchyStress.value)[dimension * i + j] += (*dStrainEnergydFe)[dimension * i + I] * (*Fe)[dimension * j + I];
+                    (*cauchyStress.value)[dimension * i + j] +=
+                        (*dStrainEnergydFe)[dimension * i + I] * (*Fe)[dimension * j + I];
                 }
 
                 (*cauchyStress.value)[dimension * i + j] /= *Je;
@@ -436,7 +439,8 @@ namespace tardigradeHydra {
         }
 
         TARDIGRADE_ERROR_TOOLS_CHECK((std::end(*Fe) - std::begin(*Fe)) == dimension * dimension,
-                                     "The elastic deformation must have a size of " + std::to_string(dimension * dimension));
+                                     "The elastic deformation must have a size of " +
+                                         std::to_string(dimension * dimension));
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             (std::end(*dStrainEnergydFe) - std::begin(*dStrainEnergydFe)) == dimension * dimension,
@@ -451,23 +455,26 @@ namespace tardigradeHydra {
 
         secondOrderTensor invFe(dimension * dimension, 0);
 
-        Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> Femat(
-            Fe->data(), dimension, dimension);
-        Eigen::Map<Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> invFemat(
-            invFe.data(), dimension, dimension);
+        Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> Femat(Fe->data(), dimension,
+                                                                                                dimension);
+        Eigen::Map<Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor>> invFemat(invFe.data(), dimension,
+                                                                                             dimension);
         invFemat = Femat.inverse().eval();
 
         secondOrderTensor JecauchyStress(dimension * dimension, 0);
         secondOrderTensor invFedFedF(dimension * dimension, 0);
         secondOrderTensor invFedFedFn(dimension * dimension * (hydra->getNumConfigurations() - 1), 0);
         fourthOrderTensor d2StrainEnergydFedF(dimension * dimension * dimension * dimension, 0);
-        fourthOrderTensor d2StrainEnergydFedFn(dimension * dimension * dimension * dimension * (hydra->getNumConfigurations() - 1), 0);
+        fourthOrderTensor d2StrainEnergydFedFn(dimension * dimension * dimension * dimension *
+                                                   (hydra->getNumConfigurations() - 1),
+                                               0);
 
         for (unsigned int iI = 0; iI < dimension * dimension; ++iI) {
             for (unsigned int aA = 0; aA < dimension * dimension; ++aA) {
                 for (unsigned int bB = 0; bB < dimension * dimension; ++bB) {
                     d2StrainEnergydFedF[dimension * dimension * iI + bB] +=
-                        (*d2StrainEnergydFe2)[dimension * dimension * iI + aA] * (*dFedF)[dimension * dimension * aA + bB];
+                        (*d2StrainEnergydFe2)[dimension * dimension * iI + aA] *
+                        (*dFedF)[dimension * dimension * aA + bB];
                 }
                 for (unsigned int bB = 0; bB < dimension * dimension * (hydra->getNumConfigurations() - 1); ++bB) {
                     d2StrainEnergydFedFn[dimension * dimension * (hydra->getNumConfigurations() - 1) * iI + bB] +=
@@ -480,13 +487,15 @@ namespace tardigradeHydra {
         for (unsigned int i = 0; i < dimension; ++i) {
             for (unsigned int I = 0; I < dimension; ++I) {
                 for (unsigned int aA = 0; aA < dimension * dimension; ++aA) {
-                    invFedFedF[aA] += invFe[dimension * I + i] * (*dFedF)[dimension * dimension * dimension * i + dimension * dimension * I + aA];
+                    invFedFedF[aA] += invFe[dimension * I + i] *
+                                      (*dFedF)[dimension * dimension * dimension * i + dimension * dimension * I + aA];
                 }
 
                 for (unsigned int aA = 0; aA < dimension * dimension * (hydra->getNumConfigurations() - 1); ++aA) {
                     invFedFedFn[aA] +=
-                        invFe[dimension * I + i] * (*dFedFn)[dimension * dimension * dimension * (hydra->getNumConfigurations() - 1) * i +
-                                                       dimension * dimension * (hydra->getNumConfigurations() - 1) * I + aA];
+                        invFe[dimension * I + i] *
+                        (*dFedFn)[dimension * dimension * dimension * (hydra->getNumConfigurations() - 1) * i +
+                                  dimension * dimension * (hydra->getNumConfigurations() - 1) * I + aA];
                 }
             }
         }
@@ -494,11 +503,13 @@ namespace tardigradeHydra {
         for (unsigned int i = 0; i < dimension; ++i) {
             for (unsigned int j = 0; j < dimension; ++j) {
                 for (unsigned int I = 0; I < dimension; ++I) {
-                    (*dCauchyStressdT.value)[dimension * i + j] += (*d2StrainEnergydFedT)[dimension * i + I] * (*Fe)[dimension * j + I];
-                    JecauchyStress[dimension * i + j] += (*dStrainEnergydFe)[dimension * i + I] * (*Fe)[dimension * j + I];
+                    (*dCauchyStressdT.value)[dimension * i + j] +=
+                        (*d2StrainEnergydFedT)[dimension * i + I] * (*Fe)[dimension * j + I];
+                    JecauchyStress[dimension * i + j] +=
+                        (*dStrainEnergydFe)[dimension * i + I] * (*Fe)[dimension * j + I];
                 }
 
-                (*dCauchyStressdT.value)[dim * i + j] /= *Je;
+                (*dCauchyStressdT.value)[dimension * i + j] /= *Je;
             }
         }
 
@@ -506,15 +517,21 @@ namespace tardigradeHydra {
             for (unsigned int j = 0; j < dimension; ++j) {
                 for (unsigned int I = 0; I < dimension; ++I) {
                     for (unsigned int aA = 0; aA < dimension * dimension; ++aA) {
-                        (*dCauchyStressdF.value)[dimension * dimension * dimension * i + dimension * dimension * j + aA] +=
-                            d2StrainEnergydFedF[dimension * dimension * dimension * i + dimension * dimension * I + aA] * (*Fe)[dimension * j + I] +
-                            (*dStrainEnergydFe)[dimension * i + I] * (*dFedF)[dimension * dimension * dimension * j + dimension * dimension * I + aA];
+                        (*dCauchyStressdF
+                              .value)[dimension * dimension * dimension * i + dimension * dimension * j + aA] +=
+                            d2StrainEnergydFedF[dimension * dimension * dimension * i + dimension * dimension * I +
+                                                aA] *
+                                (*Fe)[dimension * j + I] +
+                            (*dStrainEnergydFe)[dimension * i + I] *
+                                (*dFedF)[dimension * dimension * dimension * j + dimension * dimension * I + aA];
                     }
 
                     for (unsigned int aA = 0; aA < dimension * dimension * (hydra->getNumConfigurations() - 1); ++aA) {
-                        (*dCauchyStressdFn.value)[dimension * dimension * dimension * (hydra->getNumConfigurations() - 1) * i +
-                                                  dimension * dimension * (hydra->getNumConfigurations() - 1) * j + aA] +=
-                            d2StrainEnergydFedFn[dimension * dimension * dimension * (hydra->getNumConfigurations() - 1) * i +
+                        (*dCauchyStressdFn
+                              .value)[dimension * dimension * dimension * (hydra->getNumConfigurations() - 1) * i +
+                                      dimension * dimension * (hydra->getNumConfigurations() - 1) * j + aA] +=
+                            d2StrainEnergydFedFn[dimension * dimension * dimension *
+                                                     (hydra->getNumConfigurations() - 1) * i +
                                                  dimension * dimension * (hydra->getNumConfigurations() - 1) * I + aA] *
                                 (*Fe)[dimension * j + I] +
                             (*dStrainEnergydFe)[dimension * i + I] *
@@ -631,7 +648,8 @@ namespace tardigradeHydra {
 
                 for (unsigned int I = 0; I < num_unknown_config_vars; I++) {
                     (*jacobian.value)[num_unknowns * dimension * i + num_unknowns * j + getStress()->size() + I] =
-                        (*get_dCauchyStressdFn())[dimension * num_unknown_config_vars * i + num_unknown_config_vars * j + I];
+                        (*get_dCauchyStressdFn())[dimension * num_unknown_config_vars * i +
+                                                  num_unknown_config_vars * j + I];
                 }
             }
         }

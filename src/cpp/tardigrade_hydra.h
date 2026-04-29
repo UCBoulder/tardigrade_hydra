@@ -199,11 +199,12 @@ namespace tardigradeHydra {
     };
 
     class HydraClassical3DConfiguration {
-        public:
-            //! The spatial dimension
-            static constexpr int dimension = 3;
-        protected:
-        private:
+       public:
+        //! The spatial dimension
+        static constexpr int dimension = 3;
+
+       protected:
+       private:
     };
 
     /*!
@@ -215,32 +216,31 @@ namespace tardigradeHydra {
      *
      * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
      */
-    template<class _configuration>
+    template <class _configuration>
     class HydraBase : public CachingDataBase {
-        public:
-            //!The core configuration of the hydra object
-            using configuration = _configuration;
+       public:
+        //! The core configuration of the hydra object
+        using configuration = _configuration;
 
-            //Logging capabilities. Move to stand-alone class
-            template <class v_type>
-            void addToFailureOutput(const v_type &v, bool add_endline = true);
+        // Logging capabilities. Move to stand-alone class
+        template <class v_type>
+        void addToFailureOutput(const v_type &v, bool add_endline = true);
 
-            template <class v_iterator>
-            void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true);
+        template <class v_iterator>
+        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true);
 
-            void addToFailureOutput(const std::string &value, bool add_endline = false);
+        void addToFailureOutput(const std::string &value, bool add_endline = false);
 
-            void addToFailureOutput(const floatVector &value, bool add_endline = true);
+        void addToFailureOutput(const floatVector &value, bool add_endline = true);
 
-            void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
+        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
 
-            void addToFailureOutput(const floatType &value, bool add_endline = true);
+        void addToFailureOutput(const floatType &value, bool add_endline = true);
 
-        protected:
-            //Logging capabilities. Move to stand-alone class
-            //! Additional failure output information
-            std::stringstream _failure_output;
-
+       protected:
+        // Logging capabilities. Move to stand-alone class
+        //! Additional failure output information
+        std::stringstream _failure_output;
     };
 
     /*!

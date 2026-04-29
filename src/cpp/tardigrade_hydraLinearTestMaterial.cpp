@@ -87,7 +87,8 @@ namespace tardigradeHydra {
 
             stress.zero(dimension * dimension);
 
-            std::copy(std::begin(*get_XPred()), std::begin(*get_XPred()) + dimension * dimension, std::begin(*stress.value));
+            std::copy(std::begin(*get_XPred()), std::begin(*get_XPred()) + dimension * dimension,
+                      std::begin(*stress.value));
         }
 
         void residual::setPreviousStress() {

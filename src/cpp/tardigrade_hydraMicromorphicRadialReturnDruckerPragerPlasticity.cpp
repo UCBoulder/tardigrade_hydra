@@ -263,8 +263,10 @@ namespace tardigradeHydra {
                     }
 
                     // Deformation Jacobians
-                    for (auto v = std::begin(*get_dMicroGradientYielddFn()) + sot_dimension * (num_configurations - 1) * i;
-                         v != std::begin(*get_dMicroGradientYielddFn()) + sot_dimension * (num_configurations - 1) * (i + 1);
+                    for (auto v =
+                             std::begin(*get_dMicroGradientYielddFn()) + sot_dimension * (num_configurations - 1) * i;
+                         v !=
+                         std::begin(*get_dMicroGradientYielddFn()) + sot_dimension * (num_configurations - 1) * (i + 1);
                          ++v) {
                         col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddFn()) -
                                              sot_dimension * (num_configurations - 1) * i) +
@@ -272,9 +274,10 @@ namespace tardigradeHydra {
                         (*jacobian.value)[num_unknowns * row + col] += *v;
                     }
 
-                    for (auto v = std::begin(*get_dMicroGradientYielddChin()) + sot_dimension * (num_configurations - 1) * i;
-                         v !=
-                         std::begin(*get_dMicroGradientYielddChin()) + sot_dimension * (num_configurations - 1) * (i + 1);
+                    for (auto v =
+                             std::begin(*get_dMicroGradientYielddChin()) + sot_dimension * (num_configurations - 1) * i;
+                         v != std::begin(*get_dMicroGradientYielddChin()) +
+                                  sot_dimension * (num_configurations - 1) * (i + 1);
                          ++v) {
                         col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddChin()) -
                                              sot_dimension * (num_configurations - 1) * i) +
@@ -373,7 +376,8 @@ namespace tardigradeHydra {
 
                     for (auto v = std::begin(*get_dMicroGradientYielddChi()) + sot_dimension * i;
                          v != std::begin(*get_dMicroGradientYielddChi()) + sot_dimension * (i + 1); ++v) {
-                        col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddChi()) - sot_dimension * i) + sot_dimension;
+                        col = (unsigned int)(v - std::begin(*get_dMicroGradientYielddChi()) - sot_dimension * i) +
+                              sot_dimension;
                         (*jacobian.value)[num_cols * row + col] += *v;
                     }
                 }

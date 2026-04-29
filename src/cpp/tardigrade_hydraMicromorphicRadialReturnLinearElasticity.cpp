@@ -72,7 +72,8 @@ namespace tardigradeHydra {
             std::array<const floatVector *, numStresses * numDeformationMeasures> stressReferences = {
                 dS1dF, dS1dChi, dS1dGradChi, dS2dF, dS2dChi, dS2dGradChi, dS3dF, dS3dChi, dS3dGradChi};
 
-            constexpr std::array<unsigned int, numDeformationMeasures> dims = {sot_dimension, sot_dimension, tot_dimension};
+            constexpr std::array<unsigned int, numDeformationMeasures> dims = {sot_dimension, sot_dimension,
+                                                                               tot_dimension};
 
             unsigned int row = 0;
             for (unsigned int S = 0; S < numStresses; ++S) {

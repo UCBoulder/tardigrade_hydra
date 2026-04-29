@@ -46,8 +46,8 @@ namespace tardigradeHydra {
                 auto dDamagedPreviousStateVariables = get_SetDataStorage_dDamagedPreviousStateVariables();
 
                 *dDamagedPreviousCauchyStress.value =
-                    tardigradeVectorTools::getRow(*get_dPlasticStateVariablesdPreviousCauchyStress(), num_isvs, sot_dimension,
-                                                  damageISVIndex);
+                    tardigradeVectorTools::getRow(*get_dPlasticStateVariablesdPreviousCauchyStress(), num_isvs,
+                                                  sot_dimension, damageISVIndex);
 
                 *dDamagedPreviousF.value = tardigradeVectorTools::getRow(*get_dPlasticStateVariablesdPreviousF(),
                                                                          num_isvs, sot_dimension, damageISVIndex);
@@ -134,7 +134,8 @@ namespace tardigradeHydra {
             // Get the elastic deformation gradient
             floatVector Fe =
                 floatVector(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
-                            hydra->deformation->get_configurations()->begin() + sot_dimension * (elastic_config_index + 1));
+                            hydra->deformation->get_configurations()->begin() +
+                                sot_dimension * (elastic_config_index + 1));
 
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
@@ -198,7 +199,8 @@ namespace tardigradeHydra {
             // Get the elastic deformation gradient
             floatVector Fe =
                 floatVector(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
-                            hydra->deformation->get_configurations()->begin() + sot_dimension * (elastic_config_index + 1));
+                            hydra->deformation->get_configurations()->begin() +
+                                sot_dimension * (elastic_config_index + 1));
 
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
@@ -227,7 +229,8 @@ namespace tardigradeHydra {
             auto map_dFedF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFedF.data());
 
             auto map_dFedSubFs =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dFedSubFs.data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dFedSubFs.data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
             // Compute the damage strain
             floatVector Ed = (*get_damage()) / (1 - (*get_damage())) * Ee;
@@ -239,7 +242,8 @@ namespace tardigradeHydra {
 
             floatVector dEddSubFs((num_configs - 1) * dimension * dimension * dimension * dimension, 0);
             auto        map_dEddSubFs =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dEddSubFs.data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dEddSubFs.data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
             map_dEddF = ((*get_damage()) / (1 - (*get_damage())) * map_dEedFe * map_dFedF).eval();
 
@@ -253,14 +257,15 @@ namespace tardigradeHydra {
                                  //
             floatVector dAdFe;   // A = 2.0 * Ed + eye
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value = tardigradeVectorTools::matrixSqrt(2.0 * Ed + eye, dimension, _dAdFe));
+            TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value =
+                                             tardigradeVectorTools::matrixSqrt(2.0 * Ed + eye, dimension, _dAdFe));
 
             dAdFe          = tardigradeVectorTools::appendVectors(_dAdFe);
             auto map_dAdFe = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFe.data());
 
             fourthOrderTensor dFddEd(dimension * dimension * dimension * dimension, 0);
-            auto              map_dFddEd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFddEd.data());
-            map_dFddEd                   = (2 * map_dAdFe.inverse()).eval();
+            auto map_dFddEd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFddEd.data());
+            map_dFddEd      = (2 * map_dAdFe.inverse()).eval();
 
             auto map_dEddD = getFixedSizeVectorMap<floatType, sot_dimension>(dEddD.data());
 
@@ -272,7 +277,8 @@ namespace tardigradeHydra {
 
             fourthOrderTensor dFddSubFs((num_configs - 1) * dimension * dimension * dimension * dimension, 0);
             auto              map_dFddSubFs =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dFddSubFs.data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dFddSubFs.data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
             map_dFddD = (map_dFddEd * map_dEddD).eval();
 
@@ -306,7 +312,8 @@ namespace tardigradeHydra {
                 auto dDamageDeformationGradientdPreviousSubFs =
                     get_SetDataStorage_dDamageDeformationGradientdPreviousSubFs();
                 auto map_dDamageDeformationGradientdPreviousSubFs =
-                    dDamageDeformationGradientdPreviousSubFs.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
+                    dDamageDeformationGradientdPreviousSubFs.zeroMap<floatType, sot_dimension>((num_configs - 1) *
+                                                                                               sot_dimension);
 
                 auto dDamageDeformationGradientdPreviousT = get_SetDataStorage_dDamageDeformationGradientdPreviousT();
 
@@ -333,8 +340,8 @@ namespace tardigradeHydra {
 
             auto map_dDamagedF = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(get_dDamagedF()->data());
 
-            auto map_dDamagedSubFs =
-                getDynamicColumnSizeMatrixMap<floatType, 1>(get_dDamagedSubFs()->data(), (num_configs - 1) * sot_dimension);
+            auto map_dDamagedSubFs = getDynamicColumnSizeMatrixMap<floatType, 1>(get_dDamagedSubFs()->data(),
+                                                                                 (num_configs - 1) * sot_dimension);
 
             auto map_dDamagedStateVariables =
                 getDynamicColumnSizeMatrixMap<floatType, 1>(get_dDamagedStateVariables()->data(), num_isvs);
@@ -343,8 +350,9 @@ namespace tardigradeHydra {
             auto map_dDamageDeformationGradientdCauchyStress =
                 dDamageDeformationGradientdCauchyStress.zeroMap<floatType, sot_dimension, sot_dimension>();
 
-            auto dDamageDeformationGradientdF     = get_SetDataStorage_dDamageDeformationGradientdF();
-            auto map_dDamageDeformationGradientdF = dDamageDeformationGradientdF.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto dDamageDeformationGradientdF = get_SetDataStorage_dDamageDeformationGradientdF();
+            auto map_dDamageDeformationGradientdF =
+                dDamageDeformationGradientdF.zeroMap<floatType, sot_dimension, sot_dimension>();
 
             auto dDamageDeformationGradientdSubFs = get_SetDataStorage_dDamageDeformationGradientdSubFs();
             auto map_dDamageDeformationGradientdSubFs =
@@ -505,7 +513,8 @@ namespace tardigradeHydra {
             *evolutionRates.value = {(*stateVariableEvolutionRates)[0], *plasticMultiplier};
 
             for (unsigned int i = 0; i < sot_dimension; i++) {
-                (*dStateVariableEvolutionRatesdCauchyStress.value)[sot_dimension + i] = (*dPlasticMultiplierdCauchyStress)[i];
+                (*dStateVariableEvolutionRatesdCauchyStress.value)[sot_dimension + i] =
+                    (*dPlasticMultiplierdCauchyStress)[i];
             }
 
             for (unsigned int i = 0; i < sot_dimension; i++) {

@@ -28,9 +28,10 @@ namespace tardigradeHydra {
              * are the volumetric time constants, Gs are the shear moduli, and Gtaus are the isochoric time constants,
              */
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() >= 10, "Parameter vector is expected to have a length of at least 10 but has a length of " +
-                    std::to_string(parameters.size())
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK(
+                parameters.size() >= 10,
+                "Parameter vector is expected to have a length of at least 10 but has a length of " +
+                    std::to_string(parameters.size()))
 
             setNumVolumetricViscousTerms((unsigned int)(parameters[0] + 0.5));
 
@@ -38,11 +39,13 @@ namespace tardigradeHydra {
 
             setNumStateVariables(getNumVolumetricViscousTerms() + sot_dimension * getNumIsochoricViscousTerms());
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(getNumStateVariables() == (getViscoelasticISVUpperIndex() - getViscoelasticISVLowerIndex()),
-                "The number of state variables required by the parameterization is not equal to the number of state variables indicated by the ISV bounds\n   required # ISVs: " + std::to_string(getNumStateVariables())
-                + "\n   ISV Lower Bound: " + std::to_string(getViscoelasticISVLowerIndex())
-                + "\n   ISV Upper Bound: " + std::to_string(getViscoelasticISVUpperIndex()) + "\n"
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK(
+                getNumStateVariables() == (getViscoelasticISVUpperIndex() - getViscoelasticISVLowerIndex()),
+                "The number of state variables required by the parameterization is not equal to the number of state "
+                "variables indicated by the ISV bounds\n   required # ISVs: " +
+                    std::to_string(getNumStateVariables()) +
+                    "\n   ISV Lower Bound: " + std::to_string(getViscoelasticISVLowerIndex()) +
+                    "\n   ISV Upper Bound: " + std::to_string(getViscoelasticISVUpperIndex()) + "\n")
 
             setKinf(parameters[2]);
 
@@ -55,11 +58,15 @@ namespace tardigradeHydra {
             unsigned int parameterCount = 10 + 2 * getNumVolumetricViscousTerms() + 2 * getNumIsochoricViscousTerms();
 
             TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == parameterCount,
-                "The number of parameters provided is not consistent with the parameter counts\n  num parameters:      " + std::to_string(parameters.size())
-                + "\n  num viscous terms:   " + std::to_string(getNumVolumetricViscousTerms())
-                + "\n  num isochoric terms: " + std::to_string(getNumIsochoricViscousTerms())
-                + "\nThe number of parameters is 4 + 2 * ( numVolumetricViscousTerms + numIsochoricViscousTerms )\n  required parameter count: " + std::to_string(parameterCount) + "\n"
-            )
+                                         "The number of parameters provided is not consistent with the parameter "
+                                         "counts\n  num parameters:      " +
+                                             std::to_string(parameters.size()) + "\n  num viscous terms:   " +
+                                             std::to_string(getNumVolumetricViscousTerms()) +
+                                             "\n  num isochoric terms: " +
+                                             std::to_string(getNumIsochoricViscousTerms()) +
+                                             "\nThe number of parameters is 4 + 2 * ( numVolumetricViscousTerms + "
+                                             "numIsochoricViscousTerms )\n  required parameter count: " +
+                                             std::to_string(parameterCount) + "\n")
 
             unsigned int lb = 10;
             unsigned int ub = lb + getNumVolumetricViscousTerms();
@@ -256,11 +263,15 @@ namespace tardigradeHydra {
              */
 
             using F_iterator = decltype(std::begin(F));
-            using F_type = std::iterator_traits<F_iterator>::value_type;
+            using F_type     = std::iterator_traits<F_iterator>::value_type;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(std::end(F)-std::begin(F)) == dimension * dimension, "The deformation has a size of " + std::to_string((unsigned int)(std::end(F)-std::begin(F))) + " but must have a size of " + std::to_string(dimension * dimension));
+            TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(std::end(F) - std::begin(F)) == dimension * dimension,
+                                         "The deformation has a size of " +
+                                             std::to_string((unsigned int)(std::end(F) - std::begin(F))) +
+                                             " but must have a size of " + std::to_string(dimension * dimension));
 
-            J = tardigradeVectorTools::determinant<F_iterator,F_type,dimension,dimension>(std::begin(F), std::end(F), dimension, dimension);
+            J = tardigradeVectorTools::determinant<F_iterator, F_type, dimension, dimension>(std::begin(F), std::end(F),
+                                                                                             dimension, dimension);
 
             TARDIGRADE_ERROR_TOOLS_CATCH(Fhat = F / std::pow(J, 1. / 3));
         }
@@ -288,14 +299,15 @@ namespace tardigradeHydra {
                 dJedFe = get_SetDataStorage_dJedFe();
             }
 
-            using Fe_iterator = decltype(std::begin(*Fe));
+            using Fe_iterator     = decltype(std::begin(*Fe));
             using dJedFe_iterator = decltype(std::begin(*dJedFe.value));
-            using Fe_type = std::iterator_traits<Fe_iterator>::value_type;
+            using Fe_type         = std::iterator_traits<Fe_iterator>::value_type;
 
-            dJedFe.zero(dimension*dimension);
+            dJedFe.zero(dimension * dimension);
 
-            tardigradeVectorTools::computeDDetADA<Fe_iterator,dJedFe_iterator,Fe_type,dimension,dimension>(std::begin(*Fe), std::end(*Fe), dimension, dimension, std::begin(*dJedFe.value), std::end(*dJedFe.value));
-
+            tardigradeVectorTools::computeDDetADA<Fe_iterator, dJedFe_iterator, Fe_type, dimension, dimension>(
+                std::begin(*Fe), std::end(*Fe), dimension, dimension, std::begin(*dJedFe.value),
+                std::end(*dJedFe.value));
         }
 
         void residual::setdJedFe() {
@@ -817,7 +829,7 @@ namespace tardigradeHydra {
                     }
                 }
 
-                Eigen::Map<const Eigen::Vector<floatType, -1> >      map_dISVsdJe(dISVsdJe.data(), dISVsdJe.size());
+                Eigen::Map<const Eigen::Vector<floatType, -1> > map_dISVsdJe(dISVsdJe.data(), dISVsdJe.size());
                 Eigen::Map<const Eigen::Vector<floatType, sot_dimension> > map_dJedFe(dJedFe->data(), sot_dimension);
 
                 auto dVolumetricISVsdFe = get_SetDataStorage_dVolumetricISVsdFe();
@@ -830,15 +842,16 @@ namespace tardigradeHydra {
                 auto dVolumetricISVsdT   = get_SetDataStorage_dVolumetricISVsdT();
                 *dVolumetricISVsdT.value = dISVsdRateModifier * (*dVolumetricRateMultiplierdT);
 
-                Eigen::Map<const Eigen::Vector<floatType, -1> >      map_dISVsdPreviousJe(dISVsdPreviousJe.data(),
-                                                                                          dISVsdPreviousJe.size());
-                Eigen::Map<const Eigen::Vector<floatType, sot_dimension> > map_previousdJedFe(get_previousdJedFe()->data(),
-                                                                                        sot_dimension);
+                Eigen::Map<const Eigen::Vector<floatType, -1> > map_dISVsdPreviousJe(dISVsdPreviousJe.data(),
+                                                                                     dISVsdPreviousJe.size());
+                Eigen::Map<const Eigen::Vector<floatType, sot_dimension> > map_previousdJedFe(
+                    get_previousdJedFe()->data(), sot_dimension);
 
                 auto dVolumetricISVsdPreviousFe = get_SetDataStorage_dVolumetricISVsdPreviousFe();
                 dVolumetricISVsdPreviousFe.zero(dISVsdPreviousJe.size() * sot_dimension);
-                Eigen::Map<Eigen::Matrix<floatType, -1, sot_dimension, Eigen::RowMajor> > map_dVolumetricISVsdPreviousFe(
-                    dVolumetricISVsdPreviousFe.value->data(), dISVsdPreviousJe.size(), sot_dimension);
+                Eigen::Map<Eigen::Matrix<floatType, -1, sot_dimension, Eigen::RowMajor> >
+                    map_dVolumetricISVsdPreviousFe(dVolumetricISVsdPreviousFe.value->data(), dISVsdPreviousJe.size(),
+                                                   sot_dimension);
 
                 map_dVolumetricISVsdPreviousFe = (map_dISVsdPreviousJe * map_previousdJedFe.transpose()).eval();
 
@@ -1040,9 +1053,9 @@ namespace tardigradeHydra {
             Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dFehatdFe(
                 dFehatdFe->data(), sot_dimension, sot_dimension);
 
-            fourthOrderTensor                                                        dEehatdFe(sot_dimension * sot_dimension, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dEehatdFe(dEehatdFe.data(),
-                                                                                                   sot_dimension, sot_dimension);
+            fourthOrderTensor dEehatdFe(sot_dimension * sot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dEehatdFe(
+                dEehatdFe.data(), sot_dimension, sot_dimension);
 
             map_dEehatdFe = (map_dEehatdFehat * map_dFehatdFe).eval();
 
@@ -1114,12 +1127,12 @@ namespace tardigradeHydra {
 
             dISVsdPreviousIsochoricISVs = tardigradeVectorTools::appendVectors(_dISVsdPreviousIsochoricISVs);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPK2IsochoricStressdEe(
-                dPK2IsochoricStressdEe.data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dPK2IsochoricStressdEe(dPK2IsochoricStressdEe.data(), sot_dimension, sot_dimension);
 
             dPK2IsochoricStressdFe.zero(sot_dimension * sot_dimension);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPK2IsochoricStressdFe(
-                dPK2IsochoricStressdFe.value->data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dPK2IsochoricStressdFe(dPK2IsochoricStressdFe.value->data(), sot_dimension, sot_dimension);
 
             map_dPK2IsochoricStressdFe = (map_dPK2IsochoricStressdEe * map_dEehatdFe).eval();
 
@@ -1128,16 +1141,16 @@ namespace tardigradeHydra {
             if (!isPrevious) {
                 set_isochoricViscoelasticStateVariables(currentIsochoricStateVariables);
 
-                Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_previousdEehatdFehat(
-                    previousdEehatdFehat.data(), sot_dimension, sot_dimension);
+                Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                    map_previousdEehatdFehat(previousdEehatdFehat.data(), sot_dimension, sot_dimension);
 
-                Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_previousdFehatdFe(
-                    get_previousdFehatdFe()->data(), sot_dimension, sot_dimension);
+                Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                    map_previousdFehatdFe(get_previousdFehatdFe()->data(), sot_dimension, sot_dimension);
 
                 fourthOrderTensor previousdEehatdFe(sot_dimension * sot_dimension, 0);
 
-                Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_previousdEehatdFe(
-                    previousdEehatdFe.data(), sot_dimension, sot_dimension);
+                Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                    map_previousdEehatdFe(previousdEehatdFe.data(), sot_dimension, sot_dimension);
 
                 map_previousdEehatdFe = (map_previousdEehatdFehat * map_previousdFehatdFe).eval();
 
@@ -1146,10 +1159,12 @@ namespace tardigradeHydra {
                 dPK2IsochoricStressdPreviousFe.zero(sot_dimension * sot_dimension);
 
                 Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
-                    map_dPK2IsochoricStressdPreviousEe(dPK2IsochoricStressdPreviousEe.data(), sot_dimension, sot_dimension);
+                    map_dPK2IsochoricStressdPreviousEe(dPK2IsochoricStressdPreviousEe.data(), sot_dimension,
+                                                       sot_dimension);
 
                 Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
-                    map_dPK2IsochoricStressdPreviousFe(dPK2IsochoricStressdPreviousFe.value->data(), sot_dimension, sot_dimension);
+                    map_dPK2IsochoricStressdPreviousFe(dPK2IsochoricStressdPreviousFe.value->data(), sot_dimension,
+                                                       sot_dimension);
 
                 map_dPK2IsochoricStressdPreviousFe =
                     (map_dPK2IsochoricStressdPreviousEe * map_previousdEehatdFe).eval();
@@ -1184,9 +1199,8 @@ namespace tardigradeHydra {
                     }
                 }
 
-                Eigen::Map<const Eigen::Matrix<floatType, -1, sot_dimension, Eigen::RowMajor> > map_dISVsdEe(dISVsdEe.data(),
-                                                                                                       iso_isvs_size,
-                                                                                                       sot_dimension);
+                Eigen::Map<const Eigen::Matrix<floatType, -1, sot_dimension, Eigen::RowMajor> > map_dISVsdEe(
+                    dISVsdEe.data(), iso_isvs_size, sot_dimension);
 
                 auto dIsochoricISVsdFe = get_SetDataStorage_dIsochoricISVsdFe();
                 dIsochoricISVsdFe.zero(iso_isvs_size * sot_dimension);
@@ -1427,7 +1441,8 @@ namespace tardigradeHydra {
 
             for (unsigned int i = 0; i < dimension; i++) {
                 for (unsigned int jk = 0; jk < sot_dimension; jk++) {
-                    (*dPK2StressdFe.value)[dimension * dimension * dimension * i + dimension * dimension * i + jk] += (*dMeandFe)[jk];
+                    (*dPK2StressdFe.value)[dimension * dimension * dimension * i + dimension * dimension * i + jk] +=
+                        (*dMeandFe)[jk];
                 }
             }
 
@@ -1438,7 +1453,8 @@ namespace tardigradeHydra {
 
                 for (unsigned int i = 0; i < dimension; i++) {
                     for (unsigned int jk = 0; jk < sot_dimension; jk++) {
-                        (*dPK2StressdPreviousFe.value)[dimension * dimension * dimension * i + dimension * dimension * i + jk] +=
+                        (*dPK2StressdPreviousFe
+                              .value)[dimension * dimension * dimension * i + dimension * dimension * i + jk] +=
                             (*get_dPK2MeanStressdPreviousFe())[jk];
                     }
                 }
@@ -1523,12 +1539,14 @@ namespace tardigradeHydra {
 
             dCauchyStressdT.zero(sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdPK2Stress(
-                get_dCauchyStressdPK2Stress()->data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dCauchyStressdPK2Stress(get_dCauchyStressdPK2Stress()->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Vector<floatType, sot_dimension> > map_dPK2StressdT(get_dPK2StressdT()->data(), sot_dimension);
+            Eigen::Map<const Eigen::Vector<floatType, sot_dimension> > map_dPK2StressdT(get_dPK2StressdT()->data(),
+                                                                                        sot_dimension);
 
-            Eigen::Map<Eigen::Vector<floatType, sot_dimension> > map_dCauchyStressdT(dCauchyStressdT.value->data(), sot_dimension);
+            Eigen::Map<Eigen::Vector<floatType, sot_dimension> > map_dCauchyStressdT(dCauchyStressdT.value->data(),
+                                                                                     sot_dimension);
 
             map_dCauchyStressdT = (map_dCauchyStressdPK2Stress * map_dPK2StressdT).eval();
         }
@@ -1542,8 +1560,8 @@ namespace tardigradeHydra {
 
             dCauchyStressdPreviousT.zero(sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdPK2Stress(
-                get_dCauchyStressdPK2Stress()->data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dCauchyStressdPK2Stress(get_dCauchyStressdPK2Stress()->data(), sot_dimension, sot_dimension);
 
             Eigen::Map<const Eigen::Vector<floatType, sot_dimension> > map_dPK2StressdPreviousT(
                 get_dPK2StressdPreviousT()->data(), sot_dimension);
@@ -1561,8 +1579,8 @@ namespace tardigradeHydra {
 
             const unsigned int num_isvs = get_dPK2StressdPreviousISVs()->size() / sot_dimension;
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdPK2Stress(
-                get_dCauchyStressdPK2Stress()->data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dCauchyStressdPK2Stress(get_dCauchyStressdPK2Stress()->data(), sot_dimension, sot_dimension);
 
             Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPK2StressdPreviousISVs(
                 get_dPK2StressdPreviousISVs()->data(), sot_dimension, num_isvs);
@@ -1584,8 +1602,8 @@ namespace tardigradeHydra {
 
             auto previousdCauchyStressdT = get_SetDataStorage_previousdCauchyStressdT();
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdPK2Stress(
-                get_dCauchyStressdPK2Stress()->data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dCauchyStressdPK2Stress(get_dCauchyStressdPK2Stress()->data(), sot_dimension, sot_dimension);
 
             Eigen::Map<const Eigen::Vector<floatType, sot_dimension> > map_previousdPK2StressdT(
                 get_previousdPK2StressdT()->data(), sot_dimension);

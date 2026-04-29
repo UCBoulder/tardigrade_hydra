@@ -259,8 +259,10 @@ namespace tardigradeHydra {
             dPK2StressdEe.zero(dimension * dimension * dimension * dimension);
             for (unsigned int i = 0; i < dimension; i++) {
                 for (unsigned int j = 0; j < dimension; j++) {
-                    (*dPK2StressdEe.value)[dimension * dimension * (dimension * i + j) + (dimension * i + j)] += 2 * getMu();
-                    (*dPK2StressdEe.value)[dimension * dimension * dimension * i + dimension * dimension * i + dimension * j + j] += getLambda();
+                    (*dPK2StressdEe.value)[dimension * dimension * (dimension * i + j) + (dimension * i + j)] +=
+                        2 * getMu();
+                    (*dPK2StressdEe.value)[dimension * dimension * dimension * i + dimension * dimension * i +
+                                           dimension * j + j] += getLambda();
                 }
             }
 
@@ -328,7 +330,8 @@ namespace tardigradeHydra {
                 for (unsigned int J = 0; J < sot_dimension; J++) {
                     for (unsigned int K = 0; K < sot_dimension; K++) {
                         (*previousdPK2StressdFe.value)[sot_dimension * I + K] +=
-                            (*get_previousdPK2StressdEe())[sot_dimension * I + J] * (*get_previousdEedFe())[sot_dimension * J + K];
+                            (*get_previousdPK2StressdEe())[sot_dimension * I + J] *
+                            (*get_previousdEedFe())[sot_dimension * J + K];
                     }
                 }
             }
@@ -401,16 +404,16 @@ namespace tardigradeHydra {
             }
 
             // Compute the Second Piola-Kirchhoff stress and it's gradients
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPK2StressdFe(
-                dPK2StressdFe->data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dPK2StressdFe(dPK2StressdFe->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dFedF(dFedF->data(),
-                                                                                                     sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dFedF(
+                dFedF->data(), sot_dimension, sot_dimension);
 
             Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dFedFn(
                 dFedFn->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            fourthOrderTensor                                                        dPK2StressdF(dimension * dimension * dimension * dimension, 0);
+            fourthOrderTensor dPK2StressdF(dimension * dimension * dimension * dimension, 0);
             Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPK2StressdF(
                 dPK2StressdF.data(), sot_dimension, sot_dimension);
 
@@ -429,11 +432,11 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::pushForwardPK2Stress(
                 *PK2Stress, *Fe, *cauchyStress.value, *dCauchyStressdPK2Stress.value, dCauchyStressdFe));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdPK2Stress(
-                dCauchyStressdPK2Stress.value->data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dCauchyStressdPK2Stress(dCauchyStressdPK2Stress.value->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdFe(
-                dCauchyStressdFe.data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dCauchyStressdFe(dCauchyStressdFe.data(), sot_dimension, sot_dimension);
 
             dCauchyStressdF.zero(dimension * dimension * dimension * dimension);
             Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdF(
@@ -455,15 +458,15 @@ namespace tardigradeHydra {
                 Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
                     map_dPK2StressdPreviousFe(get_dPK2StressdPreviousFe()->data(), sot_dimension, sot_dimension);
 
-                Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_previousdFedF(
-                    get_previousdFedF()->data(), sot_dimension, sot_dimension);
+                Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                    map_previousdFedF(get_previousdFedF()->data(), sot_dimension, sot_dimension);
 
                 Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_previousdFedFn(
                     get_previousdFedFn()->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
                 fourthOrderTensor dPK2StressdPreviousF(dimension * dimension * dimension * dimension, 0);
-                Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPK2StressdPreviousF(
-                    dPK2StressdPreviousF.data(), sot_dimension, sot_dimension);
+                Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                    map_dPK2StressdPreviousF(dPK2StressdPreviousF.data(), sot_dimension, sot_dimension);
 
                 floatVector dPK2StressdPreviousFn(sot_dimension * (num_configs - 1) * sot_dimension, 0);
                 Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPK2StressdPreviousFn(
@@ -474,8 +477,8 @@ namespace tardigradeHydra {
                 map_dPK2StressdPreviousFn = (map_dPK2StressdPreviousFe * map_previousdFedFn).eval();
 
                 dCauchyStressdPreviousF.zero(dimension * dimension * dimension * dimension);
-                Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdPreviousF(
-                    dCauchyStressdPreviousF.value->data(), sot_dimension, sot_dimension);
+                Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                    map_dCauchyStressdPreviousF(dCauchyStressdPreviousF.value->data(), sot_dimension, sot_dimension);
 
                 dCauchyStressdPreviousFn.zero(sot_dimension * (num_configs - 1) * sot_dimension);
                 Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dCauchyStressdPreviousFn(
@@ -636,8 +639,8 @@ namespace tardigradeHydra {
 
                     for (unsigned int I = 0; I < num_unknown_config_vars; I++) {
                         (*jacobian.value)[num_unknowns * dimension * i + num_unknowns * j + getStress()->size() + I] =
-                            (*get_dCauchyStressdFn())[dimension * num_unknown_config_vars * i + num_unknown_config_vars * j +
-                                                      I];
+                            (*get_dCauchyStressdFn())[dimension * num_unknown_config_vars * i +
+                                                      num_unknown_config_vars * j + I];
                     }
                 }
             }

@@ -452,7 +452,8 @@ namespace tardigradeHydra {
                 for (unsigned int i = 0; i < dimension; i++) {
                     (*velocityGradient.value)[dimension * i + i] += a * (1 - *massDirectionMixingParameter);
 
-                    (*dVelocityGradientdDensity.value)[dimension * i + i] += dadDensity * (1 - *massDirectionMixingParameter);
+                    (*dVelocityGradientdDensity.value)[dimension * i + i] +=
+                        dadDensity * (1 - *massDirectionMixingParameter);
 
                     (*dVelocityGradientdMassChangeRate.value)[dimension * i + i] +=
                         dadMassChangeRate * (1 - *massDirectionMixingParameter);
@@ -474,8 +475,10 @@ namespace tardigradeHydra {
                         for (unsigned int k = 0; k < dimension; k++) {
                             (*dVelocityGradientdDirectionVector.value)[dimension * dimension * i + dimension * j + k] +=
                                 a * (*massDirectionMixingParameter) *
-                                ((*dUnitDirectionVectordDirectionVector)[dimension * i + k] * (*unitDirectionVector)[j] +
-                                 (*unitDirectionVector)[i] * (*dUnitDirectionVectordDirectionVector)[dimension * j + k]);
+                                ((*dUnitDirectionVectordDirectionVector)[dimension * i + k] *
+                                     (*unitDirectionVector)[j] +
+                                 (*unitDirectionVector)[i] *
+                                     (*dUnitDirectionVectordDirectionVector)[dimension * j + k]);
                         }
                     }
                 }
@@ -486,7 +489,8 @@ namespace tardigradeHydra {
 
                     (*dVelocityGradientdDensity.value)[dimension * i + i] += (*dVelocityGradientTracedDensity);
 
-                    (*dVelocityGradientdMassChangeRate.value)[dimension * i + i] += (*dVelocityGradientTracedMassChangeRate);
+                    (*dVelocityGradientdMassChangeRate.value)[dimension * i + i] +=
+                        (*dVelocityGradientTracedMassChangeRate);
                 }
             }
         }
@@ -649,7 +653,8 @@ namespace tardigradeHydra {
 
                     for (unsigned int k = 0; k < sot_dimension; k++) {
                         (*dpFdFn.value)[(num_configs - 1) * sot_dimension * i + j] +=
-                            dpFdFs[num_configs * sot_dimension * i + k] * (*dF1dFn)[(num_configs - 1) * sot_dimension * k + j];
+                            dpFdFs[num_configs * sot_dimension * i + k] *
+                            (*dF1dFn)[(num_configs - 1) * sot_dimension * k + j];
                     }
                 }
             }
@@ -855,11 +860,13 @@ namespace tardigradeHydra {
                     (*dILdC.value)[i] += dILdL[sot_dimension * i + j] * (*dLdC)[j];
 
                     for (unsigned int k = 0; k < dimension; k++) {
-                        (*dILdGradC.value)[dimension * i + k] += dILdL[sot_dimension * i + j] * (*dLdGradC)[dimension * j + k];
+                        (*dILdGradC.value)[dimension * i + k] +=
+                            dILdL[sot_dimension * i + j] * (*dLdGradC)[dimension * j + k];
                     }
 
                     for (unsigned int k = 0; k < sot_dimension; k++) {
-                        (*dILdF.value)[sot_dimension * i + k] += dILdPF[sot_dimension * i + j] * (*dPFdF)[sot_dimension * j + k];
+                        (*dILdF.value)[sot_dimension * i + k] +=
+                            dILdPF[sot_dimension * i + j] * (*dPFdF)[sot_dimension * j + k];
                     }
 
                     for (unsigned int k = 0; k < (num_configs - 1) * sot_dimension; k++) {
@@ -1117,11 +1124,13 @@ namespace tardigradeHydra {
                     (*dFmdC.value)[i] += dFmdL[sot_dimension * i + j] * (*dLdC)[j];
 
                     for (unsigned int k = 0; k < dimension; k++) {
-                        (*dFmdGradC.value)[dimension * i + k] += dFmdL[sot_dimension * i + j] * (*dLdGradC)[dimension * j + k];
+                        (*dFmdGradC.value)[dimension * i + k] +=
+                            dFmdL[sot_dimension * i + j] * (*dLdGradC)[dimension * j + k];
                     }
 
                     for (unsigned int k = 0; k < sot_dimension; k++) {
-                        (*dFmdF.value)[sot_dimension * i + k] += dFmdL[sot_dimension * i + j] * (*dLdF)[sot_dimension * j + k];
+                        (*dFmdF.value)[sot_dimension * i + k] +=
+                            dFmdL[sot_dimension * i + j] * (*dLdF)[sot_dimension * j + k];
                     }
 
                     for (unsigned int k = 0; k < (num_configs - 1) * sot_dimension; k++) {
@@ -1253,7 +1262,8 @@ namespace tardigradeHydra {
                 (*jacobian.value)[num_unknowns * i + sot_dimension * getMassChangeConfigurationIndex() + i] += -1;
 
                 for (unsigned int j = 0; j < (num_configs - 1) * sot_dimension; j++) {
-                    (*jacobian.value)[num_unknowns * i + j + sot_dimension] += (*dFmdFn)[(num_configs - 1) * sot_dimension * i + j];
+                    (*jacobian.value)[num_unknowns * i + j + sot_dimension] +=
+                        (*dFmdFn)[(num_configs - 1) * sot_dimension * i + j];
                 }
             }
         }

@@ -275,7 +275,8 @@ namespace tardigradeHydra {
             static constexpr unsigned int fiot_dimension = dimension * dimension * dimension * dimension * dimension;
 
             //! The dimension of a sixth order tensor
-            static constexpr unsigned int siot_dimension = dimension * dimension * dimension * dimension * dimension * dimension;
+            static constexpr unsigned int siot_dimension =
+                dimension * dimension * dimension * dimension * dimension * dimension;
 
             //! Set the current values of the deformation
             virtual void setDeformation() { setDeformation(false); }
