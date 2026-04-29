@@ -325,22 +325,6 @@ namespace tardigradeHydra {
 
         const unsigned int getCurrentResidualOffset();
 
-        //! Get the dimension
-        constexpr unsigned int getDimension() { return deformation->dimension; }
-
-        //! Get a second order tensor's dimension
-        constexpr unsigned int getSOTDimension() { return deformation->dimension * deformation->dimension; }
-
-        //! Get a third order tensor's dimension
-        constexpr unsigned int getTOTDimension() {
-            return deformation->dimension * deformation->dimension * deformation->dimension;
-        }
-
-        //! Get a fourth order tensor's dimension
-        constexpr unsigned int getFOTDimension() {
-            return deformation->dimension * deformation->dimension * deformation->dimension * deformation->dimension;
-        }
-
         virtual void setResidualClasses();
 
         void setResidualClasses(std::vector<ResidualBase<hydraBase> *> &residualClasses);

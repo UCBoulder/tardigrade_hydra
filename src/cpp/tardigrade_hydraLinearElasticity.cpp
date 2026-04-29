@@ -313,7 +313,7 @@ namespace tardigradeHydra {
 
             auto dPK2StressdPreviousFe = get_SetDataStorage_dPK2StressdPreviousFe();
 
-            dPK2StressdPreviousFe.zero(hydra->getFOTDimension());
+            dPK2StressdPreviousFe.zero(dimension * dimension * dimension * dimension);
         }
 
         void residual::setPreviousdPK2StressdFe() {
@@ -324,7 +324,7 @@ namespace tardigradeHydra {
 
             auto previousdPK2StressdFe = get_SetDataStorage_previousdPK2StressdFe();
 
-            previousdPK2StressdFe.zero(hydra->getFOTDimension());
+            previousdPK2StressdFe.zero(dimension * dimension * dimension * dimension);
 
             for (unsigned int I = 0; I < sot_dimension; I++) {
                 for (unsigned int J = 0; J < sot_dimension; J++) {
