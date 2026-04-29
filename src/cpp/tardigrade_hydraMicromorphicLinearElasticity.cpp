@@ -87,9 +87,9 @@ namespace tardigradeHydra {
              *     micro-deformation.
              */
 
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            constexpr unsigned int tot_dimension = sot_dimension * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             variableVector PK2Stress, referenceMicroStress, referenceHigherOrderStress;
 
@@ -259,9 +259,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            constexpr unsigned int tot_dimension = sot_dimension * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             // Compute the required deformation measures
             variableVector RCG, Psi, Gamma;
@@ -383,7 +383,7 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
             variableVector                                               invRCG = rightCauchyGreenDeformation;
             Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> > mat(invRCG.data(), 3, 3);
@@ -392,9 +392,9 @@ namespace tardigradeHydra {
             // Compute the strain measures
             variableVector greenLagrangeStrain = 0.5 * rightCauchyGreenDeformation;
             variableVector microStrain         = Psi;
-            for (unsigned int i = 0; i < dim; i++) {
-                greenLagrangeStrain[dim * i + i] -= 0.5;
-                microStrain[dim * i + i] -= 1;
+            for (unsigned int i = 0; i < dimension; i++) {
+                greenLagrangeStrain[dimension * i + i] -= 0.5;
+                microStrain[dimension * i + i] -= 1;
             }
 
             // Compute the higher order stress
@@ -470,11 +470,11 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim            = 3;
-            constexpr unsigned int sot_dimension  = dim * dim;
-            constexpr unsigned int tot_dimension  = sot_dimension * dim;
-            constexpr unsigned int fot_dimension  = tot_dimension * dim;
-            constexpr unsigned int fiot_dimension = fot_dimension * dim;
+            constexpr unsigned int dimension      = 3;
+            constexpr unsigned int sot_dimension  = dimension * dimension;
+            constexpr unsigned int tot_dimension  = sot_dimension * dimension;
+            constexpr unsigned int fot_dimension  = tot_dimension * dimension;
+            constexpr unsigned int fiot_dimension = fot_dimension * dimension;
 
             variableVector                                               invRCG = rightCauchyGreenDeformation;
             Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> > mat(invRCG.data(), 3, 3);
@@ -483,9 +483,9 @@ namespace tardigradeHydra {
             // Compute the strain measures
             variableVector greenLagrangeStrain = 0.5 * rightCauchyGreenDeformation;
             variableVector microStrain         = Psi;
-            for (unsigned int i = 0; i < dim; i++) {
-                greenLagrangeStrain[dim * i + i] -= 0.5;
-                microStrain[dim * i + i] -= 1;
+            for (unsigned int i = 0; i < dimension; i++) {
+                greenLagrangeStrain[dimension * i + i] -= 0.5;
+                microStrain[dimension * i + i] -= 1;
             }
 
             // Compute the higher order stress
@@ -791,10 +791,10 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dimension = sot_dimension * dim;
-                                        constexpr unsigned int fot_dimension = tot_dimension * dim;)
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dimension = sot_dimension * dimension;
+                                        constexpr unsigned int fot_dimension = tot_dimension * dimension;)
 
             TARDIGRADE_ERROR_TOOLS_CHECK(greenLagrangeStrain.size() == sot_dimension,
                                          "The green lagrange strain must have a length of 9");
@@ -807,7 +807,7 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CHECK(D.size() == fot_dimension, "D must have a size of 3**4");
 
             // Compute the first common term for the PK2 and symmetric micro-stress
-            term1 = variableVector(dim * dim, 0);
+            term1 = variableVector(dimension * dimension, 0);
             for (unsigned int IJ = 0; IJ < sot_dimension; IJ++) {
                 for (unsigned int KL = 0; KL < sot_dimension; KL++) {
                     term1[IJ] += A[sot_dimension * IJ + KL] * greenLagrangeStrain[KL] +
@@ -866,8 +866,8 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(greenLagrangeStrain.size() == sot_dimension,
                                          "The green lagrange strain must have a length of 9");
@@ -883,16 +883,16 @@ namespace tardigradeHydra {
 
             term2 = variableVector(sot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int K = 0; K < dim; K++) {
-                        for (unsigned int L = 0; L < dim; L++) {
-                            for (unsigned int Q = 0; Q < dim; Q++) {
-                                term2[dim * I + J] +=
-                                    (B[dim * dim * dim * I + dim * dim * Q + dim * K + L] * microStrain[dim * K + L] +
-                                     greenLagrangeStrain[dim * K + L] *
-                                         D[dim * dim * dim * K + dim * dim * L + dim * I + Q]) *
-                                    invCPsi[dim * J + Q];
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int K = 0; K < dimension; K++) {
+                        for (unsigned int L = 0; L < dimension; L++) {
+                            for (unsigned int Q = 0; Q < dimension; Q++) {
+                                term2[dimension * I + J] +=
+                                    (B[dimension * dimension * dimension * I + dimension * dimension * Q + dimension * K + L] * microStrain[dimension * K + L] +
+                                     greenLagrangeStrain[dimension * K + L] *
+                                         D[dimension * dimension * dimension * K + dimension * dimension * L + dimension * I + Q]) *
+                                    invCPsi[dimension * J + Q];
                             }
                         }
                     }
@@ -931,8 +931,8 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeLinearElasticTerm2(greenLagrangeStrain, microStrain, invCPsi, B, D,
                                                                    term2));
@@ -942,19 +942,19 @@ namespace tardigradeHydra {
             dTerm2dMicroStrain         = variableVector(sot_dimension * sot_dimension, 0);
             dTerm2dInvCPsi             = variableVector(sot_dimension * sot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int M = 0; M < dim; M++) {
-                        for (unsigned int N = 0; N < dim; N++) {
-                            for (unsigned int K = 0; K < dim; K++) {
-                                dTerm2dGreenLagrangeStrain[dim * sot_dimension * I + sot_dimension * J + dim * M + N] +=
-                                    D[dim * dim * dim * M + dim * dim * N + dim * I + K] * invCPsi[dim * J + K];
-                                dTerm2dMicroStrain[dim * sot_dimension * I + sot_dimension * J + dim * M + N] +=
-                                    B[dim * dim * dim * I + dim * dim * K + dim * M + N] * invCPsi[dim * J + K];
-                                dTerm2dInvCPsi[dim * sot_dimension * I + sot_dimension * J + dim * J + M] +=
-                                    (B[dim * dim * dim * I + dim * dim * M + dim * N + K] * microStrain[dim * N + K] +
-                                     greenLagrangeStrain[dim * N + K] *
-                                         D[dim * dim * dim * N + dim * dim * K + dim * I + M]);
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int M = 0; M < dimension; M++) {
+                        for (unsigned int N = 0; N < dimension; N++) {
+                            for (unsigned int K = 0; K < dimension; K++) {
+                                dTerm2dGreenLagrangeStrain[dimension * sot_dimension * I + sot_dimension * J + dimension * M + N] +=
+                                    D[dimension * dimension * dimension * M + dimension * dimension * N + dimension * I + K] * invCPsi[dimension * J + K];
+                                dTerm2dMicroStrain[dimension * sot_dimension * I + sot_dimension * J + dimension * M + N] +=
+                                    B[dimension * dimension * dimension * I + dimension * dimension * K + dimension * M + N] * invCPsi[dimension * J + K];
+                                dTerm2dInvCPsi[dimension * sot_dimension * I + sot_dimension * J + dimension * J + M] +=
+                                    (B[dimension * dimension * dimension * I + dimension * dimension * M + dimension * N + K] * microStrain[dimension * N + K] +
+                                     greenLagrangeStrain[dimension * N + K] *
+                                         D[dimension * dimension * dimension * N + dimension * dimension * K + dimension * I + M]);
                             }
                         }
                     }
@@ -977,9 +977,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            constexpr unsigned int tot_dimension = sot_dimension * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(Gamma.size() == tot_dimension, "Gamma must have a length of 27");
 
@@ -989,12 +989,12 @@ namespace tardigradeHydra {
 
             referenceHigherOrderStress = variableVector(tot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int K = 0; K < dim; K++) {
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int K = 0; K < dimension; K++) {
                         for (unsigned int LMN = 0; LMN < tot_dimension; LMN++) {
-                            referenceHigherOrderStress[dim * dim * I + dim * J + K] +=
-                                C[dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I +
+                            referenceHigherOrderStress[dimension * dimension * I + dimension * J + K] +=
+                                C[dimension * dimension * dimension * dimension * dimension * J + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * I +
                                   LMN] *
                                 Gamma[LMN];
                         }
@@ -1023,22 +1023,22 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            constexpr unsigned int tot_dimension = sot_dimension * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeReferenceHigherOrderStress(Gamma, C, referenceHigherOrderStress));
 
             // Assemble the Jacobian
             dReferenceHigherOrderStressdGamma = variableVector(tot_dimension * tot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int K = 0; K < dim; K++) {
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int K = 0; K < dimension; K++) {
                         for (unsigned int OPQ = 0; OPQ < tot_dimension; OPQ++) {
-                            dReferenceHigherOrderStressdGamma[dim * dim * tot_dimension * I + dim * tot_dimension * J +
+                            dReferenceHigherOrderStressdGamma[dimension * dimension * tot_dimension * I + dimension * tot_dimension * J +
                                                               tot_dimension * K + OPQ] +=
-                                C[dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I +
+                                C[dimension * dimension * dimension * dimension * dimension * J + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * I +
                                   OPQ];
                         }
                     }
@@ -1060,9 +1060,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dimension = sot_dimension * dim;)
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dimension = sot_dimension * dimension;)
 
             TARDIGRADE_ERROR_TOOLS_CHECK(invCGamma.size() == tot_dimension, "invCGamma must have a size of 27");
 
@@ -1071,11 +1071,11 @@ namespace tardigradeHydra {
 
             term3 = variableVector(sot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
                     for (unsigned int QR = 0; QR < sot_dimension; QR++) {
-                        term3[dim * I + J] +=
-                            referenceHigherOrderStress[dim * dim * I + QR] * invCGamma[dim * dim * J + QR];
+                        term3[dimension * I + J] +=
+                            referenceHigherOrderStress[dimension * dimension * I + QR] * invCGamma[dimension * dimension * J + QR];
                     }
                 }
             }
@@ -1107,22 +1107,22 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            constexpr unsigned int tot_dimension = sot_dimension * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeLinearElasticTerm3(invCGamma, referenceHigherOrderStress, term3));
 
             dTerm3dInvCGamma                  = variableVector(sot_dimension * tot_dimension, 0);
             dTerm3dReferenceHigherOrderStress = variableVector(sot_dimension * tot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
                     for (unsigned int TU = 0; TU < sot_dimension; TU++) {
-                        dTerm3dReferenceHigherOrderStress[dim * tot_dimension * I + tot_dimension * J + dim * dim * I +
-                                                          TU] += invCGamma[dim * dim * J + TU];
-                        dTerm3dInvCGamma[dim * tot_dimension * I + tot_dimension * J + dim * dim * J + TU] +=
-                            referenceHigherOrderStress[dim * dim * I + TU];
+                        dTerm3dReferenceHigherOrderStress[dimension * tot_dimension * I + tot_dimension * J + dimension * dimension * I +
+                                                          TU] += invCGamma[dimension * dimension * J + TU];
+                        dTerm3dInvCGamma[dimension * tot_dimension * I + tot_dimension * J + dimension * dimension * J + TU] +=
+                            referenceHigherOrderStress[dimension * dimension * I + TU];
                     }
                 }
             }
@@ -1139,18 +1139,18 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(invRCG.size() == sot_dimension, "invRCG has an improper dimension");
 
             TARDIGRADE_ERROR_TOOLS_CHECK(Psi.size() == sot_dimension, "Psi has an improper dimension");
 
-            Eigen::Map<const Eigen::Matrix<floatType, dim, dim, Eigen::RowMajor> > map_invRCG(invRCG.data(), dim, dim);
-            Eigen::Map<const Eigen::Matrix<floatType, dim, dim, Eigen::RowMajor> > map_Psi(Psi.data(), dim, dim);
+            Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_invRCG(invRCG.data(), dimension, dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_Psi(Psi.data(), dimension, dimension);
 
             invRCGPsi = secondOrderTensor(sot_dimension, 0);
-            Eigen::Map<Eigen::Matrix<floatType, dim, dim, Eigen::RowMajor> > map_invRCGPsi(invRCGPsi.data(), dim, dim);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_invRCGPsi(invRCGPsi.data(), dimension, dimension);
 
             map_invRCGPsi = (map_invRCG * map_Psi).eval();
 
@@ -1178,8 +1178,8 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeInvRCGPsi(invRCG, Psi, invRCGPsi));
 
@@ -1190,10 +1190,10 @@ namespace tardigradeHydra {
             for (unsigned int I = 0; I < 3; I++) {
                 for (unsigned int J = 0; J < 3; J++) {
                     for (unsigned int K = 0; K < 3; K++) {
-                        dInvRCGPsidPsi[dim * sot_dimension * I + sot_dimension * J + dim * K + J] = invRCG[dim * I + K];
+                        dInvRCGPsidPsi[dimension * sot_dimension * I + sot_dimension * J + dimension * K + J] = invRCG[dimension * I + K];
                         for (unsigned int L = 0; L < 3; L++) {
-                            dInvRCGPsidRCG[dim * sot_dimension * I + sot_dimension * J + dim * K + L] =
-                                -invRCG[dim * I + K] * invRCGPsi[dim * L + J];
+                            dInvRCGPsidRCG[dimension * sot_dimension * I + sot_dimension * J + dimension * K + L] =
+                                -invRCG[dimension * I + K] * invRCGPsi[dimension * L + J];
                         }
                     }
                 }
@@ -1213,21 +1213,21 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            constexpr unsigned int tot_dimension = sot_dimension * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(invRCG.size() == sot_dimension, "invRCG has an improper dimension");
 
             TARDIGRADE_ERROR_TOOLS_CHECK(Gamma.size() == tot_dimension, "Gamma has an improper dimension");
 
             invRCGGamma = variableVector(tot_dimension, 0);
-            for (unsigned int J = 0; J < dim; J++) {
-                for (unsigned int S = 0; S < dim; S++) {
-                    for (unsigned int Q = 0; Q < dim; Q++) {
-                        for (unsigned int R = 0; R < dim; R++) {
-                            invRCGGamma[dim * dim * J + dim * Q + R] +=
-                                invRCG[dim * J + S] * Gamma[dim * dim * S + dim * Q + R];
+            for (unsigned int J = 0; J < dimension; J++) {
+                for (unsigned int S = 0; S < dimension; S++) {
+                    for (unsigned int Q = 0; Q < dimension; Q++) {
+                        for (unsigned int R = 0; R < dimension; R++) {
+                            invRCGGamma[dimension * dimension * J + dimension * Q + R] +=
+                                invRCG[dimension * J + S] * Gamma[dimension * dimension * S + dimension * Q + R];
                         }
                     }
                 }
@@ -1256,9 +1256,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim           = 3;
-            constexpr unsigned int sot_dimension = dim * dim;
-            constexpr unsigned int tot_dimension = sot_dimension * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeInvRCGGamma(invRCG, Gamma, invRCGGamma));
 
@@ -1266,16 +1266,16 @@ namespace tardigradeHydra {
             dInvRCGGammadRCG   = variableVector(tot_dimension * sot_dimension, 0);
             dInvRCGGammadGamma = variableVector(tot_dimension * tot_dimension, 0);
 
-            for (unsigned int J = 0; J < dim; J++) {
-                for (unsigned int Q = 0; Q < dim; Q++) {
-                    for (unsigned int R = 0; R < dim; R++) {
-                        for (unsigned int T = 0; T < dim; T++) {
-                            dInvRCGGammadGamma[dim * dim * tot_dimension * J + dim * tot_dimension * Q +
-                                               tot_dimension * R + dim * dim * T + dim * Q + R] = invRCG[dim * J + T];
-                            for (unsigned int U = 0; U < dim; U++) {
-                                dInvRCGGammadRCG[dim * dim * sot_dimension * J + dim * sot_dimension * Q +
-                                                 sot_dimension * R + dim * T + U] =
-                                    -invRCG[dim * J + T] * invRCGGamma[dim * dim * U + dim * Q + R];
+            for (unsigned int J = 0; J < dimension; J++) {
+                for (unsigned int Q = 0; Q < dimension; Q++) {
+                    for (unsigned int R = 0; R < dimension; R++) {
+                        for (unsigned int T = 0; T < dimension; T++) {
+                            dInvRCGGammadGamma[dimension * dimension * tot_dimension * J + dimension * tot_dimension * Q +
+                                               tot_dimension * R + dimension * dimension * T + dimension * Q + R] = invRCG[dimension * J + T];
+                            for (unsigned int U = 0; U < dimension; U++) {
+                                dInvRCGGammadRCG[dimension * dimension * sot_dimension * J + dimension * sot_dimension * Q +
+                                                 sot_dimension * R + dimension * T + U] =
+                                    -invRCG[dimension * J + T] * invRCGGamma[dimension * dimension * U + dimension * Q + R];
                             }
                         }
                     }
@@ -1299,15 +1299,15 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
-            A = parameterVector(dim * dim * dim * dim, 0);
+            A = parameterVector(dimension * dimension * dimension * dimension, 0);
 
-            for (unsigned int K = 0; K < dim; K++) {
-                for (unsigned int L = 0; L < dim; L++) {
-                    A[dim * dim * dim * K + dim * dim * K + dim * L + L] += lambda;
-                    A[dim * dim * dim * K + dim * dim * L + dim * K + L] += mu;
-                    A[dim * dim * dim * K + dim * dim * L + dim * L + K] += mu;
+            for (unsigned int K = 0; K < dimension; K++) {
+                for (unsigned int L = 0; L < dimension; L++) {
+                    A[dimension * dimension * dimension * K + dimension * dimension * K + dimension * L + L] += lambda;
+                    A[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] += mu;
+                    A[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] += mu;
                 }
             }
 
@@ -1334,18 +1334,18 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
-            B = parameterVector(dim * dim * dim * dim, 0);
+            B = parameterVector(dimension * dimension * dimension * dimension, 0);
 
-            for (unsigned int K = 0; K < dim; K++) {
-                for (unsigned int L = 0; L < dim; L++) {
-                    B[dim * dim * dim * K + dim * dim * K + dim * L + L] += (eta - tau);
-                    B[dim * dim * dim * K + dim * dim * L + dim * K + L] += kappa;
-                    B[dim * dim * dim * K + dim * dim * L + dim * L + K] += nu;
-                    B[dim * dim * dim * K + dim * dim * L + dim * K + L] -= sigma;
+            for (unsigned int K = 0; K < dimension; K++) {
+                for (unsigned int L = 0; L < dimension; L++) {
+                    B[dimension * dimension * dimension * K + dimension * dimension * K + dimension * L + L] += (eta - tau);
+                    B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] += kappa;
+                    B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] += nu;
+                    B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] -= sigma;
                     ;
-                    B[dim * dim * dim * K + dim * dim * L + dim * L + K] -= sigma;
+                    B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] -= sigma;
                 }
             }
 
@@ -1379,45 +1379,45 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(taus.size() == 11, "11 moduli required to form C");
 
-            C = parameterVector(dim * dim * dim * dim * dim * dim, 0);
+            C = parameterVector(dimension * dimension * dimension * dimension * dimension * dimension, 0);
 
-            for (unsigned int K = 0; K < dim; K++) {
-                for (unsigned int L = 0; L < dim; L++) {
-                    for (unsigned int M = 0; M < dim; M++) {
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L +
-                          dim * dim * L + dim * M + M] += taus[0];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L +
-                          dim * dim * M + dim * M + K] += taus[0];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L +
-                          dim * dim * M + dim * L + M] += taus[1];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K +
-                          dim * dim * M + dim * M + L] += taus[1];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L +
-                          dim * dim * M + dim * M + L] += taus[2];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L +
-                          dim * dim * K + dim * M + M] += taus[3];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K +
-                          dim * dim * L + dim * M + M] += taus[4];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L +
-                          dim * dim * M + dim * K + M] += taus[4];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K +
-                          dim * dim * M + dim * L + M] += taus[5];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * K + dim * L + M] += taus[6];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * M + dim * K + L] += taus[7];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * L + dim * M + K] += taus[7];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * K + dim * M + L] += taus[8];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * L + dim * K + M] += taus[9];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * M + dim * L + K] += taus[10];
+            for (unsigned int K = 0; K < dimension; K++) {
+                for (unsigned int L = 0; L < dimension; L++) {
+                    for (unsigned int M = 0; M < dimension; M++) {
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                          dimension * dimension * L + dimension * M + M] += taus[0];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                          dimension * dimension * M + dimension * M + K] += taus[0];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                          dimension * dimension * M + dimension * L + M] += taus[1];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                          dimension * dimension * M + dimension * M + L] += taus[1];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                          dimension * dimension * M + dimension * M + L] += taus[2];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                          dimension * dimension * K + dimension * M + M] += taus[3];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                          dimension * dimension * L + dimension * M + M] += taus[4];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                          dimension * dimension * M + dimension * K + M] += taus[4];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                          dimension * dimension * M + dimension * L + M] += taus[5];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * K + dimension * L + M] += taus[6];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * M + dimension * K + L] += taus[7];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * L + dimension * M + K] += taus[7];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * K + dimension * M + L] += taus[8];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * L + dimension * K + M] += taus[9];
+                        C[dimension * dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * M + dimension * L + K] += taus[10];
                     }
                 }
             }
@@ -1437,14 +1437,14 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
-            D = parameterVector(dim * dim * dim * dim, 0);
-            for (unsigned int K = 0; K < dim; K++) {
-                for (unsigned int L = 0; L < dim; L++) {
-                    D[dim * dim * dim * K + dim * dim * K + dim * L + L] += tau;
-                    D[dim * dim * dim * K + dim * dim * L + dim * K + L] += sigma;
-                    D[dim * dim * dim * K + dim * dim * L + dim * L + K] += sigma;
+            D = parameterVector(dimension * dimension * dimension * dimension, 0);
+            for (unsigned int K = 0; K < dimension; K++) {
+                for (unsigned int L = 0; L < dimension; L++) {
+                    D[dimension * dimension * dimension * K + dimension * dimension * K + dimension * L + L] += tau;
+                    D[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] += sigma;
+                    D[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] += sigma;
                 }
             }
 
