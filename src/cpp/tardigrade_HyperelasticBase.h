@@ -105,44 +105,48 @@ namespace tardigradeHydra {
 
         virtual void setdRdF() override;
 
-        template<typename T>
+        template <typename T>
         inline T compute_I1(const bool isPrevious);
 
-        template<class dI1dFe_iter>
+        template <class dI1dFe_iter>
         inline void compute_dI1dFe(const bool isPrevious, dI1dFe_iter dI1dFe_begin, dI1dFe_iter dI1dFe_end);
 
-        template<class d2I1dFe2_iter>
+        template <class d2I1dFe2_iter>
         inline void compute_d2I1dFe2(d2I1dFe2_iter d2I1dFe2_begin, d2I1dFe2_iter d2I1dFe2_end);
 
-        template<typename C_iter>
+        template <typename C_iter>
         void compute_right_cauchy_green_deformation_tensor(const bool isPrevious, C_iter C_begin, C_iter C_end);
 
-        template<typename T>
+        template <typename T>
         inline T compute_I2(const bool isPrevious);
 
-        template<class dI2dFe_iter>
+        template <class dI2dFe_iter>
         inline void compute_dI2dFe(const bool isPrevious, dI2dFe_iter dI2dFe_begin, dI2dFe_iter dI2dFe_end);
 
-        template<class d2I2dFe2_iter>
+        template <class d2I2dFe2_iter>
         inline void compute_d2I2dFe2(const bool isPrevious, d2I2dFe2_iter d2I2dFe2_begin, d2I2dFe2_iter d2I2dFe2_end);
 
-        template<typename T>
+        template <typename T>
         inline T compute_Ibar1(const bool isPrevious);
 
-        template<class dIbar1dFe_iter>
-        inline void compute_dIbar1dFe(const bool isPrevious, dIbar1dFe_iter dIbar1dFe_begin, dIbar1dFe_iter dIbar1dFe_end);
+        template <class dIbar1dFe_iter>
+        inline void compute_dIbar1dFe(const bool isPrevious, dIbar1dFe_iter dIbar1dFe_begin,
+                                      dIbar1dFe_iter dIbar1dFe_end);
 
-        template<class d2Ibar1dFe2_iter>
-        inline void compute_d2Ibar1dFe2(const bool isPrevious, d2Ibar1dFe2_iter d2Ibar1dFe2_begin, d2Ibar1dFe2_iter d2Ibar1dFe2_end);
+        template <class d2Ibar1dFe2_iter>
+        inline void compute_d2Ibar1dFe2(const bool isPrevious, d2Ibar1dFe2_iter d2Ibar1dFe2_begin,
+                                        d2Ibar1dFe2_iter d2Ibar1dFe2_end);
 
-        template<typename T>
+        template <typename T>
         inline T compute_Ibar2(const bool isPrevious);
 
-        template<class dIbar2dFe_iter>
-        inline void compute_dIbar2dFe(const bool isPrevious, dIbar2dFe_iter dIbar2dFe_begin, dIbar2dFe_iter dIbar2dFe_end);
+        template <class dIbar2dFe_iter>
+        inline void compute_dIbar2dFe(const bool isPrevious, dIbar2dFe_iter dIbar2dFe_begin,
+                                      dIbar2dFe_iter dIbar2dFe_end);
 
-        template<class d2Ibar2dFe2_iter>
-        inline void compute_d2Ibar2dFe2(const bool isPrevious, d2Ibar2dFe2_iter d2Ibar2dFe2_begin, d2Ibar2dFe2_iter d2Ibar2dFe2_end);
+        template <class d2Ibar2dFe2_iter>
+        inline void compute_d2Ibar2dFe2(const bool isPrevious, d2Ibar2dFe2_iter d2Ibar2dFe2_begin,
+                                        d2Ibar2dFe2_iter d2Ibar2dFe2_end);
 
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Fe, secondOrderTensor, setFe)
@@ -170,7 +174,6 @@ namespace tardigradeHydra {
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJedPreviousFe2, fourthOrderTensor,
                                                   setd2PreviousJedPreviousFe2)
-
 
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, strainEnergy, floatType, setStrainEnergy)
 

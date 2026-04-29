@@ -68,15 +68,15 @@ BOOST_AUTO_TEST_CASE(test_NeoHookianStrainEnergy_setStrainEnergy, *boost::unit_t
 
         tardigradeHydra::floatVector previousFe = {1.1, 0.2, 0.3, 0.4, 1.5, 0.6, 0.7, 0.8, 1.9};
 
-        tardigradeHydra::floatType public_compute_I1(const bool isPrevious){
+        tardigradeHydra::floatType public_compute_I1(const bool isPrevious) {
             return compute_I1<tardigradeHydra::floatType>(isPrevious);
         }
 
-        void public_compute_dI1dFe(const bool isPrevious, std::vector<double> &dI1dFe){
+        void public_compute_dI1dFe(const bool isPrevious, std::vector<double> &dI1dFe) {
             compute_dI1dFe(isPrevious, std::begin(dI1dFe), std::end(dI1dFe));
         }
 
-        void public_compute_d2I1dFe2(std::vector<double> &d2I1dFe2){
+        void public_compute_d2I1dFe2(std::vector<double> &d2I1dFe2) {
             compute_d2I1dFe2(std::begin(d2I1dFe2), std::end(d2I1dFe2));
         }
 
@@ -170,192 +170,170 @@ BOOST_AUTO_TEST_CASE(test_NeoHookianStrainEnergy_setStrainEnergy, *boost::unit_t
 
     BOOST_TEST(previousAnswer == *R.get_previousStrainEnergy());
 
-    try{
-    {
+    try {
+        {
+            double                 eps     = 2e-6;
+            constexpr unsigned int NUM_VAR = 9;
+            constexpr unsigned int NUM_OUT = 1;
+            std::vector<double>    x       = R.Fe;
+            std::vector<double>    jacobian(NUM_VAR * NUM_OUT, 0);
 
-        double eps = 2e-6;
-        constexpr unsigned int NUM_VAR = 9;
-        constexpr unsigned int NUM_OUT = 1;
-        std::vector<double> x = R.Fe;
-        std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
+            for (unsigned int i = 0; i < NUM_VAR; ++i) {
+                double delta = eps * std::fabs(x[i]) + eps;
 
-        for (unsigned int i = 0; i < NUM_VAR; ++i){
+                std::vector<double> xp = x;
+                std::vector<double> xm = x;
 
-            double delta = eps * std::fabs(x[i]) + eps;
+                xp[i] += delta;
+                xm[i] -= delta;
 
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
+                hydraBaseMock hydrap(dof, model_configuration);
+                hydraBaseMock hydram(dof, model_configuration);
 
-            xp[i] += delta;
-            xm[i] -= delta;
+                hydrap.initialize();
+                hydram.initialize();
 
-            hydraBaseMock hydrap(dof,model_configuration); 
-            hydraBaseMock hydram(dof,model_configuration); 
+                NeoHookianStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
+                NeoHookianStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
 
-            hydrap.initialize();
-            hydram.initialize();
+                Rp.Fe = xp;
+                Rm.Fe = xm;
 
-            NeoHookianStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
-            NeoHookianStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
+                double vp = *Rp.get_strainEnergy();
+                double vm = *Rm.get_strainEnergy();
 
-            Rp.Fe = xp;
-            Rm.Fe = xm;
-
-            double vp = *Rp.get_strainEnergy();
-            double vm = *Rm.get_strainEnergy();
-
-            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
-
-                jacobian[NUM_VAR * j + i] = (vp-vm)/(2*delta);
-
+                for (unsigned int j = 0; j < NUM_OUT; ++j) {
+                    jacobian[NUM_VAR * j + i] = (vp - vm) / (2 * delta);
+                }
             }
 
+            BOOST_TEST(jacobian == *R.get_dStrainEnergydFe(), CHECK_PER_ELEMENT);
         }
 
-        BOOST_TEST(jacobian == *R.get_dStrainEnergydFe(), CHECK_PER_ELEMENT);
+        {
+            double                 eps     = 1e-6;
+            constexpr unsigned int NUM_VAR = 9;
+            constexpr unsigned int NUM_OUT = 1;
+            std::vector<double>    x       = R.previousFe;
+            std::vector<double>    jacobian(NUM_VAR * NUM_OUT, 0);
 
-    }
+            for (unsigned int i = 0; i < NUM_VAR; ++i) {
+                double delta = eps * std::fabs(x[i]) + eps;
 
-    {
+                std::vector<double> xp = x;
+                std::vector<double> xm = x;
 
-        double eps = 1e-6;
-        constexpr unsigned int NUM_VAR = 9;
-        constexpr unsigned int NUM_OUT = 1;
-        std::vector<double> x = R.previousFe;
-        std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
+                xp[i] += delta;
+                xm[i] -= delta;
 
-        for (unsigned int i = 0; i < NUM_VAR; ++i){
+                hydraBaseMock hydrap(dof, model_configuration);
+                hydraBaseMock hydram(dof, model_configuration);
 
-            double delta = eps * std::fabs(x[i]) + eps;
+                hydrap.initialize();
+                hydram.initialize();
 
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
+                NeoHookianStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
+                NeoHookianStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
 
-            xp[i] += delta;
-            xm[i] -= delta;
+                Rp.previousFe = xp;
+                Rm.previousFe = xm;
 
-            hydraBaseMock hydrap(dof,model_configuration); 
-            hydraBaseMock hydram(dof,model_configuration); 
+                double vp = *Rp.get_previousStrainEnergy();
+                double vm = *Rm.get_previousStrainEnergy();
 
-            hydrap.initialize();
-            hydram.initialize();
-
-            NeoHookianStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
-            NeoHookianStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
-
-            Rp.previousFe = xp;
-            Rm.previousFe = xm;
-
-            double vp = *Rp.get_previousStrainEnergy();
-            double vm = *Rm.get_previousStrainEnergy();
-
-            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
-
-                jacobian[NUM_VAR * j + i] = (vp-vm)/(2*delta);
-
+                for (unsigned int j = 0; j < NUM_OUT; ++j) {
+                    jacobian[NUM_VAR * j + i] = (vp - vm) / (2 * delta);
+                }
             }
 
+            BOOST_TEST(jacobian == *R.get_dPreviousStrainEnergydPreviousFe(), CHECK_PER_ELEMENT);
         }
 
-        BOOST_TEST(jacobian == *R.get_dPreviousStrainEnergydPreviousFe(), CHECK_PER_ELEMENT);
+        {
+            double                 eps     = 3e-6;
+            constexpr unsigned int NUM_VAR = 9;
+            constexpr unsigned int NUM_OUT = 9;
+            std::vector<double>    x       = R.Fe;
+            std::vector<double>    jacobian(NUM_VAR * NUM_OUT, 0);
 
-    }
+            for (unsigned int i = 0; i < NUM_VAR; ++i) {
+                double delta = eps * std::fabs(x[i]) + eps;
 
-    {
+                std::vector<double> xp = x;
+                std::vector<double> xm = x;
 
-        double eps = 3e-6;
-        constexpr unsigned int NUM_VAR = 9;
-        constexpr unsigned int NUM_OUT = 9;
-        std::vector<double> x = R.Fe;
-        std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
+                xp[i] += delta;
+                xm[i] -= delta;
 
-        for (unsigned int i = 0; i < NUM_VAR; ++i){
+                hydraBaseMock hydrap(dof, model_configuration);
+                hydraBaseMock hydram(dof, model_configuration);
 
-            double delta = eps * std::fabs(x[i]) + eps;
+                hydrap.initialize();
+                hydram.initialize();
 
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
+                NeoHookianStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
+                NeoHookianStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
 
-            xp[i] += delta;
-            xm[i] -= delta;
+                Rp.Fe = xp;
+                Rm.Fe = xm;
 
-            hydraBaseMock hydrap(dof,model_configuration); 
-            hydraBaseMock hydram(dof,model_configuration); 
+                std::vector<double> vp(NUM_OUT, 0);
+                std::vector<double> vm(NUM_OUT, 0);
 
-            hydrap.initialize();
-            hydram.initialize();
+                vp = *Rp.get_dStrainEnergydFe();
+                vm = *Rm.get_dStrainEnergydFe();
 
-            NeoHookianStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
-            NeoHookianStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
-
-            Rp.Fe = xp;
-            Rm.Fe = xm;
-
-            std::vector<double> vp(NUM_OUT,0);
-            std::vector<double> vm(NUM_OUT,0);
-
-            vp = *Rp.get_dStrainEnergydFe();
-            vm = *Rm.get_dStrainEnergydFe();
-
-            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
-
-                jacobian[NUM_VAR * j + i] = (vp[j]-vm[j])/(2*delta);
-
+                for (unsigned int j = 0; j < NUM_OUT; ++j) {
+                    jacobian[NUM_VAR * j + i] = (vp[j] - vm[j]) / (2 * delta);
+                }
             }
 
+            BOOST_TEST(jacobian == *R.get_d2StrainEnergydFe2(), CHECK_PER_ELEMENT);
         }
 
-        BOOST_TEST(jacobian == *R.get_d2StrainEnergydFe2(), CHECK_PER_ELEMENT);
+        {
+            double                 eps     = 1e-6;
+            constexpr unsigned int NUM_VAR = 9;
+            constexpr unsigned int NUM_OUT = 9;
+            std::vector<double>    x       = R.previousFe;
+            std::vector<double>    jacobian(NUM_VAR * NUM_OUT, 0);
 
-    }
+            for (unsigned int i = 0; i < NUM_VAR; ++i) {
+                double delta = eps * std::fabs(x[i]) + eps;
 
-    {
+                std::vector<double> xp = x;
+                std::vector<double> xm = x;
 
-        double eps = 1e-6;
-        constexpr unsigned int NUM_VAR = 9;
-        constexpr unsigned int NUM_OUT = 9;
-        std::vector<double> x = R.previousFe;
-        std::vector<double> jacobian(NUM_VAR * NUM_OUT,0);
+                xp[i] += delta;
+                xm[i] -= delta;
 
-        for (unsigned int i = 0; i < NUM_VAR; ++i){
+                hydraBaseMock hydrap(dof, model_configuration);
+                hydraBaseMock hydram(dof, model_configuration);
 
-            double delta = eps * std::fabs(x[i]) + eps;
+                hydrap.initialize();
+                hydram.initialize();
 
-            std::vector<double> xp = x;
-            std::vector<double> xm = x;
+                NeoHookianStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
+                NeoHookianStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
 
-            xp[i] += delta;
-            xm[i] -= delta;
+                Rp.previousFe = xp;
+                Rm.previousFe = xm;
 
-            hydraBaseMock hydrap(dof,model_configuration); 
-            hydraBaseMock hydram(dof,model_configuration); 
+                std::vector<double> vp(NUM_OUT, 0);
+                std::vector<double> vm(NUM_OUT, 0);
 
-            hydrap.initialize();
-            hydram.initialize();
+                vp = *Rp.get_dPreviousStrainEnergydPreviousFe();
+                vm = *Rm.get_dPreviousStrainEnergydPreviousFe();
 
-            NeoHookianStrainEnergyMock Rp(&hydrap, 9, hydra.elasticity_parameters);
-            NeoHookianStrainEnergyMock Rm(&hydram, 9, hydra.elasticity_parameters);
-
-            Rp.previousFe = xp;
-            Rm.previousFe = xm;
-
-            std::vector<double> vp(NUM_OUT,0);
-            std::vector<double> vm(NUM_OUT,0);
-
-            vp = *Rp.get_dPreviousStrainEnergydPreviousFe();
-            vm = *Rm.get_dPreviousStrainEnergydPreviousFe();
-
-            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
-
-                jacobian[NUM_VAR * j + i] = (vp[j]-vm[j])/(2*delta);
-
+                for (unsigned int j = 0; j < NUM_OUT; ++j) {
+                    jacobian[NUM_VAR * j + i] = (vp[j] - vm[j]) / (2 * delta);
+                }
             }
 
+            BOOST_TEST(jacobian == *R.get_d2PreviousStrainEnergydPreviousFe2(), CHECK_PER_ELEMENT);
         }
-
-        BOOST_TEST(jacobian == *R.get_d2PreviousStrainEnergydPreviousFe2(), CHECK_PER_ELEMENT);
-
+    } catch (std::exception &e) {
+        tardigradeErrorTools::printNestedExceptions(e);
+        throw;
     }
-    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
-
 }
