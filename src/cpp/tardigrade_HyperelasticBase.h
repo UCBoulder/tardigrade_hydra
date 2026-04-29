@@ -182,6 +182,9 @@ namespace tardigradeHydra {
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousStrainEnergydPreviousFe, secondOrderTensor,
                                                   setPreviousStrainEnergyJacobians)
 
+        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousStrainEnergydPreviousT, floatType,
+                                                  setPreviousStrainEnergyJacobians)
+
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2StrainEnergydFe2, fourthOrderTensor,
                                                   setStrainEnergyHessians)
 

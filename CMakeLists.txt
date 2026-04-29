@@ -70,6 +70,7 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_LevenbergMarquardtStep"
     "tardigrade_DeformationBase"
     "tardigrade_HyperelasticBase"
+    "tardigrade_NeoHookianStrainEnergy"
     "tardigrade_CHIPFoamStrainEnergy"
 )
 set(ADDITIONAL_HEADER_ONLY_LIBRARIES
