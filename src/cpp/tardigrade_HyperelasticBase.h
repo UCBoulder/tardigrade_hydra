@@ -135,6 +135,15 @@ namespace tardigradeHydra {
         template<class d2Ibar1dFe2_iter>
         inline void compute_d2Ibar1dFe2(const bool isPrevious, d2Ibar1dFe2_iter d2Ibar1dFe2_begin, d2Ibar1dFe2_iter d2Ibar1dFe2_end);
 
+        template<typename T>
+        inline T compute_Ibar2(const bool isPrevious);
+
+        template<class dIbar2dFe_iter>
+        inline void compute_dIbar2dFe(const bool isPrevious, dIbar2dFe_iter dIbar2dFe_begin, dIbar2dFe_iter dIbar2dFe_end);
+
+        template<class d2Ibar2dFe2_iter>
+        inline void compute_d2Ibar2dFe2(const bool isPrevious, d2Ibar2dFe2_iter d2Ibar2dFe2_begin, d2Ibar2dFe2_iter d2Ibar2dFe2_end);
+
        private:
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Fe, secondOrderTensor, setFe)
 
