@@ -55,7 +55,8 @@ namespace tardigradeHydra {
 
             setIsochoricTemperatureParameters(floatVector(parameters.begin() + 7, parameters.begin() + 10));
 
-            unsigned int parameterCount = 10 + 2 * getNumVolumetricViscousTerms() + 2 * getNumIsochoricViscousTerms();
+            TARDIGRADE_ERROR_TOOLS_EVAL(unsigned int parameterCount = 10 + 2 * getNumVolumetricViscousTerms() +
+                                                                      2 * getNumIsochoricViscousTerms();)
 
             TARDIGRADE_ERROR_TOOLS_CHECK(parameters.size() == parameterCount,
                                          "The number of parameters provided is not consistent with the parameter "
