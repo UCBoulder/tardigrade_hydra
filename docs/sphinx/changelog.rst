@@ -13,6 +13,7 @@ New Features
 ============
 - Added a compile-time map which has no run-time overhead (:pull:`275`). By `Nathan Miller`_.
 - Added a compile-time map key check which has no run-time overhead (:pull:`276`). By `Nathan Miller`_.
+- Added a Neo-Hookian strain energy potential (:pull:`277`). By `Nathan Miller`_.
 
 ******************
 0.8.5 (04-02-2026)
