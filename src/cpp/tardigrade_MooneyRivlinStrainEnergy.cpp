@@ -16,10 +16,9 @@ namespace tardigradeHydra {
      * \param isPrevious: A flag for whether to set the current (false) or previous (true) strain energy
      */
     void MooneyRivlinStrainEnergy::setStrainEnergy(const bool isPrevious) {
-
         NeoHookianStrainEnergy::setStrainEnergy(isPrevious);
 
-        const floatType  Ibar2 = compute_Ibar2<floatType>(isPrevious);
+        const floatType Ibar2 = compute_Ibar2<floatType>(isPrevious);
 
         SetDataStorageBase<floatType> strainEnergy;
 
@@ -30,7 +29,6 @@ namespace tardigradeHydra {
         }
 
         *strainEnergy.value += _C01 * (Ibar2 - 3);
-
     }
 
     /*!
@@ -39,7 +37,6 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true) Jacobians of the strain energy
      */
     void MooneyRivlinStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
-
         NeoHookianStrainEnergy::setStrainEnergyJacobians(isPrevious);
 
         constexpr unsigned int dim = 3;  // TODO: Replace with value from ResidualBase
@@ -58,7 +55,6 @@ namespace tardigradeHydra {
         for (unsigned int iI = 0; iI < dim * dim; ++iI) {
             (*dStrainEnergydFe.value)[iI] += _C01 * dIbar2dFe[iI];
         }
-
     }
 
     /*!
@@ -67,7 +63,6 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true) Hessians of the strain energy
      */
     void MooneyRivlinStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
-
         NeoHookianStrainEnergy::setStrainEnergyHessians(isPrevious);
 
         constexpr unsigned int dim = 3;  // TODO: Replace with value from ResidualBase
@@ -78,15 +73,14 @@ namespace tardigradeHydra {
         SetDataStorageBase<fourthOrderTensor> d2StrainEnergydFe2;
 
         if (isPrevious) {
-            d2StrainEnergydFe2  = get_SetDataStorage_d2PreviousStrainEnergydPreviousFe2();
+            d2StrainEnergydFe2 = get_SetDataStorage_d2PreviousStrainEnergydPreviousFe2();
         } else {
-            d2StrainEnergydFe2  = get_SetDataStorage_d2StrainEnergydFe2();
+            d2StrainEnergydFe2 = get_SetDataStorage_d2StrainEnergydFe2();
         }
 
         for (unsigned int iIjJ = 0; iIjJ < dim * dim * dim * dim; ++iIjJ) {
             (*d2StrainEnergydFe2.value)[iIjJ] += _C01 * d2Ibar2dFe2[iIjJ];
         }
-
     }
 
 }  // namespace tardigradeHydra

@@ -285,8 +285,8 @@ namespace tardigradeHydra {
      * deformation gradient
      *
      * \param isPrevious: Whether to compute the current (false) or previous (true) value
-     * \param dIbar1dFe_begin: The starting iterator of the derivative of the isochoric first invariant of the deformation
-     * with respect to the elastic deformation gradient
+     * \param dIbar1dFe_begin: The starting iterator of the derivative of the isochoric first invariant of the
+     * deformation with respect to the elastic deformation gradient
      * \param dIbar1dFe_end: The stopping iterator of the derivative of the isochoric first invariant of the deformation
      * with respect to the elastic deformation gradient
      */
@@ -328,10 +328,10 @@ namespace tardigradeHydra {
      * deformation gradient
      *
      * \param isPrevious: Whether to compute the current (false) or previous (true) value
-     * \param d2Ibar1dFe2_begin: The starting iterator of the second derivative of the isochoric second invariant of the deformation
-     * with respect to the elastic deformation gradient
-     * \param d2Ibar1dFe2_end: The stopping iterator of the second derivative of the isochoric second invariant of the deformation
-     * with respect to the elastic deformation gradient
+     * \param d2Ibar1dFe2_begin: The starting iterator of the second derivative of the isochoric second invariant of the
+     * deformation with respect to the elastic deformation gradient
+     * \param d2Ibar1dFe2_end: The stopping iterator of the second derivative of the isochoric second invariant of the
+     * deformation with respect to the elastic deformation gradient
      */
     template <class d2Ibar1dFe2_iter>
     void HyperelasticBase::compute_d2Ibar1dFe2(const bool isPrevious, d2Ibar1dFe2_iter d2Ibar1dFe2_begin,
@@ -410,10 +410,10 @@ namespace tardigradeHydra {
      * deformation gradient
      *
      * \param isPrevious: Whether to compute the current (false) or previous (true) value
-     * \param dIbar2dFe_begin: The starting iterator of the derivative of the isochoric second invariant of the deformation
-     * with respect to the elastic deformation gradient
-     * \param dIbar2dFe_end: The stopping iterator of the derivative of the isochoric second invariant of the deformation
-     * with respect to the elastic deformation gradient
+     * \param dIbar2dFe_begin: The starting iterator of the derivative of the isochoric second invariant of the
+     * deformation with respect to the elastic deformation gradient
+     * \param dIbar2dFe_end: The stopping iterator of the derivative of the isochoric second invariant of the
+     * deformation with respect to the elastic deformation gradient
      */
     template <class dIbar2dFe_iter>
     void HyperelasticBase::compute_dIbar2dFe(const bool isPrevious, dIbar2dFe_iter dIbar2dFe_begin,
@@ -453,10 +453,10 @@ namespace tardigradeHydra {
      * deformation gradient
      *
      * \param isPrevious: Whether to compute the current (false) or previous (true) value
-     * \param d2Ibar2dFe2_begin: The starting iterator of the second derivative of the isochoric second invariant of the deformation
-     * with respect to the elastic deformation gradient
-     * \param d2Ibar2dFe2_end: The stopping iterator of the second derivative of the isochoric second invariant of the deformation
-     * with respect to the elastic deformation gradient
+     * \param d2Ibar2dFe2_begin: The starting iterator of the second derivative of the isochoric second invariant of the
+     * deformation with respect to the elastic deformation gradient
+     * \param d2Ibar2dFe2_end: The stopping iterator of the second derivative of the isochoric second invariant of the
+     * deformation with respect to the elastic deformation gradient
      */
     template <class d2Ibar2dFe2_iter>
     void HyperelasticBase::compute_d2Ibar2dFe2(const bool isPrevious, d2Ibar2dFe2_iter d2Ibar2dFe2_begin,
