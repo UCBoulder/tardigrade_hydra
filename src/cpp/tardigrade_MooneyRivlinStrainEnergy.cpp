@@ -39,7 +39,7 @@ namespace tardigradeHydra {
     void MooneyRivlinStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
         NeoHookianStrainEnergy::setStrainEnergyJacobians(isPrevious);
 
-        std::array<floatType, dimension * dimension > dIbar2dFe{};
+        std::array<floatType, dimension * dimension> dIbar2dFe{};
         compute_dIbar2dFe(isPrevious, std::begin(dIbar2dFe), std::end(dIbar2dFe));
 
         SetDataStorageBase<secondOrderTensor> dStrainEnergydFe;
@@ -63,7 +63,7 @@ namespace tardigradeHydra {
     void MooneyRivlinStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
         NeoHookianStrainEnergy::setStrainEnergyHessians(isPrevious);
 
-        std::array<floatType, dimension * dimension * dimension * dimension > d2Ibar2dFe2{};
+        std::array<floatType, dimension * dimension * dimension * dimension> d2Ibar2dFe2{};
         compute_d2Ibar2dFe2(isPrevious, std::begin(d2Ibar2dFe2), std::end(d2Ibar2dFe2));
 
         SetDataStorageBase<fourthOrderTensor> d2StrainEnergydFe2;

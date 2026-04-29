@@ -157,8 +157,8 @@ namespace tardigradeHydra {
              * the stress-measure's configuration \param tol: The tolerance used to prevent nans in the Jacobians
              */
 
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH(computeDruckerPragerInternalParameters(frictionAngle, beta, AAngle, BAngle));
@@ -181,16 +181,19 @@ namespace tardigradeHydra {
                 referenceStressMeasure, rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                 dDevStressdRCG, dPressuredStress, dPressuredRCG));
 
-            auto map_dDevStressdRCG  = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdRCG.data());
-            auto map_dPressuredRCG   = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPressuredRCG.data());
-            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dRCGdPrecedingF.data());
+            auto map_dDevStressdRCG =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdRCG.data());
+            auto map_dPressuredRCG = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPressuredRCG.data());
+            auto map_dRCGdPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dRCGdPrecedingF.data());
 
             fourthOrderTensor dDevStressdPrecedingF(sot_dimension * sot_dimension);
             secondOrderTensor dPressuredPrecedingF(sot_dimension);
 
             auto map_dDevStressdPrecedingF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdPrecedingF.data());
-            auto map_dPressuredPrecedingF = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPressuredPrecedingF.data());
+            auto map_dPressuredPrecedingF =
+                getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPressuredPrecedingF.data());
 
             map_dDevStressdPrecedingF = (map_dDevStressdRCG * map_dRCGdPrecedingF).eval();
             map_dPressuredPrecedingF  = (map_dPressuredRCG * map_dRCGdPrecedingF).eval();
@@ -205,7 +208,8 @@ namespace tardigradeHydra {
             secondOrderTensor devStressDirection = deviatoricReferenceStress / (normDevStress + tol);
 
             auto map_devStressDirection = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(devStressDirection.data());
-            auto map_dDevStressdStress  = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdStress.data());
+            auto map_dDevStressdStress =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdStress.data());
 
             dFdStress = BAngle * dPressuredStress;
 
@@ -307,16 +311,19 @@ namespace tardigradeHydra {
                 stressMeasure, rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress, dDevStressdRCG,
                 dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG))
 
-            auto map_dDevStressdRCG  = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdRCG.data());
-            auto map_dPressuredRCG   = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPressuredRCG.data());
-            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dRCGdPrecedingF.data());
+            auto map_dDevStressdRCG =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdRCG.data());
+            auto map_dPressuredRCG = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPressuredRCG.data());
+            auto map_dRCGdPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dRCGdPrecedingF.data());
 
             fourthOrderTensor dDevStressdPrecedingF(sot_dimension * sot_dimension);
             secondOrderTensor dPressuredPrecedingF(sot_dimension);
 
             auto map_dDevStressdPrecedingF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdPrecedingF.data());
-            auto map_dPressuredPrecedingF = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPressuredPrecedingF.data());
+            auto map_dPressuredPrecedingF =
+                getFixedSizeMatrixMap<floatType, 1, sot_dimension>(dPressuredPrecedingF.data());
 
             map_dDevStressdPrecedingF = (map_dDevStressdRCG * map_dRCGdPrecedingF).eval();
             map_dPressuredPrecedingF  = (map_dPressuredRCG * map_dRCGdPrecedingF).eval();
@@ -350,7 +357,8 @@ namespace tardigradeHydra {
             secondOrderTensor devStressDirection = deviatoricReferenceStress / (normDevStress + tol);
 
             auto map_devStressDirection = getFixedSizeMatrixMap<floatType, 1, sot_dimension>(devStressDirection.data());
-            auto map_dDevStressdStress  = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdStress.data());
+            auto map_dDevStressdStress =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dDevStressdStress.data());
 
             dFdStress = BAngle * dPressuredStress;
 
@@ -514,11 +522,11 @@ namespace tardigradeHydra {
 
             Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > dDevStressdRCG_mat(
                 dDevStressdRCG.data(), tot_dimension, sot_dimension);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > dDevStressdPrecedingF_mat(
-                dDevStressdPrecedingF.data(), tot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> >
+                dDevStressdPrecedingF_mat(dDevStressdPrecedingF.data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dPressuredRCG_mat(dPressuredRCG.data(),
-                                                                                                   dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dPressuredRCG_mat(
+                dPressuredRCG.data(), dimension, sot_dimension);
             Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dPressuredPrecedingF_mat(
                 dPressuredPrecedingF.data(), dimension, sot_dimension);
 
@@ -537,13 +545,13 @@ namespace tardigradeHydra {
             // Construct the Jacobians
             dFdStress = BAngle * dPressuredStress;
 
-            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension, Eigen::RowMajor> > dNormDevStressdDevStress_mat(
-                dNormDevStressdDevStress.data(), dimension, tot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension, Eigen::RowMajor> >
+                dNormDevStressdDevStress_mat(dNormDevStressdDevStress.data(), dimension, tot_dimension);
 
             Eigen::Map<Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> > dDevStressdStress_mat(
                 dDevStressdStress.data(), tot_dimension, tot_dimension);
-            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension, Eigen::RowMajor> > dFdStress_mat(dFdStress.data(), dimension,
-                                                                                               tot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension, Eigen::RowMajor> > dFdStress_mat(
+                dFdStress.data(), dimension, tot_dimension);
 
             dFdStress_mat = (dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat).eval();
 
@@ -554,8 +562,8 @@ namespace tardigradeHydra {
 
             dFdPrecedingF = BAngle * dPressuredPrecedingF;
 
-            Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dFdPrecedingF_mat(dFdPrecedingF.data(),
-                                                                                                   dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dFdPrecedingF_mat(
+                dFdPrecedingF.data(), dimension, sot_dimension);
 
             dFdPrecedingF_mat = (dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat).eval();
         }
@@ -635,11 +643,11 @@ namespace tardigradeHydra {
 
             Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > dDevStressdRCG_mat(
                 dDevStressdRCG.data(), tot_dimension, sot_dimension);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > dDevStressdPrecedingF_mat(
-                dDevStressdPrecedingF.data(), tot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> >
+                dDevStressdPrecedingF_mat(dDevStressdPrecedingF.data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dPressuredRCG_mat(dPressuredRCG.data(),
-                                                                                                   dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dPressuredRCG_mat(
+                dPressuredRCG.data(), dimension, sot_dimension);
             Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dPressuredPrecedingF_mat(
                 dPressuredPrecedingF.data(), dimension, sot_dimension);
 
@@ -650,15 +658,15 @@ namespace tardigradeHydra {
 
             sixthOrderTensor d2PressuredStressdPrecedingF(dimension * tot_dimension * sot_dimension, 0);
 
-            Eigen::Map<Eigen::Matrix<floatType, siot_dimension, sot_dimension, Eigen::RowMajor> > d2DevStressdStressdRCG_mat(
-                d2DevStressdStressdRCG.data(), siot_dimension, sot_dimension);
-            Eigen::Map<Eigen::Matrix<floatType, siot_dimension, sot_dimension, Eigen::RowMajor> > d2DevStressdStressdPrecedingF_mat(
-                d2DevStressdStressdPrecedingF.data(), siot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, siot_dimension, sot_dimension, Eigen::RowMajor> >
+                d2DevStressdStressdRCG_mat(d2DevStressdStressdRCG.data(), siot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, siot_dimension, sot_dimension, Eigen::RowMajor> >
+                d2DevStressdStressdPrecedingF_mat(d2DevStressdStressdPrecedingF.data(), siot_dimension, sot_dimension);
 
-            Eigen::Map<Eigen::Matrix<floatType, fot_dimension, sot_dimension, Eigen::RowMajor> > d2PressuredStressdRCG_mat(
-                d2PressuredStressdRCG.data(), fot_dimension, sot_dimension);
-            Eigen::Map<Eigen::Matrix<floatType, fot_dimension, sot_dimension, Eigen::RowMajor> > d2PressuredStressdPrecedingF_mat(
-                d2PressuredStressdPrecedingF.data(), fot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, fot_dimension, sot_dimension, Eigen::RowMajor> >
+                d2PressuredStressdRCG_mat(d2PressuredStressdRCG.data(), fot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, fot_dimension, sot_dimension, Eigen::RowMajor> >
+                d2PressuredStressdPrecedingF_mat(d2PressuredStressdPrecedingF.data(), fot_dimension, sot_dimension);
 
             d2DevStressdStressdPrecedingF_mat = (d2DevStressdStressdRCG_mat * dRCGdPrecedingF_mat).eval();
             d2PressuredStressdPrecedingF_mat  = (d2PressuredStressdRCG_mat * dRCGdPrecedingF_mat).eval();
@@ -676,13 +684,13 @@ namespace tardigradeHydra {
             // Construct the Jacobians
             dFdStress = BAngle * dPressuredStress;
 
-            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension, Eigen::RowMajor> > dNormDevStressdDevStress_mat(
-                dNormDevStressdDevStress.data(), dimension, tot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension, Eigen::RowMajor> >
+                dNormDevStressdDevStress_mat(dNormDevStressdDevStress.data(), dimension, tot_dimension);
 
             Eigen::Map<Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> > dDevStressdStress_mat(
                 dDevStressdStress.data(), tot_dimension, tot_dimension);
-            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension, Eigen::RowMajor> > dFdStress_mat(dFdStress.data(), dimension,
-                                                                                               tot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension, Eigen::RowMajor> > dFdStress_mat(
+                dFdStress.data(), dimension, tot_dimension);
 
             dFdStress_mat = (dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat).eval();
 
@@ -693,8 +701,8 @@ namespace tardigradeHydra {
 
             dFdPrecedingF = BAngle * dPressuredPrecedingF;
 
-            Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dFdPrecedingF_mat(dFdPrecedingF.data(),
-                                                                                                   dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, sot_dimension, Eigen::RowMajor> > dFdPrecedingF_mat(
+                dFdPrecedingF.data(), dimension, sot_dimension);
 
             dFdPrecedingF_mat = (dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat).eval();
 
@@ -708,8 +716,9 @@ namespace tardigradeHydra {
             for (unsigned int KLMN = 0; KLMN < fot_dimension; KLMN++) {
                 for (unsigned int ABC = 0; ABC < tot_dimension; ABC++) {
                     for (unsigned int OP = 0; OP < sot_dimension; OP++) {
-                        temp_siot1[sot_dimension * KLMN + OP] += d2NormDevStressdDevStress2[tot_dimension * KLMN + ABC] *
-                                                           dDevStressdPrecedingF[dimension * dimension * ABC + OP];
+                        temp_siot1[sot_dimension * KLMN + OP] +=
+                            d2NormDevStressdDevStress2[tot_dimension * KLMN + ABC] *
+                            dDevStressdPrecedingF[dimension * dimension * ABC + OP];
                     }
                 }
             }
@@ -730,7 +739,8 @@ namespace tardigradeHydra {
                     for (unsigned int LMN = 0; LMN < tot_dimension; LMN++) {
                         for (unsigned int OPQ = 0; OPQ < tot_dimension; OPQ++) {
                             temp_seot1[tot_dimension * tot_dimension * K + tot_dimension * LMN + OPQ] +=
-                                d2NormDevStressdDevStress2[tot_dimension * tot_dimension * K + tot_dimension * ABC + OPQ] *
+                                d2NormDevStressdDevStress2[tot_dimension * tot_dimension * K + tot_dimension * ABC +
+                                                           OPQ] *
                                 dDevStressdStress[tot_dimension * ABC + LMN];
                         }
                     }
@@ -751,10 +761,11 @@ namespace tardigradeHydra {
 
             d2FdStressdPrecedingF += BAngle * d2PressuredStressdPrecedingF;
 
-            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension * sot_dimension, Eigen::RowMajor> > d2FdStressdPrecedingF_mat(
-                d2FdStressdPrecedingF.data(), dimension, tot_dimension * sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, tot_dimension * sot_dimension, Eigen::RowMajor> >
+                d2FdStressdPrecedingF_mat(d2FdStressdPrecedingF.data(), dimension, tot_dimension * sot_dimension);
             Eigen::Map<Eigen::Matrix<floatType, tot_dimension, tot_dimension * sot_dimension, Eigen::RowMajor> >
-                d2DevStressdStressdPrecedingF_mat2(d2DevStressdStressdPrecedingF.data(), tot_dimension, tot_dimension * sot_dimension);
+                d2DevStressdStressdPrecedingF_mat2(d2DevStressdStressdPrecedingF.data(), tot_dimension,
+                                                   tot_dimension * sot_dimension);
 
             d2FdStressdPrecedingF_mat =
                 (d2FdStressdPrecedingF_mat + dNormDevStressdDevStress_mat * d2DevStressdStressdPrecedingF_mat2).eval();
@@ -798,9 +809,10 @@ namespace tardigradeHydra {
             for (unsigned int Bb = 0; Bb < dimension; Bb++) {
                 for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                     for (unsigned int Lb = 0; Lb < dimension; Lb++) {
-                        plasticMacroVelocityGradient[dimension * Bb + Kb] += inverseElasticRightCauchyGreen[dimension * Bb + Lb] *
-                                                                       (macroGamma * macroFlowDirection[dimension * Kb + Lb] +
-                                                                        microGamma * microFlowDirection[dimension * Kb + Lb]);
+                        plasticMacroVelocityGradient[dimension * Bb + Kb] +=
+                            inverseElasticRightCauchyGreen[dimension * Bb + Lb] *
+                            (macroGamma * macroFlowDirection[dimension * Kb + Lb] +
+                             microGamma * microFlowDirection[dimension * Kb + Lb]);
                     }
                 }
             }
@@ -847,10 +859,12 @@ namespace tardigradeHydra {
                 for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                     for (unsigned int Lb = 0; Lb < dimension; Lb++) {
                         dPlasticMacroLdMacroGamma[dimension * Bb + Kb] +=
-                            inverseElasticRightCauchyGreen[dimension * Bb + Lb] * macroFlowDirection[dimension * Kb + Lb];
+                            inverseElasticRightCauchyGreen[dimension * Bb + Lb] *
+                            macroFlowDirection[dimension * Kb + Lb];
 
                         dPlasticMacroLdMicroGamma[dimension * Bb + Kb] +=
-                            inverseElasticRightCauchyGreen[dimension * Bb + Lb] * microFlowDirection[dimension * Kb + Lb];
+                            inverseElasticRightCauchyGreen[dimension * Bb + Lb] *
+                            microFlowDirection[dimension * Kb + Lb];
                     }
                 }
             }
@@ -904,14 +918,17 @@ namespace tardigradeHydra {
             for (unsigned int Bb = 0; Bb < dimension; Bb++) {
                 for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                     for (unsigned int Ob = 0; Ob < dimension; Ob++) {
-                        dPlasticMacroLdMacroFlowDirection[dimension * sot_dimension * Bb + sot_dimension * Kb + dimension * Kb + Ob] +=
+                        dPlasticMacroLdMacroFlowDirection[dimension * sot_dimension * Bb + sot_dimension * Kb +
+                                                          dimension * Kb + Ob] +=
                             macroGamma * inverseElasticRightCauchyGreen[dimension * Bb + Ob];
 
-                        dPlasticMacroLdMicroFlowDirection[dimension * sot_dimension * Bb + sot_dimension * Kb + dimension * Kb + Ob] +=
+                        dPlasticMacroLdMicroFlowDirection[dimension * sot_dimension * Bb + sot_dimension * Kb +
+                                                          dimension * Kb + Ob] +=
                             microGamma * inverseElasticRightCauchyGreen[dimension * Bb + Ob];
 
                         for (unsigned int Pb = 0; Pb < dimension; Pb++) {
-                            dPlasticMacroLdElasticRCG[dimension * sot_dimension * Bb + sot_dimension * Kb + dimension * Ob + Pb] -=
+                            dPlasticMacroLdElasticRCG[dimension * sot_dimension * Bb + sot_dimension * Kb +
+                                                      dimension * Ob + Pb] -=
                                 inverseElasticRightCauchyGreen[dimension * Bb + Ob] *
                                 plasticMacroVelocityGradient[dimension * Pb + Kb];
                         }
@@ -946,8 +963,8 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(elasticMicroRightCauchyGreen.size() == sot_dimension,
                                          "The elastic micro right Cauchy-Green deformation tensor is not 3D");
@@ -971,8 +988,9 @@ namespace tardigradeHydra {
             for (unsigned int Bb = 0; Bb < dimension; Bb++) {
                 for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                     for (unsigned int Lb = 0; Lb < dimension; Lb++) {
-                        plasticMicroVelocityGradient[dimension * Bb + Kb] +=
-                            microGamma * inverseElasticPsi[dimension * Bb + Lb] * microFlowDirection[dimension * Kb + Lb];
+                        plasticMicroVelocityGradient[dimension * Bb + Kb] += microGamma *
+                                                                             inverseElasticPsi[dimension * Bb + Lb] *
+                                                                             microFlowDirection[dimension * Kb + Lb];
                     }
                 }
             }
@@ -1114,9 +1132,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int fot_dimension   = sot_dimension * sot_dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int fot_dimension = sot_dimension * sot_dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
@@ -1142,8 +1160,8 @@ namespace tardigradeHydra {
             for (unsigned int Ob = 0; Ob < dimension; Ob++) {
                 for (unsigned int Bb = 0; Bb < dimension; Bb++) {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
-                        temp_sot1[dimension * Bb + Kb] -=
-                            microGamma * inverseElasticPsi[dimension * Ob + Kb] * elasticMicroRightCauchyGreen[dimension * Ob + Bb];
+                        temp_sot1[dimension * Bb + Kb] -= microGamma * inverseElasticPsi[dimension * Ob + Kb] *
+                                                          elasticMicroRightCauchyGreen[dimension * Ob + Bb];
 
                         temp_sot1a[dimension * Bb + Kb] +=
                             microFlowDirection[dimension * Ob + Bb] * inverseElasticPsi[dimension * Kb + Ob];
@@ -1154,7 +1172,8 @@ namespace tardigradeHydra {
             for (unsigned int Ob = 0; Ob < dimension; Ob++) {
                 for (unsigned int Bb = 0; Bb < dimension; Bb++) {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
-                        temp_sot1b[dimension * Bb + Kb] += inverseElasticPsi[dimension * Bb + Ob] * temp_sot1a[dimension * Ob + Kb];
+                        temp_sot1b[dimension * Bb + Kb] +=
+                            inverseElasticPsi[dimension * Bb + Ob] * temp_sot1a[dimension * Ob + Kb];
                     }
                 }
             }
@@ -1164,15 +1183,19 @@ namespace tardigradeHydra {
             for (unsigned int Bb = 0; Bb < dimension; Bb++) {
                 for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                     for (unsigned int Ob = 0; Ob < dimension; Ob++) {
-                        dPlasticMicroLdElasticMicroRCG[dimension * sot_dimension * Bb + sot_dimension * Kb + dimension * Ob + Kb] +=
+                        dPlasticMicroLdElasticMicroRCG[dimension * sot_dimension * Bb + sot_dimension * Kb +
+                                                       dimension * Ob + Kb] +=
                             microGamma * temp_sot1b[dimension * Bb + Ob];
 
                         for (unsigned int Pb = 0; Pb < dimension; Pb++) {
-                            dPlasticMicroLdElasticPsi[dimension * sot_dimension * Bb + sot_dimension * Kb + dimension * Ob + Pb] +=
+                            dPlasticMicroLdElasticPsi[dimension * sot_dimension * Bb + sot_dimension * Kb +
+                                                      dimension * Ob + Pb] +=
                                 temp_sot1[dimension * Kb + Ob] * temp_sot1b[dimension * Bb + Pb] -
-                                inverseElasticPsi[dimension * Bb + Ob] * plasticMicroVelocityGradient[dimension * Pb + Kb];
+                                inverseElasticPsi[dimension * Bb + Ob] *
+                                    plasticMicroVelocityGradient[dimension * Pb + Kb];
 
-                            dPlasticMicroLdMicroFlowDirection[dimension * sot_dimension * Bb + sot_dimension * Kb + dimension * Ob + Pb] -=
+                            dPlasticMicroLdMicroFlowDirection[dimension * sot_dimension * Bb + sot_dimension * Kb +
+                                                              dimension * Ob + Pb] -=
                                 inverseElasticPsi[dimension * Bb + Pb] * temp_sot1[dimension * Kb + Ob];
                         }
                     }
@@ -1243,9 +1266,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = sot_dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(microGradientGamma.size() == dimension,
                                          "The micro gradient plastic multiplier must have a length of 3");
@@ -1278,7 +1301,8 @@ namespace tardigradeHydra {
 
                         for (unsigned int Cb = 0; Cb < dimension; Cb++) {
                             temp_tot[dimension * dimension * Db + dimension * Kb + Cb] -=
-                                inverseElasticPsi[dimension * Db + Mb] * elasticGamma[dimension * dimension * Mb + dimension * Kb + Cb];
+                                inverseElasticPsi[dimension * Db + Mb] *
+                                elasticGamma[dimension * dimension * Mb + dimension * Kb + Cb];
                         }
                     }
                 }
@@ -1289,8 +1313,10 @@ namespace tardigradeHydra {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                         for (unsigned int Cb = 0; Cb < dimension; Cb++) {
                             skewTerm[dimension * dimension * Db + dimension * Mb + Kb] +=
-                                temp_sot[dimension * Db + Cb] * elasticGamma[dimension * dimension * Cb + dimension * Mb + Kb] +
-                                plasticMicroVelocityGradient[dimension * Cb + Mb] * temp_tot[dimension * dimension * Db + dimension * Cb + Kb];
+                                temp_sot[dimension * Db + Cb] *
+                                    elasticGamma[dimension * dimension * Cb + dimension * Mb + Kb] +
+                                plasticMicroVelocityGradient[dimension * Cb + Mb] *
+                                    temp_tot[dimension * dimension * Db + dimension * Cb + Kb];
                         }
                     }
                 }
@@ -1306,8 +1332,10 @@ namespace tardigradeHydra {
                         for (unsigned int Lb = 0; Lb < dimension; Lb++) {
                             temp_tot[dimension * dimension * Nb + dimension * Mb + Kb] +=
                                 microGradientGamma[Lb] *
-                                    microGradientFlowDirection[dimension * dimension * dimension * Lb + dimension * dimension * Mb + dimension * Kb + Nb] +
-                                elasticPsi[dimension * Kb + Lb] * skewTerm[dimension * dimension * Lb + dimension * Nb + Mb];
+                                    microGradientFlowDirection[dimension * dimension * dimension * Lb +
+                                                               dimension * dimension * Mb + dimension * Kb + Nb] +
+                                elasticPsi[dimension * Kb + Lb] *
+                                    skewTerm[dimension * dimension * Lb + dimension * Nb + Mb];
                         }
                     }
                 }
@@ -1318,7 +1346,8 @@ namespace tardigradeHydra {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                         for (unsigned int Lb = 0; Lb < dimension; Lb++) {
                             plasticMicroGradientVelocityGradient[dimension * dimension * Nb + dimension * Mb + Kb] +=
-                                inverseElasticPsi[dimension * Nb + Lb] * temp_tot[dimension * dimension * Mb + dimension * Kb + Lb];
+                                inverseElasticPsi[dimension * Nb + Lb] *
+                                temp_tot[dimension * dimension * Mb + dimension * Kb + Lb];
                         }
                     }
                 }
@@ -1402,9 +1431,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = sot_dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
@@ -1423,18 +1452,24 @@ namespace tardigradeHydra {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                         for (unsigned int Ob = 0; Ob < dimension; Ob++) {
                             for (unsigned int Pb = 0; Pb < dimension; Pb++) {
-                                dPlasticMicroGradientLdMicroGradientGamma[dimension * dimension * dimension * Lb + dimension * dimension * Mb +
-                                                                          dimension * Kb + Ob] +=
+                                dPlasticMicroGradientLdMicroGradientGamma[dimension * dimension * dimension * Lb +
+                                                                          dimension * dimension * Mb + dimension * Kb +
+                                                                          Ob] +=
                                     inverseElasticPsi[dimension * Lb + Pb] *
-                                    microGradientFlowDirection[dimension * dimension * dimension * Ob + dimension * dimension * Kb + dimension * Pb + Mb];
+                                    microGradientFlowDirection[dimension * dimension * dimension * Ob +
+                                                               dimension * dimension * Kb + dimension * Pb + Mb];
 
-                                dPlasticMicroGradientLdPlasticMicroL[dimension * dimension * sot_dimension * Lb + dimension * sot_dimension * Mb +
+                                dPlasticMicroGradientLdPlasticMicroL[dimension * dimension * sot_dimension * Lb +
+                                                                     dimension * sot_dimension * Mb +
                                                                      sot_dimension * Kb + dimension * Lb + Ob] +=
-                                    inverseElasticPsi[dimension * Ob + Pb] * elasticGamma[dimension * dimension * Pb + dimension * Mb + Kb];
+                                    inverseElasticPsi[dimension * Ob + Pb] *
+                                    elasticGamma[dimension * dimension * Pb + dimension * Mb + Kb];
 
-                                dPlasticMicroGradientLdPlasticMicroL[dimension * dimension * sot_dimension * Lb + dimension * sot_dimension * Mb +
+                                dPlasticMicroGradientLdPlasticMicroL[dimension * dimension * sot_dimension * Lb +
+                                                                     dimension * sot_dimension * Mb +
                                                                      sot_dimension * Kb + dimension * Ob + Mb] -=
-                                    inverseElasticPsi[dimension * Lb + Pb] * elasticGamma[dimension * dimension * Pb + dimension * Ob + Kb];
+                                    inverseElasticPsi[dimension * Lb + Pb] *
+                                    elasticGamma[dimension * dimension * Pb + dimension * Ob + Kb];
                             }
                         }
                     }
@@ -1483,9 +1518,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = sot_dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             thirdOrderTensor skewTerm;
             TARDIGRADE_ERROR_TOOLS_CATCH(
@@ -1501,7 +1536,8 @@ namespace tardigradeHydra {
 
             dPlasticMicroGradientLdElasticGamma = sixthOrderTensor(tot_dimension * tot_dimension, 0);
 
-            dPlasticMicroGradientLdMicroGradientFlowDirection = seventhOrderTensor(tot_dimension * dimension * tot_dimension, 0);
+            dPlasticMicroGradientLdMicroGradientFlowDirection =
+                seventhOrderTensor(tot_dimension * dimension * tot_dimension, 0);
 
             secondOrderTensor temp_sot1(sot_dimension, 0);
 
@@ -1517,7 +1553,8 @@ namespace tardigradeHydra {
 
                         for (unsigned int Ob = 0; Ob < dimension; Ob++) {
                             temp_tot1[dimension * dimension * Db + dimension * Kb + Ob] +=
-                                inverseElasticPsi[dimension * Db + Mb] * elasticGamma[dimension * dimension * Mb + dimension * Kb + Ob];
+                                inverseElasticPsi[dimension * Db + Mb] *
+                                elasticGamma[dimension * dimension * Mb + dimension * Kb + Ob];
                         }
                     }
                 }
@@ -1528,7 +1565,8 @@ namespace tardigradeHydra {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                         for (unsigned int Ob = 0; Ob < dimension; Ob++) {
                             temp_tot2[dimension * dimension * Db + dimension * Kb + Ob] +=
-                                plasticMicroVelocityGradient[dimension * Mb + Kb] * temp_tot1[dimension * dimension * Db + dimension * Mb + Ob];
+                                plasticMicroVelocityGradient[dimension * Mb + Kb] *
+                                temp_tot1[dimension * dimension * Db + dimension * Mb + Ob];
                         }
                     }
                 }
@@ -1538,30 +1576,41 @@ namespace tardigradeHydra {
                 for (unsigned int Mb = 0; Mb < dimension; Mb++) {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
                         for (unsigned int Ob = 0; Ob < dimension; Ob++) {
-                            dPlasticMicroGradientLdElasticGamma[dimension * dimension * tot_dimension * Db + dimension * tot_dimension * Mb +
-                                                                tot_dimension * Kb + dimension * dimension * Ob + dimension * Mb + Kb] +=
+                            dPlasticMicroGradientLdElasticGamma[dimension * dimension * tot_dimension * Db +
+                                                                dimension * tot_dimension * Mb + tot_dimension * Kb +
+                                                                dimension * dimension * Ob + dimension * Mb + Kb] +=
                                 temp_sot1[dimension * Db + Ob];
 
                             for (unsigned int Pb = 0; Pb < dimension; Pb++) {
-                                dPlasticMicroGradientLdElasticPsi[dimension * dimension * sot_dimension * Db + dimension * sot_dimension * Mb +
-                                                                  sot_dimension * Kb + dimension * Ob + Pb] +=
+                                dPlasticMicroGradientLdElasticPsi[dimension * dimension * sot_dimension * Db +
+                                                                  dimension * sot_dimension * Mb + sot_dimension * Kb +
+                                                                  dimension * Ob + Pb] +=
                                     inverseElasticPsi[dimension * Db + Ob] *
                                     (skewTerm[dimension * dimension * Pb + dimension * Mb + Kb] -
-                                     plasticMicroGradientVelocityGradient[dimension * dimension * Pb + dimension * Mb + Kb]);
+                                     plasticMicroGradientVelocityGradient[dimension * dimension * Pb + dimension * Mb +
+                                                                          Kb]);
 
-                                dPlasticMicroGradientLdElasticGamma[dimension * dimension * tot_dimension * Db + dimension * tot_dimension * Mb +
-                                                                    tot_dimension * Kb + dimension * dimension * Ob + dimension * Pb + Kb] -=
-                                    plasticMicroVelocityGradient[dimension * Pb + Mb] * inverseElasticPsi[dimension * Db + Ob];
+                                dPlasticMicroGradientLdElasticGamma[dimension * dimension * tot_dimension * Db +
+                                                                    dimension * tot_dimension * Mb +
+                                                                    tot_dimension * Kb + dimension * dimension * Ob +
+                                                                    dimension * Pb + Kb] -=
+                                    plasticMicroVelocityGradient[dimension * Pb + Mb] *
+                                    inverseElasticPsi[dimension * Db + Ob];
 
                                 dPlasticMicroGradientLdMicroGradientFlowDirection
-                                    [dimension * dimension * tot_dimension * dimension * Db + dimension * tot_dimension * dimension * Mb + tot_dimension * dimension * Kb +
-                                     dimension * dimension * dimension * Ob + dimension * dimension * Kb + dimension * Pb + Mb] +=
+                                    [dimension * dimension * tot_dimension * dimension * Db +
+                                     dimension * tot_dimension * dimension * Mb + tot_dimension * dimension * Kb +
+                                     dimension * dimension * dimension * Ob + dimension * dimension * Kb +
+                                     dimension * Pb + Mb] +=
                                     inverseElasticPsi[dimension * Db + Pb] * microGradientGamma[Ob];
 
-                                dPlasticMicroGradientLdElasticPsi[dimension * dimension * sot_dimension * Db + dimension * sot_dimension * Mb +
-                                                                  sot_dimension * Kb + dimension * Ob + Pb] +=
-                                    inverseElasticPsi[dimension * Db + Ob] * temp_tot2[dimension * dimension * Pb + dimension * Mb + Kb] -
-                                    temp_sot1[dimension * Db + Ob] * temp_tot1[dimension * dimension * Pb + dimension * Mb + Kb];
+                                dPlasticMicroGradientLdElasticPsi[dimension * dimension * sot_dimension * Db +
+                                                                  dimension * sot_dimension * Mb + sot_dimension * Kb +
+                                                                  dimension * Ob + Pb] +=
+                                    inverseElasticPsi[dimension * Db + Ob] *
+                                        temp_tot2[dimension * dimension * Pb + dimension * Mb + Kb] -
+                                    temp_sot1[dimension * Db + Ob] *
+                                        temp_tot1[dimension * dimension * Pb + dimension * Mb + Kb];
                             }
                         }
                     }
@@ -1603,10 +1652,10 @@ namespace tardigradeHydra {
             const parameterType implicit_mult = Dt * alpha;
             const parameterType explicit_mult = Dt * (1 - alpha);
 
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = dimension * dimension * dimension;
-            constexpr unsigned int fot_dimension   = dimension * dimension * dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = dimension * dimension * dimension;
+            constexpr unsigned int fot_dimension = dimension * dimension * dimension * dimension;
 
             // Declare the local variables
             std::array<floatType, sot_dimension> LHS, invLHS;
@@ -1626,12 +1675,14 @@ namespace tardigradeHydra {
                 for (unsigned int Kbar = 0; Kbar < dimension; ++Kbar) {
                     for (unsigned int A = 0; A < dimension; ++A) {
                         for (unsigned int B = 0; B < dimension; ++B) {
-                            temp1[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar + dimension * A + B] +=
-                                implicit_mult * currentPlasticMicroDeformation[dimension * Jbar + A] *
-                                currentPlasticDeformationGradient[3 * Kbar + B];
-                            temp2[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar + dimension * A + B] +=
-                                explicit_mult * previousPlasticMicroDeformation[dimension * Jbar + A] *
-                                previousPlasticDeformationGradient[3 * Kbar + B];
+                            temp1[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar +
+                                  dimension * A + B] += implicit_mult *
+                                                        currentPlasticMicroDeformation[dimension * Jbar + A] *
+                                                        currentPlasticDeformationGradient[3 * Kbar + B];
+                            temp2[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar +
+                                  dimension * A + B] += explicit_mult *
+                                                        previousPlasticMicroDeformation[dimension * Jbar + A] *
+                                                        previousPlasticDeformationGradient[3 * Kbar + B];
                         }
                     }
                 }
@@ -1654,9 +1705,9 @@ namespace tardigradeHydra {
 
                 for (unsigned int Jbar = 0; Jbar < dimension; ++Jbar) {
                     for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
-                        RHS[sot_dimension * Ibar + AB] += explicit_mult *
-                                                    previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
-                                                    previousGradientPlasticMicroDeformation[sot_dimension * Jbar + AB];
+                        RHS[sot_dimension * Ibar + AB] +=
+                            explicit_mult * previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
+                            previousGradientPlasticMicroDeformation[sot_dimension * Jbar + AB];
                     }
                 }
             }
@@ -1729,10 +1780,10 @@ namespace tardigradeHydra {
             const parameterType implicit_mult = Dt * alpha;
             const parameterType explicit_mult = Dt * (1 - alpha);
 
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = dimension * dimension * dimension;
-            constexpr unsigned int fot_dimension   = dimension * dimension * dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = dimension * dimension * dimension;
+            constexpr unsigned int fot_dimension = dimension * dimension * dimension * dimension;
 
             // Declare the local variables
             std::array<floatType, sot_dimension> LHS, invLHS;
@@ -1754,12 +1805,14 @@ namespace tardigradeHydra {
                 for (unsigned int Kbar = 0; Kbar < dimension; ++Kbar) {
                     for (unsigned int A = 0; A < dimension; ++A) {
                         for (unsigned int B = 0; B < dimension; ++B) {
-                            temp1[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar + dimension * A + B] +=
-                                implicit_mult * currentPlasticMicroDeformation[dimension * Jbar + A] *
-                                currentPlasticDeformationGradient[3 * Kbar + B];
-                            temp2[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar + dimension * A + B] +=
-                                explicit_mult * previousPlasticMicroDeformation[dimension * Jbar + A] *
-                                previousPlasticDeformationGradient[3 * Kbar + B];
+                            temp1[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar +
+                                  dimension * A + B] += implicit_mult *
+                                                        currentPlasticMicroDeformation[dimension * Jbar + A] *
+                                                        currentPlasticDeformationGradient[3 * Kbar + B];
+                            temp2[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar +
+                                  dimension * A + B] += explicit_mult *
+                                                        previousPlasticMicroDeformation[dimension * Jbar + A] *
+                                                        previousPlasticDeformationGradient[3 * Kbar + B];
                         }
                     }
                 }
@@ -1782,9 +1835,9 @@ namespace tardigradeHydra {
 
                 for (unsigned int Jbar = 0; Jbar < dimension; ++Jbar) {
                     for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
-                        RHS[sot_dimension * Ibar + AB] += explicit_mult *
-                                                    previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
-                                                    previousGradientPlasticMicroDeformation[sot_dimension * Jbar + AB];
+                        RHS[sot_dimension * Ibar + AB] +=
+                            explicit_mult * previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
+                            previousGradientPlasticMicroDeformation[sot_dimension * Jbar + AB];
                     }
                 }
             }
@@ -1806,18 +1859,20 @@ namespace tardigradeHydra {
             for (unsigned int Ibar = 0; Ibar < dimension; ++Ibar) {
                 for (unsigned int Kbar = 0; Kbar < dimension; ++Kbar) {
                     for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
-                        temp3[sot_dimension * Ibar + AB] += implicit_mult * invLHS[dimension * Ibar + Kbar] *
-                                                      currentGradientPlasticMicroVelocityGradient[sot_dimension * Kbar + AB];
+                        temp3[sot_dimension * Ibar + AB] +=
+                            implicit_mult * invLHS[dimension * Ibar + Kbar] *
+                            currentGradientPlasticMicroVelocityGradient[sot_dimension * Kbar + AB];
                     }
                 }
             }
 
             // Update the gradient of the plastic micro deformation
             gradientPlasticMicroDeformation = thirdOrderTensor(dimension * dimension * dimension, 0);
-            dGradChipdChip                  = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdFp                    = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdMicroLp               = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdGradMicroLp           = sixthOrderTensor(dimension * dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdChip    = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdFp      = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdMicroLp = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdGradMicroLp =
+                sixthOrderTensor(dimension * dimension * dimension * dimension * dimension * dimension, 0);
             for (unsigned int Ibar = 0; Ibar < dimension; ++Ibar) {
                 for (unsigned int Jbar = 0; Jbar < dimension; ++Jbar) {
                     for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
@@ -1825,21 +1880,26 @@ namespace tardigradeHydra {
                             invLHS[dimension * Ibar + Jbar] * RHS[sot_dimension * Jbar + AB];
 
                         for (unsigned int DE = 0; DE < sot_dimension; ++DE) {
-                            dGradChipdGradMicroLp[sot_dimension * dimension * sot_dimension * Ibar + dimension * sot_dimension * AB + sot_dimension * Jbar +
-                                                  DE] += invLHS[dimension * Ibar + Jbar] * temp1[sot_dimension * DE + AB];
+                            dGradChipdGradMicroLp[sot_dimension * dimension * sot_dimension * Ibar +
+                                                  dimension * sot_dimension * AB + sot_dimension * Jbar + DE] +=
+                                invLHS[dimension * Ibar + Jbar] * temp1[sot_dimension * DE + AB];
                         }
                     }
 
                     for (unsigned int A = 0; A < dimension; ++A) {
                         for (unsigned int B = 0; B < dimension; ++B) {
                             for (unsigned int C = 0; C < dimension; ++C) {
-                                dGradChipdChip[dimension * dimension * dimension * dimension * Ibar + dimension * dimension * dimension * A + dimension * dimension * B +
-                                               dimension * C + A] += temp3[dimension * dimension * Ibar + dimension * C + Jbar] *
-                                                               currentPlasticDeformationGradient[dimension * Jbar + B];
+                                dGradChipdChip[dimension * dimension * dimension * dimension * Ibar +
+                                               dimension * dimension * dimension * A + dimension * dimension * B +
+                                               dimension * C + A] +=
+                                    temp3[dimension * dimension * Ibar + dimension * C + Jbar] *
+                                    currentPlasticDeformationGradient[dimension * Jbar + B];
 
-                                dGradChipdFp[dimension * dimension * dimension * dimension * Ibar + dimension * dimension * dimension * A + dimension * dimension * B +
-                                             dimension * C + B] += temp3[dimension * dimension * Ibar + dimension * Jbar + C] *
-                                                             currentPlasticMicroDeformation[dimension * Jbar + A];
+                                dGradChipdFp[dimension * dimension * dimension * dimension * Ibar +
+                                             dimension * dimension * dimension * A + dimension * dimension * B +
+                                             dimension * C + B] +=
+                                    temp3[dimension * dimension * Ibar + dimension * Jbar + C] *
+                                    currentPlasticMicroDeformation[dimension * Jbar + A];
                             }
                         }
                     }
@@ -1850,7 +1910,8 @@ namespace tardigradeHydra {
                 for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
                     for (unsigned int Kbar = 0; Kbar < dimension; ++Kbar) {
                         for (unsigned int Lbar = 0; Lbar < dimension; ++Lbar) {
-                            dGradChipdMicroLp[sot_dimension * dimension * dimension * Ibar + dimension * dimension * AB + dimension * Kbar + Lbar] +=
+                            dGradChipdMicroLp[sot_dimension * dimension * dimension * Ibar +
+                                              dimension * dimension * AB + dimension * Kbar + Lbar] +=
                                 invLHS[dimension * Ibar + Kbar] * implicit_mult *
                                 gradientPlasticMicroDeformation[sot_dimension * Lbar + AB];
                         }
@@ -1913,10 +1974,10 @@ namespace tardigradeHydra {
             const parameterType implicit_mult = Dt * alpha;
             const parameterType explicit_mult = Dt * (1 - alpha);
 
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = dimension * dimension * dimension;
-            constexpr unsigned int fot_dimension   = dimension * dimension * dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = dimension * dimension * dimension;
+            constexpr unsigned int fot_dimension = dimension * dimension * dimension * dimension;
 
             // Declare the local variables
             std::array<floatType, sot_dimension> LHS, invLHS;
@@ -1939,12 +2000,14 @@ namespace tardigradeHydra {
                 for (unsigned int Kbar = 0; Kbar < dimension; ++Kbar) {
                     for (unsigned int A = 0; A < dimension; ++A) {
                         for (unsigned int B = 0; B < dimension; ++B) {
-                            temp1[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar + dimension * A + B] +=
-                                implicit_mult * currentPlasticMicroDeformation[dimension * Jbar + A] *
-                                currentPlasticDeformationGradient[3 * Kbar + B];
-                            temp2[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar + dimension * A + B] +=
-                                explicit_mult * previousPlasticMicroDeformation[dimension * Jbar + A] *
-                                previousPlasticDeformationGradient[3 * Kbar + B];
+                            temp1[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar +
+                                  dimension * A + B] += implicit_mult *
+                                                        currentPlasticMicroDeformation[dimension * Jbar + A] *
+                                                        currentPlasticDeformationGradient[3 * Kbar + B];
+                            temp2[dimension * dimension * dimension * Jbar + dimension * dimension * Kbar +
+                                  dimension * A + B] += explicit_mult *
+                                                        previousPlasticMicroDeformation[dimension * Jbar + A] *
+                                                        previousPlasticDeformationGradient[3 * Kbar + B];
                         }
                     }
                 }
@@ -1967,9 +2030,9 @@ namespace tardigradeHydra {
 
                 for (unsigned int Jbar = 0; Jbar < dimension; ++Jbar) {
                     for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
-                        RHS[sot_dimension * Ibar + AB] += explicit_mult *
-                                                    previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
-                                                    previousGradientPlasticMicroDeformation[sot_dimension * Jbar + AB];
+                        RHS[sot_dimension * Ibar + AB] +=
+                            explicit_mult * previousPlasticMicroVelocityGradient[3 * Ibar + Jbar] *
+                            previousGradientPlasticMicroDeformation[sot_dimension * Jbar + AB];
                     }
                 }
             }
@@ -1991,46 +2054,54 @@ namespace tardigradeHydra {
             for (unsigned int Ibar = 0; Ibar < dimension; ++Ibar) {
                 for (unsigned int Kbar = 0; Kbar < dimension; ++Kbar) {
                     for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
-                        temp3[sot_dimension * Ibar + AB] += implicit_mult * invLHS[dimension * Ibar + Kbar] *
-                                                      currentGradientPlasticMicroVelocityGradient[sot_dimension * Kbar + AB];
-                        temp4[sot_dimension * Ibar + AB] += explicit_mult * invLHS[dimension * Ibar + Kbar] *
-                                                      previousGradientPlasticMicroVelocityGradient[sot_dimension * Kbar + AB];
+                        temp3[sot_dimension * Ibar + AB] +=
+                            implicit_mult * invLHS[dimension * Ibar + Kbar] *
+                            currentGradientPlasticMicroVelocityGradient[sot_dimension * Kbar + AB];
+                        temp4[sot_dimension * Ibar + AB] +=
+                            explicit_mult * invLHS[dimension * Ibar + Kbar] *
+                            previousGradientPlasticMicroVelocityGradient[sot_dimension * Kbar + AB];
                     }
                 }
             }
 
             // Update the gradient of the plastic micro deformation
             gradientPlasticMicroDeformation = thirdOrderTensor(dimension * dimension * dimension, 0);
-            dGradChipdFp                    = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdChip                  = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdMicroLp               = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdGradMicroLp           = sixthOrderTensor(dimension * dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdPreviousFp            = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdPreviousChip          = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdPreviousMicroLp       = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdPreviousGradMicroLp   = sixthOrderTensor(dimension * dimension * dimension * dimension * dimension * dimension, 0);
-            dGradChipdPreviousGradChip      = sixthOrderTensor(dimension * dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdFp      = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdChip    = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdMicroLp = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdGradMicroLp =
+                sixthOrderTensor(dimension * dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdPreviousFp      = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdPreviousChip    = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdPreviousMicroLp = fifthOrderTensor(dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdPreviousGradMicroLp =
+                sixthOrderTensor(dimension * dimension * dimension * dimension * dimension * dimension, 0);
+            dGradChipdPreviousGradChip =
+                sixthOrderTensor(dimension * dimension * dimension * dimension * dimension * dimension, 0);
             for (unsigned int Ibar = 0; Ibar < dimension; ++Ibar) {
                 for (unsigned int Jbar = 0; Jbar < dimension; ++Jbar) {
                     for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
                         gradientPlasticMicroDeformation[sot_dimension * Ibar + AB] +=
                             invLHS[dimension * Ibar + Jbar] * RHS[sot_dimension * Jbar + AB];
 
-                        dGradChipdPreviousGradChip[sot_dimension * dimension * sot_dimension * Ibar + dimension * sot_dimension * AB +
-                                                   sot_dimension * Jbar + AB] += invLHS[dimension * Ibar + Jbar];
+                        dGradChipdPreviousGradChip[sot_dimension * dimension * sot_dimension * Ibar +
+                                                   dimension * sot_dimension * AB + sot_dimension * Jbar + AB] +=
+                            invLHS[dimension * Ibar + Jbar];
 
                         for (unsigned int K = 0; K < dimension; ++K) {
-                            dGradChipdPreviousGradChip[dimension * dimension * dimension * sot_dimension * Ibar + dimension * dimension * dimension * AB +
+                            dGradChipdPreviousGradChip[dimension * dimension * dimension * sot_dimension * Ibar +
+                                                       dimension * dimension * dimension * AB +
                                                        dimension * dimension * K + AB] +=
                                 invLHS[dimension * Ibar + Jbar] * explicit_mult *
                                 previousPlasticMicroVelocityGradient[3 * Jbar + K];
                         }
 
                         for (unsigned int DE = 0; DE < sot_dimension; ++DE) {
-                            dGradChipdGradMicroLp[sot_dimension * dimension * sot_dimension * Ibar + dimension * sot_dimension * AB + sot_dimension * Jbar +
-                                                  DE] += invLHS[dimension * Ibar + Jbar] * temp1[sot_dimension * DE + AB];
-                            dGradChipdPreviousGradMicroLp[sot_dimension * dimension * sot_dimension * Ibar + dimension * sot_dimension * AB +
-                                                          sot_dimension * Jbar + DE] +=
+                            dGradChipdGradMicroLp[sot_dimension * dimension * sot_dimension * Ibar +
+                                                  dimension * sot_dimension * AB + sot_dimension * Jbar + DE] +=
+                                invLHS[dimension * Ibar + Jbar] * temp1[sot_dimension * DE + AB];
+                            dGradChipdPreviousGradMicroLp[sot_dimension * dimension * sot_dimension * Ibar +
+                                                          dimension * sot_dimension * AB + sot_dimension * Jbar + DE] +=
                                 invLHS[dimension * Ibar + Jbar] * temp2[sot_dimension * DE + AB];
                         }
                     }
@@ -2038,21 +2109,27 @@ namespace tardigradeHydra {
                     for (unsigned int A = 0; A < dimension; ++A) {
                         for (unsigned int B = 0; B < dimension; ++B) {
                             for (unsigned int C = 0; C < dimension; ++C) {
-                                dGradChipdChip[dimension * dimension * dimension * dimension * Ibar + dimension * dimension * dimension * A + dimension * dimension * B +
-                                               dimension * C + A] += temp3[dimension * dimension * Ibar + dimension * C + Jbar] *
-                                                               currentPlasticDeformationGradient[dimension * Jbar + B];
+                                dGradChipdChip[dimension * dimension * dimension * dimension * Ibar +
+                                               dimension * dimension * dimension * A + dimension * dimension * B +
+                                               dimension * C + A] +=
+                                    temp3[dimension * dimension * Ibar + dimension * C + Jbar] *
+                                    currentPlasticDeformationGradient[dimension * Jbar + B];
 
-                                dGradChipdFp[dimension * dimension * dimension * dimension * Ibar + dimension * dimension * dimension * A + dimension * dimension * B +
-                                             dimension * C + B] += temp3[dimension * dimension * Ibar + dimension * Jbar + C] *
-                                                             currentPlasticMicroDeformation[dimension * Jbar + A];
+                                dGradChipdFp[dimension * dimension * dimension * dimension * Ibar +
+                                             dimension * dimension * dimension * A + dimension * dimension * B +
+                                             dimension * C + B] +=
+                                    temp3[dimension * dimension * Ibar + dimension * Jbar + C] *
+                                    currentPlasticMicroDeformation[dimension * Jbar + A];
 
-                                dGradChipdPreviousChip[dimension * dimension * dimension * dimension * Ibar + dimension * dimension * dimension * A +
+                                dGradChipdPreviousChip[dimension * dimension * dimension * dimension * Ibar +
+                                                       dimension * dimension * dimension * A +
                                                        dimension * dimension * B + dimension * C + A] +=
                                     temp4[dimension * dimension * Ibar + dimension * C + Jbar] *
                                     previousPlasticDeformationGradient[dimension * Jbar + B];
 
-                                dGradChipdPreviousFp[dimension * dimension * dimension * dimension * Ibar + dimension * dimension * dimension * A +
-                                                     dimension * dimension * B + dimension * C + B] +=
+                                dGradChipdPreviousFp[dimension * dimension * dimension * dimension * Ibar +
+                                                     dimension * dimension * dimension * A + dimension * dimension * B +
+                                                     dimension * C + B] +=
                                     temp4[dimension * dimension * Ibar + dimension * Jbar + C] *
                                     previousPlasticMicroDeformation[dimension * Jbar + A];
                             }
@@ -2065,12 +2142,13 @@ namespace tardigradeHydra {
                 for (unsigned int AB = 0; AB < sot_dimension; ++AB) {
                     for (unsigned int Kbar = 0; Kbar < dimension; ++Kbar) {
                         for (unsigned int Lbar = 0; Lbar < dimension; ++Lbar) {
-                            dGradChipdMicroLp[sot_dimension * dimension * dimension * Ibar + dimension * dimension * AB + dimension * Kbar + Lbar] +=
+                            dGradChipdMicroLp[sot_dimension * dimension * dimension * Ibar +
+                                              dimension * dimension * AB + dimension * Kbar + Lbar] +=
                                 invLHS[dimension * Ibar + Kbar] * implicit_mult *
                                 gradientPlasticMicroDeformation[sot_dimension * Lbar + AB];
 
-                            dGradChipdPreviousMicroLp[dimension * dimension * dimension * dimension * Ibar + dimension * dimension * AB + dimension * Kbar +
-                                                      Lbar] +=
+                            dGradChipdPreviousMicroLp[dimension * dimension * dimension * dimension * Ibar +
+                                                      dimension * dimension * AB + dimension * Kbar + Lbar] +=
                                 invLHS[dimension * Ibar + Kbar] * explicit_mult *
                                 previousGradientPlasticMicroDeformation[sot_dimension * Lbar + AB];
                         }
@@ -2160,10 +2238,10 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = sot_dimension * dimension;
-            constexpr unsigned int fot_dimension   = tot_dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
+            constexpr unsigned int fot_dimension = tot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(currentPlasticMicroDeformation.size() == sot_dimension,
                                          "The plastic micro-deformation must be 3D");
@@ -2200,26 +2278,29 @@ namespace tardigradeHydra {
             for (unsigned int Db = 0; Db < dimension; Db++) {
                 for (unsigned int B = 0; B < dimension; B++) {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
-                        previousFourthA[dimension * dimension * dimension * Db + dimension * dimension * B + dimension * Kb + Kb] +=
+                        previousFourthA[dimension * dimension * dimension * Db + dimension * dimension * B +
+                                        dimension * Kb + Kb] +=
                             previousPlasticMicroVelocityGradient[dimension * Db + B];
 
-                        previousFourthA[dimension * dimension * dimension * Db + dimension * dimension * Db + dimension * B + Kb] -=
-                            previousPlasticMacroVelocityGradient[dimension * Kb + B];
+                        previousFourthA[dimension * dimension * dimension * Db + dimension * dimension * Db +
+                                        dimension * B + Kb] -= previousPlasticMacroVelocityGradient[dimension * Kb + B];
 
-                        currentFourthA[dimension * dimension * dimension * Db + dimension * dimension * B + dimension * Kb + Kb] +=
-                            currentPlasticMicroVelocityGradient[dimension * Db + B];
+                        currentFourthA[dimension * dimension * dimension * Db + dimension * dimension * B +
+                                       dimension * Kb + Kb] += currentPlasticMicroVelocityGradient[dimension * Db + B];
 
-                        currentFourthA[dimension * dimension * dimension * Db + dimension * dimension * Db + dimension * B + Kb] -=
-                            currentPlasticMacroVelocityGradient[dimension * Kb + B];
+                        currentFourthA[dimension * dimension * dimension * Db + dimension * dimension * Db +
+                                       dimension * B + Kb] -= currentPlasticMacroVelocityGradient[dimension * Kb + B];
 
                         for (unsigned int Lb = 0; Lb < dimension; Lb++) {
                             DtAtilde[dimension * dimension * Db + dimension * B + Kb] +=
-                                Dt *
-                                ((1 - alpha) *
-                                     previousPlasticMicroGradientVelocityGradient[dimension * dimension * Db + dimension * Lb + Kb] *
-                                     previousPlasticMicroDeformation[dimension * Lb + B] +
-                                 alpha * currentPlasticMicroGradientVelocityGradient[dimension * dimension * Db + dimension * Lb + Kb] *
-                                     currentPlasticMicroDeformation[dimension * Lb + B]);
+                                Dt * ((1 - alpha) *
+                                          previousPlasticMicroGradientVelocityGradient[dimension * dimension * Db +
+                                                                                       dimension * Lb + Kb] *
+                                          previousPlasticMicroDeformation[dimension * Lb + B] +
+                                      alpha *
+                                          currentPlasticMicroGradientVelocityGradient[dimension * dimension * Db +
+                                                                                      dimension * Lb + Kb] *
+                                          currentPlasticMicroDeformation[dimension * Lb + B]);
                         }
                     }
                 }
@@ -2240,11 +2321,14 @@ namespace tardigradeHydra {
                             for (unsigned int Bb = 0; Bb < dimension; Bb++) {
                                 RHS[dimension * dimension * Db + dimension * B + Kb] +=
                                     Dt * (1. - alpha) *
-                                    previousFourthA[dimension * dimension * dimension * Db + dimension * dimension * Bb + dimension * Kb + Lb] *
+                                    previousFourthA[dimension * dimension * dimension * Db +
+                                                    dimension * dimension * Bb + dimension * Kb + Lb] *
                                     previousPlasticMicroGradient[dimension * dimension * Bb + dimension * B + Lb];
-                                LHS[dimension * dimension * tot_dimension * Db + dimension * tot_dimension * B + tot_dimension * Kb + dimension * dimension * Lb +
-                                    dimension * B + Bb] -=
-                                    Dt * alpha * currentFourthA[dimension * dimension * dimension * Db + dimension * dimension * Lb + dimension * Kb + Bb];
+                                LHS[dimension * dimension * tot_dimension * Db + dimension * tot_dimension * B +
+                                    tot_dimension * Kb + dimension * dimension * Lb + dimension * B + Bb] -=
+                                    Dt * alpha *
+                                    currentFourthA[dimension * dimension * dimension * Db + dimension * dimension * Lb +
+                                                   dimension * Kb + Bb];
                             }
                         }
                     }
@@ -2308,10 +2392,10 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = sot_dimension * dimension;
-            constexpr unsigned int fot_dimension   = tot_dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
+            constexpr unsigned int fot_dimension = tot_dimension * dimension;
 
             // Compute the new currentPlasticMicroGradient
             sixthOrderTensor LHS;
@@ -2326,8 +2410,12 @@ namespace tardigradeHydra {
 
             // Compute the negative partial derivatives w.r.t. currentFourthA and the current part of DtAtilde
             // We do this in vector form so that we can interface with Eigen easier
-            sixthOrderTensor   negdRdCurrentDtAtilde(dimension * dimension * dimension * dimension * dimension * dimension, 0);
-            seventhOrderTensor negdRdCurrentFourthA(dimension * dimension * dimension * dimension * dimension * dimension * dimension, 0);
+            sixthOrderTensor   negdRdCurrentDtAtilde(dimension * dimension * dimension * dimension * dimension *
+                                                         dimension,
+                                                     0);
+            seventhOrderTensor negdRdCurrentFourthA(dimension * dimension * dimension * dimension * dimension *
+                                                        dimension * dimension,
+                                                    0);
 
             // Also assemble jacobians of the A terms
             fifthOrderTensor dCurrentDTAtildedPlasticMicroDeformation(tot_dimension * sot_dimension, 0);
@@ -2338,32 +2426,43 @@ namespace tardigradeHydra {
             for (unsigned int Db = 0; Db < dimension; Db++) {
                 for (unsigned int B = 0; B < dimension; B++) {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
-                        negdRdCurrentDtAtilde[dimension * dimension * dimension * dimension * dimension * Db + dimension * dimension * dimension * dimension * B +
-                                              dimension * dimension * dimension * Kb + dimension * dimension * Db + dimension * B + Kb] += 1;
+                        negdRdCurrentDtAtilde[dimension * dimension * dimension * dimension * dimension * Db +
+                                              dimension * dimension * dimension * dimension * B +
+                                              dimension * dimension * dimension * Kb + dimension * dimension * Db +
+                                              dimension * B + Kb] += 1;
 
                         dCurrentFourthAdMacroVelocityGradient[dimension * dimension * dimension * sot_dimension * Db +
-                                                              dimension * dimension * sot_dimension * Db + dimension * sot_dimension * B +
-                                                              sot_dimension * Kb + dimension * Kb + B] -= 1;
+                                                              dimension * dimension * sot_dimension * Db +
+                                                              dimension * sot_dimension * B + sot_dimension * Kb +
+                                                              dimension * Kb + B] -= 1;
 
-                        dCurrentFourthAdMicroVelocityGradient[dimension * dimension * dimension * sot_dimension * Db + dimension * dimension * sot_dimension * B +
-                                                              dimension * sot_dimension * Kb + sot_dimension * Kb + dimension * Db + B] += 1;
+                        dCurrentFourthAdMicroVelocityGradient[dimension * dimension * dimension * sot_dimension * Db +
+                                                              dimension * dimension * sot_dimension * B +
+                                                              dimension * sot_dimension * Kb + sot_dimension * Kb +
+                                                              dimension * Db + B] += 1;
 
                         for (unsigned int Rb = 0; Rb < dimension; Rb++) {
-                            dCurrentDTAtildedPlasticMicroDeformation[dimension * dimension * sot_dimension * Db + dimension * sot_dimension * B +
+                            dCurrentDTAtildedPlasticMicroDeformation[dimension * dimension * sot_dimension * Db +
+                                                                     dimension * sot_dimension * B +
                                                                      sot_dimension * Kb + dimension * Rb + B] +=
                                 Dt * alpha *
-                                currentPlasticMicroGradientVelocityGradient[dimension * dimension * Db + dimension * Rb + Kb];
+                                currentPlasticMicroGradientVelocityGradient[dimension * dimension * Db +
+                                                                            dimension * Rb + Kb];
 
-                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient[dimension * dimension * tot_dimension * Db +
-                                                                                  dimension * tot_dimension * B + tot_dimension * Kb +
-                                                                                  dimension * dimension * Db + dimension * Rb + Kb] +=
+                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient
+                                [dimension * dimension * tot_dimension * Db + dimension * tot_dimension * B +
+                                 tot_dimension * Kb + dimension * dimension * Db + dimension * Rb + Kb] +=
                                 Dt * alpha * currentPlasticMicroDeformation[dimension * Rb + B];
 
                             for (unsigned int S = 0; S < dimension; S++) {
-                                negdRdCurrentFourthA[dimension * dimension * dimension * dimension * dimension * dimension * Db +
-                                                     dimension * dimension * dimension * dimension * dimension * B + dimension * dimension * dimension * dimension * Kb +
-                                                     dimension * dimension * dimension * Db + dimension * dimension * Rb + dimension * Kb + S] +=
-                                    Dt * alpha * currentPlasticMicroGradient[dimension * dimension * Rb + dimension * B + S];
+                                negdRdCurrentFourthA[dimension * dimension * dimension * dimension * dimension *
+                                                         dimension * Db +
+                                                     dimension * dimension * dimension * dimension * dimension * B +
+                                                     dimension * dimension * dimension * dimension * Kb +
+                                                     dimension * dimension * dimension * Db +
+                                                     dimension * dimension * Rb + dimension * Kb + S] +=
+                                    Dt * alpha *
+                                    currentPlasticMicroGradient[dimension * dimension * Rb + dimension * B + S];
                             }
                         }
                     }
@@ -2371,18 +2470,21 @@ namespace tardigradeHydra {
             }
 
             // Solve for the Jacobians
-            sixthOrderTensor   dCurrentPlasticMicroGradientdCurrentDTAtilde(dimension * dimension * dimension * dimension * dimension * dimension);
-            seventhOrderTensor dCurrentPlasticMicroGradientdCurrentFourthA(dimension * dimension * dimension * dimension * dimension * dimension * dimension);
+            sixthOrderTensor   dCurrentPlasticMicroGradientdCurrentDTAtilde(dimension * dimension * dimension *
+                                                                            dimension * dimension * dimension);
+            seventhOrderTensor dCurrentPlasticMicroGradientdCurrentFourthA(dimension * dimension * dimension *
+                                                                           dimension * dimension * dimension *
+                                                                           dimension);
 
-            Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > LHSMat(LHS.data(),
-                                                                                                     tot_dimension, tot_dimension);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > LHSMat(
+                LHS.data(), tot_dimension, tot_dimension);
             Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > nDRDCDA(
                 negdRdCurrentDtAtilde.data(), tot_dimension, tot_dimension);
             Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, fot_dimension, Eigen::RowMajor> > nDRDCFA(
                 negdRdCurrentFourthA.data(), tot_dimension, fot_dimension);
 
-            Eigen::ColPivHouseholderQR<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > qrSolver(
-                LHSMat);
+            Eigen::ColPivHouseholderQR<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                qrSolver(LHSMat);
 
             Eigen::Map<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > X1(
                 dCurrentPlasticMicroGradientdCurrentDTAtilde.data(), tot_dimension, tot_dimension);
@@ -2394,19 +2496,23 @@ namespace tardigradeHydra {
 
             // Assemble the final terms of the deformation
             auto map_dCurrentDTAtildedPlasticMicroDeformation =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dCurrentDTAtildedPlasticMicroDeformation.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dCurrentDTAtildedPlasticMicroDeformation.data());
             auto map_dCurrentFourthAdMacroVelocityGradient =
-                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(dCurrentFourthAdMacroVelocityGradient.data());
+                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(
+                    dCurrentFourthAdMacroVelocityGradient.data());
             auto map_dCurrentFourthAdMicroVelocityGradient =
-                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(dCurrentFourthAdMicroVelocityGradient.data());
+                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(
+                    dCurrentFourthAdMicroVelocityGradient.data());
             auto map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient =
                 getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
                     dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data());
 
-            dCurrentPlasticMicroGradientdPlasticMicroDeformation              = fifthOrderTensor(tot_dimension * sot_dimension);
-            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient         = fifthOrderTensor(tot_dimension * sot_dimension);
-            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient         = fifthOrderTensor(tot_dimension * sot_dimension);
-            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = sixthOrderTensor(tot_dimension * tot_dimension);
+            dCurrentPlasticMicroGradientdPlasticMicroDeformation      = fifthOrderTensor(tot_dimension * sot_dimension);
+            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = fifthOrderTensor(tot_dimension * sot_dimension);
+            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = fifthOrderTensor(tot_dimension * sot_dimension);
+            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient =
+                sixthOrderTensor(tot_dimension * tot_dimension);
 
             auto map_dCurrentPlasticMicroGradientdPlasticMicroDeformation =
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
@@ -2495,10 +2601,10 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = sot_dimension * dimension;
-            constexpr unsigned int fot_dimension   = tot_dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
+            constexpr unsigned int fot_dimension = tot_dimension * dimension;
 
             // Compute the new currentPlasticMicroGradient
             sixthOrderTensor LHS;
@@ -2532,63 +2638,91 @@ namespace tardigradeHydra {
             for (unsigned int Db = 0; Db < dimension; Db++) {
                 for (unsigned int B = 0; B < dimension; B++) {
                     for (unsigned int Kb = 0; Kb < dimension; Kb++) {
-                        negdRdCurrentDtAtilde[dimension * dimension * dimension * dimension * dimension * Db + dimension * dimension * dimension * dimension * B +
-                                              dimension * dimension * dimension * Kb + dimension * dimension * Db + dimension * B + Kb] += 1;
+                        negdRdCurrentDtAtilde[dimension * dimension * dimension * dimension * dimension * Db +
+                                              dimension * dimension * dimension * dimension * B +
+                                              dimension * dimension * dimension * Kb + dimension * dimension * Db +
+                                              dimension * B + Kb] += 1;
 
-                        dCurrentFourthAdMicroVelocityGradient[dimension * dimension * dimension * sot_dimension * Db + dimension * dimension * sot_dimension * B +
-                                                              dimension * sot_dimension * Kb + sot_dimension * Kb + dimension * Db + B] += 1;
+                        dCurrentFourthAdMicroVelocityGradient[dimension * dimension * dimension * sot_dimension * Db +
+                                                              dimension * dimension * sot_dimension * B +
+                                                              dimension * sot_dimension * Kb + sot_dimension * Kb +
+                                                              dimension * Db + B] += 1;
 
                         dCurrentFourthAdMacroVelocityGradient[dimension * dimension * dimension * sot_dimension * Db +
-                                                              dimension * dimension * sot_dimension * Db + dimension * sot_dimension * B +
-                                                              sot_dimension * Kb + dimension * Kb + B] -= 1;
+                                                              dimension * dimension * sot_dimension * Db +
+                                                              dimension * sot_dimension * B + sot_dimension * Kb +
+                                                              dimension * Kb + B] -= 1;
 
-                        dRHSdPreviousPlasticMicroGradient[dimension * dimension * dimension * dimension * dimension * Db + dimension * dimension * dimension * dimension * B +
-                                                          dimension * dimension * dimension * Kb + dimension * dimension * Db + dimension * B + Kb] += 1;
+                        dRHSdPreviousPlasticMicroGradient[dimension * dimension * dimension * dimension * dimension *
+                                                              Db +
+                                                          dimension * dimension * dimension * dimension * B +
+                                                          dimension * dimension * dimension * Kb +
+                                                          dimension * dimension * Db + dimension * B + Kb] += 1;
 
                         for (unsigned int Rb = 0; Rb < dimension; Rb++) {
-                            dCurrentDTAtildedPlasticMicroDeformation[dimension * dimension * sot_dimension * Db + dimension * sot_dimension * B +
+                            dCurrentDTAtildedPlasticMicroDeformation[dimension * dimension * sot_dimension * Db +
+                                                                     dimension * sot_dimension * B +
                                                                      sot_dimension * Kb + dimension * Rb + B] +=
                                 Dt * alpha *
-                                currentPlasticMicroGradientVelocityGradient[dimension * dimension * Db + dimension * Rb + Kb];
+                                currentPlasticMicroGradientVelocityGradient[dimension * dimension * Db +
+                                                                            dimension * Rb + Kb];
 
-                            dPreviousDTAtildedPlasticMicroDeformation[dimension * dimension * sot_dimension * Db + dimension * sot_dimension * B +
+                            dPreviousDTAtildedPlasticMicroDeformation[dimension * dimension * sot_dimension * Db +
+                                                                      dimension * sot_dimension * B +
                                                                       sot_dimension * Kb + dimension * Rb + B] +=
                                 Dt * (1. - alpha) *
-                                previousPlasticMicroGradientVelocityGradient[dimension * dimension * Db + dimension * Rb + Kb];
+                                previousPlasticMicroGradientVelocityGradient[dimension * dimension * Db +
+                                                                             dimension * Rb + Kb];
 
-                            dRHSdPreviousPlasticMacroVelocityGradient[dimension * dimension * dimension * dimension * Db + dimension * dimension * dimension * B +
-                                                                      dimension * dimension * Kb + dimension * Rb + Kb] -=
-                                Dt * (1. - alpha) * previousPlasticMicroGradient[dimension * dimension * Db + dimension * B + Rb];
+                            dRHSdPreviousPlasticMacroVelocityGradient[dimension * dimension * dimension * dimension *
+                                                                          Db +
+                                                                      dimension * dimension * dimension * B +
+                                                                      dimension * dimension * Kb + dimension * Rb +
+                                                                      Kb] -=
+                                Dt * (1. - alpha) *
+                                previousPlasticMicroGradient[dimension * dimension * Db + dimension * B + Rb];
 
-                            dRHSdPreviousPlasticMicroVelocityGradient[dimension * dimension * dimension * dimension * Db + dimension * dimension * dimension * B +
-                                                                      dimension * dimension * Kb + dimension * Db + Rb] +=
-                                Dt * (1. - alpha) * previousPlasticMicroGradient[dimension * dimension * Rb + dimension * B + Kb];
+                            dRHSdPreviousPlasticMicroVelocityGradient[dimension * dimension * dimension * dimension *
+                                                                          Db +
+                                                                      dimension * dimension * dimension * B +
+                                                                      dimension * dimension * Kb + dimension * Db +
+                                                                      Rb] +=
+                                Dt * (1. - alpha) *
+                                previousPlasticMicroGradient[dimension * dimension * Rb + dimension * B + Kb];
 
-                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient[dimension * dimension * tot_dimension * Db +
-                                                                                  dimension * tot_dimension * B + tot_dimension * Kb +
-                                                                                  dimension * dimension * Db + dimension * Rb + Kb] +=
+                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient
+                                [dimension * dimension * tot_dimension * Db + dimension * tot_dimension * B +
+                                 tot_dimension * Kb + dimension * dimension * Db + dimension * Rb + Kb] +=
                                 Dt * alpha * currentPlasticMicroDeformation[dimension * Rb + B];
 
-                            dPreviousDTAtildedPlasticMicroGradientVelocityGradient[dimension * dimension * tot_dimension * Db +
-                                                                                   dimension * tot_dimension * B + tot_dimension * Kb +
-                                                                                   dimension * dimension * Db + dimension * Rb + Kb] +=
+                            dPreviousDTAtildedPlasticMicroGradientVelocityGradient
+                                [dimension * dimension * tot_dimension * Db + dimension * tot_dimension * B +
+                                 tot_dimension * Kb + dimension * dimension * Db + dimension * Rb + Kb] +=
                                 Dt * (1. - alpha) * previousPlasticMicroDeformation[dimension * Rb + B];
 
-                            dRHSdPreviousPlasticMicroGradient[dimension * dimension * dimension * dimension * dimension * Db +
-                                                              dimension * dimension * dimension * dimension * B + dimension * dimension * dimension * Kb +
+                            dRHSdPreviousPlasticMicroGradient[dimension * dimension * dimension * dimension *
+                                                                  dimension * Db +
+                                                              dimension * dimension * dimension * dimension * B +
+                                                              dimension * dimension * dimension * Kb +
                                                               dimension * dimension * Rb + dimension * B + Kb] +=
                                 Dt * (1 - alpha) * previousPlasticMicroVelocityGradient[dimension * Db + Rb];
 
-                            dRHSdPreviousPlasticMicroGradient[dimension * dimension * dimension * dimension * dimension * Db +
-                                                              dimension * dimension * dimension * dimension * B + dimension * dimension * dimension * Kb +
+                            dRHSdPreviousPlasticMicroGradient[dimension * dimension * dimension * dimension *
+                                                                  dimension * Db +
+                                                              dimension * dimension * dimension * dimension * B +
+                                                              dimension * dimension * dimension * Kb +
                                                               dimension * dimension * Db + dimension * B + Rb] -=
                                 Dt * (1 - alpha) * previousPlasticMacroVelocityGradient[dimension * Rb + Kb];
 
                             for (unsigned int S = 0; S < dimension; S++) {
-                                negdRdCurrentFourthA[dimension * dimension * dimension * dimension * dimension * dimension * Db +
-                                                     dimension * dimension * dimension * dimension * dimension * B + dimension * dimension * dimension * dimension * Kb +
-                                                     dimension * dimension * dimension * Db + dimension * dimension * Rb + dimension * Kb + S] +=
-                                    Dt * alpha * currentPlasticMicroGradient[dimension * dimension * Rb + dimension * B + S];
+                                negdRdCurrentFourthA[dimension * dimension * dimension * dimension * dimension *
+                                                         dimension * Db +
+                                                     dimension * dimension * dimension * dimension * dimension * B +
+                                                     dimension * dimension * dimension * dimension * Kb +
+                                                     dimension * dimension * dimension * Db +
+                                                     dimension * dimension * Rb + dimension * Kb + S] +=
+                                    Dt * alpha *
+                                    currentPlasticMicroGradient[dimension * dimension * Rb + dimension * B + S];
                             }
                         }
                     }
@@ -2597,13 +2731,16 @@ namespace tardigradeHydra {
 
             sixthOrderTensor   dCurrentPlasticMicroGradientdCurrentDTAtilde(tot_dimension * tot_dimension, 0);
             seventhOrderTensor dCurrentPlasticMicroGradientdCurrentFourthA(tot_dimension * fot_dimension, 0);
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient         = sixthOrderTensor(tot_dimension * tot_dimension, 0);
-            dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient = fifthOrderTensor(tot_dimension * sot_dimension, 0);
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient = fifthOrderTensor(tot_dimension * sot_dimension, 0);
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient =
+                sixthOrderTensor(tot_dimension * tot_dimension, 0);
+            dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient =
+                fifthOrderTensor(tot_dimension * sot_dimension, 0);
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient =
+                fifthOrderTensor(tot_dimension * sot_dimension, 0);
 
             // Solve for the Jacobians
-            Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > LHSMat(LHS.data(),
-                                                                                                     tot_dimension, tot_dimension);
+            Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > LHSMat(
+                LHS.data(), tot_dimension, tot_dimension);
             Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > nDRDCDA(
                 negdRdCurrentDtAtilde.data(), tot_dimension, tot_dimension);
             Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, fot_dimension, Eigen::RowMajor> > nDRDCFA(
@@ -2615,8 +2752,8 @@ namespace tardigradeHydra {
             Eigen::Map<const Eigen::Matrix<variableType, tot_dimension, sot_dimension, Eigen::RowMajor> > DRDPPMiVG(
                 dRHSdPreviousPlasticMicroVelocityGradient.data(), tot_dimension, sot_dimension);
 
-            Eigen::ColPivHouseholderQR<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > qrSolver(
-                LHSMat);
+            Eigen::ColPivHouseholderQR<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                qrSolver(LHSMat);
 
             Eigen::Map<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > X1(
                 dCurrentPlasticMicroGradientdCurrentDTAtilde.data(), tot_dimension, tot_dimension);
@@ -2638,25 +2775,31 @@ namespace tardigradeHydra {
             // Assemble the final terms of the deformation
 
             auto map_dCurrentDTAtildedPlasticMicroDeformation =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dCurrentDTAtildedPlasticMicroDeformation.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dCurrentDTAtildedPlasticMicroDeformation.data());
             auto map_dCurrentFourthAdMacroVelocityGradient =
-                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(dCurrentFourthAdMacroVelocityGradient.data());
+                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(
+                    dCurrentFourthAdMacroVelocityGradient.data());
             auto map_dCurrentFourthAdMicroVelocityGradient =
-                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(dCurrentFourthAdMicroVelocityGradient.data());
+                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(
+                    dCurrentFourthAdMicroVelocityGradient.data());
             auto map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient =
                 getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
                     dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data());
             auto map_dPreviousDTAtildedPlasticMicroDeformation =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPreviousDTAtildedPlasticMicroDeformation.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPreviousDTAtildedPlasticMicroDeformation.data());
             auto map_dPreviousDTAtildedPlasticMicroGradientVelocityGradient =
                 getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
                     dPreviousDTAtildedPlasticMicroGradientVelocityGradient.data());
 
-            dCurrentPlasticMicroGradientdPlasticMicroDeformation              = fifthOrderTensor(tot_dimension * sot_dimension);
-            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient         = fifthOrderTensor(tot_dimension * sot_dimension);
-            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient         = fifthOrderTensor(tot_dimension * sot_dimension);
-            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = sixthOrderTensor(tot_dimension * tot_dimension);
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation      = fifthOrderTensor(tot_dimension * sot_dimension);
+            dCurrentPlasticMicroGradientdPlasticMicroDeformation      = fifthOrderTensor(tot_dimension * sot_dimension);
+            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = fifthOrderTensor(tot_dimension * sot_dimension);
+            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = fifthOrderTensor(tot_dimension * sot_dimension);
+            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient =
+                sixthOrderTensor(tot_dimension * tot_dimension);
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation =
+                fifthOrderTensor(tot_dimension * sot_dimension);
             dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient =
                 sixthOrderTensor(tot_dimension * tot_dimension);
 
@@ -2831,9 +2974,9 @@ namespace tardigradeHydra {
              * gradient plasticity. Defaults to 0.5.
              */
 
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = sot_dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 tardigradeConstitutiveTools::evolveFFlatJ(Dt, previousPlasticDeformationGradient,
@@ -2883,14 +3026,18 @@ namespace tardigradeHydra {
             auto map_dPlasticDeformationGradientdPlasticMacroL =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticFdPlasticMacroL.data());
             auto map_dPlasticMicroGradientdPlasticMacroL =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticMicroGradientdPlasticMacroL.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPlasticMacroL.data());
 
-            auto map_dPlasticMicroGradientdPlasticMicroDeformation = getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
-                dPlasticMicroGradientdPlasticMicroDeformation.data());
+            auto map_dPlasticMicroGradientdPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPlasticMicroDeformation.data());
             auto map_dPlasticMicroDeformationdPlasticMicroL =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMicroDeformationdPlasticMicroL.data());
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                    dPlasticMicroDeformationdPlasticMicroL.data());
             auto map_dPlasticMicroGradientdPlasticMicroL =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticMicroGradientdPlasticMicroL.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPlasticMicroL.data());
 
             map_dPlasticMicroGradientdPlasticMacroL =
                 (map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPlasticMacroL)
@@ -2980,9 +3127,9 @@ namespace tardigradeHydra {
              * for the micro gradient plasticity. Defaults to 0.5.
              */
 
-            constexpr unsigned int dimension = 3;
-            constexpr unsigned int sot_dimension   = dimension * dimension;
-            constexpr unsigned int tot_dimension   = sot_dimension * dimension;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 tardigradeConstitutiveTools::evolveFFlatJ(
@@ -3036,7 +3183,8 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
                     dPlasticMicroGradientdPlasticDeformationGradient.data());
             auto map_dPlasticMicroGradientdPreviousPlasticF =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticMicroGradientdPreviousPlasticF.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPreviousPlasticF.data());
             auto map_dPlasticDeformationGradientdPlasticMacroL =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticFdPlasticMacroL.data());
             auto map_dPlasticDeformationGradientdPreviousPlasticMacroL =
@@ -3044,17 +3192,21 @@ namespace tardigradeHydra {
             auto map_dPlasticDeformationGradientdPreviousPlasticF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticFdPreviousPlasticF.data());
             auto map_dPlasticMicroGradientdPlasticMacroL =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticMicroGradientdPlasticMacroL.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPlasticMacroL.data());
             auto map_dPlasticMicroGradientdPreviousPlasticMacroL =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticMicroGradientdPreviousPlasticMacroL.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPreviousPlasticMacroL.data());
 
-            auto map_dPlasticMicroGradientdPlasticMicroDeformation = getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
-                dPlasticMicroGradientdPlasticMicroDeformation.data());
+            auto map_dPlasticMicroGradientdPlasticMicroDeformation =
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPlasticMicroDeformation.data());
             auto map_dPlasticMicroGradientdPreviousPlasticMicroDeformation =
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
                     dPlasticMicroGradientdPreviousPlasticMicroDeformation.data());
             auto map_dPlasticMicroDeformationdPlasticMicroL =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMicroDeformationdPlasticMicroL.data());
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                    dPlasticMicroDeformationdPlasticMicroL.data());
             auto map_dPlasticMicroDeformationdPreviousPlasticMicroL =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
                     dPlasticMicroDeformationdPreviousPlasticMicroL.data());
@@ -3062,9 +3214,11 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
                     dPlasticMicroDeformationdPreviousPlasticMicroDeformation.data());
             auto map_dPlasticMicroGradientdPlasticMicroL =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticMicroGradientdPlasticMicroL.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPlasticMicroL.data());
             auto map_dPlasticMicroGradientdPreviousPlasticMicroL =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticMicroGradientdPreviousPlasticMicroL.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticMicroGradientdPreviousPlasticMicroL.data());
 
             map_dPlasticMicroGradientdPlasticMacroL =
                 (map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPlasticMacroL)
@@ -3628,7 +3782,8 @@ namespace tardigradeHydra {
             for (unsigned int i = 0; i < sot_dimension; i++) {
                 for (unsigned int k = 0; k < sot_dimension; k++) {
                     for (unsigned int j = 0; j < sot_dimension; j++) {
-                        dFpdF[sot_dimension * i + j] += dFpdSubFs[num_configs * sot_dimension * i + k] * (*dF1dF)[sot_dimension * k + j];
+                        dFpdF[sot_dimension * i + j] +=
+                            dFpdSubFs[num_configs * sot_dimension * i + k] * (*dF1dF)[sot_dimension * k + j];
 
                         dChipdChi[sot_dimension * i + j] +=
                             dChipdSubChis[num_configs * sot_dimension * i + k] * (*dChi1dChi)[sot_dimension * k + j];
@@ -3638,14 +3793,16 @@ namespace tardigradeHydra {
                 for (unsigned int j = 0; j < (num_configs - 1) * sot_dimension;
                      j++) {  // TODO: Investigate ways to prevent cache misses here
 
-                    dFpdFn[(num_configs - 1) * sot_dimension * i + j] += dFpdSubFs[num_configs * sot_dimension * i + j + sot_dimension];
+                    dFpdFn[(num_configs - 1) * sot_dimension * i + j] +=
+                        dFpdSubFs[num_configs * sot_dimension * i + j + sot_dimension];
 
                     dChipdChin[(num_configs - 1) * sot_dimension * i + j] +=
                         dChipdSubChis[num_configs * sot_dimension * i + j + sot_dimension];
 
                     for (unsigned int k = 0; k < sot_dimension; k++) {
                         dFpdFn[(num_configs - 1) * sot_dimension * i + j] +=
-                            dFpdSubFs[num_configs * sot_dimension * i + k] * (*dF1dFn)[(num_configs - 1) * sot_dimension * k + j];
+                            dFpdSubFs[num_configs * sot_dimension * i + k] *
+                            (*dF1dFn)[(num_configs - 1) * sot_dimension * k + j];
 
                         dChipdChin[(num_configs - 1) * sot_dimension * i + j] +=
                             dChipdSubChis[num_configs * sot_dimension * i + k] *
@@ -3690,15 +3847,17 @@ namespace tardigradeHydra {
             auto map_dFpdF        = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFpdF.data());
             auto map_dChipdChi    = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dChipdChi.data());
 
-            auto map_dFpdFn =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dFpdFn.data(), (num_configs - 1) * sot_dimension);
+            auto map_dFpdFn = getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dFpdFn.data(), (num_configs - 1) *
+                                                                                                         sot_dimension);
             auto map_dChipdChin =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dChipdChin.data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dChipdChin.data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
-            auto map_dMacroDrivingStressdF    = dMacroDrivingStressdF.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_dMicroDrivingStressdF    = dMicroDrivingStressdF.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_dHigherDrivingStressdF   = dHigherDrivingStressdF.zeroMap<floatType, tot_dimension, sot_dimension>();
-            auto map_dHigherDrivingStressdChi = dHigherDrivingStressdChi.zeroMap<floatType, tot_dimension, sot_dimension>();
+            auto map_dMacroDrivingStressdF  = dMacroDrivingStressdF.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dMicroDrivingStressdF  = dMicroDrivingStressdF.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dHigherDrivingStressdF = dHigherDrivingStressdF.zeroMap<floatType, tot_dimension, sot_dimension>();
+            auto map_dHigherDrivingStressdChi =
+                dHigherDrivingStressdChi.zeroMap<floatType, tot_dimension, sot_dimension>();
 
             auto map_dMacroDrivingStressdFn =
                 dMacroDrivingStressdFn.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
@@ -4705,55 +4864,65 @@ namespace tardigradeHydra {
             auto map_d2MacroFlowdDrivingStress2 =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(d2MacroFlowdDrivingStress2.data());
             auto map_d2MacroFlowdDrivingStressdPrecedingF =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(d2MacroFlowdDrivingStressdPrecedingF.data());
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                    d2MacroFlowdDrivingStressdPrecedingF.data());
             auto map_d2MicroFlowdDrivingStress2 =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(d2MicroFlowdDrivingStress2.data());
             auto map_d2MicroFlowdDrivingStressdPrecedingF =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(d2MicroFlowdDrivingStressdPrecedingF.data());
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                    d2MicroFlowdDrivingStressdPrecedingF.data());
             auto map_d2MicroGradientFlowdDrivingStress2 =
-                getFixedSizeMatrixMap<floatType, fot_dimension, tot_dimension>(d2MicroGradientFlowdDrivingStress2.data());
+                getFixedSizeMatrixMap<floatType, fot_dimension, tot_dimension>(
+                    d2MicroGradientFlowdDrivingStress2.data());
             auto map_d2MicroGradientFlowdDrivingStressdPrecedingF =
-                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(d2MicroGradientFlowdDrivingStressdPrecedingF.data());
+                getFixedSizeMatrixMap<floatType, fot_dimension, sot_dimension>(
+                    d2MicroGradientFlowdDrivingStressdPrecedingF.data());
 
             auto map_dMacroDrivingStressdStress =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMacroDrivingStressdStress->data());
             auto map_dMicroDrivingStressdStress =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMicroDrivingStressdStress->data());
             auto map_dMicroGradientDrivingStressdStress =
-                getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(dMicroGradientDrivingStressdStress->data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
+                    dMicroGradientDrivingStressdStress->data());
             auto map_dMacroDrivingStressdF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMacroDrivingStressdF->data());
             auto map_dMicroDrivingStressdF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMicroDrivingStressdF->data());
             auto map_dMicroGradientDrivingStressdF =
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dMicroGradientDrivingStressdF->data());
-            auto map_dPrecedingFdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPrecedingFdF->data());
+            auto map_dPrecedingFdF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPrecedingFdF->data());
             auto map_dMicroGradientDrivingStressdChi =
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dMicroGradientDrivingStressdChi->data());
 
             auto map_dMacroDrivingStressdFn =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dMacroDrivingStressdFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dMicroDrivingStressdFn =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dMicroDrivingStressdFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dMicroGradientDrivingStressdFn =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dMicroGradientDrivingStressdFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dPrecedingFdFn =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPrecedingFdFn->data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPrecedingFdFn->data(),
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dMicroGradientDrivingStressdChin =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dMicroGradientDrivingStressdChin->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
 
             auto map_d2MacroFlowdDrivingStressdMacroStress =
                 d2MacroFlowdDrivingStressdMacroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
             auto map_d2MicroFlowdDrivingStressdMicroStress =
                 d2MicroFlowdDrivingStressdMicroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
             auto map_d2MicroGradientFlowdDrivingStressdMicroGradientStress =
-                d2MicroGradientFlowdDrivingStressdMicroGradientStress.zeroMap<floatType, fot_dimension, tot_dimension>();
-            auto map_d2MacroFlowdDrivingStressdF = d2MacroFlowdDrivingStressdF.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_d2MicroFlowdDrivingStressdF = d2MicroFlowdDrivingStressdF.zeroMap<floatType, sot_dimension, sot_dimension>();
+                d2MicroGradientFlowdDrivingStressdMicroGradientStress
+                    .zeroMap<floatType, fot_dimension, tot_dimension>();
+            auto map_d2MacroFlowdDrivingStressdF =
+                d2MacroFlowdDrivingStressdF.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_d2MicroFlowdDrivingStressdF =
+                d2MicroFlowdDrivingStressdF.zeroMap<floatType, sot_dimension, sot_dimension>();
             auto map_d2MicroGradientFlowdDrivingStressdF =
                 d2MicroGradientFlowdDrivingStressdF.zeroMap<floatType, fot_dimension, sot_dimension>();
             auto map_d2MicroGradientFlowdDrivingStressdChi =
@@ -4764,9 +4933,11 @@ namespace tardigradeHydra {
             auto map_d2MicroFlowdDrivingStressdFn =
                 d2MicroFlowdDrivingStressdFn.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
             auto map_d2MicroGradientFlowdDrivingStressdFn =
-                d2MicroGradientFlowdDrivingStressdFn.zeroMap<floatType, fot_dimension>((num_configs - 1) * sot_dimension);
+                d2MicroGradientFlowdDrivingStressdFn.zeroMap<floatType, fot_dimension>((num_configs - 1) *
+                                                                                       sot_dimension);
             auto map_d2MicroGradientFlowdDrivingStressdChin =
-                d2MicroGradientFlowdDrivingStressdChin.zeroMap<floatType, fot_dimension>((num_configs - 1) * sot_dimension);
+                d2MicroGradientFlowdDrivingStressdChin.zeroMap<floatType, fot_dimension>((num_configs - 1) *
+                                                                                         sot_dimension);
 
             map_d2MacroFlowdDrivingStressdMacroStress =
                 (map_d2MacroFlowdDrivingStress2 * map_dMacroDrivingStressdStress).eval();
@@ -6017,13 +6188,15 @@ namespace tardigradeHydra {
             auto map_dMicroGradientYielddPrecedingF =
                 getFixedSizeMatrixMap<floatType, 3, sot_dimension>(dMicroGradientYielddPrecedingF.data());
 
-            auto map_dPrecedingFdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPrecedingFdF->data());
+            auto map_dPrecedingFdF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPrecedingFdF->data());
             auto map_dMacroDrivingStressdStress =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMacroDrivingStressdStress->data());
             auto map_dMicroDrivingStressdStress =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMicroDrivingStressdStress->data());
             auto map_dMicroGradientDrivingStressdStress =
-                getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(dMicroGradientDrivingStressdStress->data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
+                    dMicroGradientDrivingStressdStress->data());
             auto map_dMacroDrivingStressdF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMacroDrivingStressdF->data());
             auto map_dMicroDrivingStressdF =
@@ -6034,33 +6207,35 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dMicroGradientDrivingStressdChi->data());
 
             auto map_dPrecedingFdFn =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPrecedingFdFn->data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPrecedingFdFn->data(),
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dMicroGradientCohesiondStateVariables =
                 getDynamicColumnSizeMatrixMap<floatType, 3>(dMicroGradientCohesiondStateVariables->data(), num_isvs);
             auto map_dMacroDrivingStressdFn =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dMacroDrivingStressdFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dMicroDrivingStressdFn =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dMicroDrivingStressdFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dMicroGradientDrivingStressdFn =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dMicroGradientDrivingStressdFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dMicroGradientDrivingStressdChin =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dMicroGradientDrivingStressdChin->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
 
-            auto map_dMacroYielddStress         = dMacroYielddStress.zeroMap<floatType, 1, sot_dimension>();
-            auto map_dMacroYielddF              = dMacroYielddF.zeroMap<floatType, 1, sot_dimension>();
-            auto map_dMacroYielddFn             = dMacroYielddFn.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
-            auto map_dMicroYielddStress         = dMicroYielddStress.zeroMap<floatType, 1, sot_dimension>();
-            auto map_dMicroYielddF              = dMicroYielddF.zeroMap<floatType, 1, sot_dimension>();
-            auto map_dMicroYielddFn             = dMicroYielddFn.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
+            auto map_dMacroYielddStress = dMacroYielddStress.zeroMap<floatType, 1, sot_dimension>();
+            auto map_dMacroYielddF      = dMacroYielddF.zeroMap<floatType, 1, sot_dimension>();
+            auto map_dMacroYielddFn     = dMacroYielddFn.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
+            auto map_dMicroYielddStress = dMicroYielddStress.zeroMap<floatType, 1, sot_dimension>();
+            auto map_dMicroYielddF      = dMicroYielddF.zeroMap<floatType, 1, sot_dimension>();
+            auto map_dMicroYielddFn     = dMicroYielddFn.zeroMap<floatType, 1>((num_configs - 1) * sot_dimension);
             auto map_dMicroGradientYielddStress = dMicroGradientYielddStress.zeroMap<floatType, 3, tot_dimension>();
             auto map_dMicroGradientYielddStateVariables =
                 dMicroGradientYielddStateVariables.zeroMap<floatType, 3>((num_configs - 1) * num_isvs);
-            auto map_dMicroGradientYielddF  = dMicroGradientYielddF.zeroMap<floatType, 3, sot_dimension>();
-            auto map_dMicroGradientYielddFn = dMicroGradientYielddFn.zeroMap<floatType, 3>((num_configs - 1) * sot_dimension);
+            auto map_dMicroGradientYielddF = dMicroGradientYielddF.zeroMap<floatType, 3, sot_dimension>();
+            auto map_dMicroGradientYielddFn =
+                dMicroGradientYielddFn.zeroMap<floatType, 3>((num_configs - 1) * sot_dimension);
             auto map_dMicroGradientYielddChi = dMicroGradientYielddChi.zeroMap<floatType, 3, sot_dimension>();
             auto map_dMicroGradientYielddChin =
                 dMicroGradientYielddChin.zeroMap<floatType, 3>((num_configs - 1) * sot_dimension);
@@ -6375,7 +6550,8 @@ namespace tardigradeHydra {
                 for (unsigned int k = 0; k < sot_dimension; k++) {
                     for (unsigned int j = 0; j < sot_dimension; j++) {
                         (*dPrecedingChidChi.value)[sot_dimension * i + j] +=
-                            dPrecedingChidSubChis[num_configs * sot_dimension * i + k] * (*dChi1dChi)[sot_dimension * k + j];
+                            dPrecedingChidSubChis[num_configs * sot_dimension * i + k] *
+                            (*dChi1dChi)[sot_dimension * k + j];
                     }
                 }
 
@@ -6427,9 +6603,10 @@ namespace tardigradeHydra {
                                          tot_dimension));  // TODO: Generalize this expression
 
             } else {
-                set_precedingGradientMicroDeformation(thirdOrderTensor(
-                    hydra->get_gradientMicroConfigurations()->begin(),
-                    hydra->get_gradientMicroConfigurations()->begin() + tot_dimension));  // TODO: Generalize this expression
+                set_precedingGradientMicroDeformation(
+                    thirdOrderTensor(hydra->get_gradientMicroConfigurations()->begin(),
+                                     hydra->get_gradientMicroConfigurations()->begin() +
+                                         tot_dimension));  // TODO: Generalize this expression
             }
         }
 
@@ -6546,10 +6723,11 @@ namespace tardigradeHydra {
                 set_previousdPrecedingGradientMicroDeformationdGradChin(*hydra->get_previousdGradChi1dGradChin());
 
             } else {
-                set_precedingGradientMicroDeformation(thirdOrderTensor(
-                    hydra->get_gradientMicroConfigurations()->begin(),
-                    hydra->get_gradientMicroConfigurations()->begin() + tot_dimension));  // TODO: Generalize this expression
-                                                                                    //
+                set_precedingGradientMicroDeformation(
+                    thirdOrderTensor(hydra->get_gradientMicroConfigurations()->begin(),
+                                     hydra->get_gradientMicroConfigurations()->begin() +
+                                         tot_dimension));  // TODO: Generalize this expression
+                                                           //
                 set_dPrecedingGradientMicroDeformationdFn(*hydra->get_dGradChi1dFn());
 
                 set_dPrecedingGradientMicroDeformationdChi(*hydra->get_dGradChi1dChi());
@@ -6690,8 +6868,9 @@ namespace tardigradeHydra {
                 tardigradeConstitutiveTools::computeRightCauchyGreen(*precedingDeformationGradient, precedingRCG));
 
             secondOrderTensor inversePrecedingRCG = precedingRCG;
-            auto map_inversePrecedingRCG = getFixedSizeMatrixMap<floatType, dimension, dimension>(inversePrecedingRCG.data());
-            map_inversePrecedingRCG      = map_inversePrecedingRCG.inverse().eval();
+            auto              map_inversePrecedingRCG =
+                getFixedSizeMatrixMap<floatType, dimension, dimension>(inversePrecedingRCG.data());
+            map_inversePrecedingRCG = map_inversePrecedingRCG.inverse().eval();
 
             // Form the precedingPsi and its inverse
             secondOrderTensor precedingPsi(sot_dimension, 0);
@@ -6700,8 +6879,9 @@ namespace tardigradeHydra {
                                                                                  precedingPsi));
 
             secondOrderTensor inversePrecedingPsi = precedingPsi;
-            auto map_inversePrecedingPsi = getFixedSizeMatrixMap<floatType, dimension, dimension>(inversePrecedingPsi.data());
-            map_inversePrecedingPsi      = map_inversePrecedingPsi.inverse().eval();
+            auto              map_inversePrecedingPsi =
+                getFixedSizeMatrixMap<floatType, dimension, dimension>(inversePrecedingPsi.data());
+            map_inversePrecedingPsi = map_inversePrecedingPsi.inverse().eval();
 
             // Form the preceding micro RCG and its inverse
             secondOrderTensor precedingMicroRCG;
@@ -7401,20 +7581,25 @@ namespace tardigradeHydra {
                 *precedingDeformationGradient, precedingRCG, dRCGdPrecedingF));
 
             secondOrderTensor inversePrecedingRCG = precedingRCG;
-            auto map_inversePrecedingRCG = getFixedSizeMatrixMap<floatType, dimension, dimension>(inversePrecedingRCG.data());
-            map_inversePrecedingRCG      = map_inversePrecedingRCG.inverse().eval();
+            auto              map_inversePrecedingRCG =
+                getFixedSizeMatrixMap<floatType, dimension, dimension>(inversePrecedingRCG.data());
+            map_inversePrecedingRCG = map_inversePrecedingRCG.inverse().eval();
 
-            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dRCGdPrecedingF.data());
-            auto map_dPrecedingFdF   = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPrecedingFdF->data());
+            auto map_dRCGdPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dRCGdPrecedingF.data());
+            auto map_dPrecedingFdF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPrecedingFdF->data());
             auto map_dPrecedingFdFn =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPrecedingFdFn->data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPrecedingFdFn->data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
             fourthOrderTensor dRCGdF(fot_dimension, 0);
-            auto              map_dRCGdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dRCGdF.data());
+            auto map_dRCGdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dRCGdF.data());
 
             floatVector dRCGdFn(fot_dimension * (num_configs - 1), 0);
             auto        map_dRCGdFn =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dRCGdFn.data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dRCGdFn.data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
             map_dRCGdF = (map_dRCGdPrecedingF * map_dPrecedingFdF).eval();
 
@@ -7430,26 +7615,31 @@ namespace tardigradeHydra {
                                                                                  precedingPsi, dPsidPrecedingF,
                                                                                  dPsidPrecedingChi));
 
-            auto map_dPsidPrecedingF   = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPsidPrecedingF.data());
-            auto map_dPsidPrecedingChi = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPsidPrecedingChi.data());
-            auto map_dPrecedingChidChi = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPrecedingChidChi->data());
+            auto map_dPsidPrecedingF =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPsidPrecedingF.data());
+            auto map_dPsidPrecedingChi =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPsidPrecedingChi.data());
+            auto map_dPrecedingChidChi =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPrecedingChidChi->data());
             auto map_dPrecedingChidChin =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPrecedingChidChin->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
 
             fourthOrderTensor dPsidF(fot_dimension, 0);
-            auto              map_dPsidF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPsidF.data());
+            auto map_dPsidF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPsidF.data());
 
             fourthOrderTensor dPsidFn(fot_dimension * (num_configs - 1), 0);
             auto              map_dPsidFn =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPsidFn.data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPsidFn.data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
             fourthOrderTensor dPsidChi(fot_dimension, 0);
-            auto              map_dPsidChi = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPsidChi.data());
+            auto map_dPsidChi = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPsidChi.data());
 
             fourthOrderTensor dPsidChin(fot_dimension * (num_configs - 1), 0);
             auto              map_dPsidChin =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPsidChin.data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dPsidChin.data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
             map_dPsidF = (map_dPsidPrecedingF * map_dPrecedingFdF).eval();
 
@@ -7460,8 +7650,9 @@ namespace tardigradeHydra {
             map_dPsidChin = (map_dPsidPrecedingChi * map_dPrecedingChidChin).eval();
 
             secondOrderTensor inversePrecedingPsi = precedingPsi;
-            auto map_inversePrecedingPsi = getFixedSizeMatrixMap<floatType, dimension, dimension>(inversePrecedingPsi.data());
-            map_inversePrecedingPsi      = map_inversePrecedingPsi.inverse().eval();
+            auto              map_inversePrecedingPsi =
+                getFixedSizeMatrixMap<floatType, dimension, dimension>(inversePrecedingPsi.data());
+            map_inversePrecedingPsi = map_inversePrecedingPsi.inverse().eval();
 
             // Form the preceding micro RCG and its inverse
             secondOrderTensor precedingMicroRCG;
@@ -7475,11 +7666,13 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMicroRCGdPrecedingChi.data());
 
             fourthOrderTensor dMicroRCGdChi(fot_dimension, 0);
-            auto map_dMicroRCGdChi = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMicroRCGdChi.data());
+            auto              map_dMicroRCGdChi =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dMicroRCGdChi.data());
 
             fourthOrderTensor dMicroRCGdChin(fot_dimension * (num_configs - 1), 0);
             auto              map_dMicroRCGdChin =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dMicroRCGdChin.data(), (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dMicroRCGdChin.data(),
+                                                                        (num_configs - 1) * sot_dimension);
 
             map_dMicroRCGdChi = (map_dMicroRCGdPrecedingChi * map_dPrecedingChidChi).eval();
 
@@ -7502,25 +7695,26 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(dPrecedingGammadPrecedingGradChi.data());
             auto map_dPrecedingGradChidFn =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dPrecedingGradChidFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dPrecedingGradChidChi =
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPrecedingGradChidChi->data());
             auto map_dPrecedingGradChidChin =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dPrecedingGradChidChin->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_dPrecedingGradChidGradChi =
                 getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(dPrecedingGradChidGradChi->data());
             auto map_dPrecedingGradChidGradChin =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dPrecedingGradChidGradChin->data(),
-                                                                  (num_configs - 1) * tot_dimension);
+                                                                        (num_configs - 1) * tot_dimension);
 
             fifthOrderTensor dPrecedingGammadF(fiot_dimension, 0);
-            auto map_dPrecedingGammadF = getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPrecedingGammadF.data());
+            auto             map_dPrecedingGammadF =
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPrecedingGammadF.data());
 
             floatVector dPrecedingGammadFn(fiot_dimension * (num_configs - 1), 0);
             auto        map_dPrecedingGammadFn =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dPrecedingGammadFn.data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
 
             fifthOrderTensor dPrecedingGammadChi(fiot_dimension, 0);
             auto             map_dPrecedingGammadChi =
@@ -7529,7 +7723,7 @@ namespace tardigradeHydra {
             floatVector dPrecedingGammadChin(fiot_dimension * (num_configs - 1), 0);
             auto        map_dPrecedingGammadChin =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dPrecedingGammadChin.data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
 
             sixthOrderTensor dPrecedingGammadGradChi(siot_dimension, 0);
             auto             map_dPrecedingGammadGradChi =
@@ -7538,7 +7732,7 @@ namespace tardigradeHydra {
             floatVector dPrecedingGammadGradChin(siot_dimension * (num_configs - 1), 0);
             auto        map_dPrecedingGammadGradChin =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(dPrecedingGammadGradChin.data(),
-                                                                  (num_configs - 1) * tot_dimension);
+                                                                        (num_configs - 1) * tot_dimension);
 
             map_dPrecedingGammadF = (map_dPrecedingGammadPrecedingF * map_dPrecedingFdF).eval();
 
@@ -7607,78 +7801,92 @@ namespace tardigradeHydra {
 
             auto map_dPlasticMacroLdPrecedingRCG =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMacroLdPrecedingRCG.data());
-            auto map_dPlasticMacroLdMacroFlowDirection =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMacroLdMacroFlowDirection.data());
-            auto map_dPlasticMacroLdMicroFlowDirection =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMacroLdMicroFlowDirection.data());
+            auto map_dPlasticMacroLdMacroFlowDirection = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                dPlasticMacroLdMacroFlowDirection.data());
+            auto map_dPlasticMacroLdMicroFlowDirection = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                dPlasticMacroLdMicroFlowDirection.data());
 
             auto map_dPlasticMicroLdPrecedingMicroRCG =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMicroLdPrecedingMicroRCG.data());
             auto map_dPlasticMicroLdPrecedingPsi =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMicroLdPrecedingPsi.data());
-            auto map_dPlasticMicroLdMicroFlowDirection =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMicroLdMicroFlowDirection.data());
+            auto map_dPlasticMicroLdMicroFlowDirection = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                dPlasticMicroLdMicroFlowDirection.data());
 
             auto map_dPlasticGradientMicroLdPlasticMicroL =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticGradientMicroLdPlasticMicroL.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticGradientMicroLdPlasticMicroL.data());
             auto map_dPlasticGradientMicroLdPrecedingPsi =
-                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(dPlasticGradientMicroLdPrecedingPsi.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    dPlasticGradientMicroLdPrecedingPsi.data());
             auto map_dPlasticGradientMicroLdPrecedingGamma =
-                getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(dPlasticGradientMicroLdPrecedingGamma.data());
+                getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
+                    dPlasticGradientMicroLdPrecedingGamma.data());
             auto map_dPlasticGradientMicroLdMicroGradientFlowDirection =
                 getFixedSizeMatrixMap<floatType, tot_dimension, 3 * tot_dimension>(
                     dPlasticGradientMicroLdMicroGradientFlowDirection.data());
 
-            auto map_d2MacroFlowdDrivingStressdStress =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(d2MacroFlowdDrivingStressdStress->data());
-            auto map_d2MicroFlowdDrivingStressdStress =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(d2MicroFlowdDrivingStressdStress->data());
-            auto map_d2MicroGradientFlowdDrivingStressdStress = getFixedSizeMatrixMap<floatType, 3 * tot_dimension, tot_dimension>(
-                d2MicroGradientFlowdDrivingStressdStress->data());
+            auto map_d2MacroFlowdDrivingStressdStress = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                d2MacroFlowdDrivingStressdStress->data());
+            auto map_d2MicroFlowdDrivingStressdStress = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                d2MicroFlowdDrivingStressdStress->data());
+            auto map_d2MicroGradientFlowdDrivingStressdStress =
+                getFixedSizeMatrixMap<floatType, 3 * tot_dimension, tot_dimension>(
+                    d2MicroGradientFlowdDrivingStressdStress->data());
             auto map_d2MacroFlowdDrivingStressdF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(d2MacroFlowdDrivingStressdF->data());
             auto map_d2MicroFlowdDrivingStressdF =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(d2MicroFlowdDrivingStressdF->data());
             auto map_d2MicroGradientFlowdDrivingStressdF =
-                getFixedSizeMatrixMap<floatType, 3 * tot_dimension, sot_dimension>(d2MicroGradientFlowdDrivingStressdF->data());
+                getFixedSizeMatrixMap<floatType, 3 * tot_dimension, sot_dimension>(
+                    d2MicroGradientFlowdDrivingStressdF->data());
             auto map_d2MicroGradientFlowdDrivingStressdChi =
-                getFixedSizeMatrixMap<floatType, 3 * tot_dimension, sot_dimension>(d2MicroGradientFlowdDrivingStressdChi->data());
+                getFixedSizeMatrixMap<floatType, 3 * tot_dimension, sot_dimension>(
+                    d2MicroGradientFlowdDrivingStressdChi->data());
             auto map_d2MacroFlowdDrivingStressdFn =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(d2MacroFlowdDrivingStressdFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
             auto map_d2MicroFlowdDrivingStressdFn =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(d2MicroFlowdDrivingStressdFn->data(),
-                                                                  (num_configs - 1) * sot_dimension);
-            auto map_d2MicroGradientFlowdDrivingStressdFn =
-                getDynamicColumnSizeMatrixMap<floatType, 3 * tot_dimension>(d2MicroGradientFlowdDrivingStressdFn->data(),
-                                                                      (num_configs - 1) * sot_dimension);
+                                                                        (num_configs - 1) * sot_dimension);
+            auto map_d2MicroGradientFlowdDrivingStressdFn = getDynamicColumnSizeMatrixMap<floatType, 3 * tot_dimension>(
+                d2MicroGradientFlowdDrivingStressdFn->data(), (num_configs - 1) * sot_dimension);
             auto map_d2MicroGradientFlowdDrivingStressdChin =
-                getDynamicColumnSizeMatrixMap<floatType, 3 * tot_dimension>(d2MicroGradientFlowdDrivingStressdChin->data(),
-                                                                      (num_configs - 1) * sot_dimension);
+                getDynamicColumnSizeMatrixMap<floatType, 3 * tot_dimension>(
+                    d2MicroGradientFlowdDrivingStressdChin->data(), (num_configs - 1) * sot_dimension);
 
-            auto map_dPlasticMacroLdMacroStress = dPlasticMacroLdMacroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_dPlasticMacroLdMicroStress = dPlasticMacroLdMicroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_dPlasticMicroLdMicroStress = dPlasticMicroLdMicroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dPlasticMacroLdMacroStress =
+                dPlasticMacroLdMacroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dPlasticMacroLdMicroStress =
+                dPlasticMacroLdMicroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dPlasticMicroLdMicroStress =
+                dPlasticMicroLdMicroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
             auto map_dPlasticGradientMicroLdMicroStress =
                 dPlasticGradientMicroLdMicroStress.zeroMap<floatType, tot_dimension, sot_dimension>();
-            auto map_dPlasticMacroLdF  = dPlasticMacroLdF.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_dPlasticMacroLdFn = dPlasticMacroLdFn.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
-            auto map_dPlasticMicroLdF  = dPlasticMicroLdF.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_dPlasticMicroLdFn = dPlasticMicroLdFn.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
-            auto map_dPlasticGradientMicroLdF = dPlasticGradientMicroLdF.zeroMap<floatType, tot_dimension, sot_dimension>();
+            auto map_dPlasticMacroLdF = dPlasticMacroLdF.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dPlasticMacroLdFn =
+                dPlasticMacroLdFn.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
+            auto map_dPlasticMicroLdF = dPlasticMicroLdF.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dPlasticMicroLdFn =
+                dPlasticMicroLdFn.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
+            auto map_dPlasticGradientMicroLdF =
+                dPlasticGradientMicroLdF.zeroMap<floatType, tot_dimension, sot_dimension>();
             auto map_dPlasticGradientMicroLdFn =
                 dPlasticGradientMicroLdFn.zeroMap<floatType, tot_dimension>((num_configs - 1) * sot_dimension);
-            auto map_dPlasticMicroLdChi  = dPlasticMicroLdChi.zeroMap<floatType, sot_dimension, sot_dimension>();
-            auto map_dPlasticMicroLdChin = dPlasticMicroLdChin.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
-            auto map_dPlasticGradientMicroLdChi = dPlasticGradientMicroLdChi.zeroMap<floatType, tot_dimension, sot_dimension>();
+            auto map_dPlasticMicroLdChi = dPlasticMicroLdChi.zeroMap<floatType, sot_dimension, sot_dimension>();
+            auto map_dPlasticMicroLdChin =
+                dPlasticMicroLdChin.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
+            auto map_dPlasticGradientMicroLdChi =
+                dPlasticGradientMicroLdChi.zeroMap<floatType, tot_dimension, sot_dimension>();
             auto map_dPlasticGradientMicroLdChin =
                 dPlasticGradientMicroLdChin.zeroMap<floatType, tot_dimension>((num_configs - 1) * sot_dimension);
             auto map_dPlasticGradientMicroLdGradChi =
                 dPlasticGradientMicroLdGradChi.zeroMap<floatType, tot_dimension, tot_dimension>();
             auto map_dPlasticGradientMicroLdGradChin =
                 dPlasticGradientMicroLdGradChin.zeroMap<floatType, tot_dimension>((num_configs - 1) * tot_dimension);
-            auto map_dPlasticMicroLdISVs         = dPlasticMicroLdISVs.zeroMap<floatType, sot_dimension>(num_isvs);
-            auto map_dPlasticGradientMicroLdISVs = dPlasticGradientMicroLdISVs.zeroMap<floatType, tot_dimension>(num_isvs);
+            auto map_dPlasticMicroLdISVs = dPlasticMicroLdISVs.zeroMap<floatType, sot_dimension>(num_isvs);
+            auto map_dPlasticGradientMicroLdISVs =
+                dPlasticGradientMicroLdISVs.zeroMap<floatType, tot_dimension>(num_isvs);
             auto map_dPlasticGradientMicroLdHigherOrderStress =
                 dPlasticGradientMicroLdHigherOrderStress.zeroMap<floatType, tot_dimension, tot_dimension>();
 
@@ -7823,17 +8031,21 @@ namespace tardigradeHydra {
 
             auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
-            const secondOrderTensor previousPlasticDeformationGradient = secondOrderTensor(
-                hydra->deformation->get_previousConfigurations()->begin() + sot_dimension * plasticConfigurationIndex,
-                hydra->deformation->get_previousConfigurations()->begin() + sot_dimension * (plasticConfigurationIndex + 1));
+            const secondOrderTensor previousPlasticDeformationGradient =
+                secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin() +
+                                      sot_dimension * plasticConfigurationIndex,
+                                  hydra->deformation->get_previousConfigurations()->begin() +
+                                      sot_dimension * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
                 hydra->get_previousMicroConfigurations()->begin() + sot_dimension * plasticConfigurationIndex,
                 hydra->get_previousMicroConfigurations()->begin() + sot_dimension * (plasticConfigurationIndex + 1));
 
-            const thirdOrderTensor previousPlasticGradientMicroDeformation = thirdOrderTensor(
-                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dimension * plasticConfigurationIndex,
-                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dimension * (plasticConfigurationIndex + 1));
+            const thirdOrderTensor previousPlasticGradientMicroDeformation =
+                thirdOrderTensor(hydra->get_previousGradientMicroConfigurations()->begin() +
+                                     tot_dimension * plasticConfigurationIndex,
+                                 hydra->get_previousGradientMicroConfigurations()->begin() +
+                                     tot_dimension * (plasticConfigurationIndex + 1));
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 evolvePlasticDeformation(
@@ -8214,17 +8426,21 @@ namespace tardigradeHydra {
 
             auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation();
 
-            const secondOrderTensor previousPlasticDeformationGradient = secondOrderTensor(
-                hydra->deformation->get_previousConfigurations()->begin() + sot_dimension * plasticConfigurationIndex,
-                hydra->deformation->get_previousConfigurations()->begin() + sot_dimension * (plasticConfigurationIndex + 1));
+            const secondOrderTensor previousPlasticDeformationGradient =
+                secondOrderTensor(hydra->deformation->get_previousConfigurations()->begin() +
+                                      sot_dimension * plasticConfigurationIndex,
+                                  hydra->deformation->get_previousConfigurations()->begin() +
+                                      sot_dimension * (plasticConfigurationIndex + 1));
 
             const secondOrderTensor previousPlasticMicroDeformation = secondOrderTensor(
                 hydra->get_previousMicroConfigurations()->begin() + sot_dimension * plasticConfigurationIndex,
                 hydra->get_previousMicroConfigurations()->begin() + sot_dimension * (plasticConfigurationIndex + 1));
 
-            const thirdOrderTensor previousPlasticGradientMicroDeformation = thirdOrderTensor(
-                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dimension * plasticConfigurationIndex,
-                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dimension * (plasticConfigurationIndex + 1));
+            const thirdOrderTensor previousPlasticGradientMicroDeformation =
+                thirdOrderTensor(hydra->get_previousGradientMicroConfigurations()->begin() +
+                                     tot_dimension * plasticConfigurationIndex,
+                                 hydra->get_previousGradientMicroConfigurations()->begin() +
+                                     tot_dimension * (plasticConfigurationIndex + 1));
 
             fourthOrderTensor dPlasticFdPlasticMacroL;
 
@@ -8270,7 +8486,8 @@ namespace tardigradeHydra {
                         getIntegrationParameter(), getIntegrationParameter());)
 
                 auto map_dPlasticFdPreviousPlasticMacroL =
-                    getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticFdPreviousPlasticMacroL.data());
+                    getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                        dPlasticFdPreviousPlasticMacroL.data());
                 auto map_dPlasticMicroDeformationdPreviousPlasticMicroL =
                     getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
                         dPlasticMicroDeformationdPreviousPlasticMicroL.data());
@@ -8290,24 +8507,30 @@ namespace tardigradeHydra {
                 auto map_previousdPlasticMacroVelocityGradientdMicroStress =
                     getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
                         get_previousdPlasticMacroVelocityGradientdMicroStress()->data());
-                auto map_previousdPlasticMacroVelocityGradientdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
-                    get_previousdPlasticMacroVelocityGradientdF()->data());
-                auto map_previousdPlasticMacroVelocityGradientdFn = getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
-                    get_previousdPlasticMacroVelocityGradientdFn()->data(), sot_dimension * (num_configs - 1));
+                auto map_previousdPlasticMacroVelocityGradientdF =
+                    getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                        get_previousdPlasticMacroVelocityGradientdF()->data());
+                auto map_previousdPlasticMacroVelocityGradientdFn =
+                    getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
+                        get_previousdPlasticMacroVelocityGradientdFn()->data(), sot_dimension * (num_configs - 1));
                 auto map_previousdPlasticMacroVelocityGradientdStateVariables =
                     getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
                         get_previousdPlasticMacroVelocityGradientdStateVariables()->data(), num_isvs);
                 auto map_previousdPlasticMicroVelocityGradientdMicroStress =
                     getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
                         get_previousdPlasticMicroVelocityGradientdMicroStress()->data());
-                auto map_previousdPlasticMicroVelocityGradientdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
-                    get_previousdPlasticMicroVelocityGradientdF()->data());
-                auto map_previousdPlasticMicroVelocityGradientdFn = getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
-                    get_previousdPlasticMicroVelocityGradientdFn()->data(), sot_dimension * (num_configs - 1));
-                auto map_previousdPlasticMicroVelocityGradientdChi = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
-                    get_previousdPlasticMicroVelocityGradientdChi()->data());
-                auto map_previousdPlasticMicroVelocityGradientdChin = getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
-                    get_previousdPlasticMicroVelocityGradientdChin()->data(), sot_dimension * (num_configs - 1));
+                auto map_previousdPlasticMicroVelocityGradientdF =
+                    getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                        get_previousdPlasticMicroVelocityGradientdF()->data());
+                auto map_previousdPlasticMicroVelocityGradientdFn =
+                    getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
+                        get_previousdPlasticMicroVelocityGradientdFn()->data(), sot_dimension * (num_configs - 1));
+                auto map_previousdPlasticMicroVelocityGradientdChi =
+                    getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                        get_previousdPlasticMicroVelocityGradientdChi()->data());
+                auto map_previousdPlasticMicroVelocityGradientdChin =
+                    getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
+                        get_previousdPlasticMicroVelocityGradientdChin()->data(), sot_dimension * (num_configs - 1));
                 auto map_previousdPlasticMicroVelocityGradientdStateVariables =
                     getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
                         get_previousdPlasticMicroVelocityGradientdStateVariables()->data(), num_isvs);
@@ -8322,13 +8545,15 @@ namespace tardigradeHydra {
                         get_previousdPlasticGradientMicroVelocityGradientdF()->data());
                 auto map_previousdPlasticGradientMicroVelocityGradientdFn =
                     getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(
-                        get_previousdPlasticGradientMicroVelocityGradientdFn()->data(), sot_dimension * (num_configs - 1));
+                        get_previousdPlasticGradientMicroVelocityGradientdFn()->data(),
+                        sot_dimension * (num_configs - 1));
                 auto map_previousdPlasticGradientMicroVelocityGradientdChi =
                     getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
                         get_previousdPlasticGradientMicroVelocityGradientdChi()->data());
                 auto map_previousdPlasticGradientMicroVelocityGradientdChin =
                     getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(
-                        get_previousdPlasticGradientMicroVelocityGradientdChin()->data(), sot_dimension * (num_configs - 1));
+                        get_previousdPlasticGradientMicroVelocityGradientdChin()->data(),
+                        sot_dimension * (num_configs - 1));
                 auto map_previousdPlasticGradientMicroVelocityGradientdGradChi =
                     getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
                         get_previousdPlasticGradientMicroVelocityGradientdGradChi()->data());
@@ -8343,12 +8568,14 @@ namespace tardigradeHydra {
                 auto dUpdatedPlasticDeformationGradientdPreviousMacroStress =
                     get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousMacroStress();
                 auto map_dUpdatedPlasticDeformationGradientdPreviousMacroStress =
-                    dUpdatedPlasticDeformationGradientdPreviousMacroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
+                    dUpdatedPlasticDeformationGradientdPreviousMacroStress
+                        .zeroMap<floatType, sot_dimension, sot_dimension>();
 
                 auto dUpdatedPlasticDeformationGradientdPreviousMicroStress =
                     get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousMicroStress();
                 auto map_dUpdatedPlasticDeformationGradientdPreviousMicroStress =
-                    dUpdatedPlasticDeformationGradientdPreviousMicroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
+                    dUpdatedPlasticDeformationGradientdPreviousMicroStress
+                        .zeroMap<floatType, sot_dimension, sot_dimension>();
 
                 auto dUpdatedPlasticDeformationGradientdPreviousF =
                     get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousF();
@@ -8362,12 +8589,14 @@ namespace tardigradeHydra {
                 auto dUpdatedPlasticDeformationGradientdPreviousStateVariables =
                     get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousStateVariables();
                 auto map_dUpdatedPlasticDeformationGradientdPreviousStateVariables =
-                    dUpdatedPlasticDeformationGradientdPreviousStateVariables.zeroMap<floatType, sot_dimension>(num_isvs);
+                    dUpdatedPlasticDeformationGradientdPreviousStateVariables.zeroMap<floatType, sot_dimension>(
+                        num_isvs);
 
                 auto dUpdatedPlasticMicroDeformationdPreviousMicroStress =
                     get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousMicroStress();
                 auto map_dUpdatedPlasticMicroDeformationdPreviousMicroStress =
-                    dUpdatedPlasticMicroDeformationdPreviousMicroStress.zeroMap<floatType, sot_dimension, sot_dimension>();
+                    dUpdatedPlasticMicroDeformationdPreviousMicroStress
+                        .zeroMap<floatType, sot_dimension, sot_dimension>();
 
                 auto dUpdatedPlasticMicroDeformationdPreviousF =
                     get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousF();
@@ -8377,7 +8606,8 @@ namespace tardigradeHydra {
                 auto dUpdatedPlasticMicroDeformationdPreviousFn =
                     get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousFn();
                 auto map_dUpdatedPlasticMicroDeformationdPreviousFn =
-                    dUpdatedPlasticMicroDeformationdPreviousFn.zeroMap<floatType, sot_dimension>(sot_dimension * (num_configs - 1));
+                    dUpdatedPlasticMicroDeformationdPreviousFn.zeroMap<floatType, sot_dimension>(sot_dimension *
+                                                                                                 (num_configs - 1));
 
                 auto dUpdatedPlasticMicroDeformationdPreviousChi =
                     get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousChi();
@@ -8388,7 +8618,7 @@ namespace tardigradeHydra {
                     get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousChin();
                 auto map_dUpdatedPlasticMicroDeformationdPreviousChin =
                     dUpdatedPlasticMicroDeformationdPreviousChin.zeroMap<floatType, sot_dimension>(sot_dimension *
-                                                                                             (num_configs - 1));
+                                                                                                   (num_configs - 1));
 
                 auto dUpdatedPlasticMicroDeformationdPreviousStateVariables =
                     get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousStateVariables();
@@ -8398,12 +8628,14 @@ namespace tardigradeHydra {
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress();
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress =
-                    dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress.zeroMap<floatType, tot_dimension, sot_dimension>();
+                    dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress
+                        .zeroMap<floatType, tot_dimension, sot_dimension>();
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress();
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress =
-                    dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress.zeroMap<floatType, tot_dimension, sot_dimension>();
+                    dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress
+                        .zeroMap<floatType, tot_dimension, sot_dimension>();
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress();
@@ -8414,29 +8646,32 @@ namespace tardigradeHydra {
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousF =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousF();
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousF =
-                    dUpdatedPlasticGradientMicroDeformationdPreviousF.zeroMap<floatType, tot_dimension, sot_dimension>();
+                    dUpdatedPlasticGradientMicroDeformationdPreviousF
+                        .zeroMap<floatType, tot_dimension, sot_dimension>();
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousFn =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousFn();
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousFn =
-                    dUpdatedPlasticGradientMicroDeformationdPreviousFn.zeroMap<floatType, tot_dimension>(sot_dimension *
-                                                                                                   (num_configs - 1));
+                    dUpdatedPlasticGradientMicroDeformationdPreviousFn.zeroMap<floatType, tot_dimension>(
+                        sot_dimension * (num_configs - 1));
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousChi =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChi();
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousChi =
-                    dUpdatedPlasticGradientMicroDeformationdPreviousChi.zeroMap<floatType, tot_dimension, sot_dimension>();
+                    dUpdatedPlasticGradientMicroDeformationdPreviousChi
+                        .zeroMap<floatType, tot_dimension, sot_dimension>();
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousChin =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChin();
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousChin =
-                    dUpdatedPlasticGradientMicroDeformationdPreviousChin.zeroMap<floatType, tot_dimension>(sot_dimension *
-                                                                                                     (num_configs - 1));
+                    dUpdatedPlasticGradientMicroDeformationdPreviousChin.zeroMap<floatType, tot_dimension>(
+                        sot_dimension * (num_configs - 1));
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChi =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi();
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi =
-                    dUpdatedPlasticGradientMicroDeformationdPreviousGradChi.zeroMap<floatType, tot_dimension, tot_dimension>();
+                    dUpdatedPlasticGradientMicroDeformationdPreviousGradChi
+                        .zeroMap<floatType, tot_dimension, tot_dimension>();
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChin =
                     get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin();
@@ -8640,7 +8875,8 @@ namespace tardigradeHydra {
             auto map_dPlasticFdPlasticMacroL =
                 getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticFdPlasticMacroL.data());
             auto map_dPlasticMicroDeformationdPlasticMicroL =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dPlasticMicroDeformationdPlasticMicroL.data());
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                    dPlasticMicroDeformationdPlasticMicroL.data());
             auto map_dPlasticGradientMicroDeformationdPlasticMacroL =
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
                     dPlasticGradientMicroDeformationdPlasticMacroL.data());
@@ -8651,49 +8887,58 @@ namespace tardigradeHydra {
                 getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
                     dPlasticGradientMicroDeformationdPlasticGradientMicroL.data());
 
-            auto map_dPlasticMacroVelocityGradientdMacroStress = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
-                get_dPlasticMacroVelocityGradientdMacroStress()->data());
-            auto map_dPlasticMacroVelocityGradientdMicroStress = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
-                get_dPlasticMacroVelocityGradientdMicroStress()->data());
-            auto map_dPlasticMacroVelocityGradientdF =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(get_dPlasticMacroVelocityGradientdF()->data());
+            auto map_dPlasticMacroVelocityGradientdMacroStress =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                    get_dPlasticMacroVelocityGradientdMacroStress()->data());
+            auto map_dPlasticMacroVelocityGradientdMicroStress =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                    get_dPlasticMacroVelocityGradientdMicroStress()->data());
+            auto map_dPlasticMacroVelocityGradientdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                get_dPlasticMacroVelocityGradientdF()->data());
             auto map_dPlasticMacroVelocityGradientdFn =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(get_dPlasticMacroVelocityGradientdFn()->data(),
-                                                                  sot_dimension * (num_configs - 1));
-            auto map_dPlasticMacroVelocityGradientdStateVariables = getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
-                get_dPlasticMacroVelocityGradientdStateVariables()->data(), num_isvs);
-            auto map_dPlasticMicroVelocityGradientdMicroStress = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
-                get_dPlasticMicroVelocityGradientdMicroStress()->data());
-            auto map_dPlasticMicroVelocityGradientdF =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(get_dPlasticMicroVelocityGradientdF()->data());
+                                                                        sot_dimension * (num_configs - 1));
+            auto map_dPlasticMacroVelocityGradientdStateVariables =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
+                    get_dPlasticMacroVelocityGradientdStateVariables()->data(), num_isvs);
+            auto map_dPlasticMicroVelocityGradientdMicroStress =
+                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                    get_dPlasticMicroVelocityGradientdMicroStress()->data());
+            auto map_dPlasticMicroVelocityGradientdF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                get_dPlasticMicroVelocityGradientdF()->data());
             auto map_dPlasticMicroVelocityGradientdFn =
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(get_dPlasticMicroVelocityGradientdFn()->data(),
-                                                                  sot_dimension * (num_configs - 1));
-            auto map_dPlasticMicroVelocityGradientdChi =
-                getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(get_dPlasticMicroVelocityGradientdChi()->data());
-            auto map_dPlasticMicroVelocityGradientdChin =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(get_dPlasticMicroVelocityGradientdChin()->data(),
-                                                                  sot_dimension * (num_configs - 1));
-            auto map_dPlasticMicroVelocityGradientdStateVariables = getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
-                get_dPlasticMicroVelocityGradientdStateVariables()->data(), num_isvs);
+                                                                        sot_dimension * (num_configs - 1));
+            auto map_dPlasticMicroVelocityGradientdChi = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(
+                get_dPlasticMicroVelocityGradientdChi()->data());
+            auto map_dPlasticMicroVelocityGradientdChin = getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
+                get_dPlasticMicroVelocityGradientdChin()->data(), sot_dimension * (num_configs - 1));
+            auto map_dPlasticMicroVelocityGradientdStateVariables =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(
+                    get_dPlasticMicroVelocityGradientdStateVariables()->data(), num_isvs);
             auto map_dPlasticGradientMicroVelocityGradientdMicroStress =
                 getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
                     get_dPlasticGradientMicroVelocityGradientdMicroStress()->data());
             auto map_dPlasticGradientMicroVelocityGradientdHigherOrderStress =
                 getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
                     get_dPlasticGradientMicroVelocityGradientdHigherOrderStress()->data());
-            auto map_dPlasticGradientMicroVelocityGradientdF = getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
-                get_dPlasticGradientMicroVelocityGradientdF()->data());
+            auto map_dPlasticGradientMicroVelocityGradientdF =
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    get_dPlasticGradientMicroVelocityGradientdF()->data());
             auto map_dPlasticGradientMicroVelocityGradientdFn = getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(
                 get_dPlasticGradientMicroVelocityGradientdFn()->data(), sot_dimension * (num_configs - 1));
-            auto map_dPlasticGradientMicroVelocityGradientdChi = getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
-                get_dPlasticGradientMicroVelocityGradientdChi()->data());
-            auto map_dPlasticGradientMicroVelocityGradientdChin = getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(
-                get_dPlasticGradientMicroVelocityGradientdChin()->data(), sot_dimension * (num_configs - 1));
-            auto map_dPlasticGradientMicroVelocityGradientdGradChi = getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
-                get_dPlasticGradientMicroVelocityGradientdGradChi()->data());
-            auto map_dPlasticGradientMicroVelocityGradientdGradChin = getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(
-                get_dPlasticGradientMicroVelocityGradientdGradChin()->data(), tot_dimension * (num_configs - 1));
+            auto map_dPlasticGradientMicroVelocityGradientdChi =
+                getFixedSizeMatrixMap<floatType, tot_dimension, sot_dimension>(
+                    get_dPlasticGradientMicroVelocityGradientdChi()->data());
+            auto map_dPlasticGradientMicroVelocityGradientdChin =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(
+                    get_dPlasticGradientMicroVelocityGradientdChin()->data(), sot_dimension * (num_configs - 1));
+            auto map_dPlasticGradientMicroVelocityGradientdGradChi =
+                getFixedSizeMatrixMap<floatType, tot_dimension, tot_dimension>(
+                    get_dPlasticGradientMicroVelocityGradientdGradChi()->data());
+            auto map_dPlasticGradientMicroVelocityGradientdGradChin =
+                getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(
+                    get_dPlasticGradientMicroVelocityGradientdGradChin()->data(), tot_dimension * (num_configs - 1));
             auto map_dPlasticGradientMicroVelocityGradientdStateVariables =
                 getDynamicColumnSizeMatrixMap<floatType, tot_dimension>(
                     get_dPlasticGradientMicroVelocityGradientdStateVariables()->data(), num_isvs);
@@ -8714,7 +8959,8 @@ namespace tardigradeHydra {
 
             auto dUpdatedPlasticDeformationGradientdFn = get_SetDataStorage_dUpdatedPlasticDeformationGradientdFn();
             auto map_dUpdatedPlasticDeformationGradientdFn =
-                dUpdatedPlasticDeformationGradientdFn.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
+                dUpdatedPlasticDeformationGradientdFn.zeroMap<floatType, sot_dimension>((num_configs - 1) *
+                                                                                        sot_dimension);
 
             auto dUpdatedPlasticDeformationGradientdStateVariables =
                 get_SetDataStorage_dUpdatedPlasticDeformationGradientdStateVariables();
@@ -8740,7 +8986,8 @@ namespace tardigradeHydra {
 
             auto dUpdatedPlasticMicroDeformationdChin = get_SetDataStorage_dUpdatedPlasticMicroDeformationdChin();
             auto map_dUpdatedPlasticMicroDeformationdChin =
-                dUpdatedPlasticMicroDeformationdChin.zeroMap<floatType, sot_dimension>((num_configs - 1) * sot_dimension);
+                dUpdatedPlasticMicroDeformationdChin.zeroMap<floatType, sot_dimension>((num_configs - 1) *
+                                                                                       sot_dimension);
 
             auto dUpdatedPlasticMicroDeformationdStateVariables =
                 get_SetDataStorage_dUpdatedPlasticMicroDeformationdStateVariables();
@@ -8760,7 +9007,8 @@ namespace tardigradeHydra {
             auto dUpdatedPlasticGradientMicroDeformationdHigherOrderStress =
                 get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress();
             auto map_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress =
-                dUpdatedPlasticGradientMicroDeformationdHigherOrderStress.zeroMap<floatType, tot_dimension, tot_dimension>();
+                dUpdatedPlasticGradientMicroDeformationdHigherOrderStress
+                    .zeroMap<floatType, tot_dimension, tot_dimension>();
 
             auto dUpdatedPlasticGradientMicroDeformationdF =
                 get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdF();
@@ -8770,7 +9018,8 @@ namespace tardigradeHydra {
             auto dUpdatedPlasticGradientMicroDeformationdFn =
                 get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdFn();
             auto map_dUpdatedPlasticGradientMicroDeformationdFn =
-                dUpdatedPlasticGradientMicroDeformationdFn.zeroMap<floatType, tot_dimension>((num_configs - 1) * sot_dimension);
+                dUpdatedPlasticGradientMicroDeformationdFn.zeroMap<floatType, tot_dimension>((num_configs - 1) *
+                                                                                             sot_dimension);
 
             auto dUpdatedPlasticGradientMicroDeformationdChi =
                 get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdChi();
@@ -8780,7 +9029,8 @@ namespace tardigradeHydra {
             auto dUpdatedPlasticGradientMicroDeformationdChin =
                 get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdChin();
             auto map_dUpdatedPlasticGradientMicroDeformationdChin =
-                dUpdatedPlasticGradientMicroDeformationdChin.zeroMap<floatType, tot_dimension>((num_configs - 1) * sot_dimension);
+                dUpdatedPlasticGradientMicroDeformationdChin.zeroMap<floatType, tot_dimension>((num_configs - 1) *
+                                                                                               sot_dimension);
 
             auto dUpdatedPlasticGradientMicroDeformationdGradChi =
                 get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChi();
@@ -8791,7 +9041,7 @@ namespace tardigradeHydra {
                 get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChin();
             auto map_dUpdatedPlasticGradientMicroDeformationdGradChin =
                 dUpdatedPlasticGradientMicroDeformationdGradChin.zeroMap<floatType, tot_dimension>((num_configs - 1) *
-                                                                                             tot_dimension);
+                                                                                                   tot_dimension);
 
             auto dUpdatedPlasticGradientMicroDeformationdStateVariables =
                 get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdStateVariables();
