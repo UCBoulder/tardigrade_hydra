@@ -35,15 +35,20 @@ namespace tardigradeHydra {
      *
      * \f$ F_{iI}^{t+1} = F_{iI}^t + \Delta t \left( 1 - \alpha \right) L_{ij}^t F_{jI}^t + \Delta t \alpha L_{ij}^{t+1} F_{jI}^{t+1} \f$
      *
-     * \f$ \left(\delta_{ij} - \Delta t \alpha L_{ij}^{t+1} \right) F_{jI}^{t+1} = \left(\delta_{ij} + \Delta t \left(1 - \alpha \right) F_{jI}^t \f$
+     * \f$ \left(\delta_{ij} - \Delta t \alpha L_{ij}^{t+1} \right) F_{jI}^{t+1} = \left(\delta_{ij} + \Delta t \left(1 - \alpha \right) L_{ij}^{t}\right) F_{jI}^t \f$
      *
      * which can be solved for \f$F_{jI}^{t+1}\f$.
      *
-     * By default the integration parameter is 0.5 which enables second
-     * order accuracy. If it is set to 0.0, then the evolution equation is
-     * explicitly integrated, and 1.0 then the integration is fully implicit.
+     * By default the integration parameter (available as integration_paramter) is
+     * 0.5 which enables second order accuracy. If it is set to 0.0, then the
+     * evolution equation is explicitly integrated, and 1.0 then the integration
+     * is fully implicit.
+     *
+     * In some cases (e.g., if the rate is very large) it may be helpful to use the
+     * fully implicit method. A value of 0.5 can be shown to be marginally stable
+     * in that it may oscillate, but the oscillations do not grow.
      */
-    template <class container>
+    template <class container, int size>
     class DeformationEvolutionBase : public ResidualBase<container> {
         public:
 	    using tardigradeHydra::ResidualBase::ResidualBase;
@@ -51,9 +56,10 @@ namespace tardigradeHydra {
 	    double integration_parameter = 0.5;
 
 	    template<
-		class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator
+		typename dt_type, class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator
 	    >
-        void computeDeformation(const Lt_iterator &Lt_begin, const Lt_iterator &Lt_end,
+        void computeDeformation(cont dt_type &dt,
+                                const Lt_iterator &Lt_begin, const Lt_iterator &Lt_end,
                                 const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
                                 const Ft_iterator &Ft_begin, const Ft_iterator &Ft_end,
                                 Ftp1_iterator Ftp1_begin, Ftp1_iterator Ftp1_end);
