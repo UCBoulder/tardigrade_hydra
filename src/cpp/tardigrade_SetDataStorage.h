@@ -279,7 +279,9 @@ namespace tardigradeHydra {
      */
     template <typename key_type, typename value_type>
     struct Entry {
-        key_type   key;
+        //! The indexing key for the entry. Must be able to compare with ==
+        key_type key;
+        //! The value indexed by the key
         value_type value;
     };
 

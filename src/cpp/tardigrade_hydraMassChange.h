@@ -94,6 +94,12 @@ namespace tardigradeHydra {
                 TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeHydra::massChange::residual::decomposeParameters(parameters));
             }
 
+            //! The dimension of a second-order tensor
+            static constexpr unsigned int sot_dimension = dimension * dimension;
+
+            //! The dimension of a third-order tensor
+            static constexpr unsigned int tot_dimension = dimension * dimension * dimension;
+
             //! Get the index of the mass-change configuration
             const unsigned int getMassChangeConfigurationIndex() { return _massChangeConfigurationIndex; }
 

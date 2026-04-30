@@ -51,6 +51,7 @@ namespace tardigradeHydra {
     }
 
     namespace unit_test {
+        class HydraBaseTester;  //!< Friend class for HydraBase for unit testing
         class hydraBaseTester;  //!< Friend class for hydraBase for unit testing
     }  // namespace unit_test
 
@@ -197,8 +198,17 @@ namespace tardigradeHydra {
         const unsigned int _num_nonlinear_solve_state_variables;
     };
 
+    class HydraClassical3DConfiguration {
+       public:
+        //! The spatial dimension
+        static constexpr int dimension = 3;
+
+       protected:
+       private:
+    };
+
     /*!
-     * hydraBase: A base class which can be used to construct finite deformation material models.
+     * HydraBase: A base class template which can be used to construct finite deformation material models.
      *
      * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
      * more rapidly than would be possible previously. The user can define as many different configurations as desired
@@ -206,7 +216,37 @@ namespace tardigradeHydra {
      *
      * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
      */
-    class hydraBase : public CachingDataBase {
+    template <class _configuration>
+    class HydraBase : public CachingDataBase {
+       public:
+        //! The core configuration of the hydra object
+        using configuration = _configuration;
+
+        // Logging capabilities. Move to stand-alone class
+        template <class v_type>
+        void addToFailureOutput(const v_type &v, bool add_endline = true);
+
+        template <class v_iterator>
+        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true);
+
+        void addToFailureOutput(const std::string &value, bool add_endline = false);
+
+        void addToFailureOutput(const floatVector &value, bool add_endline = true);
+
+        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
+
+        void addToFailureOutput(const floatType &value, bool add_endline = true);
+
+       protected:
+        // Logging capabilities. Move to stand-alone class
+        //! Additional failure output information
+        std::stringstream _failure_output;
+    };
+
+    /*!
+     * A base class for 3D Classical continuum
+     */
+    class hydraBase : public HydraBase<HydraClassical3DConfiguration> {
        public:
         // Constructors
         //! Default constructor for hydraBase
@@ -285,22 +325,6 @@ namespace tardigradeHydra {
 
         const unsigned int getCurrentResidualOffset();
 
-        //! Get the dimension
-        constexpr unsigned int getDimension() { return deformation->dimension; }
-
-        //! Get a second order tensor's dimension
-        constexpr unsigned int getSOTDimension() { return deformation->dimension * deformation->dimension; }
-
-        //! Get a third order tensor's dimension
-        constexpr unsigned int getTOTDimension() {
-            return deformation->dimension * deformation->dimension * deformation->dimension;
-        }
-
-        //! Get a fourth order tensor's dimension
-        constexpr unsigned int getFOTDimension() {
-            return deformation->dimension * deformation->dimension * deformation->dimension * deformation->dimension;
-        }
-
         virtual void setResidualClasses();
 
         void setResidualClasses(std::vector<ResidualBase<hydraBase> *> &residualClasses);
@@ -369,20 +393,6 @@ namespace tardigradeHydra {
 
         //! Get the verbosity level for failure outputs
         const unsigned int getFailureVerbosityLevel() { return _failure_verbosity_level; }
-
-        void addToFailureOutput(const std::string &value, bool add_endline = false);
-
-        void addToFailureOutput(const floatVector &value, bool add_endline = true);
-
-        void addToFailureOutput(const std::vector<bool> &value, bool add_endline = true);
-
-        void addToFailureOutput(const floatType &value, bool add_endline = true);
-
-        template <class v_type>
-        void addToFailureOutput(const v_type &v, bool add_endline = true);
-
-        template <class v_iterator>
-        void addToFailureOutput(const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true);
 
         //! Get the failure output string
         const std::string getFailureOutput() { return _failure_output.str(); }
@@ -594,9 +604,6 @@ namespace tardigradeHydra {
 
         //! The verbosity level for failure
         unsigned int _failure_verbosity_level = 0;
-
-        //! Additional failure output information
-        std::stringstream _failure_output;
 
         //! A scale factor applied to the incoming loading (deformation, temperature, etc.)
         floatType _scale_factor = 1.0;

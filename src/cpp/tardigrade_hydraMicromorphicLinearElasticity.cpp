@@ -87,9 +87,9 @@ namespace tardigradeHydra {
              *     micro-deformation.
              */
 
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             variableVector PK2Stress, referenceMicroStress, referenceHigherOrderStress;
 
@@ -113,54 +113,56 @@ namespace tardigradeHydra {
                 dHigherOrderStressdReferenceHigherOrderStress));
 
             // Size the target vectors
-            dCauchyStressdChi          = floatVector(sot_dim * sot_dim, 0);
-            dCauchyStressdGradChi      = floatVector(sot_dim * tot_dim, 0);
-            dMicroStressdChi           = floatVector(sot_dim * sot_dim, 0);
-            dMicroStressdGradChi       = floatVector(sot_dim * tot_dim, 0);
-            dHigherOrderStressdGradChi = floatVector(tot_dim * tot_dim, 0);
+            dCauchyStressdChi          = floatVector(sot_dimension * sot_dimension, 0);
+            dCauchyStressdGradChi      = floatVector(sot_dimension * tot_dimension, 0);
+            dMicroStressdChi           = floatVector(sot_dimension * sot_dimension, 0);
+            dMicroStressdGradChi       = floatVector(sot_dimension * tot_dimension, 0);
+            dHigherOrderStressdGradChi = floatVector(tot_dimension * tot_dimension, 0);
 
             // Set up the Eigen Maps
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dCauchyStressdF_map(
-                dCauchyStressdF.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dCauchyStressdChi_map(
-                dCauchyStressdChi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, tot_dim, Eigen::RowMajor> > dCauchyStressdGradChi_map(
-                dCauchyStressdGradChi.data(), sot_dim, tot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dCauchyStressdPK2Stress_map(
-                dCauchyStressdPK2Stress.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dPK2StressdF_map(
-                dPK2StressdF.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dPK2StressdChi_map(
-                dPK2StressdChi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, tot_dim, Eigen::RowMajor> > dPK2StressdGradChi_map(
-                dPK2StressdGradChi.data(), sot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dCauchyStressdF_map(
+                dCauchyStressdF.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dCauchyStressdChi_map(dCauchyStressdChi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                dCauchyStressdGradChi_map(dCauchyStressdGradChi.data(), sot_dimension, tot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dCauchyStressdPK2Stress_map(dCauchyStressdPK2Stress.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dPK2StressdF_map(
+                dPK2StressdF.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dPK2StressdChi_map(
+                dPK2StressdChi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                dPK2StressdGradChi_map(dPK2StressdGradChi.data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dMicroStressdF_map(
-                dMicroStressdF.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dMicroStressdChi_map(
-                dMicroStressdChi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, tot_dim, Eigen::RowMajor> > dMicroStressdGradChi_map(
-                dMicroStressdGradChi.data(), sot_dim, tot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> >
-                dMicroStressdReferenceMicroStress_map(dMicroStressdReferenceMicroStress.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dReferenceMicroStressdF_map(
-                dReferenceMicroStressdF.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dReferenceMicroStressdChi_map(
-                dReferenceMicroStressdChi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, tot_dim, Eigen::RowMajor> >
-                dReferenceMicroStressdGradChi_map(dReferenceMicroStressdGradChi.data(), sot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dMicroStressdF_map(
+                dMicroStressdF.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dMicroStressdChi_map(dMicroStressdChi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                dMicroStressdGradChi_map(dMicroStressdGradChi.data(), sot_dimension, tot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dMicroStressdReferenceMicroStress_map(dMicroStressdReferenceMicroStress.data(), sot_dimension,
+                                                      sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdF_map(dReferenceMicroStressdF.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdChi_map(dReferenceMicroStressdChi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdGradChi_map(dReferenceMicroStressdGradChi.data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > dHigherOrderStressdF_map(
-                dHigherOrderStressdF.data(), tot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > dHigherOrderStressdGradChi_map(
-                dHigherOrderStressdGradChi.data(), tot_dim, tot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> >
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, sot_dimension, Eigen::RowMajor> >
+                dHigherOrderStressdF_map(dHigherOrderStressdF.data(), tot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                dHigherOrderStressdGradChi_map(dHigherOrderStressdGradChi.data(), tot_dimension, tot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> >
                 dHigherOrderStressdReferenceHigherOrderStress_map(dHigherOrderStressdReferenceHigherOrderStress.data(),
-                                                                  tot_dim, tot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> >
-                dReferenceHigherOrderStressdF_map(dReferenceHigherOrderStressdF.data(), tot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> >
-                dReferenceHigherOrderStressdGradChi_map(dReferenceHigherOrderStressdGradChi.data(), tot_dim, tot_dim);
+                                                                  tot_dimension, tot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, sot_dimension, Eigen::RowMajor> >
+                dReferenceHigherOrderStressdF_map(dReferenceHigherOrderStressdF.data(), tot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                dReferenceHigherOrderStressdGradChi_map(dReferenceHigherOrderStressdGradChi.data(), tot_dimension,
+                                                        tot_dimension);
 
             // Assemble the jacobians of the Cauchy stress
             dCauchyStressdF_map       = (dCauchyStressdF_map + dCauchyStressdPK2Stress_map * dPK2StressdF_map).eval();
@@ -257,9 +259,9 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             // Compute the required deformation measures
             variableVector RCG, Psi, Gamma;
@@ -278,64 +280,64 @@ namespace tardigradeHydra {
                 dReferenceMicroStressdGamma, dMdGamma));
 
             // Size the arrays
-            dPK2StressdF       = floatVector(sot_dim * sot_dim, 0);
-            dPK2StressdChi     = floatVector(sot_dim * sot_dim, 0);
-            dPK2StressdGradChi = floatVector(sot_dim * tot_dim, 0);
+            dPK2StressdF       = floatVector(sot_dimension * sot_dimension, 0);
+            dPK2StressdChi     = floatVector(sot_dimension * sot_dimension, 0);
+            dPK2StressdGradChi = floatVector(sot_dimension * tot_dimension, 0);
 
-            dReferenceMicroStressdF       = floatVector(sot_dim * sot_dim, 0);
-            dReferenceMicroStressdChi     = floatVector(sot_dim * sot_dim, 0);
-            dReferenceMicroStressdGradChi = floatVector(sot_dim * tot_dim, 0);
+            dReferenceMicroStressdF       = floatVector(sot_dimension * sot_dimension, 0);
+            dReferenceMicroStressdChi     = floatVector(sot_dimension * sot_dimension, 0);
+            dReferenceMicroStressdGradChi = floatVector(sot_dimension * tot_dimension, 0);
 
-            dMdF       = floatVector(tot_dim * sot_dim, 0);
-            dMdGradChi = floatVector(tot_dim * tot_dim, 0);
+            dMdF       = floatVector(tot_dimension * sot_dimension, 0);
+            dMdGradChi = floatVector(tot_dimension * tot_dimension, 0);
 
             // Form the Eigen maps
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dPK2StressdF_map(
-                dPK2StressdF.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dPK2StressdChi_map(
-                dPK2StressdChi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, tot_dim, Eigen::RowMajor> > dPK2StressdGradChi_map(
-                dPK2StressdGradChi.data(), sot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dPK2StressdF_map(
+                dPK2StressdF.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dPK2StressdChi_map(
+                dPK2StressdChi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                dPK2StressdGradChi_map(dPK2StressdGradChi.data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dPK2StressdRCG_map(
-                dPK2StressdRCG.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dPK2StressdPsi_map(
-                dPK2StressdPsi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, tot_dim, Eigen::RowMajor> > dPK2StressdGamma_map(
-                dPK2StressdGamma.data(), sot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dPK2StressdRCG_map(
+                dPK2StressdRCG.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dPK2StressdPsi_map(
+                dPK2StressdPsi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                dPK2StressdGamma_map(dPK2StressdGamma.data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dReferenceMicroStressdF_map(
-                dReferenceMicroStressdF.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dReferenceMicroStressdChi_map(
-                dReferenceMicroStressdChi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, tot_dim, Eigen::RowMajor> >
-                dReferenceMicroStressdGradChi_map(dReferenceMicroStressdGradChi.data(), sot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdF_map(dReferenceMicroStressdF.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdChi_map(dReferenceMicroStressdChi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdGradChi_map(dReferenceMicroStressdGradChi.data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dReferenceMicroStressdRCG_map(
-                dReferenceMicroStressdRCG.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dReferenceMicroStressdPsi_map(
-                dReferenceMicroStressdPsi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, tot_dim, Eigen::RowMajor> > dReferenceMicroStressdGamma_map(
-                dReferenceMicroStressdGamma.data(), sot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdRCG_map(dReferenceMicroStressdRCG.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdPsi_map(dReferenceMicroStressdPsi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                dReferenceMicroStressdGamma_map(dReferenceMicroStressdGamma.data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > dMdF_map(dMdF.data(), tot_dim,
-                                                                                                 sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > dMdGradChi_map(
-                dMdGradChi.data(), tot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, sot_dimension, Eigen::RowMajor> > dMdF_map(
+                dMdF.data(), tot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > dMdGradChi_map(
+                dMdGradChi.data(), tot_dimension, tot_dimension);
 
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > dMdGamma_map(dMdGamma.data(),
-                                                                                                     tot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > dMdGamma_map(
+                dMdGamma.data(), tot_dimension, tot_dimension);
 
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dRCGdF_map(dRCGdF.data(),
-                                                                                                   sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dPsidF_map(dPsidF.data(),
-                                                                                                   sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, sot_dim, sot_dim, Eigen::RowMajor> > dPsidChi_map(dPsidChi.data(),
-                                                                                                     sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, sot_dim, Eigen::RowMajor> > dGammadF_map(dGammadF.data(),
-                                                                                                     tot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<variableType, tot_dim, tot_dim, Eigen::RowMajor> > dGammadGradChi_map(
-                dGammadGradChi.data(), tot_dim, tot_dim);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dRCGdF_map(
+                dRCGdF.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dPsidF_map(
+                dPsidF.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, sot_dimension, sot_dimension, Eigen::RowMajor> > dPsidChi_map(
+                dPsidChi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, sot_dimension, Eigen::RowMajor> > dGammadF_map(
+                dGammadF.data(), tot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<variableType, tot_dimension, tot_dimension, Eigen::RowMajor> > dGammadGradChi_map(
+                dGammadGradChi.data(), tot_dimension, tot_dimension);
 
             dPK2StressdF_map       = (dPK2StressdRCG_map * dRCGdF_map + dPK2StressdPsi_map * dPsidF_map +
                                       dPK2StressdGamma_map * dGammadF_map)
@@ -381,7 +383,7 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
             variableVector                                               invRCG = rightCauchyGreenDeformation;
             Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> > mat(invRCG.data(), 3, 3);
@@ -390,9 +392,9 @@ namespace tardigradeHydra {
             // Compute the strain measures
             variableVector greenLagrangeStrain = 0.5 * rightCauchyGreenDeformation;
             variableVector microStrain         = Psi;
-            for (unsigned int i = 0; i < dim; i++) {
-                greenLagrangeStrain[dim * i + i] -= 0.5;
-                microStrain[dim * i + i] -= 1;
+            for (unsigned int i = 0; i < dimension; i++) {
+                greenLagrangeStrain[dimension * i + i] -= 0.5;
+                microStrain[dimension * i + i] -= 1;
             }
 
             // Compute the higher order stress
@@ -468,11 +470,11 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim      = 3;
-            constexpr unsigned int sot_dim  = dim * dim;
-            constexpr unsigned int tot_dim  = sot_dim * dim;
-            constexpr unsigned int fot_dim  = tot_dim * dim;
-            constexpr unsigned int fiot_dim = fot_dim * dim;
+            constexpr unsigned int dimension      = 3;
+            constexpr unsigned int sot_dimension  = dimension * dimension;
+            constexpr unsigned int tot_dimension  = sot_dimension * dimension;
+            constexpr unsigned int fot_dimension  = tot_dimension * dimension;
+            constexpr unsigned int fiot_dimension = fot_dimension * dimension;
 
             variableVector                                               invRCG = rightCauchyGreenDeformation;
             Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor> > mat(invRCG.data(), 3, 3);
@@ -481,9 +483,9 @@ namespace tardigradeHydra {
             // Compute the strain measures
             variableVector greenLagrangeStrain = 0.5 * rightCauchyGreenDeformation;
             variableVector microStrain         = Psi;
-            for (unsigned int i = 0; i < dim; i++) {
-                greenLagrangeStrain[dim * i + i] -= 0.5;
-                microStrain[dim * i + i] -= 1;
+            for (unsigned int i = 0; i < dimension; i++) {
+                greenLagrangeStrain[dimension * i + i] -= 0.5;
+                microStrain[dimension * i + i] -= 1;
             }
 
             // Compute the higher order stress
@@ -513,16 +515,16 @@ namespace tardigradeHydra {
 
             dTerm2dRCG *= 0.5;
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dTerm2dInvRCGPsi(
-                dTerm2dInvRCGPsi.data(), sot_dim, sot_dim);
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dInvRCGPsidRCG(
-                dInvRCGPsidRCG.data(), sot_dim, sot_dim);
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dInvRCGPsidPsi(
-                dInvRCGPsidPsi.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dTerm2dRCG(dTerm2dRCG.data(),
-                                                                                                    sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dTerm2dPsi(dTerm2dPsi.data(),
-                                                                                                    sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dTerm2dInvRCGPsi(dTerm2dInvRCGPsi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dInvRCGPsidRCG(dInvRCGPsidRCG.data(), sot_dimension, sot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dInvRCGPsidPsi(dInvRCGPsidPsi.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dTerm2dRCG(
+                dTerm2dRCG.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dTerm2dPsi(
+                dTerm2dPsi.data(), sot_dimension, sot_dimension);
 
             map_dTerm2dRCG += (map_dTerm2dInvRCGPsi * map_dInvRCGPsidRCG).eval();
             map_dTerm2dPsi += (map_dTerm2dInvRCGPsi * map_dInvRCGPsidPsi).eval();
@@ -539,28 +541,26 @@ namespace tardigradeHydra {
             TARDIGRADE_ERROR_TOOLS_CATCH(computeLinearElasticTerm3(invRCGGamma, referenceHigherOrderStress, term3,
                                                                    dTerm3dInvRCGGamma, dTerm3dM));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dTerm3dInvRCGGamma(
-                dTerm3dInvRCGGamma.data(), sot_dim, tot_dim);
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dInvRCGGammadRCG(
-                dInvRCGGammadRCG.data(), tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dTerm3dInvRCGGamma(dTerm3dInvRCGGamma.data(), sot_dimension, tot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dInvRCGGammadRCG(dInvRCGGammadRCG.data(), tot_dimension, sot_dimension);
 
-            fourthOrderTensor                                                        dTerm3dRCG(fot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dTerm3dRCG(dTerm3dRCG.data(),
-                                                                                                    sot_dim, sot_dim);
+            fourthOrderTensor dTerm3dRCG(fot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dTerm3dRCG(
+                dTerm3dRCG.data(), sot_dimension, sot_dimension);
 
             map_dTerm3dRCG = (map_dTerm3dInvRCGGamma * map_dInvRCGGammadRCG).eval();
 
-            fifthOrderTensor                                                               dTerm3dGamma(fiot_dim, 0);
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dInvRCGGammadGamma(
-                dInvRCGGammadGamma.data(), tot_dim, tot_dim);
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dTerm3dM(dTerm3dM.data(),
-                                                                                                        sot_dim,
-                                                                                                        tot_dim);
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dMdGamma(dMdGamma.data(),
-                                                                                                        tot_dim,
-                                                                                                        tot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> >       map_dTerm3dGamma(
-                dTerm3dGamma.data(), sot_dim, tot_dim);
+            fifthOrderTensor dTerm3dGamma(fiot_dimension, 0);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dInvRCGGammadGamma(dInvRCGGammadGamma.data(), tot_dimension, tot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> > map_dTerm3dM(
+                dTerm3dM.data(), sot_dimension, tot_dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> > map_dMdGamma(
+                dMdGamma.data(), tot_dimension, tot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> > map_dTerm3dGamma(
+                dTerm3dGamma.data(), sot_dimension, tot_dimension);
 
             map_dTerm3dGamma = (map_dTerm3dInvRCGGamma * map_dInvRCGGammadGamma).eval();
             map_dTerm3dGamma += (map_dTerm3dM * map_dMdGamma).eval();
@@ -581,23 +581,23 @@ namespace tardigradeHydra {
             referenceMicroStress = term1 + 2 * symmTerm2Term3;
 
             dReferenceMicroStressdRCG = dTerm1dRCG;
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> >
-                map_dSymmTerm2Term3dTerm2Term3(dSymmTerm2Term3dTerm2Term3.data(), sot_dim, sot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dReferenceMicroStressdRCG(
-                dReferenceMicroStressdRCG.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dSymmTerm2Term3dTerm2Term3(dSymmTerm2Term3dTerm2Term3.data(), sot_dimension, sot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dReferenceMicroStressdRCG(dReferenceMicroStressdRCG.data(), sot_dimension, sot_dimension);
 
             map_dReferenceMicroStressdRCG += (2 * map_dSymmTerm2Term3dTerm2Term3 * map_dTerm2dRCG).eval();
             map_dReferenceMicroStressdRCG += (2 * map_dSymmTerm2Term3dTerm2Term3 * map_dTerm3dRCG).eval();
 
             dReferenceMicroStressdPsi = dTerm1dPsi;
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dReferenceMicroStressdPsi(
-                dReferenceMicroStressdPsi.data(), sot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dReferenceMicroStressdPsi(dReferenceMicroStressdPsi.data(), sot_dimension, sot_dimension);
 
             map_dReferenceMicroStressdPsi += (2 * map_dSymmTerm2Term3dTerm2Term3 * map_dTerm2dPsi).eval();
 
-            dReferenceMicroStressdGamma = fifthOrderTensor(fiot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dReferenceMicroStressdGamma(
-                dReferenceMicroStressdGamma.data(), sot_dim, tot_dim);
+            dReferenceMicroStressdGamma = fifthOrderTensor(fiot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dReferenceMicroStressdGamma(dReferenceMicroStressdGamma.data(), sot_dimension, tot_dimension);
 
             map_dReferenceMicroStressdGamma = (2 * map_dSymmTerm2Term3dTerm2Term3 * map_dTerm3dGamma).eval();
 
@@ -791,26 +791,27 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dim = sot_dim * dim;
-                                        constexpr unsigned int fot_dim = tot_dim * dim;)
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dimension = sot_dimension * dimension;
+                                        constexpr unsigned int fot_dimension = tot_dimension * dimension;)
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(greenLagrangeStrain.size() == sot_dim,
+            TARDIGRADE_ERROR_TOOLS_CHECK(greenLagrangeStrain.size() == sot_dimension,
                                          "The green lagrange strain must have a length of 9");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(microStrain.size() == sot_dim, "The micro-strain must have a length of 9");
+            TARDIGRADE_ERROR_TOOLS_CHECK(microStrain.size() == sot_dimension,
+                                         "The micro-strain must have a length of 9");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(A.size() == fot_dim, "A must have a size of 3**4");
+            TARDIGRADE_ERROR_TOOLS_CHECK(A.size() == fot_dimension, "A must have a size of 3**4");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(D.size() == fot_dim, "D must have a size of 3**4");
+            TARDIGRADE_ERROR_TOOLS_CHECK(D.size() == fot_dimension, "D must have a size of 3**4");
 
             // Compute the first common term for the PK2 and symmetric micro-stress
-            term1 = variableVector(dim * dim, 0);
-            for (unsigned int IJ = 0; IJ < sot_dim; IJ++) {
-                for (unsigned int KL = 0; KL < sot_dim; KL++) {
-                    term1[IJ] +=
-                        A[sot_dim * IJ + KL] * greenLagrangeStrain[KL] + D[sot_dim * IJ + KL] * microStrain[KL];
+            term1 = variableVector(dimension * dimension, 0);
+            for (unsigned int IJ = 0; IJ < sot_dimension; IJ++) {
+                for (unsigned int KL = 0; KL < sot_dimension; KL++) {
+                    term1[IJ] += A[sot_dimension * IJ + KL] * greenLagrangeStrain[KL] +
+                                 D[sot_dimension * IJ + KL] * microStrain[KL];
                 }
             }
 
@@ -865,32 +866,35 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(greenLagrangeStrain.size() == sot_dim,
+            TARDIGRADE_ERROR_TOOLS_CHECK(greenLagrangeStrain.size() == sot_dimension,
                                          "The green lagrange strain must have a length of 9");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(microStrain.size() == sot_dim, "The micro-strain must have a length of 9");
+            TARDIGRADE_ERROR_TOOLS_CHECK(microStrain.size() == sot_dimension,
+                                         "The micro-strain must have a length of 9");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(invCPsi.size() == sot_dim, "invCPsi must have a size of 9");
+            TARDIGRADE_ERROR_TOOLS_CHECK(invCPsi.size() == sot_dimension, "invCPsi must have a size of 9");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(B.size() == sot_dim * sot_dim, "B must have a size of 3**4");
+            TARDIGRADE_ERROR_TOOLS_CHECK(B.size() == sot_dimension * sot_dimension, "B must have a size of 3**4");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(D.size() == sot_dim * sot_dim, "D must have a size of 3**4");
+            TARDIGRADE_ERROR_TOOLS_CHECK(D.size() == sot_dimension * sot_dimension, "D must have a size of 3**4");
 
-            term2 = variableVector(sot_dim, 0);
+            term2 = variableVector(sot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int K = 0; K < dim; K++) {
-                        for (unsigned int L = 0; L < dim; L++) {
-                            for (unsigned int Q = 0; Q < dim; Q++) {
-                                term2[dim * I + J] +=
-                                    (B[dim * dim * dim * I + dim * dim * Q + dim * K + L] * microStrain[dim * K + L] +
-                                     greenLagrangeStrain[dim * K + L] *
-                                         D[dim * dim * dim * K + dim * dim * L + dim * I + Q]) *
-                                    invCPsi[dim * J + Q];
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int K = 0; K < dimension; K++) {
+                        for (unsigned int L = 0; L < dimension; L++) {
+                            for (unsigned int Q = 0; Q < dimension; Q++) {
+                                term2[dimension * I + J] += (B[dimension * dimension * dimension * I +
+                                                               dimension * dimension * Q + dimension * K + L] *
+                                                                 microStrain[dimension * K + L] +
+                                                             greenLagrangeStrain[dimension * K + L] *
+                                                                 D[dimension * dimension * dimension * K +
+                                                                   dimension * dimension * L + dimension * I + Q]) *
+                                                            invCPsi[dimension * J + Q];
                             }
                         }
                     }
@@ -929,30 +933,38 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeLinearElasticTerm2(greenLagrangeStrain, microStrain, invCPsi, B, D,
                                                                    term2));
 
             // Compute the Jacobians
-            dTerm2dGreenLagrangeStrain = variableVector(sot_dim * sot_dim, 0);
-            dTerm2dMicroStrain         = variableVector(sot_dim * sot_dim, 0);
-            dTerm2dInvCPsi             = variableVector(sot_dim * sot_dim, 0);
+            dTerm2dGreenLagrangeStrain = variableVector(sot_dimension * sot_dimension, 0);
+            dTerm2dMicroStrain         = variableVector(sot_dimension * sot_dimension, 0);
+            dTerm2dInvCPsi             = variableVector(sot_dimension * sot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int M = 0; M < dim; M++) {
-                        for (unsigned int N = 0; N < dim; N++) {
-                            for (unsigned int K = 0; K < dim; K++) {
-                                dTerm2dGreenLagrangeStrain[dim * sot_dim * I + sot_dim * J + dim * M + N] +=
-                                    D[dim * dim * dim * M + dim * dim * N + dim * I + K] * invCPsi[dim * J + K];
-                                dTerm2dMicroStrain[dim * sot_dim * I + sot_dim * J + dim * M + N] +=
-                                    B[dim * dim * dim * I + dim * dim * K + dim * M + N] * invCPsi[dim * J + K];
-                                dTerm2dInvCPsi[dim * sot_dim * I + sot_dim * J + dim * J + M] +=
-                                    (B[dim * dim * dim * I + dim * dim * M + dim * N + K] * microStrain[dim * N + K] +
-                                     greenLagrangeStrain[dim * N + K] *
-                                         D[dim * dim * dim * N + dim * dim * K + dim * I + M]);
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int M = 0; M < dimension; M++) {
+                        for (unsigned int N = 0; N < dimension; N++) {
+                            for (unsigned int K = 0; K < dimension; K++) {
+                                dTerm2dGreenLagrangeStrain[dimension * sot_dimension * I + sot_dimension * J +
+                                                           dimension * M + N] +=
+                                    D[dimension * dimension * dimension * M + dimension * dimension * N +
+                                      dimension * I + K] *
+                                    invCPsi[dimension * J + K];
+                                dTerm2dMicroStrain[dimension * sot_dimension * I + sot_dimension * J + dimension * M +
+                                                   N] += B[dimension * dimension * dimension * I +
+                                                           dimension * dimension * K + dimension * M + N] *
+                                                         invCPsi[dimension * J + K];
+                                dTerm2dInvCPsi[dimension * sot_dimension * I + sot_dimension * J + dimension * J + M] +=
+                                    (B[dimension * dimension * dimension * I + dimension * dimension * M +
+                                       dimension * N + K] *
+                                         microStrain[dimension * N + K] +
+                                     greenLagrangeStrain[dimension * N + K] *
+                                         D[dimension * dimension * dimension * N + dimension * dimension * K +
+                                           dimension * I + M]);
                             }
                         }
                     }
@@ -975,25 +987,26 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(Gamma.size() == tot_dim, "Gamma must have a length of 27");
+            TARDIGRADE_ERROR_TOOLS_CHECK(Gamma.size() == tot_dimension, "Gamma must have a length of 27");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(C.size() == tot_dim * tot_dim,
+            TARDIGRADE_ERROR_TOOLS_CHECK(C.size() == tot_dimension * tot_dimension,
                                          "The C stiffness tensor must have a length of 3**6.\nThe current size is " +
                                              std::to_string(C.size()));
 
-            referenceHigherOrderStress = variableVector(tot_dim, 0);
+            referenceHigherOrderStress = variableVector(tot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int K = 0; K < dim; K++) {
-                        for (unsigned int LMN = 0; LMN < tot_dim; LMN++) {
-                            referenceHigherOrderStress[dim * dim * I + dim * J + K] +=
-                                C[dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I +
-                                  LMN] *
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int K = 0; K < dimension; K++) {
+                        for (unsigned int LMN = 0; LMN < tot_dimension; LMN++) {
+                            referenceHigherOrderStress[dimension * dimension * I + dimension * J + K] +=
+                                C[dimension * dimension * dimension * dimension * dimension * J +
+                                  dimension * dimension * dimension * dimension * K +
+                                  dimension * dimension * dimension * I + LMN] *
                                 Gamma[LMN];
                         }
                     }
@@ -1021,23 +1034,25 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeReferenceHigherOrderStress(Gamma, C, referenceHigherOrderStress));
 
             // Assemble the Jacobian
-            dReferenceHigherOrderStressdGamma = variableVector(tot_dim * tot_dim, 0);
+            dReferenceHigherOrderStressdGamma = variableVector(tot_dimension * tot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int K = 0; K < dim; K++) {
-                        for (unsigned int OPQ = 0; OPQ < tot_dim; OPQ++) {
-                            dReferenceHigherOrderStressdGamma[dim * dim * tot_dim * I + dim * tot_dim * J +
-                                                              tot_dim * K + OPQ] +=
-                                C[dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I +
-                                  OPQ];
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int K = 0; K < dimension; K++) {
+                        for (unsigned int OPQ = 0; OPQ < tot_dimension; OPQ++) {
+                            dReferenceHigherOrderStressdGamma[dimension * dimension * tot_dimension * I +
+                                                              dimension * tot_dimension * J + tot_dimension * K +
+                                                              OPQ] +=
+                                C[dimension * dimension * dimension * dimension * dimension * J +
+                                  dimension * dimension * dimension * dimension * K +
+                                  dimension * dimension * dimension * I + OPQ];
                         }
                     }
                 }
@@ -1058,22 +1073,22 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dim = sot_dim * dim;)
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int tot_dimension = sot_dimension * dimension;)
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(invCGamma.size() == tot_dim, "invCGamma must have a size of 27");
+            TARDIGRADE_ERROR_TOOLS_CHECK(invCGamma.size() == tot_dimension, "invCGamma must have a size of 27");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(referenceHigherOrderStress.size() == tot_dim,
+            TARDIGRADE_ERROR_TOOLS_CHECK(referenceHigherOrderStress.size() == tot_dimension,
                                          "The referenceHigherOrder stress must have a size of 27");
 
-            term3 = variableVector(sot_dim, 0);
+            term3 = variableVector(sot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int QR = 0; QR < sot_dim; QR++) {
-                        term3[dim * I + J] +=
-                            referenceHigherOrderStress[dim * dim * I + QR] * invCGamma[dim * dim * J + QR];
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int QR = 0; QR < sot_dimension; QR++) {
+                        term3[dimension * I + J] += referenceHigherOrderStress[dimension * dimension * I + QR] *
+                                                    invCGamma[dimension * dimension * J + QR];
                     }
                 }
             }
@@ -1105,22 +1120,23 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeLinearElasticTerm3(invCGamma, referenceHigherOrderStress, term3));
 
-            dTerm3dInvCGamma                  = variableVector(sot_dim * tot_dim, 0);
-            dTerm3dReferenceHigherOrderStress = variableVector(sot_dim * tot_dim, 0);
+            dTerm3dInvCGamma                  = variableVector(sot_dimension * tot_dimension, 0);
+            dTerm3dReferenceHigherOrderStress = variableVector(sot_dimension * tot_dimension, 0);
 
-            for (unsigned int I = 0; I < dim; I++) {
-                for (unsigned int J = 0; J < dim; J++) {
-                    for (unsigned int TU = 0; TU < sot_dim; TU++) {
-                        dTerm3dReferenceHigherOrderStress[dim * tot_dim * I + tot_dim * J + dim * dim * I + TU] +=
-                            invCGamma[dim * dim * J + TU];
-                        dTerm3dInvCGamma[dim * tot_dim * I + tot_dim * J + dim * dim * J + TU] +=
-                            referenceHigherOrderStress[dim * dim * I + TU];
+            for (unsigned int I = 0; I < dimension; I++) {
+                for (unsigned int J = 0; J < dimension; J++) {
+                    for (unsigned int TU = 0; TU < sot_dimension; TU++) {
+                        dTerm3dReferenceHigherOrderStress[dimension * tot_dimension * I + tot_dimension * J +
+                                                          dimension * dimension * I + TU] +=
+                            invCGamma[dimension * dimension * J + TU];
+                        dTerm3dInvCGamma[dimension * tot_dimension * I + tot_dimension * J + dimension * dimension * J +
+                                         TU] += referenceHigherOrderStress[dimension * dimension * I + TU];
                     }
                 }
             }
@@ -1137,18 +1153,24 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(invRCG.size() == sot_dim, "invRCG has an improper dimension");
+            TARDIGRADE_ERROR_TOOLS_CHECK(invRCG.size() == sot_dimension, "invRCG has an improper dimension");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(Psi.size() == sot_dim, "Psi has an improper dimension");
+            TARDIGRADE_ERROR_TOOLS_CHECK(Psi.size() == sot_dimension, "Psi has an improper dimension");
 
-            Eigen::Map<const Eigen::Matrix<floatType, dim, dim, Eigen::RowMajor> > map_invRCG(invRCG.data(), dim, dim);
-            Eigen::Map<const Eigen::Matrix<floatType, dim, dim, Eigen::RowMajor> > map_Psi(Psi.data(), dim, dim);
+            Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_invRCG(invRCG.data(),
+                                                                                                          dimension,
+                                                                                                          dimension);
+            Eigen::Map<const Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_Psi(Psi.data(),
+                                                                                                       dimension,
+                                                                                                       dimension);
 
-            invRCGPsi = secondOrderTensor(sot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, dim, dim, Eigen::RowMajor> > map_invRCGPsi(invRCGPsi.data(), dim, dim);
+            invRCGPsi = secondOrderTensor(sot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, dimension, dimension, Eigen::RowMajor> > map_invRCGPsi(invRCGPsi.data(),
+                                                                                                       dimension,
+                                                                                                       dimension);
 
             map_invRCGPsi = (map_invRCG * map_Psi).eval();
 
@@ -1176,22 +1198,23 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeInvRCGPsi(invRCG, Psi, invRCGPsi));
 
             // Construct the jacobians
-            dInvRCGPsidRCG = variableVector(sot_dim * sot_dim, 0);
-            dInvRCGPsidPsi = variableVector(sot_dim * sot_dim, 0);
+            dInvRCGPsidRCG = variableVector(sot_dimension * sot_dimension, 0);
+            dInvRCGPsidPsi = variableVector(sot_dimension * sot_dimension, 0);
 
             for (unsigned int I = 0; I < 3; I++) {
                 for (unsigned int J = 0; J < 3; J++) {
                     for (unsigned int K = 0; K < 3; K++) {
-                        dInvRCGPsidPsi[dim * sot_dim * I + sot_dim * J + dim * K + J] = invRCG[dim * I + K];
+                        dInvRCGPsidPsi[dimension * sot_dimension * I + sot_dimension * J + dimension * K + J] =
+                            invRCG[dimension * I + K];
                         for (unsigned int L = 0; L < 3; L++) {
-                            dInvRCGPsidRCG[dim * sot_dim * I + sot_dim * J + dim * K + L] =
-                                -invRCG[dim * I + K] * invRCGPsi[dim * L + J];
+                            dInvRCGPsidRCG[dimension * sot_dimension * I + sot_dimension * J + dimension * K + L] =
+                                -invRCG[dimension * I + K] * invRCGPsi[dimension * L + J];
                         }
                     }
                 }
@@ -1211,21 +1234,21 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(invRCG.size() == sot_dim, "invRCG has an improper dimension");
+            TARDIGRADE_ERROR_TOOLS_CHECK(invRCG.size() == sot_dimension, "invRCG has an improper dimension");
 
-            TARDIGRADE_ERROR_TOOLS_CHECK(Gamma.size() == tot_dim, "Gamma has an improper dimension");
+            TARDIGRADE_ERROR_TOOLS_CHECK(Gamma.size() == tot_dimension, "Gamma has an improper dimension");
 
-            invRCGGamma = variableVector(tot_dim, 0);
-            for (unsigned int J = 0; J < dim; J++) {
-                for (unsigned int S = 0; S < dim; S++) {
-                    for (unsigned int Q = 0; Q < dim; Q++) {
-                        for (unsigned int R = 0; R < dim; R++) {
-                            invRCGGamma[dim * dim * J + dim * Q + R] +=
-                                invRCG[dim * J + S] * Gamma[dim * dim * S + dim * Q + R];
+            invRCGGamma = variableVector(tot_dimension, 0);
+            for (unsigned int J = 0; J < dimension; J++) {
+                for (unsigned int S = 0; S < dimension; S++) {
+                    for (unsigned int Q = 0; Q < dimension; Q++) {
+                        for (unsigned int R = 0; R < dimension; R++) {
+                            invRCGGamma[dimension * dimension * J + dimension * Q + R] +=
+                                invRCG[dimension * J + S] * Gamma[dimension * dimension * S + dimension * Q + R];
                         }
                     }
                 }
@@ -1254,25 +1277,29 @@ namespace tardigradeHydra {
              */
 
             // Assume 3d
-            constexpr unsigned int dim     = 3;
-            constexpr unsigned int sot_dim = dim * dim;
-            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dimension     = 3;
+            constexpr unsigned int sot_dimension = dimension * dimension;
+            constexpr unsigned int tot_dimension = sot_dimension * dimension;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(computeInvRCGGamma(invRCG, Gamma, invRCGGamma));
 
             // Assemble jacobians of invCGamma w.r.t. C and Gamma
-            dInvRCGGammadRCG   = variableVector(tot_dim * sot_dim, 0);
-            dInvRCGGammadGamma = variableVector(tot_dim * tot_dim, 0);
+            dInvRCGGammadRCG   = variableVector(tot_dimension * sot_dimension, 0);
+            dInvRCGGammadGamma = variableVector(tot_dimension * tot_dimension, 0);
 
-            for (unsigned int J = 0; J < dim; J++) {
-                for (unsigned int Q = 0; Q < dim; Q++) {
-                    for (unsigned int R = 0; R < dim; R++) {
-                        for (unsigned int T = 0; T < dim; T++) {
-                            dInvRCGGammadGamma[dim * dim * tot_dim * J + dim * tot_dim * Q + tot_dim * R +
-                                               dim * dim * T + dim * Q + R] = invRCG[dim * J + T];
-                            for (unsigned int U = 0; U < dim; U++) {
-                                dInvRCGGammadRCG[dim * dim * sot_dim * J + dim * sot_dim * Q + sot_dim * R + dim * T +
-                                                 U] = -invRCG[dim * J + T] * invRCGGamma[dim * dim * U + dim * Q + R];
+            for (unsigned int J = 0; J < dimension; J++) {
+                for (unsigned int Q = 0; Q < dimension; Q++) {
+                    for (unsigned int R = 0; R < dimension; R++) {
+                        for (unsigned int T = 0; T < dimension; T++) {
+                            dInvRCGGammadGamma[dimension * dimension * tot_dimension * J +
+                                               dimension * tot_dimension * Q + tot_dimension * R +
+                                               dimension * dimension * T + dimension * Q + R] =
+                                invRCG[dimension * J + T];
+                            for (unsigned int U = 0; U < dimension; U++) {
+                                dInvRCGGammadRCG[dimension * dimension * sot_dimension * J +
+                                                 dimension * sot_dimension * Q + sot_dimension * R + dimension * T +
+                                                 U] = -invRCG[dimension * J + T] *
+                                                      invRCGGamma[dimension * dimension * U + dimension * Q + R];
                             }
                         }
                     }
@@ -1296,15 +1323,15 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
-            A = parameterVector(dim * dim * dim * dim, 0);
+            A = parameterVector(dimension * dimension * dimension * dimension, 0);
 
-            for (unsigned int K = 0; K < dim; K++) {
-                for (unsigned int L = 0; L < dim; L++) {
-                    A[dim * dim * dim * K + dim * dim * K + dim * L + L] += lambda;
-                    A[dim * dim * dim * K + dim * dim * L + dim * K + L] += mu;
-                    A[dim * dim * dim * K + dim * dim * L + dim * L + K] += mu;
+            for (unsigned int K = 0; K < dimension; K++) {
+                for (unsigned int L = 0; L < dimension; L++) {
+                    A[dimension * dimension * dimension * K + dimension * dimension * K + dimension * L + L] += lambda;
+                    A[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] += mu;
+                    A[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] += mu;
                 }
             }
 
@@ -1331,18 +1358,19 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
-            B = parameterVector(dim * dim * dim * dim, 0);
+            B = parameterVector(dimension * dimension * dimension * dimension, 0);
 
-            for (unsigned int K = 0; K < dim; K++) {
-                for (unsigned int L = 0; L < dim; L++) {
-                    B[dim * dim * dim * K + dim * dim * K + dim * L + L] += (eta - tau);
-                    B[dim * dim * dim * K + dim * dim * L + dim * K + L] += kappa;
-                    B[dim * dim * dim * K + dim * dim * L + dim * L + K] += nu;
-                    B[dim * dim * dim * K + dim * dim * L + dim * K + L] -= sigma;
+            for (unsigned int K = 0; K < dimension; K++) {
+                for (unsigned int L = 0; L < dimension; L++) {
+                    B[dimension * dimension * dimension * K + dimension * dimension * K + dimension * L + L] +=
+                        (eta - tau);
+                    B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] += kappa;
+                    B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] += nu;
+                    B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] -= sigma;
                     ;
-                    B[dim * dim * dim * K + dim * dim * L + dim * L + K] -= sigma;
+                    B[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] -= sigma;
                 }
             }
 
@@ -1376,45 +1404,60 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
             TARDIGRADE_ERROR_TOOLS_CHECK(taus.size() == 11, "11 moduli required to form C");
 
-            C = parameterVector(dim * dim * dim * dim * dim * dim, 0);
+            C = parameterVector(dimension * dimension * dimension * dimension * dimension * dimension, 0);
 
-            for (unsigned int K = 0; K < dim; K++) {
-                for (unsigned int L = 0; L < dim; L++) {
-                    for (unsigned int M = 0; M < dim; M++) {
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L +
-                          dim * dim * L + dim * M + M] += taus[0];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L +
-                          dim * dim * M + dim * M + K] += taus[0];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L +
-                          dim * dim * M + dim * L + M] += taus[1];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K +
-                          dim * dim * M + dim * M + L] += taus[1];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L +
-                          dim * dim * M + dim * M + L] += taus[2];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L +
-                          dim * dim * K + dim * M + M] += taus[3];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K +
-                          dim * dim * L + dim * M + M] += taus[4];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L +
-                          dim * dim * M + dim * K + M] += taus[4];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K +
-                          dim * dim * M + dim * L + M] += taus[5];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * K + dim * L + M] += taus[6];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * M + dim * K + L] += taus[7];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * L + dim * M + K] += taus[7];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * K + dim * M + L] += taus[8];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * L + dim * K + M] += taus[9];
-                        C[dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M +
-                          dim * dim * M + dim * L + K] += taus[10];
+            for (unsigned int K = 0; K < dimension; K++) {
+                for (unsigned int L = 0; L < dimension; L++) {
+                    for (unsigned int M = 0; M < dimension; M++) {
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                          dimension * dimension * L + dimension * M + M] += taus[0];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                          dimension * dimension * M + dimension * M + K] += taus[0];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                          dimension * dimension * M + dimension * L + M] += taus[1];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                          dimension * dimension * M + dimension * M + L] += taus[1];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * K + dimension * dimension * dimension * L +
+                          dimension * dimension * M + dimension * M + L] += taus[2];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                          dimension * dimension * K + dimension * M + M] += taus[3];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                          dimension * dimension * L + dimension * M + M] += taus[4];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * L +
+                          dimension * dimension * M + dimension * K + M] += taus[4];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * K +
+                          dimension * dimension * M + dimension * L + M] += taus[5];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * K + dimension * L + M] += taus[6];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * M + dimension * K + L] += taus[7];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * L + dimension * M + K] += taus[7];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * K + dimension * M + L] += taus[8];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * L + dimension * K + M] += taus[9];
+                        C[dimension * dimension * dimension * dimension * dimension * K +
+                          dimension * dimension * dimension * dimension * L + dimension * dimension * dimension * M +
+                          dimension * dimension * M + dimension * L + K] += taus[10];
                     }
                 }
             }
@@ -1434,14 +1477,14 @@ namespace tardigradeHydra {
              */
 
             // Assume 3D
-            constexpr unsigned int dim = 3;
+            constexpr unsigned int dimension = 3;
 
-            D = parameterVector(dim * dim * dim * dim, 0);
-            for (unsigned int K = 0; K < dim; K++) {
-                for (unsigned int L = 0; L < dim; L++) {
-                    D[dim * dim * dim * K + dim * dim * K + dim * L + L] += tau;
-                    D[dim * dim * dim * K + dim * dim * L + dim * K + L] += sigma;
-                    D[dim * dim * dim * K + dim * dim * L + dim * L + K] += sigma;
+            D = parameterVector(dimension * dimension * dimension * dimension, 0);
+            for (unsigned int K = 0; K < dimension; K++) {
+                for (unsigned int L = 0; L < dimension; L++) {
+                    D[dimension * dimension * dimension * K + dimension * dimension * K + dimension * L + L] += tau;
+                    D[dimension * dimension * dimension * K + dimension * dimension * L + dimension * K + L] += sigma;
+                    D[dimension * dimension * dimension * K + dimension * dimension * L + dimension * L + K] += sigma;
                 }
             }
 
@@ -1662,10 +1705,6 @@ namespace tardigradeHydra {
              * configuration
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension();
-
-            const unsigned int tot_dim = hydra->getTOTDimension();
-
             floatVector deformationGradient1;
 
             floatVector microDeformation1;
@@ -1679,15 +1718,16 @@ namespace tardigradeHydra {
             SetDataStorageBase<thirdOrderTensor> Gamma;
 
             if (isPrevious) {
-                deformationGradient1 = floatVector(hydra->deformation->get_previousConfigurations()->begin(),
-                                                   hydra->deformation->get_previousConfigurations()->begin() + sot_dim);
+                deformationGradient1 =
+                    floatVector(hydra->deformation->get_previousConfigurations()->begin(),
+                                hydra->deformation->get_previousConfigurations()->begin() + sot_dimension);
 
                 microDeformation1 = floatVector(hydra->get_previousMicroConfigurations()->begin(),
-                                                hydra->get_previousMicroConfigurations()->begin() + sot_dim);
+                                                hydra->get_previousMicroConfigurations()->begin() + sot_dimension);
 
                 gradientMicroDeformation1 =
                     floatVector(hydra->get_previousGradientMicroConfigurations()->begin(),
-                                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dim);
+                                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dimension);
 
                 rightCauchyGreen = get_SetDataStorage_previousRightCauchyGreen();
 
@@ -1697,13 +1737,14 @@ namespace tardigradeHydra {
 
             } else {
                 deformationGradient1 = floatVector(hydra->deformation->get_configurations()->begin(),
-                                                   hydra->deformation->get_configurations()->begin() + sot_dim);
+                                                   hydra->deformation->get_configurations()->begin() + sot_dimension);
 
                 microDeformation1 = floatVector(hydra->get_microConfigurations()->begin(),
-                                                hydra->get_microConfigurations()->begin() + sot_dim);
+                                                hydra->get_microConfigurations()->begin() + sot_dimension);
 
-                gradientMicroDeformation1 = floatVector(hydra->get_gradientMicroConfigurations()->begin(),
-                                                        hydra->get_gradientMicroConfigurations()->begin() + tot_dim);
+                gradientMicroDeformation1 =
+                    floatVector(hydra->get_gradientMicroConfigurations()->begin(),
+                                hydra->get_gradientMicroConfigurations()->begin() + tot_dimension);
 
                 rightCauchyGreen = get_SetDataStorage_rightCauchyGreen();
 
@@ -2361,18 +2402,6 @@ namespace tardigradeHydra {
              * \param isPrevious: Flag for if the stresses to be calculated are the current (false) or previous (true)
              */
 
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
-            constexpr unsigned int tot_dim = sot_dim * dim;
-
-            constexpr unsigned int fot_dim = tot_dim * dim;
-
-            constexpr unsigned int fiot_dim = fot_dim * dim;
-
-            constexpr unsigned int siot_dim = fiot_dim * dim;
-
             auto num_configs = hydra->getNumConfigurations();
 
             const variableVector *C;
@@ -2618,62 +2647,61 @@ namespace tardigradeHydra {
                 dMdGradChin = get_SetDataStorage_dMdGradChin();
             }
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dCdF(dCdF->data(),
-                                                                                                    sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCdF(
+                dCdF->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dCdFn(dCdFn->data(), sot_dim,
-                                                                                                sot_dim *
-                                                                                                    (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dCdFn(
+                dCdFn->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPsidF(dPsidF->data(),
-                                                                                                      sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPsidF(
+                dPsidF->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dPsidFn(
-                dPsidFn->data(), sot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPsidFn(
+                dPsidFn->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPsidChi(
-                dPsidChi->data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPsidChi(
+                dPsidChi->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dPsidChin(
-                dPsidChin->data(), sot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPsidChin(
+                dPsidChin->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dGammadF(
-                dGammadF->data(), tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dGammadF(
+                dGammadF->data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGammadFn(
-                dGammadFn->data(), tot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGammadFn(
+                dGammadFn->data(), tot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dGammadChi(
-                dGammadChi->data(), tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dGammadChi(
+                dGammadChi->data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGammadChin(
-                dGammadChin->data(), tot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGammadChin(
+                dGammadChin->data(), tot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dGammadGradChi(
-                dGammadGradChi->data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dGammadGradChi(dGammadGradChi->data(), tot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGammadGradChin(
-                dGammadGradChin->data(), tot_dim, tot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGammadGradChin(
+                dGammadGradChin->data(), tot_dimension, tot_dimension * (num_configs - 1));
 
-            variableVector dFFollowdFn(sot_dim * (num_configs - 1) * sot_dim, 0);
+            variableVector dFFollowdFn(sot_dimension * (num_configs - 1) * sot_dimension, 0);
 
-            variableVector dChiFollowdChin(sot_dim * (num_configs - 1) * sot_dim, 0);
+            variableVector dChiFollowdChin(sot_dimension * (num_configs - 1) * sot_dimension, 0);
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < (num_configs - 1) * sot_dim; j++) {
-                    dFFollowdFn[(num_configs - 1) * sot_dim * i + j] =
-                        dFFollowdFs[num_configs * sot_dim * i + j + sot_dim];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < (num_configs - 1) * sot_dimension; j++) {
+                    dFFollowdFn[(num_configs - 1) * sot_dimension * i + j] =
+                        dFFollowdFs[num_configs * sot_dimension * i + j + sot_dimension];
 
-                    dChiFollowdChin[(num_configs - 1) * sot_dim * i + j] =
-                        dChiFollowdChis[num_configs * sot_dim * i + j + sot_dim];
+                    dChiFollowdChin[(num_configs - 1) * sot_dimension * i + j] =
+                        dChiFollowdChis[num_configs * sot_dimension * i + j + sot_dimension];
                 }
             }
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dFFollowdFn(
-                dFFollowdFn.data(), sot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dFFollowdFn(
+                dFFollowdFn.data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dChiFollowdChin(
-                dChiFollowdChin.data(), sot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dChiFollowdChin(
+                dChiFollowdChin.data(), sot_dimension, sot_dimension * (num_configs - 1));
 
             secondOrderTensor localPK2Stress;
 
@@ -2701,144 +2729,144 @@ namespace tardigradeHydra {
                 localReferenceSymmetricMicroStress, localReferenceHigherOrderStress, dLocalPK2dC, dLocalPK2dPsi,
                 dLocalPK2dGamma, dLocalSIGMAdC, dLocalSIGMAdPsi, dLocalSIGMAdGamma, dLocalMdGamma));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dLocalPK2dC(
-                dLocalPK2dC.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dLocalPK2dC(
+                dLocalPK2dC.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dLocalPK2dPsi(
-                dLocalPK2dPsi.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dLocalPK2dPsi(dLocalPK2dPsi.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dLocalPK2dGamma(
-                dLocalPK2dGamma.data(), sot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dLocalPK2dGamma(dLocalPK2dGamma.data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dLocalSIGMAdC(
-                dLocalSIGMAdC.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dLocalSIGMAdC(dLocalSIGMAdC.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dLocalSIGMAdPsi(
-                dLocalSIGMAdPsi.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dLocalSIGMAdPsi(dLocalSIGMAdPsi.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dLocalSIGMAdGamma(
-                dLocalSIGMAdGamma.data(), sot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dLocalSIGMAdGamma(dLocalSIGMAdGamma.data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dLocalMdGamma(
-                dLocalMdGamma.data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dLocalMdGamma(dLocalMdGamma.data(), tot_dimension, tot_dimension);
 
-            fourthOrderTensor                                                        dLocalPK2dF(fot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dLocalPK2dF(dLocalPK2dF.data(),
-                                                                                                     sot_dim, sot_dim);
+            fourthOrderTensor dLocalPK2dF(fot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dLocalPK2dF(
+                dLocalPK2dF.data(), sot_dimension, sot_dimension);
 
             map_dLocalPK2dF = (map_dLocalPK2dC * map_dCdF).eval();
             map_dLocalPK2dF += (map_dLocalPK2dPsi * map_dPsidF).eval();
             map_dLocalPK2dF += (map_dLocalPK2dGamma * map_dGammadF).eval();
 
-            floatVector dLocalPK2dFn(fot_dim * (num_configs - 1), 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dLocalPK2dFn(
-                dLocalPK2dFn.data(), sot_dim, sot_dim * (num_configs - 1));
+            floatVector dLocalPK2dFn(fot_dimension * (num_configs - 1), 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dLocalPK2dFn(
+                dLocalPK2dFn.data(), sot_dimension, sot_dimension * (num_configs - 1));
 
             map_dLocalPK2dFn = (map_dLocalPK2dC * map_dCdFn).eval();
             map_dLocalPK2dFn += (map_dLocalPK2dPsi * map_dPsidFn).eval();
             map_dLocalPK2dFn += (map_dLocalPK2dGamma * map_dGammadFn).eval();
 
-            fourthOrderTensor                                                        dLocalPK2dChi(fot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dLocalPK2dChi(
-                dLocalPK2dChi.data(), sot_dim, sot_dim);
+            fourthOrderTensor dLocalPK2dChi(fot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dLocalPK2dChi(
+                dLocalPK2dChi.data(), sot_dimension, sot_dimension);
 
             map_dLocalPK2dChi = (map_dLocalPK2dPsi * map_dPsidChi).eval();
             map_dLocalPK2dChi += (map_dLocalPK2dGamma * map_dGammadChi).eval();
 
-            floatVector dLocalPK2dChin(fot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dLocalPK2dChin(
-                dLocalPK2dChin.data(), sot_dim, sot_dim * (num_configs - 1));
+            floatVector dLocalPK2dChin(fot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dLocalPK2dChin(
+                dLocalPK2dChin.data(), sot_dimension, sot_dimension * (num_configs - 1));
 
             map_dLocalPK2dChin = (map_dLocalPK2dPsi * map_dPsidChin).eval();
             map_dLocalPK2dChin += (map_dLocalPK2dGamma * map_dGammadChin).eval();
 
-            fifthOrderTensor                                                         dLocalPK2dGradChi(fiot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dLocalPK2dGradChi(
-                dLocalPK2dGradChi.data(), sot_dim, tot_dim);
+            fifthOrderTensor dLocalPK2dGradChi(fiot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> > map_dLocalPK2dGradChi(
+                dLocalPK2dGradChi.data(), sot_dimension, tot_dimension);
 
             map_dLocalPK2dGradChi = (map_dLocalPK2dGamma * map_dGammadGradChi).eval();
 
-            floatVector dLocalPK2dGradChin(fiot_dim * (num_configs - 1), 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dLocalPK2dGradChin(
-                dLocalPK2dGradChin.data(), sot_dim, tot_dim * (num_configs - 1));
+            floatVector dLocalPK2dGradChin(fiot_dimension * (num_configs - 1), 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dLocalPK2dGradChin(
+                dLocalPK2dGradChin.data(), sot_dimension, tot_dimension * (num_configs - 1));
 
             map_dLocalPK2dGradChin = (map_dLocalPK2dGamma * map_dGammadGradChin).eval();
 
-            fifthOrderTensor                                                         dLocalSIGMAdF(fot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dLocalSIGMAdF(
-                dLocalSIGMAdF.data(), sot_dim, sot_dim);
+            fifthOrderTensor dLocalSIGMAdF(fot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dLocalSIGMAdF(
+                dLocalSIGMAdF.data(), sot_dimension, sot_dimension);
 
             map_dLocalSIGMAdF = (map_dLocalSIGMAdC * map_dCdF).eval();
             map_dLocalSIGMAdF += (map_dLocalSIGMAdPsi * map_dPsidF).eval();
             map_dLocalSIGMAdF += (map_dLocalSIGMAdGamma * map_dGammadF).eval();
 
-            floatVector dLocalSIGMAdFn(fot_dim * (num_configs - 1), 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dLocalSIGMAdFn(
-                dLocalSIGMAdFn.data(), sot_dim, sot_dim * (num_configs - 1));
+            floatVector dLocalSIGMAdFn(fot_dimension * (num_configs - 1), 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dLocalSIGMAdFn(
+                dLocalSIGMAdFn.data(), sot_dimension, sot_dimension * (num_configs - 1));
 
             map_dLocalSIGMAdFn = (map_dLocalSIGMAdC * map_dCdFn).eval();
             map_dLocalSIGMAdFn += (map_dLocalSIGMAdPsi * map_dPsidFn).eval();
             map_dLocalSIGMAdFn += (map_dLocalSIGMAdGamma * map_dGammadFn).eval();
 
-            fourthOrderTensor                                                        dLocalSIGMAdChi(fot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dLocalSIGMAdChi(
-                dLocalSIGMAdChi.data(), sot_dim, sot_dim);
+            fourthOrderTensor dLocalSIGMAdChi(fot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dLocalSIGMAdChi(
+                dLocalSIGMAdChi.data(), sot_dimension, sot_dimension);
 
             map_dLocalSIGMAdChi = (map_dLocalSIGMAdPsi * map_dPsidChi).eval();
             map_dLocalSIGMAdChi += (map_dLocalSIGMAdGamma * map_dGammadChi).eval();
 
-            floatVector dLocalSIGMAdChin(fot_dim * (num_configs - 1), 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dLocalSIGMAdChin(
-                dLocalSIGMAdChin.data(), sot_dim, sot_dim * (num_configs - 1));
+            floatVector dLocalSIGMAdChin(fot_dimension * (num_configs - 1), 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dLocalSIGMAdChin(
+                dLocalSIGMAdChin.data(), sot_dimension, sot_dimension * (num_configs - 1));
 
             map_dLocalSIGMAdChin = (map_dLocalSIGMAdPsi * map_dPsidChin).eval();
             map_dLocalSIGMAdChin += (map_dLocalSIGMAdGamma * map_dGammadChin).eval();
 
-            fifthOrderTensor                                                         dLocalSIGMAdGradChi(fiot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dLocalSIGMAdGradChi(
-                dLocalSIGMAdGradChi.data(), sot_dim, tot_dim);
+            fifthOrderTensor dLocalSIGMAdGradChi(fiot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dLocalSIGMAdGradChi(dLocalSIGMAdGradChi.data(), sot_dimension, tot_dimension);
 
             map_dLocalSIGMAdGradChi = (map_dLocalSIGMAdGamma * map_dGammadGradChi).eval();
 
-            floatVector                                                         dLocalSIGMAdGradChin(fiot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dLocalSIGMAdGradChin(
-                dLocalSIGMAdGradChin.data(), sot_dim, tot_dim * (num_configs - 1));
+            floatVector dLocalSIGMAdGradChin(fiot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dLocalSIGMAdGradChin(
+                dLocalSIGMAdGradChin.data(), sot_dimension, tot_dimension * (num_configs - 1));
 
             map_dLocalSIGMAdGradChin = (map_dLocalSIGMAdGamma * map_dGammadGradChin).eval();
 
-            fifthOrderTensor                                                         dLocalMdF(fiot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dLocalMdF(dLocalMdF.data(),
-                                                                                                   tot_dim, sot_dim);
+            fifthOrderTensor dLocalMdF(fiot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dLocalMdF(
+                dLocalMdF.data(), tot_dimension, sot_dimension);
 
             map_dLocalMdF = (map_dLocalMdGamma * map_dGammadF).eval();
 
-            floatVector dLocalMdFn(fiot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dLocalMdFn(
-                dLocalMdFn.data(), tot_dim, sot_dim * (num_configs - 1));
+            floatVector dLocalMdFn(fiot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dLocalMdFn(
+                dLocalMdFn.data(), tot_dimension, sot_dimension * (num_configs - 1));
 
             map_dLocalMdFn = (map_dLocalMdGamma * map_dGammadFn).eval();
 
-            fifthOrderTensor                                                         dLocalMdChi(fiot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dLocalMdChi(dLocalMdChi.data(),
-                                                                                                     tot_dim, sot_dim);
+            fifthOrderTensor dLocalMdChi(fiot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dLocalMdChi(
+                dLocalMdChi.data(), tot_dimension, sot_dimension);
 
             map_dLocalMdChi = (map_dLocalMdGamma * map_dGammadChi).eval();
 
-            floatVector dLocalMdChin(fiot_dim * (num_configs - 1), 0);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dLocalMdChin(
-                dLocalMdChin.data(), tot_dim, (num_configs - 1) * sot_dim);
+            floatVector dLocalMdChin(fiot_dimension * (num_configs - 1), 0);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dLocalMdChin(
+                dLocalMdChin.data(), tot_dimension, (num_configs - 1) * sot_dimension);
 
             map_dLocalMdChin = (map_dLocalMdGamma * map_dGammadChin).eval();
 
-            sixthOrderTensor                                                         dLocalMdGradChi(siot_dim, 0);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dLocalMdGradChi(
-                dLocalMdGradChi.data(), tot_dim, tot_dim);
+            sixthOrderTensor dLocalMdGradChi(siot_dimension, 0);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> > map_dLocalMdGradChi(
+                dLocalMdGradChi.data(), tot_dimension, tot_dimension);
 
             map_dLocalMdGradChi = (map_dLocalMdGamma * map_dGammadGradChi).eval();
 
-            floatVector dLocalMdGradChin(siot_dim * (num_configs - 1), 0);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dLocalMdGradChin(
-                dLocalMdGradChin.data(), tot_dim, (num_configs - 1) * tot_dim);
+            floatVector dLocalMdGradChin(siot_dimension * (num_configs - 1), 0);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dLocalMdGradChin(
+                dLocalMdGradChin.data(), tot_dimension, (num_configs - 1) * tot_dimension);
 
             map_dLocalMdGradChin = (map_dLocalMdGamma * map_dGammadGradChin).eval();
 
@@ -2868,100 +2896,101 @@ namespace tardigradeHydra {
                 localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
                 *referenceHigherOrderStress.value, dMdLocalM, dMdFFollow, dMdChiFollow));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPK2dLocalPK2(
-                dPK2dLocalPK2.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dPK2dLocalPK2(dPK2dLocalPK2.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPK2dFFollow(
-                dPK2dFFollow.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPK2dFFollow(
+                dPK2dFFollow.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dSIGMAdLocalSIGMA(
-                dSIGMAdLocalSIGMA.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dSIGMAdLocalSIGMA(dSIGMAdLocalSIGMA.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dSIGMAdFFollow(
-                dSIGMAdFFollow.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dSIGMAdFFollow(dSIGMAdFFollow.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dMdLocalM(
-                dMdLocalM.data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> > map_dMdLocalM(
+                dMdLocalM.data(), tot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dMdFFollow(
-                dMdFFollow.data(), tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dMdFFollow(
+                dMdFFollow.data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dMdChiFollow(
-                dMdChiFollow.data(), tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dMdChiFollow(
+                dMdChiFollow.data(), tot_dimension, sot_dimension);
 
-            auto map_dPK2dF = dPK2dF.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dPK2dF = dPK2dF.zeroMap<floatType, sot_dimension, sot_dimension>();
 
             map_dPK2dF = (map_dPK2dLocalPK2 * map_dLocalPK2dF).eval();
 
-            auto map_dPK2dFn = dPK2dFn.zeroMap<floatType, sot_dim>(sot_dim * (num_configs - 1));
+            auto map_dPK2dFn = dPK2dFn.zeroMap<floatType, sot_dimension>(sot_dimension * (num_configs - 1));
 
             map_dPK2dFn = (map_dPK2dLocalPK2 * map_dLocalPK2dFn).eval();
             map_dPK2dFn += (map_dPK2dFFollow * map_dFFollowdFn).eval();
 
-            auto map_dPK2dChi = dPK2dChi.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dPK2dChi = dPK2dChi.zeroMap<floatType, sot_dimension, sot_dimension>();
 
             map_dPK2dChi = (map_dPK2dLocalPK2 * map_dLocalPK2dChi).eval();
 
-            auto map_dPK2dChin = dPK2dChin.zeroMap<floatType, sot_dim>(sot_dim * (num_configs - 1));
+            auto map_dPK2dChin = dPK2dChin.zeroMap<floatType, sot_dimension>(sot_dimension * (num_configs - 1));
 
             map_dPK2dChin = (map_dPK2dLocalPK2 * map_dLocalPK2dChin).eval();
 
-            auto map_dPK2dGradChi = dPK2dGradChi.zeroMap<floatType, sot_dim, tot_dim>();
+            auto map_dPK2dGradChi = dPK2dGradChi.zeroMap<floatType, sot_dimension, tot_dimension>();
 
             map_dPK2dGradChi = (map_dPK2dLocalPK2 * map_dLocalPK2dGradChi).eval();
 
-            auto map_dPK2dGradChin = dPK2dGradChin.zeroMap<floatType, sot_dim>(tot_dim * (num_configs - 1));
+            auto map_dPK2dGradChin = dPK2dGradChin.zeroMap<floatType, sot_dimension>(tot_dimension * (num_configs - 1));
 
             map_dPK2dGradChin = (map_dPK2dLocalPK2 * map_dLocalPK2dGradChin).eval();
 
-            auto map_dSIGMAdF = dSIGMAdF.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dSIGMAdF = dSIGMAdF.zeroMap<floatType, sot_dimension, sot_dimension>();
 
             map_dSIGMAdF = (map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdF).eval();
 
-            auto map_dSIGMAdFn = dSIGMAdFn.zeroMap<floatType, sot_dim>(sot_dim * (num_configs - 1));
+            auto map_dSIGMAdFn = dSIGMAdFn.zeroMap<floatType, sot_dimension>(sot_dimension * (num_configs - 1));
 
             map_dSIGMAdFn = (map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdFn).eval();
             map_dSIGMAdFn += (map_dSIGMAdFFollow * map_dFFollowdFn).eval();
 
-            auto map_dSIGMAdChi = dSIGMAdChi.zeroMap<floatType, sot_dim, sot_dim>();
+            auto map_dSIGMAdChi = dSIGMAdChi.zeroMap<floatType, sot_dimension, sot_dimension>();
 
             map_dSIGMAdChi = (map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdChi).eval();
 
-            auto map_dSIGMAdChin = dSIGMAdChin.zeroMap<floatType, sot_dim>(sot_dim * (num_configs - 1));
+            auto map_dSIGMAdChin = dSIGMAdChin.zeroMap<floatType, sot_dimension>(sot_dimension * (num_configs - 1));
 
             map_dSIGMAdChin = (map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdChin).eval();
 
-            auto map_dSIGMAdGradChi = dSIGMAdGradChi.zeroMap<floatType, sot_dim, tot_dim>();
+            auto map_dSIGMAdGradChi = dSIGMAdGradChi.zeroMap<floatType, sot_dimension, tot_dimension>();
 
             map_dSIGMAdGradChi = (map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdGradChi).eval();
 
-            auto map_dSIGMAdGradChin = dSIGMAdGradChin.zeroMap<floatType, sot_dim>(tot_dim * (num_configs - 1));
+            auto map_dSIGMAdGradChin =
+                dSIGMAdGradChin.zeroMap<floatType, sot_dimension>(tot_dimension * (num_configs - 1));
 
             map_dSIGMAdGradChin = (map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdGradChin).eval();
 
-            auto map_dMdF = dMdF.zeroMap<floatType, tot_dim, sot_dim>();
+            auto map_dMdF = dMdF.zeroMap<floatType, tot_dimension, sot_dimension>();
 
             map_dMdF = (map_dMdLocalM * map_dLocalMdF).eval();
 
-            auto map_dMdFn = dMdFn.zeroMap<floatType, tot_dim>(sot_dim * (num_configs - 1));
+            auto map_dMdFn = dMdFn.zeroMap<floatType, tot_dimension>(sot_dimension * (num_configs - 1));
 
             map_dMdFn = (map_dMdLocalM * map_dLocalMdFn);
             map_dMdFn += (map_dMdFFollow * map_dFFollowdFn);
 
-            auto map_dMdChi = dMdChi.zeroMap<floatType, tot_dim, sot_dim>();
+            auto map_dMdChi = dMdChi.zeroMap<floatType, tot_dimension, sot_dimension>();
 
             map_dMdChi = (map_dMdLocalM * map_dLocalMdChi).eval();
 
-            auto map_dMdChin = dMdChin.zeroMap<floatType, tot_dim>(sot_dim * (num_configs - 1));
+            auto map_dMdChin = dMdChin.zeroMap<floatType, tot_dimension>(sot_dimension * (num_configs - 1));
 
             map_dMdChin = (map_dMdLocalM * map_dLocalMdChin).eval();
             map_dMdChin += (map_dMdChiFollow * map_dChiFollowdChin).eval();
 
-            auto map_dMdGradChi = dMdGradChi.zeroMap<floatType, tot_dim, tot_dim>();
+            auto map_dMdGradChi = dMdGradChi.zeroMap<floatType, tot_dimension, tot_dimension>();
 
             map_dMdGradChi = (map_dMdLocalM * map_dLocalMdGradChi).eval();
 
-            auto map_dMdGradChin = dMdGradChin.zeroMap<floatType, tot_dim>(tot_dim * (num_configs - 1));
+            auto map_dMdGradChin = dMdGradChin.zeroMap<floatType, tot_dimension>(tot_dimension * (num_configs - 1));
 
             map_dMdGradChin = (map_dMdLocalM * map_dLocalMdGradChin).eval();
         }
@@ -3384,18 +3413,6 @@ namespace tardigradeHydra {
              * their Jacobians
              */
 
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
-            constexpr unsigned int tot_dim = sot_dim * dim;
-
-            constexpr unsigned int fot_dim = tot_dim * dim;
-
-            constexpr unsigned int fiot_dim = fot_dim * dim;
-
-            constexpr unsigned int siot_dim = fiot_dim * dim;
-
             auto num_configs = hydra->getNumConfigurations();
 
             const secondOrderTensor *PK2Stress;
@@ -3677,137 +3694,136 @@ namespace tardigradeHydra {
                 *dCauchyStressdF.value, dCauchyStressdPK2Stress, *dMicroStressdF.value, dMicroStressdSIGMA,
                 *dHigherOrderStressdF.value, *dHigherOrderStressdChi.value, dHigherOrderStressdM));
 
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dCauchyStressdF(
-                dCauchyStressdF.value->data(), sot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdF(
+                dCauchyStressdF.value->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dCauchyStressdPK2Stress(
-                dCauchyStressdPK2Stress.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dCauchyStressdPK2Stress(dCauchyStressdPK2Stress.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dMicroStressdF(
-                dMicroStressdF.value->data(), sot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dMicroStressdF(
+                dMicroStressdF.value->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dMicroStressdSIGMA(
-                dMicroStressdSIGMA.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dMicroStressdSIGMA(dMicroStressdSIGMA.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dHigherOrderStressdF(
-                dHigherOrderStressdF.value->data(), tot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dHigherOrderStressdF(dHigherOrderStressdF.value->data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dHigherOrderStressdChi(
-                dHigherOrderStressdChi.value->data(), tot_dim, sot_dim);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dHigherOrderStressdChi(dHigherOrderStressdChi.value->data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dHigherOrderStressdM(
-                dHigherOrderStressdM.data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dHigherOrderStressdM(dHigherOrderStressdM.data(), tot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPK2dF(dPK2dF->data(),
-                                                                                                      sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPK2dF(
+                dPK2dF->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dPK2dFn(
-                dPK2dFn->data(), sot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPK2dFn(
+                dPK2dFn->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPK2dChi(
-                dPK2dChi->data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPK2dChi(
+                dPK2dChi->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dPK2dChin(
-                dPK2dChin->data(), sot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPK2dChin(
+                dPK2dChin->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dPK2dGradChi(
-                dPK2dGradChi->data(), sot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> > map_dPK2dGradChi(
+                dPK2dGradChi->data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dPK2dGradChin(
-                dPK2dGradChin->data(), sot_dim, tot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPK2dGradChin(
+                dPK2dGradChin->data(), sot_dimension, tot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dSIGMAdF(
-                dSIGMAdF->data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dSIGMAdF(
+                dSIGMAdF->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dSIGMAdFn(
-                dSIGMAdFn->data(), sot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dSIGMAdFn(
+                dSIGMAdFn->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dSIGMAdChi(
-                dSIGMAdChi->data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dSIGMAdChi(
+                dSIGMAdChi->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dSIGMAdChin(
-                dSIGMAdChin->data(), sot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dSIGMAdChin(
+                dSIGMAdChin->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dSIGMAdGradChi(
-                dSIGMAdGradChi->data(), sot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dSIGMAdGradChi(dSIGMAdGradChi->data(), sot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dSIGMAdGradChin(
-                dSIGMAdGradChin->data(), sot_dim, tot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dSIGMAdGradChin(
+                dSIGMAdGradChin->data(), sot_dimension, tot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dMdF(dMdF->data(),
-                                                                                                    tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dMdF(
+                dMdF->data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dMdFn(dMdFn->data(), tot_dim,
-                                                                                                sot_dim *
-                                                                                                    (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dMdFn(
+                dMdFn->data(), tot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dMdChi(dMdChi->data(),
-                                                                                                      tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dMdChi(
+                dMdChi->data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dMdChin(
-                dMdChin->data(), tot_dim, sot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dMdChin(
+                dMdChin->data(), tot_dimension, sot_dimension * (num_configs - 1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dMdGradChi(
-                dMdGradChi->data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> > map_dMdGradChi(
+                dMdGradChi->data(), tot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dMdGradChin(
-                dMdGradChin->data(), tot_dim, tot_dim * (num_configs - 1));
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dMdGradChin(
+                dMdGradChin->data(), tot_dimension, tot_dimension * (num_configs - 1));
 
-            dCauchyStressdFn.zero(fot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dCauchyStressdFn(
-                dCauchyStressdFn.value->data(), sot_dim, sot_dim * (num_configs - 1));
+            dCauchyStressdFn.zero(fot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dCauchyStressdFn(
+                dCauchyStressdFn.value->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            dCauchyStressdChi.zero(fot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dCauchyStressdChi(
-                dCauchyStressdChi.value->data(), sot_dim, sot_dim);
+            dCauchyStressdChi.zero(fot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCauchyStressdChi(
+                dCauchyStressdChi.value->data(), sot_dimension, sot_dimension);
 
-            dCauchyStressdChin.zero(fot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dCauchyStressdChin(
-                dCauchyStressdChin.value->data(), sot_dim, sot_dim * (num_configs - 1));
+            dCauchyStressdChin.zero(fot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dCauchyStressdChin(
+                dCauchyStressdChin.value->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            dCauchyStressdGradChi.zero(fiot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dCauchyStressdGradChi(
-                dCauchyStressdGradChi.value->data(), sot_dim, tot_dim);
+            dCauchyStressdGradChi.zero(fiot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dCauchyStressdGradChi(dCauchyStressdGradChi.value->data(), sot_dimension, tot_dimension);
 
-            dCauchyStressdGradChin.zero(fiot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dCauchyStressdGradChin(
-                dCauchyStressdGradChin.value->data(), sot_dim, tot_dim * (num_configs - 1));
+            dCauchyStressdGradChin.zero(fiot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dCauchyStressdGradChin(
+                dCauchyStressdGradChin.value->data(), sot_dimension, tot_dimension * (num_configs - 1));
 
-            dMicroStressdFn.zero(fot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dMicroStressdFn(
-                dMicroStressdFn.value->data(), sot_dim, sot_dim * (num_configs - 1));
+            dMicroStressdFn.zero(fot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dMicroStressdFn(
+                dMicroStressdFn.value->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            dMicroStressdChi.zero(fot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dMicroStressdChi(
-                dMicroStressdChi.value->data(), sot_dim, sot_dim);
+            dMicroStressdChi.zero(fot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dMicroStressdChi(
+                dMicroStressdChi.value->data(), sot_dimension, sot_dimension);
 
-            dMicroStressdChin.zero(fot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dMicroStressdChin(
-                dMicroStressdChin.value->data(), sot_dim, sot_dim * (num_configs - 1));
+            dMicroStressdChin.zero(fot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dMicroStressdChin(
+                dMicroStressdChin.value->data(), sot_dimension, sot_dimension * (num_configs - 1));
 
-            dMicroStressdGradChi.zero(fiot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, tot_dim, Eigen::RowMajor> > map_dMicroStressdGradChi(
-                dMicroStressdGradChi.value->data(), sot_dim, tot_dim);
+            dMicroStressdGradChi.zero(fiot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dMicroStressdGradChi(dMicroStressdGradChi.value->data(), sot_dimension, tot_dimension);
 
-            dMicroStressdGradChin.zero(fiot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dMicroStressdGradChin(
-                dMicroStressdGradChin.value->data(), sot_dim, tot_dim * (num_configs - 1));
+            dMicroStressdGradChin.zero(fiot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dMicroStressdGradChin(
+                dMicroStressdGradChin.value->data(), sot_dimension, tot_dimension * (num_configs - 1));
 
-            dHigherOrderStressdFn.zero(fiot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dHigherOrderStressdFn(
-                dHigherOrderStressdFn.value->data(), tot_dim, sot_dim * (num_configs - 1));
+            dHigherOrderStressdFn.zero(fiot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dHigherOrderStressdFn(
+                dHigherOrderStressdFn.value->data(), tot_dimension, sot_dimension * (num_configs - 1));
 
-            dHigherOrderStressdChin.zero(fiot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dHigherOrderStressdChin(
-                dHigherOrderStressdChin.value->data(), tot_dim, sot_dim * (num_configs - 1));
+            dHigherOrderStressdChin.zero(fiot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dHigherOrderStressdChin(
+                dHigherOrderStressdChin.value->data(), tot_dimension, sot_dimension * (num_configs - 1));
 
-            dHigherOrderStressdGradChi.zero(siot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dHigherOrderStressdGradChi(
-                dHigherOrderStressdGradChi.value->data(), tot_dim, tot_dim);
+            dHigherOrderStressdGradChi.zero(siot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dHigherOrderStressdGradChi(dHigherOrderStressdGradChi.value->data(), tot_dimension, tot_dimension);
 
-            dHigherOrderStressdGradChin.zero(siot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dHigherOrderStressdGradChin(
-                dHigherOrderStressdGradChin.value->data(), tot_dim, tot_dim * (num_configs - 1));
+            dHigherOrderStressdGradChin.zero(siot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dHigherOrderStressdGradChin(
+                dHigherOrderStressdGradChin.value->data(), tot_dimension, tot_dimension * (num_configs - 1));
 
             map_dCauchyStressdF += (map_dCauchyStressdPK2Stress * map_dPK2dF).eval();
 
@@ -3855,18 +3871,6 @@ namespace tardigradeHydra {
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous
              * configuration
              */
-
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
-            constexpr unsigned int tot_dim = sot_dim * dim;
-
-            constexpr unsigned int fot_dim = tot_dim * dim;
-
-            constexpr unsigned int fiot_dim = fot_dim * dim;
-
-            constexpr unsigned int siot_dim = fiot_dim * dim;
 
             auto num_configs = hydra->getNumConfigurations();
 
@@ -3925,15 +3929,16 @@ namespace tardigradeHydra {
             SetDataStorageBase<floatVector> dGammadGradChin;
 
             if (isPrevious) {
-                deformationGradient1 = floatVector(hydra->deformation->get_previousConfigurations()->begin(),
-                                                   hydra->deformation->get_previousConfigurations()->begin() + sot_dim);
+                deformationGradient1 =
+                    floatVector(hydra->deformation->get_previousConfigurations()->begin(),
+                                hydra->deformation->get_previousConfigurations()->begin() + sot_dimension);
 
                 microDeformation1 = floatVector(hydra->get_previousMicroConfigurations()->begin(),
-                                                hydra->get_previousMicroConfigurations()->begin() + sot_dim);
+                                                hydra->get_previousMicroConfigurations()->begin() + sot_dimension);
 
                 gradientMicroDeformation1 =
                     floatVector(hydra->get_previousGradientMicroConfigurations()->begin(),
-                                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dim);
+                                hydra->get_previousGradientMicroConfigurations()->begin() + tot_dimension);
 
                 dF1dF = hydra->deformation->get_previousdF1dF();
 
@@ -3985,13 +3990,14 @@ namespace tardigradeHydra {
 
             } else {
                 deformationGradient1 = floatVector(hydra->deformation->get_configurations()->begin(),
-                                                   hydra->deformation->get_configurations()->begin() + sot_dim);
+                                                   hydra->deformation->get_configurations()->begin() + sot_dimension);
 
                 microDeformation1 = floatVector(hydra->get_microConfigurations()->begin(),
-                                                hydra->get_microConfigurations()->begin() + sot_dim);
+                                                hydra->get_microConfigurations()->begin() + sot_dimension);
 
-                gradientMicroDeformation1 = floatVector(hydra->get_gradientMicroConfigurations()->begin(),
-                                                        hydra->get_gradientMicroConfigurations()->begin() + tot_dim);
+                gradientMicroDeformation1 =
+                    floatVector(hydra->get_gradientMicroConfigurations()->begin(),
+                                hydra->get_gradientMicroConfigurations()->begin() + tot_dimension);
 
                 dF1dF = hydra->deformation->get_dF1dF();
 
@@ -4057,119 +4063,118 @@ namespace tardigradeHydra {
                                                                     *Psi.value, *Gamma.value, dCdF1, dPsidF1, dPsidChi1,
                                                                     dGammadF1, dGammadGradChi1));
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dCdF1(dCdF1.data(),
-                                                                                                     sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dCdF1(
+                dCdF1.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPsidF1(dPsidF1.data(),
-                                                                                                       sot_dim,
-                                                                                                       sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPsidF1(
+                dPsidF1.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPsidChi1(
-                dPsidChi1.data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPsidChi1(
+                dPsidChi1.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dGammadF1(
-                dGammadF1.data(), tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dGammadF1(
+                dGammadF1.data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dGammadGradChi1(
-                dGammadGradChi1.data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dGammadGradChi1(dGammadGradChi1.data(), tot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dF1dF(dF1dF->data(),
-                                                                                                     sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dF1dF(
+                dF1dF->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dF1dFn(
-                dF1dFn->data(), sot_dim, (num_configs - 1) * sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dF1dFn(
+                dF1dFn->data(), sot_dimension, (num_configs - 1) * sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dChi1dChi(
-                dChi1dChi->data(), sot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dChi1dChi(
+                dChi1dChi->data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dChi1dChin(
-                dChi1dChin->data(), sot_dim, (num_configs - 1) * sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dChi1dChin(
+                dChi1dChin->data(), sot_dimension, (num_configs - 1) * sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGradChi1dFn(
-                dGradChi1dFn->data(), tot_dim, (num_configs - 1) * sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGradChi1dFn(
+                dGradChi1dFn->data(), tot_dimension, (num_configs - 1) * sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dGradChi1dChi(
-                dGradChi1dChi->data(), tot_dim, sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dGradChi1dChi(dGradChi1dChi->data(), tot_dimension, sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGradChi1dChin(
-                dGradChi1dChin->data(), tot_dim, (num_configs - 1) * sot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGradChi1dChin(
+                dGradChi1dChin->data(), tot_dimension, (num_configs - 1) * sot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dGradChi1dGradChi(
-                dGradChi1dGradChi->data(), tot_dim, tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> >
+                map_dGradChi1dGradChi(dGradChi1dGradChi->data(), tot_dimension, tot_dimension);
 
-            Eigen::Map<const Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGradChi1dGradChin(
-                dGradChi1dGradChin->data(), tot_dim, (num_configs - 1) * tot_dim);
+            Eigen::Map<const Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGradChi1dGradChin(
+                dGradChi1dGradChin->data(), tot_dimension, (num_configs - 1) * tot_dimension);
 
-            dRightCauchyGreendF.zero(fot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dRightCauchyGreendF(
-                dRightCauchyGreendF.value->data(), sot_dim, sot_dim);
+            dRightCauchyGreendF.zero(fot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
+                map_dRightCauchyGreendF(dRightCauchyGreendF.value->data(), sot_dimension, sot_dimension);
 
             map_dRightCauchyGreendF = (map_dCdF1 * map_dF1dF).eval();
 
-            dRightCauchyGreendFn.zero(fot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dRightCauchyGreendFn(
-                dRightCauchyGreendFn.value->data(), sot_dim, (num_configs - 1) * sot_dim);
+            dRightCauchyGreendFn.zero(fot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dRightCauchyGreendFn(
+                dRightCauchyGreendFn.value->data(), sot_dimension, (num_configs - 1) * sot_dimension);
 
             map_dRightCauchyGreendFn = (map_dCdF1 * map_dF1dFn).eval();
 
-            dPsidF.zero(fot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPsidF(dPsidF.value->data(),
-                                                                                                sot_dim, sot_dim);
+            dPsidF.zero(fot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPsidF(
+                dPsidF.value->data(), sot_dimension, sot_dimension);
 
             map_dPsidF = (map_dPsidF1 * map_dF1dF).eval();
 
-            dPsidFn.zero(fot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dPsidFn(
-                dPsidFn.value->data(), sot_dim, (num_configs - 1) * sot_dim);
+            dPsidFn.zero(fot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPsidFn(
+                dPsidFn.value->data(), sot_dimension, (num_configs - 1) * sot_dimension);
 
             map_dPsidFn = (map_dPsidF1 * map_dF1dFn).eval();
 
-            dPsidChi.zero(fot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> > map_dPsidChi(
-                dPsidChi.value->data(), sot_dim, sot_dim);
+            dPsidChi.zero(fot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> > map_dPsidChi(
+                dPsidChi.value->data(), sot_dimension, sot_dimension);
 
             map_dPsidChi = (map_dPsidChi1 * map_dChi1dChi).eval();
 
-            dPsidChin.zero(fot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, -1, Eigen::RowMajor> > map_dPsidChin(
-                dPsidChin.value->data(), sot_dim, (num_configs - 1) * sot_dim);
+            dPsidChin.zero(fot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, -1, Eigen::RowMajor> > map_dPsidChin(
+                dPsidChin.value->data(), sot_dimension, (num_configs - 1) * sot_dimension);
 
             map_dPsidChin = (map_dPsidChi1 * map_dChi1dChin).eval();
 
-            dGammadF.zero(fiot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dGammadF(
-                dGammadF.value->data(), tot_dim, sot_dim);
+            dGammadF.zero(fiot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dGammadF(
+                dGammadF.value->data(), tot_dimension, sot_dimension);
 
             map_dGammadF = (map_dGammadF1 * map_dF1dF).eval();
 
-            dGammadFn.zero(fiot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGammadFn(
-                dGammadFn.value->data(), tot_dim, (num_configs - 1) * sot_dim);
+            dGammadFn.zero(fiot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGammadFn(
+                dGammadFn.value->data(), tot_dimension, (num_configs - 1) * sot_dimension);
 
             map_dGammadFn = (map_dGammadF1 * map_dF1dFn).eval();
             map_dGammadFn += (map_dGammadGradChi1 * map_dGradChi1dFn).eval();
 
-            dGammadChi.zero(fiot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, sot_dim, Eigen::RowMajor> > map_dGammadChi(
-                dGammadChi.value->data(), tot_dim, sot_dim);
+            dGammadChi.zero(fiot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, sot_dimension, Eigen::RowMajor> > map_dGammadChi(
+                dGammadChi.value->data(), tot_dimension, sot_dimension);
 
             map_dGammadChi = (map_dGammadGradChi1 * map_dGradChi1dChi).eval();
 
-            dGammadChin.zero(fiot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGammadChin(
-                dGammadChin.value->data(), tot_dim, (num_configs - 1) * sot_dim);
+            dGammadChin.zero(fiot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGammadChin(
+                dGammadChin.value->data(), tot_dimension, (num_configs - 1) * sot_dimension);
 
             map_dGammadChin = (map_dGammadGradChi1 * map_dGradChi1dChin).eval();
 
-            dGammadGradChi.zero(siot_dim);
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, tot_dim, Eigen::RowMajor> > map_dGammadGradChi(
-                dGammadGradChi.value->data(), tot_dim, tot_dim);
+            dGammadGradChi.zero(siot_dimension);
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, tot_dimension, Eigen::RowMajor> > map_dGammadGradChi(
+                dGammadGradChi.value->data(), tot_dimension, tot_dimension);
 
             map_dGammadGradChi = (map_dGammadGradChi1 * map_dGradChi1dGradChi).eval();
 
-            dGammadGradChin.zero(siot_dim * (num_configs - 1));
-            Eigen::Map<Eigen::Matrix<floatType, tot_dim, -1, Eigen::RowMajor> > map_dGammadGradChin(
-                dGammadGradChin.value->data(), tot_dim, (num_configs - 1) * tot_dim);
+            dGammadGradChin.zero(siot_dimension * (num_configs - 1));
+            Eigen::Map<Eigen::Matrix<floatType, tot_dimension, -1, Eigen::RowMajor> > map_dGammadGradChin(
+                dGammadGradChin.value->data(), tot_dimension, (num_configs - 1) * tot_dimension);
 
             map_dGammadGradChin = (map_dGammadGradChi1 * map_dGradChi1dGradChin).eval();
         }
@@ -4194,10 +4199,6 @@ namespace tardigradeHydra {
             /*!
              * Set the Jacobian w.r.t. the unknown vector
              */
-
-            auto sot_dim = hydra->getSOTDimension();
-
-            auto tot_dim = hydra->getTOTDimension();
 
             auto num_configs = hydra->getNumConfigurations();
 
@@ -4232,7 +4233,7 @@ namespace tardigradeHydra {
                 {dS3dFn, dS3dChin, dS3dGradChin}
             };
 
-            const std::array<unsigned int, 3> dims = {sot_dim, sot_dim, tot_dim};
+            const std::array<unsigned int, 3> dims = {sot_dimension, sot_dimension, tot_dimension};
 
             unsigned int row = 0;
             for (auto S = stressReferences.begin(); S != stressReferences.end(); S++) {
@@ -4265,10 +4266,6 @@ namespace tardigradeHydra {
             /*!
              * Set the Jacobian w.r.t. the deformation
              */
-
-            auto sot_dim = hydra->getSOTDimension();
-
-            auto tot_dim = hydra->getTOTDimension();
 
             auto num_equations = getNumEquations();
 
@@ -4304,7 +4301,7 @@ namespace tardigradeHydra {
                 {dS3dF, dS3dChi, dS3dGradChi}
             };
 
-            const std::array<unsigned int, 3> dims = {sot_dim, sot_dim, tot_dim};
+            const std::array<unsigned int, 3> dims = {sot_dimension, sot_dimension, tot_dimension};
 
             unsigned int row = 0;
             for (auto S = stressReferences.begin(); S != stressReferences.end(); S++) {
@@ -4334,23 +4331,17 @@ namespace tardigradeHydra {
              * Set the stresses
              */
 
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
-            constexpr unsigned int tot_dim = sot_dim * dim;
-
             auto stress = get_SetDataStorage_stress();
 
-            stress.zero(2 * sot_dim + tot_dim);
+            stress.zero(2 * sot_dimension + tot_dimension);
 
             std::copy(std::begin(*get_PK2Stress()), std::end(*get_PK2Stress()), std::begin(*stress.value));
 
             std::copy(std::begin(*get_referenceSymmetricMicroStress()), std::end(*get_referenceSymmetricMicroStress()),
-                      std::begin(*stress.value) + sot_dim);
+                      std::begin(*stress.value) + sot_dimension);
 
             std::copy(std::begin(*get_referenceHigherOrderStress()), std::end(*get_referenceHigherOrderStress()),
-                      std::begin(*stress.value) + 2 * sot_dim);
+                      std::begin(*stress.value) + 2 * sot_dimension);
         }
 
         void residual::setPreviousStress() {
@@ -4358,26 +4349,20 @@ namespace tardigradeHydra {
              * Set the previous stresses
              */
 
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
-            constexpr unsigned int tot_dim = sot_dim * dim;
-
             auto previousStress = get_SetDataStorage_previousStress();
 
-            previousStress.zero(2 * sot_dim + tot_dim);
+            previousStress.zero(2 * sot_dimension + tot_dimension);
 
             std::copy(std::begin(*get_previousPK2Stress()), std::end(*get_previousPK2Stress()),
                       std::begin(*previousStress.value));
 
             std::copy(std::begin(*get_previousReferenceSymmetricMicroStress()),
                       std::end(*get_previousReferenceSymmetricMicroStress()),
-                      std::begin(*previousStress.value) + sot_dim);
+                      std::begin(*previousStress.value) + sot_dimension);
 
             std::copy(std::begin(*get_previousReferenceHigherOrderStress()),
                       std::end(*get_previousReferenceHigherOrderStress()),
-                      std::begin(*previousStress.value) + 2 * sot_dim);
+                      std::begin(*previousStress.value) + 2 * sot_dimension);
         }
 
         void residual::setdRdT() {

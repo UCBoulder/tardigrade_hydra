@@ -38,9 +38,7 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true) Jacobians of the strain energy
      */
     void NeoHookianStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
-        constexpr unsigned int dim = 3;  // TODO: Replace with value from ResidualBase
-
-        floatVector dIbar1dFe(dim * dim, 0);
+        std::array<floatType, dimension * dimension> dIbar1dFe{};
         compute_dIbar1dFe(isPrevious, std::begin(dIbar1dFe), std::end(dIbar1dFe));
         const floatType         *Je;
         const secondOrderTensor *dJedFe;
@@ -57,9 +55,9 @@ namespace tardigradeHydra {
             dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
         }
 
-        dStrainEnergydFe.zero(dim * dim);
+        dStrainEnergydFe.zero(dimension * dimension);
 
-        for (unsigned int iI = 0; iI < dim * dim; ++iI) {
+        for (unsigned int iI = 0; iI < dimension * dimension; ++iI) {
             (*dStrainEnergydFe.value)[iI] += _C10 * dIbar1dFe[iI] + 2 * _D1 * (*Je - 1) * (*dJedFe)[iI];
         }
     }
@@ -70,9 +68,7 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true) Hessians of the strain energy
      */
     void NeoHookianStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
-        constexpr unsigned int dim = 3;  // TODO: Replace with value from ResidualBase
-
-        floatVector d2Ibar1dFe2(dim * dim * dim * dim, 0);
+        std::array<floatType, dimension * dimension * dimension * dimension> d2Ibar1dFe2{};
         compute_d2Ibar1dFe2(isPrevious, std::begin(d2Ibar1dFe2), std::end(d2Ibar1dFe2));
         const floatType         *Je;
         const secondOrderTensor *dJedFe;
@@ -95,14 +91,14 @@ namespace tardigradeHydra {
             d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
         }
 
-        d2StrainEnergydFe2.zero(dim * dim * dim * dim);
-        d2StrainEnergydFedT.zero(dim * dim);
+        d2StrainEnergydFe2.zero(dimension * dimension * dimension * dimension);
+        d2StrainEnergydFedT.zero(dimension * dimension);
 
-        for (unsigned int iI = 0; iI < dim * dim; ++iI) {
-            for (unsigned int jJ = 0; jJ < dim * dim; ++jJ) {
-                (*d2StrainEnergydFe2.value)[dim * dim * iI + jJ] +=
-                    _C10 * d2Ibar1dFe2[dim * dim * iI + jJ] + 2 * _D1 * (*dJedFe)[iI] * (*dJedFe)[jJ] +
-                    2 * _D1 * (*Je - 1) * (*d2JedFe2)[dim * dim * iI + jJ];
+        for (unsigned int iI = 0; iI < dimension * dimension; ++iI) {
+            for (unsigned int jJ = 0; jJ < dimension * dimension; ++jJ) {
+                (*d2StrainEnergydFe2.value)[dimension * dimension * iI + jJ] +=
+                    _C10 * d2Ibar1dFe2[dimension * dimension * iI + jJ] + 2 * _D1 * (*dJedFe)[iI] * (*dJedFe)[jJ] +
+                    2 * _D1 * (*Je - 1) * (*d2JedFe2)[dimension * dimension * iI + jJ];
             }
         }
     }

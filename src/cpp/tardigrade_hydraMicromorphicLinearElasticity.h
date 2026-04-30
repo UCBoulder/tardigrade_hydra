@@ -262,6 +262,22 @@ namespace tardigradeHydra {
 
             using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setPreviousStress;
 
+            //! The dimension of a second order tensor
+            static constexpr unsigned int sot_dimension = dimension * dimension;
+
+            //! The dimension of a third order tensor
+            static constexpr unsigned int tot_dimension = dimension * dimension * dimension;
+
+            //! The dimension of a fourth order tensor
+            static constexpr unsigned int fot_dimension = dimension * dimension * dimension * dimension;
+
+            //! The dimension of a fifth order tensor
+            static constexpr unsigned int fiot_dimension = dimension * dimension * dimension * dimension * dimension;
+
+            //! The dimension of a sixth order tensor
+            static constexpr unsigned int siot_dimension =
+                dimension * dimension * dimension * dimension * dimension * dimension;
+
             //! Set the current values of the deformation
             virtual void setDeformation() { setDeformation(false); }
 

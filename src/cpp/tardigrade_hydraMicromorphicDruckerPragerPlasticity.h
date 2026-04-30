@@ -474,6 +474,12 @@ namespace tardigradeHydra {
                         parameters));
             }
 
+            //! The dimension of a second-order tensor
+            static constexpr unsigned int sot_dimension = dimension * dimension;
+
+            //! The dimension of a third-order tensor
+            static constexpr unsigned int tot_dimension = dimension * dimension * dimension;
+
             //! Get the number of plastic multipliers expected for the problem
             const unsigned int getNumPlasticMultipliers() { return _numPlasticMultipliers; }
 
@@ -1282,9 +1288,7 @@ namespace tardigradeHydra {
                  * \param &value: The value of the smoothing ratio
                  */
 
-                constexpr unsigned int dim = 3;
-
-                _microGradientSmoothingRatio = floatVector(dim, value);
+                _microGradientSmoothingRatio = floatVector(dimension, value);
             }
 
             void setMicroGradientSmoothingRatio(const floatVector &value) {
@@ -1346,9 +1350,7 @@ namespace tardigradeHydra {
                  * \param &value: The value of the smoothing ratio
                  */
 
-                constexpr unsigned int dim = 3;
-
-                _baseMicroGradientSmoothingRatio = floatVector(dim, value);
+                _baseMicroGradientSmoothingRatio = floatVector(dimension, value);
             }
 
             void setBaseMicroGradientSmoothingRatio(const floatVector &value) {

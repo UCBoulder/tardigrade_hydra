@@ -36,9 +36,9 @@ namespace tardigradeHydra {
 
             auto dTrialStressdD = get_SetDataStorage_dTrialStressdD();
 
-            auto sot_dim = hydra->getSOTDimension();
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
-            auto tot_dim = hydra->getTOTDimension();
+            constexpr unsigned int tot_dimension = dimension * dimension * dimension;
 
             auto num_equations = getNumEquations();
 
@@ -72,7 +72,8 @@ namespace tardigradeHydra {
             std::array<const floatVector *, numStresses * numDeformationMeasures> stressReferences = {
                 dS1dF, dS1dChi, dS1dGradChi, dS2dF, dS2dChi, dS2dGradChi, dS3dF, dS3dChi, dS3dGradChi};
 
-            const std::array<unsigned int, numDeformationMeasures> dims = {sot_dim, sot_dim, tot_dim};
+            constexpr std::array<unsigned int, numDeformationMeasures> dims = {sot_dimension, sot_dimension,
+                                                                               tot_dimension};
 
             unsigned int row = 0;
             for (unsigned int S = 0; S < numStresses; ++S) {
