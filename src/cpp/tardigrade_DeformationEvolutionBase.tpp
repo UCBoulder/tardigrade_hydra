@@ -6,6 +6,9 @@
  ******************************************************************************
  */
 
+#include "tardigrade_vector_tools.h"
+#include "tardigrade_MatrixMap.h"
+
 namespace tardigradeHydra {
 
     /*!
@@ -52,8 +55,8 @@ namespace tardigradeHydra {
         std::array<Ltp1_type, size*size> LHS;
         std::transform(Ltp1_begin, Ltp1_end, std::begin(LHS),
                 std::bind(std::multiplies<>(), std::placeholders::_1, -dt * integration_parameter));
-        std::array<Lt_type, size> previous_dF{};
-        std::array<Ft_type, size> RHS{};
+        std::array<Lt_type, size * size> previous_dF{};
+        std::array<Ft_type, size * size> RHS{};
         std::transform(Lt_begin, Lt_end, std::begin(previous_dF),
                 std::bind(std::multiplies<>(), std::placeholders::_1, dt * (1 - integration_parameter)));
 
@@ -66,5 +69,14 @@ namespace tardigradeHydra {
                 }
             }
         }
+
+        auto _LHS = getFixedSizeMatrixMap<Ltp1_type,size,size>(LHS.data());
+        auto _RHS = getFixedSizeMatrixMap<Ltp1_type,size,size>(RHS.data());
+        auto _Ftp1 = getFixedSizeMatrixMap<Ltp1_type,size,size>(Ftp1_begin);
+
+        tardigradeVectorTools::solverType<Ltp1_type, size, size> linearSolver(_LHS);
+
+        _Ftp1 = linearSolver.solve(_RHS);
+
     }
 }
