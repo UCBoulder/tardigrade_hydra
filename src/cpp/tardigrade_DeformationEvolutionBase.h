@@ -51,14 +51,17 @@ namespace tardigradeHydra {
     template <class container, int size>
     class DeformationEvolutionBase : public ResidualBase<container> {
         public:
-	    using tardigradeHydra::ResidualBase::ResidualBase;
-	    
+	    using tardigradeHydra::ResidualBase<container>::ResidualBase;
+
+        //! The spatial dimension
+        using tardigradeHydra::ResidualBase<container>::dimension;
+
 	    double integration_parameter = 0.5;
 
 	    template<
 		typename dt_type, class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator
 	    >
-        void computeDeformation(cont dt_type &dt,
+        void computeDeformation(const dt_type &dt,
                                 const Lt_iterator &Lt_begin, const Lt_iterator &Lt_end,
                                 const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
                                 const Ft_iterator &Ft_begin, const Ft_iterator &Ft_end,
@@ -66,10 +69,10 @@ namespace tardigradeHydra {
 
         protected:
 	private:
-    }
+    };
 
 }
 
-include "tardigrade_DeformationEvolutionBase.tpp"
+#include "tardigrade_DeformationEvolutionBase.tpp"
 
 #endif

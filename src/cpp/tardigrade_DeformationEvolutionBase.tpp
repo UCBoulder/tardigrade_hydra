@@ -23,7 +23,7 @@ namespace tardigradeHydra {
      */
     template<class container, int size>
     template<
-    typename dt, class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator
+    typename dt_type, class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator
     >
     void DeformationEvolutionBase<container, size>::computeDeformation(
         const dt_type &dt,
@@ -57,12 +57,12 @@ namespace tardigradeHydra {
         std::transform(Lt_begin, Lt_end, std::begin(previous_dF),
                 std::bind(std::multiplies<>(), std::placeholders::_1, dt * (1 - integration_parameter)));
 
-        for ( unsigned int i = 0; i < size, ++i ){
+        for ( unsigned int i = 0; i < size; ++i ){
             LHS[size*i+i] += 1;
             previous_dF[size*i+i] += 1;
             for ( unsigned int j = 0; j < size; ++j ){
                 for ( unsigned int I = 0; I < size; ++I ){
-                    RHS[size*i+I] += previous_dF[dim * i + j] * (*(Ft_begin + dim* j + I));
+                    RHS[size*i+I] += previous_dF[dimension * i + j] * (*(Ft_begin + dimension * j + I));
                 }
             }
         }
