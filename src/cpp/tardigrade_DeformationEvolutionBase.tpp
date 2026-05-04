@@ -133,4 +133,25 @@ namespace tardigradeHydra {
         _Ftp1 = linearSolver.solve(_RHS);
 
     }
+
+    /*!
+     * Compute the derivative of the current deformation with respect to the current velocity gradient
+     *
+     * \param &dt: The change in time
+     * \param &Ltp1_begin: The starting iterator of the velocity gradient
+     * \param &Ltp1_end: The stopping iterator of the velocity gradient
+     * \param &Ftp1_begin: The starting iterator of the deformation
+     * \param &Ftp1_end: The stopping iterator of the deformation
+     * \param &dFtp1dLtp1_begin: The starting iterator of the derivative
+     * \param &dFtp1dLtp1_end: The stopping iterator of the derivative
+     */
+	template<
+	typename dt_type, class Ltp1_iterator, class Ftp1_iterator, class dFtp1dLtp1_iterator
+	>
+    void computeDeformation_dFtp1dLtp1(const dt_type &dt,
+                                       const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                                       const Ftp1_iterator &Ftp1_begin, const Ftp1_iterator &Ftp1_end,
+                                       dFtp1dLtp1_iterator dFtp1dLtp1_begin, dFtp1dLtp1_iterator dFtp1dLtp1_end){
+
+    }
 }

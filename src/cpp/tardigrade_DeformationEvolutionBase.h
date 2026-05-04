@@ -81,6 +81,14 @@ namespace tardigradeHydra {
                                 const Ft_iterator &Ft_begin, const Ft_iterator &Ft_end,
                                 Ftp1_iterator Ftp1_begin, Ftp1_iterator Ftp1_end);
 
+	    template<
+		typename dt_type, class Ltp1_iterator, class Ftp1_iterator, class dFtp1dLtp1_iterator
+	    >
+        void computeDeformation_dFtp1dLtp1(const dt_type &dt,
+                                           const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                                           const Ftp1_iterator &Ftp1_begin, const Ftp1_iterator &Ftp1_end,
+                                           dFtp1dLtp1_iterator dFtp1dLtp1_begin, dFtp1dLtp1_iterator dFtp1dLtp1_end);
+
         protected:
 	private:
     };
