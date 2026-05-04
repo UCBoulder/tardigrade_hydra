@@ -12,6 +12,62 @@
 namespace tardigradeHydra {
 
     /*!
+     * Form the LHS matrix for the deformation evolution
+     *
+     * \param &dt: The change in time
+     * \param &Ltp1_begin: The starting iterator of the velocity gradient
+     * \param &Ltp1_end: The stopping iterator of the velocity gradient
+     * \param LHS: The deformation LHS
+     */
+    template<class container, int size>
+    template<
+    typename dt_type, class Ltp1_iterator
+    >
+    void DeformationEvolutionBase<container, size>::_formDeformationLHS(const dt_type &dt,
+                             const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                             std::array<typename std::iterator_traits<Ltp1_iterator>::value_type, size * size> &LHS){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(Ltp1_end - Ltp1_begin) == size*size,
+                "The size of Ltp1 is " + std::to_string((unsigned int)(Ltp1_end - Ltp1_begin)) + " but it should be " + std::to_string(size*size))
+
+        std::transform(Ltp1_begin, Ltp1_end, std::begin(LHS),
+                std::bind(std::multiplies<>(), std::placeholders::_1, -dt * integration_parameter));
+
+        for ( unsigned int i = 0; i < size; ++i ){
+            LHS[size*i+i] += 1;
+        }
+
+    }
+
+    /*!
+     * Form the linear solver for the deformation evolution
+     *
+     * \param &dt: The change in time
+     * \param &Ltp1_begin: The starting iterator of the velocity gradient
+     * \param &Ltp1_end: The stopping iterator of the velocity gradient
+     * \param &solver: The linear solver
+     */
+    template<class container, int size>
+    template<
+    typename dt_type, class Ltp1_iterator, class solver_type
+    >
+    void DeformationEvolutionBase<container,size>::formDeformationSolver(const dt_type &dt,
+                                const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                                solver_type &solver){
+
+        using Ltp1_type = typename std::iterator_traits<Ltp1_iterator>::value_type;
+
+        std::array<Ltp1_type, size * size> LHS;
+
+        _formDeformationLHS(dt, Ltp1_begin, Ltp1_end, LHS);
+
+        auto _LHS = getFixedSizeMatrixMap<Ltp1_type,size,size>(LHS.data());
+
+        solver = tardigradeVectorTools::solverType<Ltp1_type, size, size>(_LHS);
+
+    }
+
+    /*!
      * Compute the deformation
      *
      * \param &dt: The change in time
@@ -51,17 +107,18 @@ namespace tardigradeHydra {
         TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(Ftp1_end - Ftp1_begin) == size*size,
                 "The size of Ftp1 is " + std::to_string((unsigned int)(Ftp1_end - Ftp1_begin)) + " but it should be " + std::to_string(size*size))
 
-        //Form the left and right hand sides
-        std::array<Ltp1_type, size*size> LHS;
-        std::transform(Ltp1_begin, Ltp1_end, std::begin(LHS),
-                std::bind(std::multiplies<>(), std::placeholders::_1, -dt * integration_parameter));
+        //Form the solver
+        tardigradeVectorTools::solverType<Ltp1_type, size, size> linearSolver;
+        formDeformationSolver(dt, Ltp1_begin, Ltp1_end, linearSolver);
+
+        //Form the right hand side
         std::array<Lt_type, size * size> previous_dF{};
         std::array<Ft_type, size * size> RHS{};
+
         std::transform(Lt_begin, Lt_end, std::begin(previous_dF),
                 std::bind(std::multiplies<>(), std::placeholders::_1, dt * (1 - integration_parameter)));
 
         for ( unsigned int i = 0; i < size; ++i ){
-            LHS[size*i+i] += 1;
             previous_dF[size*i+i] += 1;
             for ( unsigned int j = 0; j < size; ++j ){
                 for ( unsigned int I = 0; I < size; ++I ){
@@ -70,11 +127,8 @@ namespace tardigradeHydra {
             }
         }
 
-        auto _LHS = getFixedSizeMatrixMap<Ltp1_type,size,size>(LHS.data());
         auto _RHS = getFixedSizeMatrixMap<Ltp1_type,size,size>(RHS.data());
         auto _Ftp1 = getFixedSizeMatrixMap<Ltp1_type,size,size>(Ftp1_begin);
-
-        tardigradeVectorTools::solverType<Ltp1_type, size, size> linearSolver(_LHS);
 
         _Ftp1 = linearSolver.solve(_RHS);
 

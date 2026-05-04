@@ -58,6 +58,20 @@ namespace tardigradeHydra {
 
 	    double integration_parameter = 0.5;
 
+        template<
+        typename dt_type, class Ltp1_iterator
+        >
+        void _formDeformationLHS(const dt_type &dt,
+                                 const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                                 std::array<typename std::iterator_traits<Ltp1_iterator>::value_type, size * size> &LHS);
+
+        template<
+        typename dt_type, class Ltp1_iterator, class solver_type
+        >
+        void formDeformationSolver(const dt_type &dt,
+                                   const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                                   solver_type &solver);
+
 	    template<
 		typename dt_type, class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator
 	    >
