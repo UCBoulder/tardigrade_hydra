@@ -90,4 +90,124 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
 
     BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
 
+    {
+
+        double eps = 3e-6;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 9;
+        std::array<double, OUT_SIZE> x = Ltp1;
+        std::array<double, VAR_SIZE * OUT_SIZE> jacobian_answer{};
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::array<double, OUT_SIZE> xp = x;
+            std::array<double, OUT_SIZE> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            std::array<double, OUT_SIZE> rp;
+            std::array<double, OUT_SIZE> rm;
+
+            de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(xp), std::end(xp), std::begin(Ft), std::end(Ft), std::begin(rp), std::end(rp));
+            de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(xm), std::end(xm), std::begin(Ft), std::end(Ft), std::begin(rm), std::end(rm));
+
+            for ( unsigned int j = 0; j < OUT_SIZE; ++j ){
+
+                jacobian_answer[ VAR_SIZE * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+        std::array<double, VAR_SIZE * OUT_SIZE> jacobian_result;
+
+        de.computeDeformation_dFtp1dLtp1(dt, std::begin(Ltp1), std::end(Ltp1), std::begin(answer), std::end(answer), std::begin(jacobian_result), std::end(jacobian_result));
+
+        BOOST_TEST(jacobian_answer == jacobian_result, CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 3e-6;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 9;
+        std::array<double, OUT_SIZE> x = Lt;
+        std::array<double, VAR_SIZE * OUT_SIZE> jacobian_answer{};
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::array<double, OUT_SIZE> xp = x;
+            std::array<double, OUT_SIZE> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            std::array<double, OUT_SIZE> rp;
+            std::array<double, OUT_SIZE> rm;
+
+            de.computeDeformation(dt, std::begin(xp), std::end(xp), std::begin(Ltp1), std::end(Ltp1), std::begin(Ft), std::end(Ft), std::begin(rp), std::end(rp));
+            de.computeDeformation(dt, std::begin(xm), std::end(xm), std::begin(Ltp1), std::end(Ltp1), std::begin(Ft), std::end(Ft), std::begin(rm), std::end(rm));
+
+            for ( unsigned int j = 0; j < OUT_SIZE; ++j ){
+
+                jacobian_answer[ VAR_SIZE * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+        std::array<double, VAR_SIZE * OUT_SIZE> jacobian_result;
+
+        de.computeDeformation_dFtp1dLt(dt, std::begin(Ltp1), std::end(Ltp1), std::begin(Ft), std::end(Ft), std::begin(jacobian_result), std::end(jacobian_result));
+
+        BOOST_TEST(jacobian_answer == jacobian_result, CHECK_PER_ELEMENT);
+
+    }
+
+    {
+
+        double eps = 3e-6;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 9;
+        std::array<double, OUT_SIZE> x = Ft;
+        std::array<double, VAR_SIZE * OUT_SIZE> jacobian_answer{};
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            double delta = eps * std::fabs(x[i]) + eps;
+
+            std::array<double, OUT_SIZE> xp = x;
+            std::array<double, OUT_SIZE> xm = x;
+
+            xp[i] += delta;
+            xm[i] -= delta;
+
+            std::array<double, OUT_SIZE> rp;
+            std::array<double, OUT_SIZE> rm;
+
+            de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(Ltp1), std::end(Ltp1), std::begin(xp), std::end(xp), std::begin(rp), std::end(rp));
+            de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(Ltp1), std::end(Ltp1), std::begin(xm), std::end(xm), std::begin(rm), std::end(rm));
+
+            for ( unsigned int j = 0; j < OUT_SIZE; ++j ){
+
+                jacobian_answer[ VAR_SIZE * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+        std::array<double, VAR_SIZE * OUT_SIZE> jacobian_result;
+
+        de.computeDeformation_dFtp1dFt(dt, std::begin(Ltp1), std::end(Ltp1), std::begin(Lt), std::end(Lt), std::begin(jacobian_result), std::end(jacobian_result));
+
+        BOOST_TEST(jacobian_answer == jacobian_result, CHECK_PER_ELEMENT);
+
+    }
+
 }

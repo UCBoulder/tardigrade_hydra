@@ -145,13 +145,138 @@ namespace tardigradeHydra {
      * \param &dFtp1dLtp1_begin: The starting iterator of the derivative
      * \param &dFtp1dLtp1_end: The stopping iterator of the derivative
      */
+    template<class container, int size>
 	template<
 	typename dt_type, class Ltp1_iterator, class Ftp1_iterator, class dFtp1dLtp1_iterator
 	>
-    void computeDeformation_dFtp1dLtp1(const dt_type &dt,
+    void DeformationEvolutionBase<container, size>::computeDeformation_dFtp1dLtp1(const dt_type &dt,
                                        const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
                                        const Ftp1_iterator &Ftp1_begin, const Ftp1_iterator &Ftp1_end,
                                        dFtp1dLtp1_iterator dFtp1dLtp1_begin, dFtp1dLtp1_iterator dFtp1dLtp1_end){
 
+        using dFtp1dLtp1_type = typename std::iterator_traits<dFtp1dLtp1_iterator>::value_type;
+        using Ltp1_type = typename std::iterator_traits<Ltp1_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(dFtp1dLtp1_end - dFtp1dLtp1_begin) == size * size * size * size, "The size of dFtp1dLtp1 is " + std::to_string((unsigned int)(dFtp1dLtp1_end - dFtp1dLtp1_begin)) + " but should be " + std::to_string(size * size * size * size));
+
+        std::array<dFtp1dLtp1_type, size * size * size * size> RHS{};
+
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int I = 0; I < size; ++I ){
+                for ( unsigned int a = 0; a < size; ++a ){
+
+                    RHS[size * size * size * i + size * size * I + size * i + a] += dt * integration_parameter * ( *(Ftp1_begin + size * a + I) );
+
+                }
+            }
+        }
+
+        //Form the solver
+        tardigradeVectorTools::solverType<Ltp1_type, size, size> linearSolver;
+        formDeformationSolver(dt, Ltp1_begin, Ltp1_end, linearSolver);
+
+        auto _RHS = getFixedSizeMatrixMap<dFtp1dLtp1_type, size, size * size * size>(RHS.data());
+        auto _dFtp1dLtp1 = getFixedSizeMatrixMap<dFtp1dLtp1_type, size, size * size * size>(dFtp1dLtp1_begin);
+
+        _dFtp1dLtp1 = linearSolver.solve(_RHS);
+
     }
+
+    /*!
+     * Compute the derivative of the current deformation with respect to the previous velocity gradient
+     *
+     * \param &dt: The change in time
+     * \param &Ltp1_begin: The starting iterator of the velocity gradient
+     * \param &Ltp1_end: The stopping iterator of the velocity gradient
+     * \param &Ft_begin: The starting iterator of the previous deformation
+     * \param &Ft_end: The stopping iterator of the previous deformation
+     * \param &dFtp1dLt_begin: The starting iterator of the derivative
+     * \param &dFtp1dLt_end: The stopping iterator of the derivative
+     */
+    template<class container, int size>
+	template<
+	typename dt_type, class Ltp1_iterator, class Ft_iterator, class dFtp1dLt_iterator
+	>
+    void DeformationEvolutionBase<container,size>::computeDeformation_dFtp1dLt(const dt_type &dt,
+                                     const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                                     const Ft_iterator &Ft_begin, const Ft_iterator &Ft_end,
+                                     dFtp1dLt_iterator dFtp1dLt_begin, dFtp1dLt_iterator dFtp1dLt_end){
+
+        using dFtp1dLt_type = typename std::iterator_traits<dFtp1dLt_iterator>::value_type;
+        using Ltp1_type = typename std::iterator_traits<Ltp1_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(dFtp1dLt_end - dFtp1dLt_begin) == size * size * size * size, "The size of dFtp1dLt is " + std::to_string((unsigned int)(dFtp1dLt_end - dFtp1dLt_begin)) + " but should be " + std::to_string(size * size * size * size));
+
+        std::array<dFtp1dLt_type, size * size * size * size> RHS{};
+
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int I = 0; I < size; ++I ){
+                for ( unsigned int a = 0; a < size; ++a ){
+
+                    RHS[size * size * size * i + size * size * I + size * i + a] += dt * (1. - integration_parameter) * ( *(Ft_begin + size * a + I) );
+
+                }
+            }
+        }
+
+        //Form the solver
+        tardigradeVectorTools::solverType<Ltp1_type, size, size> linearSolver;
+        formDeformationSolver(dt, Ltp1_begin, Ltp1_end, linearSolver);
+
+        auto _RHS = getFixedSizeMatrixMap<dFtp1dLt_type, size, size * size * size>(RHS.data());
+        auto _dFtp1dLt = getFixedSizeMatrixMap<dFtp1dLt_type, size, size * size * size>(dFtp1dLt_begin);
+
+        _dFtp1dLt = linearSolver.solve(_RHS);
+
+    }
+
+    /*!
+     * Compute the derivative of the current deformation with respect to the previous deformation
+     *
+     * \param &dt: The change in time
+     * \param &Ltp1_begin: The starting iterator of the velocity gradient
+     * \param &Ltp1_end: The stopping iterator of the velocity gradient
+     * \param &Lt_begin: The starting iterator of the previous velocity gradient
+     * \param &Lt_end: The stopping iterator of the previous velocity gradient
+     * \param &dFtp1dFt_begin: The starting iterator of the derivative
+     * \param &dFtp1dFt_end: The stopping iterator of the derivative
+     */
+    template<class container, int size>
+	template<
+	typename dt_type, class Ltp1_iterator, class Lt_iterator, class dFtp1dFt_iterator
+	>
+    void DeformationEvolutionBase<container,size>::computeDeformation_dFtp1dFt(const dt_type &dt,
+                                     const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+                                     const Lt_iterator &Lt_begin, const Lt_iterator &Lt_end,
+                                     dFtp1dFt_iterator dFtp1dFt_begin, dFtp1dFt_iterator dFtp1dFt_end){
+
+        using dFtp1dFt_type = typename std::iterator_traits<dFtp1dFt_iterator>::value_type;
+        using Ltp1_type = typename std::iterator_traits<Ltp1_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK((unsigned int)(dFtp1dFt_end - dFtp1dFt_begin) == size * size * size * size, "The size of dFtp1dFt is " + std::to_string((unsigned int)(dFtp1dFt_end - dFtp1dFt_begin)) + " but should be " + std::to_string(size * size * size * size));
+
+        std::array<dFtp1dFt_type, size * size * size * size> RHS{};
+
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int I = 0; I < size; ++I ){
+                RHS[size * size * size * i + size * size * I + size * i + I] += 1;
+                for ( unsigned int a = 0; a < size; ++a ){
+
+                    RHS[size * size * size * i + size * size * I + size * a + I] += dt * (1. - integration_parameter) * ( *(Lt_begin + size * i + a) );
+
+                }
+            }
+        }
+
+        //Form the solver
+        tardigradeVectorTools::solverType<Ltp1_type, size, size> linearSolver;
+        formDeformationSolver(dt, Ltp1_begin, Ltp1_end, linearSolver);
+
+        auto _RHS = getFixedSizeMatrixMap<dFtp1dFt_type, size, size * size * size>(RHS.data());
+        auto _dFtp1dFt = getFixedSizeMatrixMap<dFtp1dFt_type, size, size * size * size>(dFtp1dFt_begin);
+
+        _dFtp1dFt = linearSolver.solve(_RHS);
+
+    }
+
 }
