@@ -31,11 +31,14 @@ namespace tardigradeHydra {
      *
      * This means
      *
-     * \f$ F_{iI}^{t+1} = F_{iI}^t + \Delta t \left(\left(1-\alpha\right) \dot{F}_{iI}^t + \alpha \dot{F}_{iI}^{t+1} \f$\right) \f$
+     * \f$ F_{iI}^{t+1} = F_{iI}^t + \Delta t \left(\left(1-\alpha\right) \dot{F}_{iI}^t + \alpha \dot{F}_{iI}^{t+1}
+     * \f$\right) \f$
      *
-     * \f$ F_{iI}^{t+1} = F_{iI}^t + \Delta t \left( 1 - \alpha \right) L_{ij}^t F_{jI}^t + \Delta t \alpha L_{ij}^{t+1} F_{jI}^{t+1} \f$
+     * \f$ F_{iI}^{t+1} = F_{iI}^t + \Delta t \left( 1 - \alpha \right) L_{ij}^t F_{jI}^t + \Delta t \alpha L_{ij}^{t+1}
+     * F_{jI}^{t+1} \f$
      *
-     * \f$ \left(\delta_{ij} - \Delta t \alpha L_{ij}^{t+1} \right) F_{jI}^{t+1} = \left(\delta_{ij} + \Delta t \left(1 - \alpha \right) L_{ij}^{t}\right) F_{jI}^t \f$
+     * \f$ \left(\delta_{ij} - \Delta t \alpha L_{ij}^{t+1} \right) F_{jI}^{t+1} = \left(\delta_{ij} + \Delta t \left(1
+     * - \alpha \right) L_{ij}^{t}\right) F_{jI}^t \f$
      *
      * which can be solved for \f$F_{jI}^{t+1}\f$.
      *
@@ -50,66 +53,52 @@ namespace tardigradeHydra {
      */
     template <class container, int size>
     class DeformationEvolutionBase : public ResidualBase<container> {
-        public:
-	    using tardigradeHydra::ResidualBase<container>::ResidualBase;
+       public:
+        using tardigradeHydra::ResidualBase<container>::ResidualBase;
 
         //! The spatial dimension
         using tardigradeHydra::ResidualBase<container>::dimension;
 
-	    double integration_parameter = 0.5;
+        double integration_parameter = 0.5;
 
-        template<
-        typename dt_type, class Ltp1_iterator
-        >
-        void _formDeformationLHS(const dt_type &dt,
-                                 const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
-                                 std::array<typename std::iterator_traits<Ltp1_iterator>::value_type, size * size> &LHS);
+        template <typename dt_type, class Ltp1_iterator>
+        void _formDeformationLHS(
+            const dt_type &dt, const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+            std::array<typename std::iterator_traits<Ltp1_iterator>::value_type, size * size> &LHS);
 
-        template<
-        typename dt_type, class Ltp1_iterator, class solver_type
-        >
-        void formDeformationSolver(const dt_type &dt,
-                                   const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
+        template <typename dt_type, class Ltp1_iterator, class solver_type>
+        void formDeformationSolver(const dt_type &dt, const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
                                    solver_type &solver);
 
-	    template<
-		typename dt_type, class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator
-	    >
-        void computeDeformation(const dt_type &dt,
-                                const Lt_iterator &Lt_begin, const Lt_iterator &Lt_end,
+        template <typename dt_type, class Lt_iterator, class Ltp1_iterator, class Ft_iterator, class Ftp1_iterator>
+        void computeDeformation(const dt_type &dt, const Lt_iterator &Lt_begin, const Lt_iterator &Lt_end,
                                 const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
-                                const Ft_iterator &Ft_begin, const Ft_iterator &Ft_end,
-                                Ftp1_iterator Ftp1_begin, Ftp1_iterator Ftp1_end);
+                                const Ft_iterator &Ft_begin, const Ft_iterator &Ft_end, Ftp1_iterator Ftp1_begin,
+                                Ftp1_iterator Ftp1_end);
 
-	    template<
-		typename dt_type, class Ltp1_iterator, class Ftp1_iterator, class dFtp1dLtp1_iterator
-	    >
-        void computeDeformation_dFtp1dLtp1(const dt_type &dt,
-                                           const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
-                                           const Ftp1_iterator &Ftp1_begin, const Ftp1_iterator &Ftp1_end,
-                                           dFtp1dLtp1_iterator dFtp1dLtp1_begin, dFtp1dLtp1_iterator dFtp1dLtp1_end);
+        template <typename dt_type, class Ltp1_iterator, class Ftp1_iterator, class dFtp1dLtp1_iterator>
+        void computeDeformation_dFtp1dLtp1(const dt_type &dt, const Ltp1_iterator &Ltp1_begin,
+                                           const Ltp1_iterator &Ltp1_end, const Ftp1_iterator &Ftp1_begin,
+                                           const Ftp1_iterator &Ftp1_end, dFtp1dLtp1_iterator dFtp1dLtp1_begin,
+                                           dFtp1dLtp1_iterator dFtp1dLtp1_end);
 
-	    template<
-		typename dt_type, class Ltp1_iterator, class Ft_iterator, class dFtp1dLt_iterator
-	    >
-        void computeDeformation_dFtp1dLt(const dt_type &dt,
-                                         const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
-                                         const Ft_iterator &Ft_begin, const Ft_iterator &Ft_end,
-                                         dFtp1dLt_iterator dFtp1dLt_begin, dFtp1dLt_iterator dFtp1dLt_end);
+        template <typename dt_type, class Ltp1_iterator, class Ft_iterator, class dFtp1dLt_iterator>
+        void computeDeformation_dFtp1dLt(const dt_type &dt, const Ltp1_iterator &Ltp1_begin,
+                                         const Ltp1_iterator &Ltp1_end, const Ft_iterator &Ft_begin,
+                                         const Ft_iterator &Ft_end, dFtp1dLt_iterator dFtp1dLt_begin,
+                                         dFtp1dLt_iterator dFtp1dLt_end);
 
-	    template<
-		typename dt_type, class Ltp1_iterator, class Lt_iterator, class dFtp1dFt_iterator
-	    >
-        void computeDeformation_dFtp1dFt(const dt_type &dt,
-                                         const Ltp1_iterator &Ltp1_begin, const Ltp1_iterator &Ltp1_end,
-                                         const Lt_iterator &Lt_begin, const Lt_iterator &Lt_end,
-                                         dFtp1dFt_iterator dFtp1dFt_begin, dFtp1dFt_iterator dFtp1dFt_end);
+        template <typename dt_type, class Ltp1_iterator, class Lt_iterator, class dFtp1dFt_iterator>
+        void computeDeformation_dFtp1dFt(const dt_type &dt, const Ltp1_iterator &Ltp1_begin,
+                                         const Ltp1_iterator &Ltp1_end, const Lt_iterator &Lt_begin,
+                                         const Lt_iterator &Lt_end, dFtp1dFt_iterator dFtp1dFt_begin,
+                                         dFtp1dFt_iterator dFtp1dFt_end);
 
-        protected:
-	private:
+       protected:
+       private:
     };
 
-}
+}  // namespace tardigradeHydra
 
 #include "tardigrade_DeformationEvolutionBase.tpp"
 
