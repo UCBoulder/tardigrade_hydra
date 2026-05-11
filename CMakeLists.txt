@@ -81,6 +81,7 @@ set(ADDITIONAL_HEADER_ONLY_LIBRARIES
     "tardigrade_CoreDefinitions"
     "tardigrade_CustomErrors"
     "tardigrade_ResidualBase"
+    "tardigrade_DeformationEvolutionBase"
 )
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h ${PROJECT_NAME}.tpp)
 set(PROJECT_PRIVATE_HEADERS "")
