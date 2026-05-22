@@ -144,7 +144,7 @@ namespace tardigradeHydra {
             );
 
             // Compute the damage strain
-            floatVector Ed(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension> Ed;
             auto D = *get_damage();
             std::transform(std::begin(Ee), std::end(Ee), std::begin(Ed),
                            std::bind(std::multiplies<>(), std::placeholders::_1, D / (1 - D)));
@@ -157,7 +157,36 @@ namespace tardigradeHydra {
                 argument[dimension * i + i] += 1;
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value = tardigradeVectorTools::matrixSqrt(argument, dimension));
+            Fd.zero(dimension * dimension);
+
+            using argument_iterator = floatVector::iterator;
+            using result_iterator = floatVector::iterator;
+            using jacobian_iterator = std::array<floatType, dimension * dimension * dimension * dimension>::iterator;
+
+            floatVector _dX(dimension * dimension, 0);
+            floatVector _R(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension * dimension * dimension> dFddA;
+
+#ifndef TARDIGRADE_ERROR_TOOLS_OPT
+
+            int return_val;
+            try{
+                return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
+                    std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
+                    std::begin(_R), std::end(_R), std::begin(dFddA), std::end(dFddA)
+                );
+            }catch(std::exception &e){
+                std::string message;
+                tardigradeErrorTools::captureNestedExceptions(e, message);
+                throw e;
+            }
+#else
+            return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
+                std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
+                std::begin(_R), std::end(_R), std::begin(dFddA), std::end(dFddA)
+            );
+#endif
+
         }
 
         void residual::setDamageDeformationGradientJacobians() {
@@ -272,14 +301,36 @@ namespace tardigradeHydra {
                 argument[dimension * i + i] += 1;
             }
 
-            floatMatrix _dAdFe;  // A = 2.0 * Ed + eye
-                                 //
-            floatVector dAdFe;   // A = 2.0 * Ed + eye
+            Fd.zero(dimension * dimension);
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value =
-                                             tardigradeVectorTools::matrixSqrt(argument, dimension, _dAdFe));
+            using argument_iterator = floatVector::iterator;
+            using result_iterator = floatVector::iterator;
+            using jacobian_iterator = std::array<floatType, dimension * dimension * dimension * dimension>::iterator;
 
-            dAdFe          = tardigradeVectorTools::appendVectors(_dAdFe);
+            floatVector _dX(dimension * dimension, 0);
+            floatVector _R(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension * dimension * dimension> dAdFe;
+
+#ifndef TARDIGRADE_ERROR_TOOLS_OPT
+
+            int return_val;
+            try{
+                return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
+                    std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
+                    std::begin(_R), std::end(_R), std::begin(dAdFe), std::end(dAdFe)
+                );
+            }catch(std::exception &e){
+                std::string message;
+                tardigradeErrorTools::captureNestedExceptions(e, message);
+                throw e;
+            }
+#else
+            return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
+                std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
+                std::begin(_R), std::end(_R), std::begin(dAdFe), std::end(dAdFe)
+            );
+#endif
+
             auto map_dAdFe = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFe.data());
 
             fourthOrderTensor dFddEd(dimension * dimension * dimension * dimension, 0);
