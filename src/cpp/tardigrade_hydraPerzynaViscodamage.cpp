@@ -177,6 +177,9 @@ namespace tardigradeHydra {
                     std::begin(_dX), std::end(_dX), std::begin(_R), std::end(_R), std::begin(dFddA), std::end(dFddA));
 
             TARDIGRADE_ERROR_TOOLS_CHECK(return_val == 0, "The return error code is " + std::to_string(return_val))
+
+            if ( return_val != 0 ){ throw std::runtime_error("Error code from matrixSqrt" + std::to_string(return_val)); }
+
         }
 
         void residual::setDamageDeformationGradientJacobians() {
@@ -311,6 +314,8 @@ namespace tardigradeHydra {
                     std::begin(_dX), std::end(_dX), std::begin(_R), std::end(_R), std::begin(dAdFd), std::end(dAdFd));
 
             TARDIGRADE_ERROR_TOOLS_CHECK(return_val == 0, "The return error code is " + std::to_string(return_val))
+
+            if ( return_val != 0 ){ throw std::runtime_error("Error code from matrixSqrt" + std::to_string(return_val)); }
 
             auto map_dAdFd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFd.data());
 
