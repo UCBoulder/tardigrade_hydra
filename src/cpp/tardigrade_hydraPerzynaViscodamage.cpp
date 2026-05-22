@@ -150,10 +150,14 @@ namespace tardigradeHydra {
                            std::bind(std::multiplies<>(), std::placeholders::_1, D / (1 - D)));
 
             // Compute the square root to solve for the damage deformation gradient
-            floatVector eye(sot_dimension);
-            tardigradeVectorTools::eye(eye);
+            floatVector argument(dimension * dimension, 0);
+            std::transform(std::begin(Ed), std::end(Ed), std::begin(argument),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, 2.0));
+            for ( unsigned int i = 0; i < dimension; ++i){
+                argument[dimension * i + i] += 1;
+            }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value = tardigradeVectorTools::matrixSqrt(2.0 * Ed + eye, dimension));
+            TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value = tardigradeVectorTools::matrixSqrt(argument, dimension));
         }
 
         void residual::setDamageDeformationGradientJacobians() {
