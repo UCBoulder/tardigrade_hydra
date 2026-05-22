@@ -138,14 +138,16 @@ namespace tardigradeHydra {
                       std::begin(Fe)); 
 
             // Compute the elastic Green-Lagrange strain
-//            std::array<floatType, dimension * dimension> Ee;
-            std::vector<floatType> Ee(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension> Ee;
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 tardigradeConstitutiveTools::computeGreenLagrangeStrain<dimension>(std::begin(Fe), std::end(Fe), std::begin(Ee), std::end(Ee))
             );
 
             // Compute the damage strain
-            floatVector Ed = (*get_damage()) / (1 - (*get_damage())) * Ee;
+            floatVector Ed(dimension * dimension, 0);
+            auto D = *get_damage();
+            std::transform(std::begin(Ee), std::end(Ee), std::begin(Ed),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, D / (1 - D)));
 
             // Compute the square root to solve for the damage deformation gradient
             floatVector eye(sot_dimension);
@@ -205,7 +207,7 @@ namespace tardigradeHydra {
                       std::begin(Fe)); 
 
             // Compute the elastic Green-Lagrange strain
-            floatVector Ee(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension> Ee;
 
             floatVector dEedFe(dimension * dimension * dimension * dimension, 0);
 
@@ -237,9 +239,14 @@ namespace tardigradeHydra {
                                                                         (num_configs - 1) * sot_dimension);
 
             // Compute the damage strain
-            floatVector Ed = (*get_damage()) / (1 - (*get_damage())) * Ee;
+            floatVector Ed(dimension * dimension, 0);
+            auto D = *get_damage();
+            std::transform(std::begin(Ee), std::end(Ee), std::begin(Ed),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, D / (1 - D)));
 
-            floatVector dEddD = 1 / (1 - (*get_damage())) * (1 + (*get_damage()) / (1 - (*get_damage()))) * Ee;
+            floatVector dEddD(dimension * dimension, 0);
+            std::transform(std::begin(Ee), std::end(Ee), std::begin(dEddD),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, 1 / (1 - D) * (1 + D / (1 - D))));
 
             fourthOrderTensor dEddF(dimension * dimension * dimension * dimension, 0);
             auto              map_dEddF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dEddF.data());
