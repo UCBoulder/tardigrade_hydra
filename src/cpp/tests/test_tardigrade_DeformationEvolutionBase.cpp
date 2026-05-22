@@ -67,11 +67,11 @@ namespace tardigradeHydra {
 BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance(DEFAULT_TEST_TOLERANCE)) {
     class DeformationEvolution : public tardigradeHydra::DeformationEvolutionBase<tardigradeHydra::hydraBase, 3> {};
 
-    tardigradeHydra::floatType dt = 1.45;
+    tardigradeHydra::floatType deltat = 1.45;
 
     tardigradeHydra::floatType alpha = 0.56;
 
-    std::array<tardigradeHydra::floatType, 3 * 3> Ft = {1.1, 0.2, 0.3, 0.4, 1.5, 0.6, 0.7, 0.8, 1.9};
+    std::array<tardigradeHydra::floatType, 3 * 3> Dt = {1.1, 0.2, 0.3, 0.4, 1.5, 0.6, 0.7, 0.8, 1.9};
 
     std::array<tardigradeHydra::floatType, 3 * 3> Lt = {0.01, -0.02, -0.02, -0.04, -0.02, -0., 0.02, -0.01, -0.04};
 
@@ -86,8 +86,8 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
 
     de.integration_parameter = alpha;
 
-    de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(Ltp1), std::end(Ltp1), std::begin(Ft),
-                          std::end(Ft), std::begin(result), std::end(result));
+    de.computeDeformation(deltat, std::begin(Lt), std::end(Lt), std::begin(Ltp1), std::end(Ltp1), std::begin(Dt),
+                          std::end(Dt), std::begin(result), std::end(result));
 
     BOOST_TEST(result == answer, CHECK_PER_ELEMENT);
 
@@ -110,10 +110,10 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
             std::array<double, OUT_SIZE> rp;
             std::array<double, OUT_SIZE> rm;
 
-            de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(xp), std::end(xp), std::begin(Ft),
-                                  std::end(Ft), std::begin(rp), std::end(rp));
-            de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(xm), std::end(xm), std::begin(Ft),
-                                  std::end(Ft), std::begin(rm), std::end(rm));
+            de.computeDeformation(deltat, std::begin(Lt), std::end(Lt), std::begin(xp), std::end(xp), std::begin(Dt),
+                                  std::end(Dt), std::begin(rp), std::end(rp));
+            de.computeDeformation(deltat, std::begin(Lt), std::end(Lt), std::begin(xm), std::end(xm), std::begin(Dt),
+                                  std::end(Dt), std::begin(rm), std::end(rm));
 
             for (unsigned int j = 0; j < OUT_SIZE; ++j) {
                 jacobian_answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
 
         std::array<double, VAR_SIZE * OUT_SIZE> jacobian_result;
 
-        de.computeDeformation_dFtp1dLtp1(dt, std::begin(Ltp1), std::end(Ltp1), std::begin(answer), std::end(answer),
+        de.computeDeformation_dDtp1dLtp1(deltat, std::begin(Ltp1), std::end(Ltp1), std::begin(answer), std::end(answer),
                                          std::begin(jacobian_result), std::end(jacobian_result));
 
         BOOST_TEST(jacobian_answer == jacobian_result, CHECK_PER_ELEMENT);
@@ -147,10 +147,10 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
             std::array<double, OUT_SIZE> rp;
             std::array<double, OUT_SIZE> rm;
 
-            de.computeDeformation(dt, std::begin(xp), std::end(xp), std::begin(Ltp1), std::end(Ltp1), std::begin(Ft),
-                                  std::end(Ft), std::begin(rp), std::end(rp));
-            de.computeDeformation(dt, std::begin(xm), std::end(xm), std::begin(Ltp1), std::end(Ltp1), std::begin(Ft),
-                                  std::end(Ft), std::begin(rm), std::end(rm));
+            de.computeDeformation(deltat, std::begin(xp), std::end(xp), std::begin(Ltp1), std::end(Ltp1), std::begin(Dt),
+                                  std::end(Dt), std::begin(rp), std::end(rp));
+            de.computeDeformation(deltat, std::begin(xm), std::end(xm), std::begin(Ltp1), std::end(Ltp1), std::begin(Dt),
+                                  std::end(Dt), std::begin(rm), std::end(rm));
 
             for (unsigned int j = 0; j < OUT_SIZE; ++j) {
                 jacobian_answer[VAR_SIZE * j + i] = (rp[j] - rm[j]) / (2 * delta);
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
 
         std::array<double, VAR_SIZE * OUT_SIZE> jacobian_result;
 
-        de.computeDeformation_dFtp1dLt(dt, std::begin(Ltp1), std::end(Ltp1), std::begin(Ft), std::end(Ft),
+        de.computeDeformation_dDtp1dLt(deltat, std::begin(Ltp1), std::end(Ltp1), std::begin(Dt), std::end(Dt),
                                        std::begin(jacobian_result), std::end(jacobian_result));
 
         BOOST_TEST(jacobian_answer == jacobian_result, CHECK_PER_ELEMENT);
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
         double                                  eps      = 3e-6;
         constexpr unsigned int                  VAR_SIZE = 9;
         constexpr unsigned int                  OUT_SIZE = 9;
-        std::array<double, OUT_SIZE>            x        = Ft;
+        std::array<double, OUT_SIZE>            x        = Dt;
         std::array<double, VAR_SIZE * OUT_SIZE> jacobian_answer{};
 
         for (unsigned int i = 0; i < VAR_SIZE; ++i) {
@@ -184,9 +184,9 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
             std::array<double, OUT_SIZE> rp;
             std::array<double, OUT_SIZE> rm;
 
-            de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(Ltp1), std::end(Ltp1), std::begin(xp),
+            de.computeDeformation(deltat, std::begin(Lt), std::end(Lt), std::begin(Ltp1), std::end(Ltp1), std::begin(xp),
                                   std::end(xp), std::begin(rp), std::end(rp));
-            de.computeDeformation(dt, std::begin(Lt), std::end(Lt), std::begin(Ltp1), std::end(Ltp1), std::begin(xm),
+            de.computeDeformation(deltat, std::begin(Lt), std::end(Lt), std::begin(Ltp1), std::end(Ltp1), std::begin(xm),
                                   std::end(xm), std::begin(rm), std::end(rm));
 
             for (unsigned int j = 0; j < OUT_SIZE; ++j) {
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(test_DeformationEvolutionBase, *boost::unit_test::tolerance
 
         std::array<double, VAR_SIZE * OUT_SIZE> jacobian_result;
 
-        de.computeDeformation_dFtp1dFt(dt, std::begin(Ltp1), std::end(Ltp1), std::begin(Lt), std::end(Lt),
+        de.computeDeformation_dDtp1dDt(deltat, std::begin(Ltp1), std::end(Ltp1), std::begin(Lt), std::end(Lt),
                                        std::begin(jacobian_result), std::end(jacobian_result));
 
         BOOST_TEST(jacobian_answer == jacobian_result, CHECK_PER_ELEMENT);
