@@ -132,24 +132,55 @@ namespace tardigradeHydra {
             auto Fd = get_SetDataStorage_damageDeformationGradient();
 
             // Get the elastic deformation gradient
-            floatVector Fe =
-                floatVector(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
-                            hydra->deformation->get_configurations()->begin() +
-                                sot_dimension * (elastic_config_index + 1));
+            std::array<floatType, dimension * dimension> Fe;
+            std::copy(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
+                      hydra->deformation->get_configurations()->begin() + sot_dimension * (elastic_config_index + 1),
+                      std::begin(Fe));
 
             // Compute the elastic Green-Lagrange strain
-            floatVector Ee;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeGreenLagrangeStrain(Fe, Ee));
+            std::array<floatType, dimension * dimension> Ee;
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeGreenLagrangeStrain<dimension>(
+                std::begin(Fe), std::end(Fe), std::begin(Ee), std::end(Ee)));
 
             // Compute the damage strain
-            floatVector Ed = (*get_damage()) / (1 - (*get_damage())) * Ee;
+            std::array<floatType, dimension * dimension> ed;
+            auto                                         D = *get_damage();
+            std::transform(std::begin(Ee), std::end(Ee), std::begin(ed),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, D / (1 - D)));
 
             // Compute the square root to solve for the damage deformation gradient
-            floatVector eye(sot_dimension);
-            tardigradeVectorTools::eye(eye);
+            std::array<floatType, dimension * dimension> inverse_argument;
+            std::transform(std::begin(ed), std::end(ed), std::begin(inverse_argument),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, -2.0));
+            for (unsigned int i = 0; i < dimension; ++i) {
+                inverse_argument[dimension * i + i] += 1;
+            }
+            std::array<floatType, dimension * dimension> argument;
+            using argument_iterator = std::array<floatType, dimension * dimension>::iterator;
+            tardigradeVectorTools::inverse<floatType, argument_iterator, argument_iterator, dimension, dimension>(
+                std::begin(inverse_argument), std::end(inverse_argument), dimension, dimension, std::begin(argument),
+                std::end(argument));
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value = tardigradeVectorTools::matrixSqrt(2.0 * Ed + eye, dimension));
+            Fd.zero(dimension * dimension);
+
+            using argument_iterator = std::array<floatType, dimension * dimension>::iterator;
+            using result_iterator   = floatVector::iterator;
+            using jacobian_iterator = std::array<floatType, dimension * dimension * dimension * dimension>::iterator;
+
+            floatVector                                                          _dX(dimension * dimension, 0);
+            floatVector                                                          _R(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension * dimension * dimension> dFddA;
+
+            int return_val =
+                tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
+                    std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value),
+                    std::begin(_dX), std::end(_dX), std::begin(_R), std::end(_R), std::begin(dFddA), std::end(dFddA));
+
+            TARDIGRADE_ERROR_TOOLS_CHECK(return_val == 0, "The return error code is " + std::to_string(return_val))
+
+            if (return_val != 0) {
+                throw std::runtime_error("Error code from matrixSqrt" + std::to_string(return_val));
+            }
         }
 
         void residual::setDamageDeformationGradientJacobians() {
@@ -197,17 +228,18 @@ namespace tardigradeHydra {
             auto Fd = get_SetDataStorage_damageDeformationGradient();
 
             // Get the elastic deformation gradient
-            floatVector Fe =
-                floatVector(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
-                            hydra->deformation->get_configurations()->begin() +
-                                sot_dimension * (elastic_config_index + 1));
+            std::array<floatType, dimension * dimension> Fe;
+            std::copy(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
+                      hydra->deformation->get_configurations()->begin() + sot_dimension * (elastic_config_index + 1),
+                      std::begin(Fe));
 
             // Compute the elastic Green-Lagrange strain
-            floatVector Ee;
+            std::array<floatType, dimension * dimension> Ee;
 
-            floatVector dEedFe;
+            floatVector dEedFe(dimension * dimension * dimension * dimension, 0);
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeGreenLagrangeStrain(Fe, Ee, dEedFe));
+            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeGreenLagrangeStrain<dimension>(
+                std::begin(Fe), std::end(Fe), std::begin(Ee), std::end(Ee), std::begin(dEedFe), std::end(dEedFe)));
 
             floatVector dFedF(dimension * dimension * dimension * dimension, 0);
 
@@ -233,41 +265,83 @@ namespace tardigradeHydra {
                                                                         (num_configs - 1) * sot_dimension);
 
             // Compute the damage strain
-            floatVector Ed = (*get_damage()) / (1 - (*get_damage())) * Ee;
+            floatVector ed(dimension * dimension, 0);
+            auto        D = *get_damage();
+            std::transform(std::begin(Ee), std::end(Ee), std::begin(ed),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, D / (1 - D)));
 
-            floatVector dEddD = 1 / (1 - (*get_damage())) * (1 + (*get_damage()) / (1 - (*get_damage()))) * Ee;
+            floatVector deddD(dimension * dimension, 0);
+            std::transform(std::begin(Ee), std::end(Ee), std::begin(deddD),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, 1 / (1 - D) * (1 + D / (1 - D))));
 
-            fourthOrderTensor dEddF(dimension * dimension * dimension * dimension, 0);
-            auto              map_dEddF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dEddF.data());
+            fourthOrderTensor deddF(dimension * dimension * dimension * dimension, 0);
+            auto              map_deddF = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(deddF.data());
 
-            floatVector dEddSubFs((num_configs - 1) * dimension * dimension * dimension * dimension, 0);
-            auto        map_dEddSubFs =
-                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dEddSubFs.data(),
+            floatVector deddSubFs((num_configs - 1) * dimension * dimension * dimension * dimension, 0);
+            auto        map_deddSubFs =
+                getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(deddSubFs.data(),
                                                                         (num_configs - 1) * sot_dimension);
 
-            map_dEddF = ((*get_damage()) / (1 - (*get_damage())) * map_dEedFe * map_dFedF).eval();
+            map_deddF = (D / (1 - D) * map_dEedFe * map_dFedF).eval();
 
-            map_dEddSubFs = ((*get_damage()) / (1 - (*get_damage())) * map_dEedFe * map_dFedSubFs).eval();
+            map_deddSubFs = (D / (1 - D) * map_dEedFe * map_dFedSubFs).eval();
 
             // Compute the square root to solve for the damage deformation gradient
-            floatVector eye(sot_dimension);
-            tardigradeVectorTools::eye(eye);
+            std::array<floatType, dimension * dimension> inverse_argument;
+            std::transform(std::begin(ed), std::end(ed), std::begin(inverse_argument),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, -2.0));
+            for (unsigned int i = 0; i < dimension; ++i) {
+                inverse_argument[dimension * i + i] += 1;
+            }
+            std::array<floatType, dimension * dimension> argument;
+            using argument_iterator = std::array<floatType, dimension * dimension>::iterator;
+            tardigradeVectorTools::inverse<floatType, argument_iterator, argument_iterator, dimension, dimension>(
+                std::begin(inverse_argument), std::end(inverse_argument), dimension, dimension, std::begin(argument),
+                std::end(argument));
 
-            floatMatrix _dAdFe;  // A = 2.0 * Ed + eye
-                                 //
-            floatVector dAdFe;   // A = 2.0 * Ed + eye
+            Fd.zero(dimension * dimension);
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value =
-                                             tardigradeVectorTools::matrixSqrt(2.0 * Ed + eye, dimension, _dAdFe));
+            using argument_iterator = std::array<floatType, dimension * dimension>::iterator;
+            using result_iterator   = floatVector::iterator;
+            using jacobian_iterator = std::array<floatType, dimension * dimension * dimension * dimension>::iterator;
 
-            dAdFe          = tardigradeVectorTools::appendVectors(_dAdFe);
-            auto map_dAdFe = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFe.data());
+            floatVector                                                          _dX(dimension * dimension, 0);
+            floatVector                                                          _R(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension * dimension * dimension> dAdFd;
 
-            fourthOrderTensor dFddEd(dimension * dimension * dimension * dimension, 0);
-            auto map_dFddEd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFddEd.data());
-            map_dFddEd      = (2 * map_dAdFe.inverse()).eval();
+            int return_val =
+                tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
+                    std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value),
+                    std::begin(_dX), std::end(_dX), std::begin(_R), std::end(_R), std::begin(dAdFd), std::end(dAdFd));
 
-            auto map_dEddD = getFixedSizeVectorMap<floatType, sot_dimension>(dEddD.data());
+            TARDIGRADE_ERROR_TOOLS_CHECK(return_val == 0, "The return error code is " + std::to_string(return_val))
+
+            if (return_val != 0) {
+                throw std::runtime_error("Error code from matrixSqrt" + std::to_string(return_val));
+            }
+
+            auto map_dAdFd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFd.data());
+
+            std::array<floatType, dimension * dimension * dimension * dimension> dAded;
+            for (unsigned int i = 0; i < dimension; ++i) {
+                for (unsigned int j = 0; j < dimension; ++j) {
+                    for (unsigned int k = 0; k < dimension; ++k) {
+                        for (unsigned int l = 0; l < dimension; ++l) {
+                            dAded[dimension * dimension * dimension * i + dimension * dimension * j + dimension * k +
+                                  l] = 2 * argument[dimension * i + k] * argument[dimension * l + j];
+                        }
+                    }
+                }
+            }
+
+            auto map_dAded =
+                getFixedSizeMatrixMap<floatType, dimension * dimension, dimension * dimension>(dAded.data());
+
+            fourthOrderTensor dFdded(dimension * dimension * dimension * dimension, 0);
+            auto map_dFdded = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFdded.data());
+            map_dFdded      = (map_dAdFd.inverse() * map_dAded).eval();
+
+            auto map_deddD = getFixedSizeVectorMap<floatType, sot_dimension>(deddD.data());
 
             secondOrderTensor dFddD(sot_dimension, 0);
             auto              map_dFddD = getFixedSizeVectorMap<floatType, sot_dimension>(dFddD.data());
@@ -280,11 +354,11 @@ namespace tardigradeHydra {
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dFddSubFs.data(),
                                                                         (num_configs - 1) * sot_dimension);
 
-            map_dFddD = (map_dFddEd * map_dEddD).eval();
+            map_dFddD = (map_dFdded * map_deddD).eval();
 
-            map_dFddF = (map_dFddEd * map_dEddF).eval();
+            map_dFddF = (map_dFdded * map_deddF).eval();
 
-            map_dFddSubFs = (map_dFddEd * map_dEddSubFs).eval();
+            map_dFddSubFs = (map_dFdded * map_deddSubFs).eval();
 
             if (withPrevious) {
                 auto map_dDamagedPreviousCauchyStress =
