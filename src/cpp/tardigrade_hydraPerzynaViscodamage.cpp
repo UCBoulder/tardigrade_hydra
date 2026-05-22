@@ -265,15 +265,19 @@ namespace tardigradeHydra {
             map_dEddSubFs = (D / (1 - D) * map_dEedFe * map_dFedSubFs).eval();
 
             // Compute the square root to solve for the damage deformation gradient
-            floatVector eye(sot_dimension);
-            tardigradeVectorTools::eye(eye);
+            floatVector argument(dimension * dimension, 0);
+            std::transform(std::begin(Ed), std::end(Ed), std::begin(argument),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, 2.0));
+            for ( unsigned int i = 0; i < dimension; ++i){
+                argument[dimension * i + i] += 1;
+            }
 
             floatMatrix _dAdFe;  // A = 2.0 * Ed + eye
                                  //
             floatVector dAdFe;   // A = 2.0 * Ed + eye
 
             TARDIGRADE_ERROR_TOOLS_CATCH(*Fd.value =
-                                             tardigradeVectorTools::matrixSqrt(2.0 * Ed + eye, dimension, _dAdFe));
+                                             tardigradeVectorTools::matrixSqrt(argument, dimension, _dAdFe));
 
             dAdFe          = tardigradeVectorTools::appendVectors(_dAdFe);
             auto map_dAdFe = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFe.data());
