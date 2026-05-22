@@ -150,7 +150,7 @@ namespace tardigradeHydra {
                            std::bind(std::multiplies<>(), std::placeholders::_1, D / (1 - D)));
 
             // Compute the square root to solve for the damage deformation gradient
-            floatVector argument(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension> argument;
             std::transform(std::begin(Ed), std::end(Ed), std::begin(argument),
                            std::bind(std::multiplies<>(), std::placeholders::_1, 2.0));
             for ( unsigned int i = 0; i < dimension; ++i){
@@ -159,7 +159,7 @@ namespace tardigradeHydra {
 
             Fd.zero(dimension * dimension);
 
-            using argument_iterator = floatVector::iterator;
+            using argument_iterator = std::array<floatType, dimension * dimension>::iterator;
             using result_iterator = floatVector::iterator;
             using jacobian_iterator = std::array<floatType, dimension * dimension * dimension * dimension>::iterator;
 
@@ -280,7 +280,7 @@ namespace tardigradeHydra {
             map_dEddSubFs = (D / (1 - D) * map_dEedFe * map_dFedSubFs).eval();
 
             // Compute the square root to solve for the damage deformation gradient
-            floatVector argument(dimension * dimension, 0);
+            std::array<floatType, dimension * dimension> argument;
             std::transform(std::begin(Ed), std::end(Ed), std::begin(argument),
                            std::bind(std::multiplies<>(), std::placeholders::_1, 2.0));
             for ( unsigned int i = 0; i < dimension; ++i){
@@ -289,7 +289,7 @@ namespace tardigradeHydra {
 
             Fd.zero(dimension * dimension);
 
-            using argument_iterator = floatVector::iterator;
+            using argument_iterator = std::array<floatType, dimension * dimension>::iterator;
             using result_iterator = floatVector::iterator;
             using jacobian_iterator = std::array<floatType, dimension * dimension * dimension * dimension>::iterator;
 
