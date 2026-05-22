@@ -283,12 +283,15 @@ namespace tardigradeHydra {
             map_deddSubFs = (D / (1 - D) * map_dEedFe * map_dFedSubFs).eval();
 
             // Compute the square root to solve for the damage deformation gradient
-            std::array<floatType, dimension * dimension> argument;
-            std::transform(std::begin(ed), std::end(ed), std::begin(argument),
-                           std::bind(std::multiplies<>(), std::placeholders::_1, 2.0));
+            std::array<floatType, dimension * dimension> inverse_argument;
+            std::transform(std::begin(ed), std::end(ed), std::begin(inverse_argument),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, -2.0));
             for ( unsigned int i = 0; i < dimension; ++i){
-                argument[dimension * i + i] += 1;
+                inverse_argument[dimension * i + i] += 1;
             }
+            std::array<floatType, dimension * dimension> argument;
+            using argument_iterator = std::array<floatType, dimension * dimension>::iterator;
+            tardigradeVectorTools::inverse<floatType, argument_iterator, argument_iterator, dimension, dimension>(std::begin(inverse_argument), std::end(inverse_argument), dimension, dimension, std::begin(argument), std::end(argument));
 
             Fd.zero(dimension * dimension);
 
@@ -308,9 +311,23 @@ namespace tardigradeHydra {
 
             auto map_dAdFd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFd.data());
 
-            fourthOrderTensor dFddEd(dimension * dimension * dimension * dimension, 0);
-            auto map_dFddEd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFddEd.data());
-            map_dFddEd      = (2 * map_dAdFd.inverse()).eval();
+            std::array<floatType, dimension * dimension * dimension * dimension> dAded;
+            for ( unsigned int i = 0; i < dimension; ++i){
+                for ( unsigned int j = 0; j < dimension; ++j){
+                    for ( unsigned int k = 0; k < dimension; ++k){
+                        for ( unsigned int l = 0; l < dimension; ++l){
+                            dAded[dimension * dimension * dimension * i + dimension * dimension * j + dimension * k + l]
+                                = 2 * argument[dimension * i + k] * argument[dimension * l + j];
+                        }
+                    }
+                }
+            }
+
+            auto map_dAded = getFixedSizeMatrixMap<floatType, dimension * dimension, dimension * dimension>(dAded.data());
+
+            fourthOrderTensor dFdded(dimension * dimension * dimension * dimension, 0);
+            auto map_dFdded = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFdded.data());
+            map_dFdded      = (map_dAdFd.inverse()  * map_dAded).eval();
 
             auto map_deddD = getFixedSizeVectorMap<floatType, sot_dimension>(deddD.data());
 
@@ -325,11 +342,11 @@ namespace tardigradeHydra {
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dFddSubFs.data(),
                                                                         (num_configs - 1) * sot_dimension);
 
-            map_dFddD = (map_dFddEd * map_deddD).eval();
+            map_dFddD = (map_dFdded * map_deddD).eval();
 
-            map_dFddF = (map_dFddEd * map_deddF).eval();
+            map_dFddF = (map_dFdded * map_deddF).eval();
 
-            map_dFddSubFs = (map_dFddEd * map_deddSubFs).eval();
+            map_dFddSubFs = (map_dFdded * map_deddSubFs).eval();
 
             if (withPrevious) {
                 auto map_dDamagedPreviousCauchyStress =
