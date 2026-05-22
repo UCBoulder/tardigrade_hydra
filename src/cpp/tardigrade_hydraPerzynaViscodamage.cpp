@@ -256,9 +256,9 @@ namespace tardigradeHydra {
                 getDynamicColumnSizeMatrixMap<floatType, sot_dimension>(dEddSubFs.data(),
                                                                         (num_configs - 1) * sot_dimension);
 
-            map_dEddF = ((*get_damage()) / (1 - (*get_damage())) * map_dEedFe * map_dFedF).eval();
+            map_dEddF = (D / (1 - D) * map_dEedFe * map_dFedF).eval();
 
-            map_dEddSubFs = ((*get_damage()) / (1 - (*get_damage())) * map_dEedFe * map_dFedSubFs).eval();
+            map_dEddSubFs = (D / (1 - D) * map_dEedFe * map_dFedSubFs).eval();
 
             // Compute the square root to solve for the damage deformation gradient
             floatVector eye(sot_dimension);
