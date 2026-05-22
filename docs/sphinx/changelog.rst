@@ -6,7 +6,11 @@ Changelog
 #########
 
 ******************
-0.9.0 (unreleased)
+0.9.1 (unreleased)
+******************
+
+******************
+0.9.0 (05-22-2026)
 ******************
 
 New Features
@@ -20,6 +24,14 @@ Breaking Changes
 ================
 - Removed the getDimension, getSOTDimension, getTOTDimension, and getFOTDimension functions since the dimension is set in the
   configuration file (:pull:`278`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Corrected a bug in the damage deformation gradient calculation for Perzyna viscodamage (:pull:`281`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.9.0 (:pull:`282`). By `Nathan Miller`_.
 
 ******************
 0.8.5 (04-02-2026)
