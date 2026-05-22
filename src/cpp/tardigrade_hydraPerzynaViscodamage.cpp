@@ -295,19 +295,19 @@ namespace tardigradeHydra {
 
             floatVector _dX(dimension * dimension, 0);
             floatVector _R(dimension * dimension, 0);
-            std::array<floatType, dimension * dimension * dimension * dimension> dAdFe;
+            std::array<floatType, dimension * dimension * dimension * dimension> dAdFd;
 
             int return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
                     std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
-                    std::begin(_R), std::end(_R), std::begin(dAdFe), std::end(dAdFe));
+                    std::begin(_R), std::end(_R), std::begin(dAdFd), std::end(dAdFd));
 
             TARDIGRADE_ERROR_TOOLS_CHECK(return_val == 0, "The return error code is " + std::to_string(return_val) )
 
-            auto map_dAdFe = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFe.data());
+            auto map_dAdFd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFd.data());
 
             fourthOrderTensor dFddEd(dimension * dimension * dimension * dimension, 0);
             auto map_dFddEd = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dFddEd.data());
-            map_dFddEd      = (2 * map_dAdFe.inverse()).eval();
+            map_dFddEd      = (2 * map_dAdFd.inverse()).eval();
 
             auto map_dEddD = getFixedSizeVectorMap<floatType, sot_dimension>(dEddD.data());
 
