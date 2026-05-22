@@ -132,15 +132,17 @@ namespace tardigradeHydra {
             auto Fd = get_SetDataStorage_damageDeformationGradient();
 
             // Get the elastic deformation gradient
-            floatVector Fe =
-                floatVector(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
-                            hydra->deformation->get_configurations()->begin() +
-                                sot_dimension * (elastic_config_index + 1));
+            std::array<floatType, dimension * dimension> Fe;
+            std::copy(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
+                      hydra->deformation->get_configurations()->begin() + sot_dimension * (elastic_config_index + 1),
+                      std::begin(Fe)); 
 
             // Compute the elastic Green-Lagrange strain
-            floatVector Ee;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeGreenLagrangeStrain(Fe, Ee));
+//            std::array<floatType, dimension * dimension> Ee;
+            std::vector<floatType> Ee(dimension * dimension, 0);
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::computeGreenLagrangeStrain<dimension>(std::begin(Fe), std::end(Fe), std::begin(Ee), std::end(Ee))
+            );
 
             // Compute the damage strain
             floatVector Ed = (*get_damage()) / (1 - (*get_damage())) * Ee;
@@ -197,17 +199,19 @@ namespace tardigradeHydra {
             auto Fd = get_SetDataStorage_damageDeformationGradient();
 
             // Get the elastic deformation gradient
-            floatVector Fe =
-                floatVector(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
-                            hydra->deformation->get_configurations()->begin() +
-                                sot_dimension * (elastic_config_index + 1));
+            std::array<floatType, dimension * dimension> Fe;
+            std::copy(hydra->deformation->get_configurations()->begin() + sot_dimension * elastic_config_index,
+                      hydra->deformation->get_configurations()->begin() + sot_dimension * (elastic_config_index + 1),
+                      std::begin(Fe)); 
 
             // Compute the elastic Green-Lagrange strain
-            floatVector Ee;
+            floatVector Ee(dimension * dimension, 0);
 
-            floatVector dEedFe;
+            floatVector dEedFe(dimension * dimension * dimension * dimension, 0);
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(tardigradeConstitutiveTools::computeGreenLagrangeStrain(Fe, Ee, dEedFe));
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::computeGreenLagrangeStrain<dimension>(std::begin(Fe), std::end(Fe), std::begin(Ee), std::end(Ee), std::begin(dEedFe), std::end(dEedFe))
+            );
 
             floatVector dFedF(dimension * dimension * dimension * dimension, 0);
 
