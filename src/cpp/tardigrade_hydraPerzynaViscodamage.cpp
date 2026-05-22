@@ -167,25 +167,11 @@ namespace tardigradeHydra {
             floatVector _R(dimension * dimension, 0);
             std::array<floatType, dimension * dimension * dimension * dimension> dFddA;
 
-#ifndef TARDIGRADE_ERROR_TOOLS_OPT
-
-            int return_val;
-            try{
-                return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
+            int return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
                     std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
-                    std::begin(_R), std::end(_R), std::begin(dFddA), std::end(dFddA)
-                );
-            }catch(std::exception &e){
-                std::string message;
-                tardigradeErrorTools::captureNestedExceptions(e, message);
-                throw e;
-            }
-#else
-            return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
-                std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
-                std::begin(_R), std::end(_R), std::begin(dFddA), std::end(dFddA)
-            );
-#endif
+                    std::begin(_R), std::end(_R), std::begin(dFddA), std::end(dFddA));
+
+            TARDIGRADE_ERROR_TOOLS_CHECK(return_val == 0, "The return error code is " + std::to_string(return_val) )
 
         }
 
@@ -311,25 +297,11 @@ namespace tardigradeHydra {
             floatVector _R(dimension * dimension, 0);
             std::array<floatType, dimension * dimension * dimension * dimension> dAdFe;
 
-#ifndef TARDIGRADE_ERROR_TOOLS_OPT
-
-            int return_val;
-            try{
-                return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
+            int return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
                     std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
-                    std::begin(_R), std::end(_R), std::begin(dAdFe), std::end(dAdFe)
-                );
-            }catch(std::exception &e){
-                std::string message;
-                tardigradeErrorTools::captureNestedExceptions(e, message);
-                throw e;
-            }
-#else
-            return_val = tardigradeVectorTools::matrixSqrt<floatType, argument_iterator, result_iterator, jacobian_iterator>(
-                std::begin(argument), std::end(argument), dimension, std::begin(*Fd.value), std::end(*Fd.value), std::begin(_dX), std::end(_dX),
-                std::begin(_R), std::end(_R), std::begin(dAdFe), std::end(dAdFe)
-            );
-#endif
+                    std::begin(_R), std::end(_R), std::begin(dAdFe), std::end(dAdFe));
+
+            TARDIGRADE_ERROR_TOOLS_CHECK(return_val == 0, "The return error code is " + std::to_string(return_val) )
 
             auto map_dAdFe = getFixedSizeMatrixMap<floatType, sot_dimension, sot_dimension>(dAdFe.data());
 
