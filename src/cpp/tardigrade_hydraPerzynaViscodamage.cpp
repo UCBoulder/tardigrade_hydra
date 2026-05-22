@@ -150,12 +150,15 @@ namespace tardigradeHydra {
                            std::bind(std::multiplies<>(), std::placeholders::_1, D / (1 - D)));
 
             // Compute the square root to solve for the damage deformation gradient
-            std::array<floatType, dimension * dimension> argument;
-            std::transform(std::begin(ed), std::end(ed), std::begin(argument),
-                           std::bind(std::multiplies<>(), std::placeholders::_1, 2.0));
+            std::array<floatType, dimension * dimension> inverse_argument;
+            std::transform(std::begin(ed), std::end(ed), std::begin(inverse_argument),
+                           std::bind(std::multiplies<>(), std::placeholders::_1, -2.0));
             for ( unsigned int i = 0; i < dimension; ++i){
-                argument[dimension * i + i] += 1;
+                inverse_argument[dimension * i + i] += 1;
             }
+            std::array<floatType, dimension * dimension> argument;
+            using argument_iterator = std::array<floatType, dimension * dimension>::iterator;
+            tardigradeVectorTools::inverse<floatType, argument_iterator, argument_iterator, dimension, dimension>(std::begin(inverse_argument), std::end(inverse_argument), dimension, dimension, std::begin(argument), std::end(argument));
 
             Fd.zero(dimension * dimension);
 

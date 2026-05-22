@@ -1707,7 +1707,8 @@ BOOST_AUTO_TEST_CASE(test_setDamageDeformationGradient, *boost::unit_test::toler
 
     residualMock R_grad2(&hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters);
 
-    floatVector damageDeformationGradientAnswer = {0.99977077, 0.02141056, 0., 0.02141056, 1.00191182, 0., 0., 0., 1.};
+    floatVector damageDeformationGradientAnswer = {1.00069218, 0.02152252, 0.        , 0.02152252, 1.00284443,
+       0.        , 0.        , 0.        , 1.        };
 
     R_grad1.get_dDamageDeformationGradientdCauchyStress();
 
