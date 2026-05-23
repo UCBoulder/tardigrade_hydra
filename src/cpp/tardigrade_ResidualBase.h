@@ -44,6 +44,9 @@ namespace tardigradeHydra {
 
         container *hydra;  //!< The hydra class which owns the ResidualBase object
 
+        //! The spatial dimension of the container
+        static constexpr unsigned int dimension = container::configuration::dimension;
+
         // User defined setter functions
 
         virtual void setResidual() {

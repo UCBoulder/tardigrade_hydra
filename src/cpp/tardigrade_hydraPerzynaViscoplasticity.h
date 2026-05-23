@@ -102,6 +102,9 @@ namespace tardigradeHydra {
                 residualTester;  //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR
                                  //!< TESTING!
 
+            //! The dimension of the second order tensor
+            static constexpr unsigned int sot_dimension = dimension * dimension;
+
             using tardigradeHydra::ResidualBase<>::ResidualBase;
 
             using tardigradeHydra::ResidualBase<>::setResidual;

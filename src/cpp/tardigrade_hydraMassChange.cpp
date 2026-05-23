@@ -197,8 +197,6 @@ namespace tardigradeHydra {
              * \param &isPrevious: Flag for whether this is the previous or current direction
              */
 
-            const unsigned int dim = hydra->getDimension();
-
             const dimVector *directionVector;
 
             SetDataStorageBase<dimVector> unitDirectionVector;
@@ -216,7 +214,7 @@ namespace tardigradeHydra {
 
             floatType normDirectionVector = tardigradeVectorTools::l2norm(*directionVector);
 
-            unitDirectionVector.zero(dim);
+            unitDirectionVector.zero(dimension);
 
             if (std::isfinite(1. / normDirectionVector)) {
                 *unitDirectionVector.value = (*directionVector) / normDirectionVector;
@@ -246,9 +244,7 @@ namespace tardigradeHydra {
              * \param &isPrevious: Flag for whether this is the previous or current direction
              */
 
-            const unsigned int dim = hydra->getDimension();
-
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int sot_dimension = dimension * dimension;
 
             const dimVector *directionVector;
 
@@ -274,20 +270,20 @@ namespace tardigradeHydra {
 
             floatType normDirectionVector = tardigradeVectorTools::l2norm(*directionVector);
 
-            unitDirectionVector.zero(dim);
+            unitDirectionVector.zero(dimension);
 
-            dUnitDirectionVectordDirectionVector.zero(sot_dim);
+            dUnitDirectionVectordDirectionVector.zero(sot_dimension);
 
             if (std::isfinite(1. / normDirectionVector)) {
                 *unitDirectionVector.value = (*directionVector) / normDirectionVector;
 
-                for (unsigned int i = 0; i < dim; i++) {
-                    (*dUnitDirectionVectordDirectionVector.value)[dim * i + i] += 1 / normDirectionVector;
+                for (unsigned int i = 0; i < dimension; i++) {
+                    (*dUnitDirectionVectordDirectionVector.value)[dimension * i + i] += 1 / normDirectionVector;
                 }
 
-                for (unsigned int i = 0; i < dim; i++) {
-                    for (unsigned int j = 0; j < dim; j++) {
-                        (*dUnitDirectionVectordDirectionVector.value)[dim * i + j] -=
+                for (unsigned int i = 0; i < dimension; i++) {
+                    for (unsigned int j = 0; j < dimension; j++) {
+                        (*dUnitDirectionVectordDirectionVector.value)[dimension * i + j] -=
                             (*unitDirectionVector.value)[i] * (*unitDirectionVector.value)[j] / normDirectionVector;
                     }
                 }
@@ -317,10 +313,6 @@ namespace tardigradeHydra {
              * \param &isPrevious: Flag for whether this is the previous or current direction
              */
 
-            const unsigned int dim = hydra->getDimension();
-
-            const unsigned int sot_dim = dim * dim;
-
             const floatType *massDirectionMixingParameter = get_massDirectionMixingParameter();
 
             const floatType *velocityGradientTrace;
@@ -344,25 +336,25 @@ namespace tardigradeHydra {
                 velocityGradient = get_SetDataStorage_massChangeVelocityGradient();
             }
 
-            velocityGradient.zero(sot_dim);
+            velocityGradient.zero(sot_dimension);
 
             floatType a = (*velocityGradientTrace) / (3. - 2. * (*massDirectionMixingParameter));
 
             if (tardigradeVectorTools::l2norm(*unitDirectionVector) > 0.5) {
-                for (unsigned int i = 0; i < dim; i++) {
-                    (*velocityGradient.value)[dim * i + i] += a * (1 - *massDirectionMixingParameter);
+                for (unsigned int i = 0; i < dimension; i++) {
+                    (*velocityGradient.value)[dimension * i + i] += a * (1 - *massDirectionMixingParameter);
                 }
 
-                for (unsigned int i = 0; i < dim; i++) {
-                    for (unsigned int j = 0; j < dim; j++) {
-                        (*velocityGradient.value)[dim * i + j] +=
+                for (unsigned int i = 0; i < dimension; i++) {
+                    for (unsigned int j = 0; j < dimension; j++) {
+                        (*velocityGradient.value)[dimension * i + j] +=
                             a * (*massDirectionMixingParameter) * (*unitDirectionVector)[i] * (*unitDirectionVector)[j];
                     }
                 }
 
             } else {
-                for (unsigned int i = 0; i < dim; i++) {
-                    (*velocityGradient.value)[dim * i + i] += *velocityGradientTrace;
+                for (unsigned int i = 0; i < dimension; i++) {
+                    (*velocityGradient.value)[dimension * i + i] += *velocityGradientTrace;
                 }
             }
         }
@@ -373,12 +365,6 @@ namespace tardigradeHydra {
              *
              * \param &isPrevious: Flag for whether this is the previous or current direction
              */
-
-            const unsigned int dim = hydra->getDimension();
-
-            const unsigned int sot_dim = dim * dim;
-
-            const unsigned int tot_dim = sot_dim * dim;
 
             const floatType *massDirectionMixingParameter = get_massDirectionMixingParameter();
 
@@ -447,13 +433,13 @@ namespace tardigradeHydra {
                 dVelocityGradientdDirectionVector = get_SetDataStorage_dMassChangeVelocityGradientdDirectionVector();
             }
 
-            velocityGradient.zero(sot_dim);
+            velocityGradient.zero(sot_dimension);
 
-            dVelocityGradientdDensity.zero(sot_dim);
+            dVelocityGradientdDensity.zero(sot_dimension);
 
-            dVelocityGradientdMassChangeRate.zero(sot_dim);
+            dVelocityGradientdMassChangeRate.zero(sot_dimension);
 
-            dVelocityGradientdDirectionVector.zero(tot_dim);
+            dVelocityGradientdDirectionVector.zero(tot_dimension);
 
             floatType a = (*velocityGradientTrace) / (3. - 2. * (*massDirectionMixingParameter));
 
@@ -463,44 +449,48 @@ namespace tardigradeHydra {
                 (*dVelocityGradientTracedMassChangeRate) / (3. - 2. * (*massDirectionMixingParameter));
 
             if (tardigradeVectorTools::l2norm(*unitDirectionVector) > 0.5) {
-                for (unsigned int i = 0; i < dim; i++) {
-                    (*velocityGradient.value)[dim * i + i] += a * (1 - *massDirectionMixingParameter);
+                for (unsigned int i = 0; i < dimension; i++) {
+                    (*velocityGradient.value)[dimension * i + i] += a * (1 - *massDirectionMixingParameter);
 
-                    (*dVelocityGradientdDensity.value)[dim * i + i] += dadDensity * (1 - *massDirectionMixingParameter);
+                    (*dVelocityGradientdDensity.value)[dimension * i + i] +=
+                        dadDensity * (1 - *massDirectionMixingParameter);
 
-                    (*dVelocityGradientdMassChangeRate.value)[dim * i + i] +=
+                    (*dVelocityGradientdMassChangeRate.value)[dimension * i + i] +=
                         dadMassChangeRate * (1 - *massDirectionMixingParameter);
                 }
 
-                for (unsigned int i = 0; i < dim; i++) {
-                    for (unsigned int j = 0; j < dim; j++) {
-                        (*velocityGradient.value)[dim * i + j] +=
+                for (unsigned int i = 0; i < dimension; i++) {
+                    for (unsigned int j = 0; j < dimension; j++) {
+                        (*velocityGradient.value)[dimension * i + j] +=
                             a * (*massDirectionMixingParameter) * (*unitDirectionVector)[i] * (*unitDirectionVector)[j];
 
-                        (*dVelocityGradientdDensity.value)[dim * i + j] +=
+                        (*dVelocityGradientdDensity.value)[dimension * i + j] +=
                             dadDensity * (*massDirectionMixingParameter) * (*unitDirectionVector)[i] *
                             (*unitDirectionVector)[j];
 
-                        (*dVelocityGradientdMassChangeRate.value)[dim * i + j] +=
+                        (*dVelocityGradientdMassChangeRate.value)[dimension * i + j] +=
                             dadMassChangeRate * (*massDirectionMixingParameter) * (*unitDirectionVector)[i] *
                             (*unitDirectionVector)[j];
 
-                        for (unsigned int k = 0; k < dim; k++) {
-                            (*dVelocityGradientdDirectionVector.value)[dim * dim * i + dim * j + k] +=
+                        for (unsigned int k = 0; k < dimension; k++) {
+                            (*dVelocityGradientdDirectionVector.value)[dimension * dimension * i + dimension * j + k] +=
                                 a * (*massDirectionMixingParameter) *
-                                ((*dUnitDirectionVectordDirectionVector)[dim * i + k] * (*unitDirectionVector)[j] +
-                                 (*unitDirectionVector)[i] * (*dUnitDirectionVectordDirectionVector)[dim * j + k]);
+                                ((*dUnitDirectionVectordDirectionVector)[dimension * i + k] *
+                                     (*unitDirectionVector)[j] +
+                                 (*unitDirectionVector)[i] *
+                                     (*dUnitDirectionVectordDirectionVector)[dimension * j + k]);
                         }
                     }
                 }
 
             } else {
-                for (unsigned int i = 0; i < dim; i++) {
-                    (*velocityGradient.value)[dim * i + i] += *velocityGradientTrace;
+                for (unsigned int i = 0; i < dimension; i++) {
+                    (*velocityGradient.value)[dimension * i + i] += *velocityGradientTrace;
 
-                    (*dVelocityGradientdDensity.value)[dim * i + i] += (*dVelocityGradientTracedDensity);
+                    (*dVelocityGradientdDensity.value)[dimension * i + i] += (*dVelocityGradientTracedDensity);
 
-                    (*dVelocityGradientdMassChangeRate.value)[dim * i + i] += (*dVelocityGradientTracedMassChangeRate);
+                    (*dVelocityGradientdMassChangeRate.value)[dimension * i + i] +=
+                        (*dVelocityGradientTracedMassChangeRate);
                 }
             }
         }
@@ -596,10 +586,6 @@ namespace tardigradeHydra {
              * \param &isPrevious Flag for whether to set the current (false) or previous (true) values
              */
 
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
             auto num_configs = hydra->getNumConfigurations();
 
             const fourthOrderTensor *dF1dF;
@@ -647,27 +633,28 @@ namespace tardigradeHydra {
                 dpFdFn = get_SetDataStorage_dPrecedingDeformationGradientdSubDeformationGradients();
             }
 
-            dpFdF.zero(sot_dim * sot_dim);
+            dpFdF.zero(sot_dimension * sot_dimension);
 
-            dpFdFn.zero(sot_dim * sot_dim * (num_configs - 1));
+            dpFdFn.zero(sot_dimension * sot_dimension * (num_configs - 1));
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < sot_dim; j++) {
-                    for (unsigned int k = 0; k < sot_dim; k++) {
-                        (*dpFdF.value)[sot_dim * i + k] +=
-                            dpFdFs[num_configs * sot_dim * i + j] * (*dF1dF)[sot_dim * j + k];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
+                    for (unsigned int k = 0; k < sot_dimension; k++) {
+                        (*dpFdF.value)[sot_dimension * i + k] +=
+                            dpFdFs[num_configs * sot_dimension * i + j] * (*dF1dF)[sot_dimension * j + k];
                     }
                 }
             }
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < (num_configs - 1) * sot_dim; j++) {
-                    (*dpFdFn.value)[(num_configs - 1) * sot_dim * i + j] +=
-                        dpFdFs[num_configs * sot_dim * i + j + sot_dim];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < (num_configs - 1) * sot_dimension; j++) {
+                    (*dpFdFn.value)[(num_configs - 1) * sot_dimension * i + j] +=
+                        dpFdFs[num_configs * sot_dimension * i + j + sot_dimension];
 
-                    for (unsigned int k = 0; k < sot_dim; k++) {
-                        (*dpFdFn.value)[(num_configs - 1) * sot_dim * i + j] +=
-                            dpFdFs[num_configs * sot_dim * i + k] * (*dF1dFn)[(num_configs - 1) * sot_dim * k + j];
+                    for (unsigned int k = 0; k < sot_dimension; k++) {
+                        (*dpFdFn.value)[(num_configs - 1) * sot_dimension * i + j] +=
+                            dpFdFs[num_configs * sot_dimension * i + k] *
+                            (*dF1dFn)[(num_configs - 1) * sot_dimension * k + j];
                     }
                 }
             }
@@ -761,12 +748,6 @@ namespace tardigradeHydra {
              *
              * \param &isPrevious: Flag for whether this is being computed for the current or previous timestep
              */
-
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
-            constexpr unsigned int tot_dim = sot_dim * dim;
 
             auto num_configs = hydra->getNumConfigurations();
 
@@ -862,33 +843,35 @@ namespace tardigradeHydra {
             tardigradeConstitutiveTools::pullBackVelocityGradient(*velocityGradient, *precedingDeformationGradient,
                                                                   *intermediateVelocityGradient.value, dILdL, dILdPF);
 
-            dILdRho.zero(sot_dim);
+            dILdRho.zero(sot_dimension);
 
-            dILdC.zero(sot_dim);
+            dILdC.zero(sot_dimension);
 
-            dILdGradC.zero(tot_dim);
+            dILdGradC.zero(tot_dimension);
 
-            dILdF.zero(sot_dim * sot_dim);
+            dILdF.zero(sot_dimension * sot_dimension);
 
-            dILdFn.zero((num_configs - 1) * sot_dim * sot_dim);
+            dILdFn.zero((num_configs - 1) * sot_dimension * sot_dimension);
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < sot_dim; j++) {
-                    (*dILdRho.value)[i] += dILdL[sot_dim * i + j] * (*dLdRho)[j];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
+                    (*dILdRho.value)[i] += dILdL[sot_dimension * i + j] * (*dLdRho)[j];
 
-                    (*dILdC.value)[i] += dILdL[sot_dim * i + j] * (*dLdC)[j];
+                    (*dILdC.value)[i] += dILdL[sot_dimension * i + j] * (*dLdC)[j];
 
-                    for (unsigned int k = 0; k < dim; k++) {
-                        (*dILdGradC.value)[dim * i + k] += dILdL[sot_dim * i + j] * (*dLdGradC)[dim * j + k];
+                    for (unsigned int k = 0; k < dimension; k++) {
+                        (*dILdGradC.value)[dimension * i + k] +=
+                            dILdL[sot_dimension * i + j] * (*dLdGradC)[dimension * j + k];
                     }
 
-                    for (unsigned int k = 0; k < sot_dim; k++) {
-                        (*dILdF.value)[sot_dim * i + k] += dILdPF[sot_dim * i + j] * (*dPFdF)[sot_dim * j + k];
+                    for (unsigned int k = 0; k < sot_dimension; k++) {
+                        (*dILdF.value)[sot_dimension * i + k] +=
+                            dILdPF[sot_dimension * i + j] * (*dPFdF)[sot_dimension * j + k];
                     }
 
-                    for (unsigned int k = 0; k < (num_configs - 1) * sot_dim; k++) {
-                        (*dILdFn.value)[(num_configs - 1) * sot_dim * i + k] +=
-                            dILdPF[sot_dim * i + j] * (*dPFdFn)[(num_configs - 1) * sot_dim * j + k];
+                    for (unsigned int k = 0; k < (num_configs - 1) * sot_dimension; k++) {
+                        (*dILdFn.value)[(num_configs - 1) * sot_dimension * i + k] +=
+                            dILdPF[sot_dimension * i + j] * (*dPFdFn)[(num_configs - 1) * sot_dimension * j + k];
                     }
                 }
             }
@@ -1020,12 +1003,6 @@ namespace tardigradeHydra {
              * \param &computePrevious: Compute the gradients w.r.t. previous values
              */
 
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
-            constexpr unsigned int tot_dim = sot_dim * dim;
-
             auto num_configs = hydra->getNumConfigurations();
 
             const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient();
@@ -1076,44 +1053,44 @@ namespace tardigradeHydra {
                     getIntegrationParameter()))
 
                 auto dFmdPreviousRho = get_SetDataStorage_dMassChangeDeformationGradientdPreviousDensity();
-                dFmdPreviousRho.zero(sot_dim);
+                dFmdPreviousRho.zero(sot_dimension);
 
                 auto dFmdPreviousC = get_SetDataStorage_dMassChangeDeformationGradientdPreviousMassChangeRate();
-                dFmdPreviousC.zero(sot_dim);
+                dFmdPreviousC.zero(sot_dimension);
 
                 auto dFmdPreviousGradC = get_SetDataStorage_dMassChangeDeformationGradientdPreviousDirectionVector();
-                dFmdPreviousGradC.zero(tot_dim);
+                dFmdPreviousGradC.zero(tot_dimension);
 
                 auto dFmdPreviousF = get_SetDataStorage_dMassChangeDeformationGradientdPreviousDeformationGradient();
-                dFmdPreviousF.zero(sot_dim * sot_dim);
+                dFmdPreviousF.zero(sot_dimension * sot_dimension);
 
                 auto dFmdPreviousFn =
                     get_SetDataStorage_dMassChangeDeformationGradientdPreviousSubDeformationGradients();
-                dFmdPreviousFn.zero(sot_dim * sot_dim * (num_configs - 1));
+                dFmdPreviousFn.zero(sot_dimension * sot_dimension * (num_configs - 1));
 
-                for (unsigned int i = 0; i < sot_dim; i++) {
-                    for (unsigned int j = 0; j < sot_dim; j++) {
-                        (*dFmdPreviousRho.value)[i] += dFmdLp[sot_dim * i + j] * (*dLpdRho)[j];
+                for (unsigned int i = 0; i < sot_dimension; i++) {
+                    for (unsigned int j = 0; j < sot_dimension; j++) {
+                        (*dFmdPreviousRho.value)[i] += dFmdLp[sot_dimension * i + j] * (*dLpdRho)[j];
 
-                        (*dFmdPreviousC.value)[i] += dFmdLp[sot_dim * i + j] * (*dLpdC)[j];
+                        (*dFmdPreviousC.value)[i] += dFmdLp[sot_dimension * i + j] * (*dLpdC)[j];
 
-                        (*dFmdPreviousFn.value)[(num_configs - 1) * sot_dim * i + j +
-                                                (getMassChangeConfigurationIndex() - 1) * sot_dim] +=
-                            dFmdFp[sot_dim * i + j];
+                        (*dFmdPreviousFn.value)[(num_configs - 1) * sot_dimension * i + j +
+                                                (getMassChangeConfigurationIndex() - 1) * sot_dimension] +=
+                            dFmdFp[sot_dimension * i + j];
 
-                        for (unsigned int k = 0; k < dim; k++) {
-                            (*dFmdPreviousGradC.value)[dim * i + k] +=
-                                dFmdLp[sot_dim * i + j] * (*dLpdGradC)[dim * j + k];
+                        for (unsigned int k = 0; k < dimension; k++) {
+                            (*dFmdPreviousGradC.value)[dimension * i + k] +=
+                                dFmdLp[sot_dimension * i + j] * (*dLpdGradC)[dimension * j + k];
                         }
 
-                        for (unsigned int k = 0; k < sot_dim; k++) {
-                            (*dFmdPreviousF.value)[sot_dim * i + k] +=
-                                dFmdLp[sot_dim * i + j] * (*dLpdF)[sot_dim * j + k];
+                        for (unsigned int k = 0; k < sot_dimension; k++) {
+                            (*dFmdPreviousF.value)[sot_dimension * i + k] +=
+                                dFmdLp[sot_dimension * i + j] * (*dLpdF)[sot_dimension * j + k];
                         }
 
-                        for (unsigned int k = 0; k < (num_configs - 1) * sot_dim; k++) {
-                            (*dFmdPreviousFn.value)[(num_configs - 1) * sot_dim * i + k] +=
-                                dFmdLp[sot_dim * i + j] * (*dLpdFn)[(num_configs - 1) * sot_dim * j + k];
+                        for (unsigned int k = 0; k < (num_configs - 1) * sot_dimension; k++) {
+                            (*dFmdPreviousFn.value)[(num_configs - 1) * sot_dimension * i + k] +=
+                                dFmdLp[sot_dimension * i + j] * (*dLpdFn)[(num_configs - 1) * sot_dimension * j + k];
                         }
                     }
                 }
@@ -1126,37 +1103,39 @@ namespace tardigradeHydra {
             }
 
             auto dFmdRho = get_SetDataStorage_dMassChangeDeformationGradientdDensity();
-            dFmdRho.zero(sot_dim);
+            dFmdRho.zero(sot_dimension);
 
             auto dFmdC = get_SetDataStorage_dMassChangeDeformationGradientdMassChangeRate();
-            dFmdC.zero(sot_dim);
+            dFmdC.zero(sot_dimension);
 
             auto dFmdGradC = get_SetDataStorage_dMassChangeDeformationGradientdDirectionVector();
-            dFmdGradC.zero(tot_dim);
+            dFmdGradC.zero(tot_dimension);
 
             auto dFmdF = get_SetDataStorage_dMassChangeDeformationGradientdDeformationGradient();
-            dFmdF.zero(sot_dim * sot_dim);
+            dFmdF.zero(sot_dimension * sot_dimension);
 
             auto dFmdFn = get_SetDataStorage_dMassChangeDeformationGradientdSubDeformationGradients();
-            dFmdFn.zero(sot_dim * sot_dim * (num_configs - 1));
+            dFmdFn.zero(sot_dimension * sot_dimension * (num_configs - 1));
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
-                for (unsigned int j = 0; j < sot_dim; j++) {
-                    (*dFmdRho.value)[i] += dFmdL[sot_dim * i + j] * (*dLdRho)[j];
+            for (unsigned int i = 0; i < sot_dimension; i++) {
+                for (unsigned int j = 0; j < sot_dimension; j++) {
+                    (*dFmdRho.value)[i] += dFmdL[sot_dimension * i + j] * (*dLdRho)[j];
 
-                    (*dFmdC.value)[i] += dFmdL[sot_dim * i + j] * (*dLdC)[j];
+                    (*dFmdC.value)[i] += dFmdL[sot_dimension * i + j] * (*dLdC)[j];
 
-                    for (unsigned int k = 0; k < dim; k++) {
-                        (*dFmdGradC.value)[dim * i + k] += dFmdL[sot_dim * i + j] * (*dLdGradC)[dim * j + k];
+                    for (unsigned int k = 0; k < dimension; k++) {
+                        (*dFmdGradC.value)[dimension * i + k] +=
+                            dFmdL[sot_dimension * i + j] * (*dLdGradC)[dimension * j + k];
                     }
 
-                    for (unsigned int k = 0; k < sot_dim; k++) {
-                        (*dFmdF.value)[sot_dim * i + k] += dFmdL[sot_dim * i + j] * (*dLdF)[sot_dim * j + k];
+                    for (unsigned int k = 0; k < sot_dimension; k++) {
+                        (*dFmdF.value)[sot_dimension * i + k] +=
+                            dFmdL[sot_dimension * i + j] * (*dLdF)[sot_dimension * j + k];
                     }
 
-                    for (unsigned int k = 0; k < (num_configs - 1) * sot_dim; k++) {
-                        (*dFmdFn.value)[(num_configs - 1) * sot_dim * i + k] +=
-                            dFmdL[sot_dim * i + j] * (*dLdFn)[(num_configs - 1) * sot_dim * j + k];
+                    for (unsigned int k = 0; k < (num_configs - 1) * sot_dimension; k++) {
+                        (*dFmdFn.value)[(num_configs - 1) * sot_dimension * i + k] +=
+                            dFmdL[sot_dimension * i + j] * (*dLdFn)[(num_configs - 1) * sot_dimension * j + k];
                     }
                 }
             }
@@ -1268,8 +1247,6 @@ namespace tardigradeHydra {
              * Set the values of the jacobian
              */
 
-            auto sot_dim = hydra->getSOTDimension();
-
             auto num_unknowns = hydra->getNumUnknowns();
 
             auto num_equations = getNumEquations();
@@ -1282,10 +1259,11 @@ namespace tardigradeHydra {
             const floatVector *dFmdFn = get_dMassChangeDeformationGradientdSubDeformationGradients();
 
             for (unsigned int i = 0; i < getNumEquations(); i++) {
-                (*jacobian.value)[num_unknowns * i + sot_dim * getMassChangeConfigurationIndex() + i] += -1;
+                (*jacobian.value)[num_unknowns * i + sot_dimension * getMassChangeConfigurationIndex() + i] += -1;
 
-                for (unsigned int j = 0; j < (num_configs - 1) * sot_dim; j++) {
-                    (*jacobian.value)[num_unknowns * i + j + sot_dim] += (*dFmdFn)[(num_configs - 1) * sot_dim * i + j];
+                for (unsigned int j = 0; j < (num_configs - 1) * sot_dimension; j++) {
+                    (*jacobian.value)[num_unknowns * i + j + sot_dimension] +=
+                        (*dFmdFn)[(num_configs - 1) * sot_dimension * i + j];
                 }
             }
         }
@@ -1295,11 +1273,9 @@ namespace tardigradeHydra {
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension();
-
             auto dRdT = get_SetDataStorage_dRdT();
 
-            dRdT.zero(sot_dim);
+            dRdT.zero(sot_dimension);
         }
 
         void residual::setdRdF() {
@@ -1316,10 +1292,6 @@ namespace tardigradeHydra {
              * Set the additional derivatives
              */
 
-            auto dim = hydra->getDimension();
-
-            auto sot_dim = hydra->getSOTDimension();
-
             auto num_equations = getNumEquations();
 
             const unsigned int num_additional_dof = hydra->getAdditionalDOF()->size();
@@ -1335,14 +1307,14 @@ namespace tardigradeHydra {
             auto dRdAdditionalDOF = get_SetDataStorage_dRdAdditionalDOF();
             dRdAdditionalDOF.zero(num_equations * num_additional_dof);
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
+            for (unsigned int i = 0; i < sot_dimension; i++) {
                 (*dRdAdditionalDOF.value)[num_additional_dof * i + 0] = (*dMassChangeDeformationdDensity)[i];
 
                 (*dRdAdditionalDOF.value)[num_additional_dof * i + 1] = (*dMassChangeDeformationdMassChangeRate)[i];
 
-                for (unsigned int j = 0; j < dim; j++) {
+                for (unsigned int j = 0; j < dimension; j++) {
                     (*dRdAdditionalDOF.value)[num_additional_dof * i + j + 2] =
-                        (*dMassChangeDeformationdDirectionVector)[dim * i + j];
+                        (*dMassChangeDeformationdDirectionVector)[dimension * i + j];
                 }
             }
         }
@@ -1371,15 +1343,13 @@ namespace tardigradeHydra {
              * \param &values: The values to suggest
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension();
-
             const unsigned int configuration = getMassChangeConfigurationIndex();
 
             const secondOrderTensor *massChangeDeformationGradient = get_massChangeDeformationGradient();
 
-            indices = std::vector<unsigned int>(sot_dim, sot_dim * configuration);
+            indices = std::vector<unsigned int>(sot_dimension, sot_dimension * configuration);
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
+            for (unsigned int i = 0; i < sot_dimension; i++) {
                 indices[i] += i;
             }
             values = *massChangeDeformationGradient;

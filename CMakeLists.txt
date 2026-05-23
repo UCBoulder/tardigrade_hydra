@@ -70,6 +70,8 @@ set(INTERNAL_SUPPORT_LIBRARIES
     "tardigrade_LevenbergMarquardtStep"
     "tardigrade_DeformationBase"
     "tardigrade_HyperelasticBase"
+    "tardigrade_NeoHookianStrainEnergy"
+    "tardigrade_MooneyRivlinStrainEnergy"
     "tardigrade_CHIPFoamStrainEnergy"
 )
 set(ADDITIONAL_HEADER_ONLY_LIBRARIES
@@ -79,6 +81,7 @@ set(ADDITIONAL_HEADER_ONLY_LIBRARIES
     "tardigrade_CoreDefinitions"
     "tardigrade_CustomErrors"
     "tardigrade_ResidualBase"
+    "tardigrade_DeformationEvolutionBase"
 )
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h ${PROJECT_NAME}.tpp)
 set(PROJECT_PRIVATE_HEADERS "")

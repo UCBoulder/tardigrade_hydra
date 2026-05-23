@@ -6,8 +6,32 @@ Changelog
 #########
 
 ******************
-0.8.6 (unreleased)
+0.9.1 (unreleased)
 ******************
+
+******************
+0.9.0 (05-22-2026)
+******************
+
+New Features
+============
+- Added a compile-time map which has no run-time overhead (:pull:`275`). By `Nathan Miller`_.
+- Added a compile-time map key check which has no run-time overhead (:pull:`276`). By `Nathan Miller`_.
+- Added a Neo-Hookian strain energy potential (:pull:`277`). By `Nathan Miller`_.
+- Added a Mooney-Rivlin strain energy potential (:pull:`278`). By `Nathan Miller`_.
+
+Breaking Changes
+================
+- Removed the getDimension, getSOTDimension, getTOTDimension, and getFOTDimension functions since the dimension is set in the
+  configuration file (:pull:`278`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Corrected a bug in the damage deformation gradient calculation for Perzyna viscodamage (:pull:`281`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.9.0 (:pull:`282`). By `Nathan Miller`_.
 
 ******************
 0.8.5 (04-02-2026)

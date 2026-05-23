@@ -62,14 +62,6 @@ namespace tardigradeHydra {
          * Set the thermal deformation gradient
          */
         void residual::setThermalDeformationGradient() {
-            constexpr unsigned int dim = 3;
-
-            constexpr unsigned int sot_dim = dim * dim;
-
-            constexpr unsigned int tot_dim = sot_dim * dim;
-
-            constexpr unsigned int fot_dim = tot_dim * dim;
-
             auto thermalDeformationGradient = get_SetDataStorage_thermalDeformationGradient();
 
             auto dThermalDeformationGradientdT = get_SetDataStorage_dThermalDeformationGradientdT();
@@ -79,35 +71,35 @@ namespace tardigradeHydra {
             floatMatrix _dThermalGreenLagrangeStraindThermalDeformationGradient;
 
             floatVector A = 2 * (*get_thermalGreenLagrangeStrain());
-            for (unsigned int i = 0; i < dim; i++) {
-                A[dim * i + i] += 1;
+            for (unsigned int i = 0; i < dimension; i++) {
+                A[dimension * i + i] += 1;
             }
 
             TARDIGRADE_ERROR_TOOLS_CATCH(*thermalDeformationGradient.value = tardigradeVectorTools::matrixSqrt(
-                                             A, dim, _dThermalGreenLagrangeStraindThermalDeformationGradient));
+                                             A, dimension, _dThermalGreenLagrangeStraindThermalDeformationGradient));
 
             dThermalGreenLagrangeStraindThermalDeformationGradient =
                 tardigradeVectorTools::appendVectors(_dThermalGreenLagrangeStraindThermalDeformationGradient);
 
-            floatVector dThermalDeformationGradientdGreenLagrangeStrain(fot_dim, 0);
+            floatVector dThermalDeformationGradientdGreenLagrangeStrain(fot_dimension, 0);
 
-            Eigen::Map<const Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> >
+            Eigen::Map<const Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
                 map_dThermalGreenLagrangeStraindThermalDeformationGradient(
-                    dThermalGreenLagrangeStraindThermalDeformationGradient.data(), sot_dim, sot_dim);
+                    dThermalGreenLagrangeStraindThermalDeformationGradient.data(), sot_dimension, sot_dimension);
 
-            Eigen::Map<Eigen::Matrix<floatType, sot_dim, sot_dim, Eigen::RowMajor> >
+            Eigen::Map<Eigen::Matrix<floatType, sot_dimension, sot_dimension, Eigen::RowMajor> >
                 map_dThermalDeformationGradientdGreenLagrangeStrain(
-                    dThermalDeformationGradientdGreenLagrangeStrain.data(), sot_dim, sot_dim);
+                    dThermalDeformationGradientdGreenLagrangeStrain.data(), sot_dimension, sot_dimension);
 
             map_dThermalDeformationGradientdGreenLagrangeStrain =
                 2 * (map_dThermalGreenLagrangeStraindThermalDeformationGradient.inverse()).eval();
 
-            Eigen::Map<const Eigen::Vector<floatType, sot_dim> > map_dThermalGreenLagrangeStraindT(
-                get_dThermalGreenLagrangeStraindT()->data(), sot_dim);
+            Eigen::Map<const Eigen::Vector<floatType, sot_dimension> > map_dThermalGreenLagrangeStraindT(
+                get_dThermalGreenLagrangeStraindT()->data(), sot_dimension);
 
-            dThermalDeformationGradientdT.zero(sot_dim);
-            Eigen::Map<Eigen::Vector<floatType, sot_dim> > map_dThermalDeformationGradientdT(
-                dThermalDeformationGradientdT.value->data(), sot_dim);
+            dThermalDeformationGradientdT.zero(sot_dimension);
+            Eigen::Map<Eigen::Vector<floatType, sot_dimension> > map_dThermalDeformationGradientdT(
+                dThermalDeformationGradientdT.value->data(), sot_dimension);
 
             map_dThermalDeformationGradientdT =
                 (map_dThermalDeformationGradientdGreenLagrangeStrain * map_dThermalGreenLagrangeStraindT).eval();
@@ -143,15 +135,13 @@ namespace tardigradeHydra {
          * Set the values of the jacobian
          */
         void residual::setJacobian() {
-            const unsigned int sot_dim = hydra->getSOTDimension();
-
             const unsigned int num_unknowns = hydra->getNumUnknowns();
 
             auto jacobian = get_SetDataStorage_jacobian();
             jacobian.zero(getNumEquations() * num_unknowns);
 
             for (unsigned int i = 0; i < getNumEquations(); i++) {
-                (*jacobian.value)[num_unknowns * i + sot_dim * getThermalConfigurationIndex() + i] = -1;
+                (*jacobian.value)[num_unknowns * i + sot_dimension * getThermalConfigurationIndex() + i] = -1;
             }
         }
 
@@ -180,13 +170,9 @@ namespace tardigradeHydra {
          *     tardigradeConstitutiveTools::quadraticThermalExpansion.
          */
         void residual::decomposeParameters(const floatVector &parameters) {
-            const unsigned int dim = hydra->getDimension();
+            constexpr unsigned int parametersPerTerm = dimension + (dimension * dimension - dimension) / 2;
 
-            const unsigned int sot_dim = hydra->getSOTDimension();
-
-            unsigned int parametersPerTerm = dim + (dim * dim - dim) / 2;
-
-            unsigned int expectedSize = 1 + 2 * parametersPerTerm;
+            constexpr unsigned int expectedSize = 1 + 2 * parametersPerTerm;
 
             if (parameters.size() != expectedSize) {
                 std::string message = "The parameters vector is not the expected length.\n";
@@ -203,15 +189,15 @@ namespace tardigradeHydra {
 
             unsigned int index = 0;
 
-            floatVector linearParameters(sot_dim, 0);
+            floatVector linearParameters(sot_dimension, 0);
 
-            floatVector quadraticParameters(sot_dim, 0);
+            floatVector quadraticParameters(sot_dimension, 0);
 
-            for (unsigned int i = 0; i < dim; i++) {
-                for (unsigned int j = i; j < dim; j++) {
-                    linearParameters[dim * i + j] = linearParameters[dim * j + i] = parameters[1 + index];
+            for (unsigned int i = 0; i < dimension; i++) {
+                for (unsigned int j = i; j < dimension; j++) {
+                    linearParameters[dimension * i + j] = linearParameters[dimension * j + i] = parameters[1 + index];
 
-                    quadraticParameters[dim * i + j] = quadraticParameters[dim * j + i] =
+                    quadraticParameters[dimension * i + j] = quadraticParameters[dimension * j + i] =
                         parameters[1 + parametersPerTerm + index];
 
                     index++;
@@ -285,15 +271,13 @@ namespace tardigradeHydra {
          * \param &values: The values to suggest
          */
         void residual::suggestInitialIterateValues(std::vector<unsigned int> &indices, std::vector<floatType> &values) {
-            const unsigned int sot_dim = hydra->getSOTDimension();
-
             const unsigned int configuration = getThermalConfigurationIndex();
 
             const secondOrderTensor *thermalDeformationGradient = get_thermalDeformationGradient();
 
-            indices = std::vector<unsigned int>(sot_dim, sot_dim * configuration);
+            indices = std::vector<unsigned int>(sot_dimension, sot_dimension * configuration);
 
-            for (unsigned int i = 0; i < sot_dim; i++) {
+            for (unsigned int i = 0; i < sot_dimension; i++) {
                 indices[i] += i;
             }
             values = *thermalDeformationGradient;

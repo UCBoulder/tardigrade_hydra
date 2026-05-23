@@ -151,24 +151,6 @@ namespace tardigradeHydra {
         //! The model parameters
         floatVector _parameters;
 
-        virtual void setJe(bool isPrevious);
-
-        virtual void setJe();
-
-        virtual void setPreviousJe();
-
-        virtual void setdJedFe(bool isPrevious);
-
-        virtual void setdJedFe();
-
-        virtual void setdPreviousJedPreviousFe();
-
-        virtual void setd2JedFe2(bool isPrevious);
-
-        virtual void setd2JedFe2();
-
-        virtual void setd2PreviousJedPreviousFe2();
-
         virtual void setIbar1(bool isPrevious);
 
         virtual void setIbar1();
@@ -314,20 +296,6 @@ namespace tardigradeHydra {
         }
 
        private:
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Je, floatType, setJe)
-
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousJe, floatType, setPreviousJe)
-
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dJedFe, secondOrderTensor, setdJedFe)
-
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, dPreviousJedPreviousFe, secondOrderTensor,
-                                                  setdPreviousJedPreviousFe)
-
-        TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, d2JedFe2, fourthOrderTensor, setd2JedFe2)
-
-        TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, d2PreviousJedPreviousFe2, fourthOrderTensor,
-                                                  setd2PreviousJedPreviousFe2)
-
         TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, Ibar1, floatType, setIbar1)
 
         TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(private, previousIbar1, floatType, setPreviousIbar1)

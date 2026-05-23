@@ -75,169 +75,11 @@ namespace tardigradeHydra {
     }
 
     /*!
-     * Compute the Jacobian of the elastic deformation
-     *
-     * \param isPrevious: A flag for of the current (false) or previous (true) value should be computed
-     */
-    void CHIPFoamStrainEnergy::setJe(bool isPrevious) {
-        constexpr unsigned int dim = 3;
-
-        const secondOrderTensor *Fe;
-
-        SetDataStorageBase<floatType> Je;
-
-        if (isPrevious) {
-            Fe = get_previousFe();
-
-            Je = get_SetDataStorage_previousJe();
-
-        } else {
-            Fe = get_Fe();
-
-            Je = get_SetDataStorage_Je();
-        }
-
-        Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> Femat(
-            Fe->data(), dim, dim);  // TODO: Change this to a constant size when possible
-        *Je.value = Femat.determinant();
-    }
-
-    /*!
-     * Compute the Jacobian of the elastic deformation
-     */
-    void CHIPFoamStrainEnergy::setJe() { setJe(false); }
-
-    /*!
-     * Compute the previous Jacobian of the elastic deformation
-     */
-    void CHIPFoamStrainEnergy::setPreviousJe() { setJe(true); }
-
-    /*!
-     * Compute the derivative of the Jacobian of the elastic deformation
-     * with respect to the elastic deformation
-     *
-     * \param isPrevious: Whether to compute the current (false) or previous (true)
-     *     value
-     */
-    void CHIPFoamStrainEnergy::setdJedFe(bool isPrevious) {
-        constexpr unsigned int dim = 3;
-
-        const secondOrderTensor *Fe;
-
-        const floatType *Je;
-
-        SetDataStorageBase<secondOrderTensor> dJedFe;
-
-        if (isPrevious) {
-            Fe = get_previousFe();
-
-            Je = get_previousJe();
-
-            dJedFe = get_SetDataStorage_dPreviousJedPreviousFe();
-
-        } else {
-            Fe = get_Fe();
-
-            Je = get_Je();
-
-            dJedFe = get_SetDataStorage_dJedFe();
-        }
-
-        secondOrderTensor                                                   invFe(dim * dim, 0);
-        Eigen::Map<const Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> Femat(
-            Fe->data(), dim, dim);  // TODO: Change this to a constant size when possible
-        Eigen::Map<Eigen::Matrix<floatType, -1, -1, Eigen::RowMajor>> invFemat(
-            invFe.data(), dim, dim);  // TODO: Change this to a constant size when possible
-        invFemat = Femat.inverse().eval();
-
-        dJedFe.zero(dim * dim);
-
-        for (unsigned int i = 0; i < dim; ++i) {
-            for (unsigned int I = 0; I < dim; ++I) {
-                (*dJedFe.value)[dim * i + I] = (*Je) * invFe[dim * I + i];
-            }
-        }
-    }
-
-    /*!
-     * Compute the derivative of the Jacobian of the elastic deformation
-     * with respect to the elastic deformation
-     */
-    void CHIPFoamStrainEnergy::setdJedFe() { setdJedFe(false); }
-
-    /*!
-     * Compute the previous derivative of the Jacobian of the elastic deformation
-     * with respect to the elastic deformation
-     */
-    void CHIPFoamStrainEnergy::setdPreviousJedPreviousFe() { setdJedFe(true); }
-
-    /*!
-     * Compute the second derivative of the Jacobian of the elastic deformation
-     * with respect to the elastic deformation
-     *
-     * \param isPrevious: Whether to compute the current (false) or previous (true)
-     *     value
-     */
-    void CHIPFoamStrainEnergy::setd2JedFe2(bool isPrevious) {
-        constexpr unsigned int dim = 3;
-
-        const floatType *Je;
-
-        const secondOrderTensor *dJedFe;
-
-        SetDataStorageBase<fourthOrderTensor> d2JedFe2;
-
-        if (isPrevious) {
-            Je = get_previousJe();
-
-            dJedFe = get_dPreviousJedPreviousFe();
-
-            d2JedFe2 = get_SetDataStorage_d2PreviousJedPreviousFe2();
-
-        } else {
-            Je = get_Je();
-
-            dJedFe = get_dJedFe();
-
-            d2JedFe2 = get_SetDataStorage_d2JedFe2();
-        }
-
-        d2JedFe2.zero(dim * dim * dim * dim);
-
-        for (unsigned int i = 0; i < dim; ++i) {
-            for (unsigned int I = 0; I < dim; ++I) {
-                for (unsigned int j = 0; j < dim; ++j) {
-                    for (unsigned int J = 0; J < dim; ++J) {
-                        (*d2JedFe2.value)[dim * dim * dim * i + dim * dim * I + dim * j + J] =
-                            ((*dJedFe)[dim * j + J] * (*dJedFe)[dim * i + I] -
-                             (*dJedFe)[dim * j + I] * (*dJedFe)[dim * i + J]) /
-                            (*Je);
-                    }
-                }
-            }
-        }
-    }
-
-    /*!
-     * Compute the derivative of the Jacobian of the elastic deformation
-     * with respect to the elastic deformation
-     */
-    void CHIPFoamStrainEnergy::setd2JedFe2() { setd2JedFe2(false); }
-
-    /*!
-     * Compute the previous derivative of the Jacobian of the elastic deformation
-     * with respect to the elastic deformation
-     */
-    void CHIPFoamStrainEnergy::setd2PreviousJedPreviousFe2() { setd2JedFe2(true); }
-
-    /*!
      * Compute the first invariant of the isochoric elastic deformation
      *
      * \param isPrevious: A flag for of the current (false) or previous (true) value should be computed
      */
     void CHIPFoamStrainEnergy::setIbar1(bool isPrevious) {
-        constexpr unsigned int dim = 3;
-
         const secondOrderTensor *Fe;
 
         const floatType *Je;
@@ -259,9 +101,9 @@ namespace tardigradeHydra {
             Ibar1 = get_SetDataStorage_Ibar1();
         }
 
-        for (unsigned int i = 0; i < dim; ++i) {
-            for (unsigned int I = 0; I < dim; ++I) {
-                *Ibar1.value += (*Fe)[dim * i + I] * (*Fe)[dim * i + I];
+        for (unsigned int i = 0; i < dimension; ++i) {
+            for (unsigned int I = 0; I < dimension; ++I) {
+                *Ibar1.value += (*Fe)[dimension * i + I] * (*Fe)[dimension * i + I];
             }
         }
 
@@ -286,8 +128,6 @@ namespace tardigradeHydra {
      *     value
      */
     void CHIPFoamStrainEnergy::setdIbar1dFe(bool isPrevious) {
-        constexpr unsigned int dim = 3;
-
         const floatType *Ibar1;
 
         const secondOrderTensor *Fe;
@@ -321,12 +161,14 @@ namespace tardigradeHydra {
             dIbar1dFe = get_SetDataStorage_dIbar1dFe();
         }
 
-        dIbar1dFe.zero(dim * dim);
+        dIbar1dFe.zero(dimension * dimension);
 
-        for (unsigned int i = 0; i < dim; ++i) {
-            for (unsigned int I = 0; I < dim; ++I) {
-                (*dIbar1dFe.value)[dim * i + I] =
-                    2 * ((*Fe)[dim * i + I] * std::pow((*Je), 1. / 3) - (*Ibar1) * (*dJedFe)[dim * i + I] / 3.) / (*Je);
+        for (unsigned int i = 0; i < dimension; ++i) {
+            for (unsigned int I = 0; I < dimension; ++I) {
+                (*dIbar1dFe.value)[dimension * i + I] = 2 *
+                                                        ((*Fe)[dimension * i + I] * std::pow((*Je), 1. / 3) -
+                                                         (*Ibar1) * (*dJedFe)[dimension * i + I] / 3.) /
+                                                        (*Je);
             }
         }
     }
@@ -351,8 +193,6 @@ namespace tardigradeHydra {
      *     value
      */
     void CHIPFoamStrainEnergy::setd2Ibar1dFe2(bool isPrevious) {
-        constexpr unsigned int dim = 3;
-
         const floatType *Ibar1;
 
         const secondOrderTensor *dIbar1dFe;
@@ -398,22 +238,26 @@ namespace tardigradeHydra {
             d2Ibar1dFe2 = get_SetDataStorage_d2Ibar1dFe2();
         }
 
-        d2Ibar1dFe2.zero(dim * dim * dim * dim);
+        d2Ibar1dFe2.zero(dimension * dimension * dimension * dimension);
 
         auto Je_23 = std::pow((*Je), 2. / 3.);
 
-        for (unsigned int i = 0; i < dim; ++i) {
-            for (unsigned int I = 0; I < dim; ++I) {
-                (*d2Ibar1dFe2.value)[dim * dim * dim * i + dim * dim * I + dim * i + I] += 2 / Je_23;
-                for (unsigned int j = 0; j < dim; ++j) {
-                    for (unsigned int J = 0; J < dim; ++J) {
-                        (*d2Ibar1dFe2.value)[dim * dim * dim * i + dim * dim * I + dim * j + J] +=
+        for (unsigned int i = 0; i < dimension; ++i) {
+            for (unsigned int I = 0; I < dimension; ++I) {
+                (*d2Ibar1dFe2
+                      .value)[dimension * dimension * dimension * i + dimension * dimension * I + dimension * i + I] +=
+                    2 / Je_23;
+                for (unsigned int j = 0; j < dimension; ++j) {
+                    for (unsigned int J = 0; J < dimension; ++J) {
+                        (*d2Ibar1dFe2.value)[dimension * dimension * dimension * i + dimension * dimension * I +
+                                             dimension * j + J] +=
                             2. / 3. *
-                                ((*Fe)[dim * i + I] / Je_23 * (*dJedFe)[dim * j + J] -
-                                 (*dIbar1dFe)[dim * j + J] * (*dJedFe)[dim * i + I] -
-                                 (*Ibar1) * (*d2JedFe2)[dim * dim * dim * i + dim * dim * I + dim * j + J]) /
+                                ((*Fe)[dimension * i + I] / Je_23 * (*dJedFe)[dimension * j + J] -
+                                 (*dIbar1dFe)[dimension * j + J] * (*dJedFe)[dimension * i + I] -
+                                 (*Ibar1) * (*d2JedFe2)[dimension * dimension * dimension * i +
+                                                        dimension * dimension * I + dimension * j + J]) /
                                 (*Je) -
-                            (*dIbar1dFe)[dim * i + I] / (*Je) * (*dJedFe)[dim * j + J];
+                            (*dIbar1dFe)[dimension * i + I] / (*Je) * (*dJedFe)[dimension * j + J];
                     }
                 }
             }
@@ -1521,8 +1365,6 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
     void CHIPFoamStrainEnergy::setStrainEnergyJacobians(const bool isPrevious) {
-        constexpr unsigned int dim = 3;
-
         const floatVector *dWLBdD;
 
         const floatVector *dWDCdD;
@@ -1568,9 +1410,9 @@ namespace tardigradeHydra {
             dStrainEnergydFe = get_SetDataStorage_dStrainEnergydFe();
         }
 
-        dStrainEnergydFe.zero(dim * dim);
+        dStrainEnergydFe.zero(dimension * dimension);
 
-        for (unsigned int iI = 0; iI < dim * dim; ++iI) {
+        for (unsigned int iI = 0; iI < dimension * dimension; ++iI) {
             (*dStrainEnergydFe.value)[iI] += ((*dWLBdD)[0] + (*dWDCdD)[0] + (*dWMdD)[0] + (*dWGdD)[0]) * (*dJedFe)[iI];
             (*dStrainEnergydFe.value)[iI] +=
                 ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) * (*dIbar1dFe)[iI];
@@ -1583,8 +1425,6 @@ namespace tardigradeHydra {
      * \param isPrevious: Whether to set the current (false) or previous (true) value
      */
     void CHIPFoamStrainEnergy::setStrainEnergyHessians(const bool isPrevious) {
-        constexpr unsigned int dim = 3;
-
         const floatVector *dWLBdD;
 
         const floatVector *dWDCdD;
@@ -1672,12 +1512,12 @@ namespace tardigradeHydra {
             d2StrainEnergydFedT = get_SetDataStorage_d2StrainEnergydFedT();
         }
 
-        d2StrainEnergydFe2.zero(dim * dim * dim * dim);
-        d2StrainEnergydFedT.zero(dim * dim);
+        d2StrainEnergydFe2.zero(dimension * dimension * dimension * dimension);
+        d2StrainEnergydFedT.zero(dimension * dimension);
 
-        for (unsigned int iI = 0; iI < dim * dim; ++iI) {
-            for (unsigned int aA = 0; aA < dim * dim; ++aA) {
-                (*d2StrainEnergydFe2.value)[dim * dim * iI + aA] +=
+        for (unsigned int iI = 0; iI < dimension * dimension; ++iI) {
+            for (unsigned int aA = 0; aA < dimension * dimension; ++aA) {
+                (*d2StrainEnergydFe2.value)[dimension * dimension * iI + aA] +=
                     ((*d2WLBdD2)[0] + (*d2WDCdD2)[0] + (*d2WMdD2)[0] + (*d2WGdD2)[0]) * (*dJedFe)[iI] * (*dJedFe)[aA] +
                     ((*d2WLBdD2)[1] + (*d2WDCdD2)[1] + (*d2WMdD2)[1] + (*d2WGdD2)[1]) * (*dJedFe)[iI] *
                         (*dIbar1dFe)[aA] +
@@ -1685,8 +1525,10 @@ namespace tardigradeHydra {
                         (*dJedFe)[aA] +
                     ((*d2WLBdD2)[3] + (*d2WDCdD2)[3] + (*d2WMdD2)[3] + (*d2WGdD2)[3]) * (*dIbar1dFe)[iI] *
                         (*dIbar1dFe)[aA] +
-                    ((*dWLBdD)[0] + (*dWDCdD)[0] + (*dWMdD)[0] + (*dWGdD)[0]) * (*d2JedFe2)[dim * dim * iI + aA] +
-                    ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) * (*d2Ibar1dFe2)[dim * dim * iI + aA];
+                    ((*dWLBdD)[0] + (*dWDCdD)[0] + (*dWMdD)[0] + (*dWGdD)[0]) *
+                        (*d2JedFe2)[dimension * dimension * iI + aA] +
+                    ((*dWLBdD)[1] + (*dWDCdD)[1] + (*dWMdD)[1] + (*dWGdD)[1]) *
+                        (*d2Ibar1dFe2)[dimension * dimension * iI + aA];
             }
         }
     }
